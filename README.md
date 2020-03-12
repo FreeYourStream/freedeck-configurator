@@ -7,3 +7,6 @@ For some future projects and convenience i needed this, so i build it.
 npm i; npm start
 ```
 thats it
+
+## Try It
+[click](https://koriwi.github.io/ssd1306-bitmap-generator/)
