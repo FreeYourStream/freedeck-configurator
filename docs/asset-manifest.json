@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.js": "/static/js/main.27c3c6ea.chunk.js",
-    "main.js.map": "/static/js/main.27c3c6ea.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.e4cadcdd.js",
-    "runtime-main.js.map": "/static/js/runtime-main.e4cadcdd.js.map",
-    "static/js/2.1dd4addb.chunk.js": "/static/js/2.1dd4addb.chunk.js",
-    "static/js/2.1dd4addb.chunk.js.map": "/static/js/2.1dd4addb.chunk.js.map",
-    "index.html": "/index.html",
-    "precache-manifest.8144384cd016b69994bae4ef620590f9.js": "/precache-manifest.8144384cd016b69994bae4ef620590f9.js",
-    "service-worker.js": "/service-worker.js",
-    "static/js/2.1dd4addb.chunk.js.LICENSE.txt": "/static/js/2.1dd4addb.chunk.js.LICENSE.txt"
+    "main.js": "https://koriwi.github.io/ssd1306-bitmap-generator/static/js/main.27c3c6ea.chunk.js",
+    "main.js.map": "https://koriwi.github.io/ssd1306-bitmap-generator/static/js/main.27c3c6ea.chunk.js.map",
+    "runtime-main.js": "https://koriwi.github.io/ssd1306-bitmap-generator/static/js/runtime-main.9f6f61e0.js",
+    "runtime-main.js.map": "https://koriwi.github.io/ssd1306-bitmap-generator/static/js/runtime-main.9f6f61e0.js.map",
+    "static/js/2.89346d69.chunk.js": "https://koriwi.github.io/ssd1306-bitmap-generator/static/js/2.89346d69.chunk.js",
+    "static/js/2.89346d69.chunk.js.map": "https://koriwi.github.io/ssd1306-bitmap-generator/static/js/2.89346d69.chunk.js.map",
+    "index.html": "https://koriwi.github.io/ssd1306-bitmap-generator/index.html",
+    "precache-manifest.38d2516ae88f07258bde9a934925830d.js": "https://koriwi.github.io/ssd1306-bitmap-generator/precache-manifest.38d2516ae88f07258bde9a934925830d.js",
+    "service-worker.js": "https://koriwi.github.io/ssd1306-bitmap-generator/service-worker.js",
+    "static/js/2.89346d69.chunk.js.LICENSE.txt": "https://koriwi.github.io/ssd1306-bitmap-generator/static/js/2.89346d69.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.e4cadcdd.js",
-    "static/js/2.1dd4addb.chunk.js",
+    "static/js/runtime-main.9f6f61e0.js",
+    "static/js/2.89346d69.chunk.js",
     "static/js/main.27c3c6ea.chunk.js"
   ]
 }
