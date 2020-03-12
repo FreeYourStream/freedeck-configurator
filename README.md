@@ -1,4 +1,4 @@
-# Just a little site, inspired by https://github.com/javl/image2cpp (thanks a lot).
+# Just a little site, inspired by [image2cpp](https://github.com/javl/image2cpp) (thanks a lot).
 ## A tool for generating (fullscreen) bitmaps for SSD1306 displays
 For some future projects and convenience i needed this, so i build it.
 
