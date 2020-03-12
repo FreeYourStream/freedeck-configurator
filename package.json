@@ -1,5 +1,5 @@
 {
-  "name": "floyd-steinberg",
+  "name": "floyd-steinberggui",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -8,11 +8,17 @@
     "@testing-library/user-event": "^7.2.1",
     "@types/jest": "^24.9.1",
     "@types/node": "^12.12.29",
+    "@types/pngjs": "^3.4.1",
     "@types/react": "^16.9.23",
     "@types/react-dom": "^16.9.5",
+    "@types/styled-components": "^5.0.1",
+    "floyd-steinberg": "^1.0.6",
+    "jimp": "^0.9.5",
+    "pngjs": "^3.4.0",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-scripts": "3.4.0",
+    "styled-components": "^5.0.1",
     "typescript": "^3.7.5"
   },
   "scripts": {
