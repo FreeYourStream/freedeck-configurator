@@ -77,7 +77,12 @@ const handleFileSelect = (file: File): Promise<ArrayBuffer> => {
   });
 };
 
-const ImagePreview: React.FC<{ image: File }> = ({ image }) => {
+export interface IProps {
+  image: File;
+  deleteFunction: () => void;
+}
+
+const ImagePreview: React.FC<IProps> = ({ image, deleteFunction }) => {
   const [hexVal, setHexVal] = useState<string>("");
   const [contrast, setContrast] = useState<number>(0);
   const [dither, setDither] = useState<boolean>(true);
@@ -98,6 +103,7 @@ const ImagePreview: React.FC<{ image: File }> = ({ image }) => {
   }, [contrast, dither, invert, image]);
   return (
     <Wrapper>
+      <Button onClick={() => deleteFunction()}>Delete</Button>
       <PixelatedImage
         height="150"
         width="300"

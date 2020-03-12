@@ -31,7 +31,13 @@ function App() {
         ></input>
       </form>
       {images.map((image, index) => (
-        <ImagePreview key={image.name + index} image={image}></ImagePreview>
+        <ImagePreview
+          key={image.name + index}
+          image={image}
+          deleteFunction={() => (
+            images.splice(index, 1), setImages([...images])
+          )}
+        ></ImagePreview>
       ))}
     </Main>
   );
