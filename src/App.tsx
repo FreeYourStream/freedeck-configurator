@@ -11,9 +11,16 @@ const Main = styled.div`
   flex-direction: column;
 `;
 
+const Label = styled.label`
+  color: white;
+  margin: 2px;
+  font-family: monospace;
+`;
+
 function App() {
   const [images, setImages] = useState<File[]>([]);
-
+  const [width, setWidth] = useState<number>(128);
+  const [height, setHeight] = useState<number>(64);
   return (
     <Main>
       <form
@@ -21,6 +28,24 @@ function App() {
           event.preventDefault();
         }}
       >
+        <input
+          disabled={true}
+          type="number"
+          min="0"
+          step="4"
+          max="1024"
+          value={width}
+          onChange={e => setWidth(parseInt(e.target.value))}
+        />
+        <Label>x</Label>
+        <input
+          disabled={true}
+          type="number"
+          min="0"
+          max="1024"
+          value={height}
+          onChange={e => setHeight(parseInt(e.target.value))}
+        />
         <input
           type="file"
           onChange={async event => {
@@ -32,6 +57,8 @@ function App() {
       </form>
       {images.map((image, index) => (
         <ImagePreview
+          height={height}
+          width={width}
           key={image.name + index}
           image={image}
           deleteFunction={() => (

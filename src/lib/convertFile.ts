@@ -7,34 +7,37 @@ import { encode } from "./uint8ToBase64";
 
 export const convertFile = (
   imageArrayBuffer: ArrayBuffer,
+  width: number,
+  height: number,
   contrast: number,
   invert: boolean,
   dither: boolean
-): Promise<{ base64: string; hex: string }> => {
+): Promise<{ base64: string; hex: string; binary: Buffer }> => {
   return new Promise(async resolve => {
     const pngImage = new PNG();
     const jimpImage = await Jimp.read(Buffer.from(imageArrayBuffer));
     if (invert) jimpImage.invert();
     await jimpImage.contrast(contrast);
-    jimpImage.autocrop().scaleToFit(128, 64);
+    jimpImage.autocrop().scaleToFit(width, height);
     const jimpPNG = await jimpImage.getBufferAsync("image/png");
 
     pngImage.parse(jimpPNG, async (err, data) => {
       if (dither) data = fs(data);
       const buffer = PNG.sync.write(data);
       const jimpImage = await Jimp.read(buffer);
-      const background = new Jimp(128, 64, "black");
+      const background = new Jimp(width, height, "black");
       background.composite(
         jimpImage,
-        64 - jimpImage.getWidth() / 2,
-        32 - jimpImage.getHeight() / 2
+        width / 2 - jimpImage.getWidth() / 2,
+        height / 2 - jimpImage.getHeight() / 2
       );
-      const converted = bwConversion(background);
+      const converted = bwConversion(background, width, height);
       // slice removes bitmap header
-      const hexConverted = bitConversion(converted.rgba.slice(55), 128);
+      const hexConverted = bitConversion(converted.rgba.slice(55), width);
       resolve({
         base64: "data:image/bmp;base64," + encode(converted.rgb),
-        hex: hexConverted
+        hex: hexConverted,
+        binary: converted.binary
       });
     });
   });

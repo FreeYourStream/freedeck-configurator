@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { copyToClipboard } from "../lib/copyToClipboard";
+import { download } from "../lib/download";
 import { convertFile } from "../lib/convertFile";
+import { binaryConversion } from "../lib/bufferToHexString";
 
 let fileReader: FileReader;
 const Wrapper = styled.div`
@@ -80,35 +82,48 @@ const handleFileSelect = (file: File): Promise<ArrayBuffer> => {
 export interface IProps {
   image: File;
   deleteFunction: () => void;
+  width: number;
+  height: number;
 }
 
-const ImagePreview: React.FC<IProps> = ({ image, deleteFunction }) => {
+const ImagePreview: React.FC<IProps> = ({
+  image,
+  deleteFunction,
+  width = 128,
+  height = 64
+}) => {
   const [hexVal, setHexVal] = useState<string>("");
   const [contrast, setContrast] = useState<number>(0);
   const [dither, setDither] = useState<boolean>(true);
   const [invert, setInvert] = useState<boolean>(false);
   const [b64Image, setB64Image] = useState<string>("");
+  const [binary, setBinary] = useState<Buffer>();
   useEffect(() => {
     (async () => {
       const arrayBuffer = await handleFileSelect(image);
       const imageString = await convertFile(
         arrayBuffer,
+        width,
+        height,
         contrast,
         invert,
         dither
       );
       setB64Image(imageString.base64);
       setHexVal(imageString.hex);
+      setBinary(imageString.binary);
     })();
-  }, [contrast, dither, invert, image]);
+  }, [contrast, dither, invert, image, height, width]);
   return (
     <Wrapper>
       <Button onClick={() => deleteFunction()}>Delete</Button>
       <PixelatedImage
-        height="150"
-        width="300"
+        width={width}
+        height={height}
         src={b64Image}
-        onClick={() => copyToClipboard(hexVal)}
+        onClick={() => (
+          copyToClipboard(hexVal), binary && download(binaryConversion(binary))
+        )}
         title="click to copy hex"
       />
       <ControlRow>

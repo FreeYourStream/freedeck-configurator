@@ -1,4 +1,4 @@
-export const encode = (input: Uint8Array) => {
+export const encode = (input: Buffer) => {
   var keyStr =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
   var output = "";

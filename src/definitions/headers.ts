@@ -1,4 +1,4 @@
-export const bmp = [
+export const bmp = (width: number, height: number) => [
   66,
   77,
   54,
@@ -17,11 +17,11 @@ export const bmp = [
   0,
   0,
   0,
-  128,
+  128, //width
   0,
   0,
   0,
-  192,
+  192, //height,
   255,
   255,
   255,
