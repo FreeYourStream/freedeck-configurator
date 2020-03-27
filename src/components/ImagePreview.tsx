@@ -48,7 +48,7 @@ const Button = styled.button`
   background-color: white;
   border: none;
   width: 50px;
-  height 30px;
+  height: 30px;
   margin: 4px;
   border-radius: 3px;
 `;
