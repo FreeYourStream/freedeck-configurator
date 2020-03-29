@@ -1,4 +1,6 @@
-export const encode = (input: Buffer) => {
+import { bmpHeader } from "../definitions/headers";
+
+export const base64Encode = (input: Buffer) => {
   var keyStr =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
   var output = "";
@@ -27,4 +29,12 @@ export const encode = (input: Buffer) => {
       keyStr.charAt(enc4);
   }
   return output;
+};
+
+export const getBase64Image = (images: Buffer[], imageIndex: number) => {
+  const prefix = "data:image/bmp;base64,";
+  const headerBuffer = Buffer.from(bmpHeader());
+  return (
+    prefix + base64Encode(Buffer.concat([headerBuffer, images[imageIndex]]))
+  );
 };

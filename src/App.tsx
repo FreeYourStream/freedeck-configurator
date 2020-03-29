@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import ImageConverter from "./components/ImagePreview";
-import { ConfigGrid } from "./components/ConfigGrid";
+import { Page } from "./components/Page";
+import { handleFileSelect } from "./lib/fileSelect";
+import { parseConfig } from "./lib/parse/parseConfig";
+import { download } from "./lib/download";
+import { HEADER_SIZE, ROW_SIZE } from "./constants";
 
 const Main = styled.div`
   display: flex;
@@ -9,77 +12,95 @@ const Main = styled.div`
   width: 100%;
 `;
 
-const Item = styled.div`
-  background-color: green;
-  height: 100%;
-  width: 100%;
-`;
-
-const ImageColumn = styled.div`
+const SideBar = styled.div`
   background-color: black;
   display: flex;
   align-items: center;
   flex-direction: column;
 `;
 
-const Label = styled.label`
-  color: white;
-  margin: 2px;
-  font-family: monospace;
+const MainBar = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
+export interface IConfig {
+  width: number;
+  height: number;
+  pages: number;
+  images: Buffer[];
+}
+
 function App() {
-  const [images, setImages] = useState<File[]>([]);
-  const [width, setWidth] = useState<number>(128);
-  const [height, setHeight] = useState<number>(64);
+  const [configFile, setConfigFile] = useState<File>();
+  const [height, setHeight] = useState<number>(2);
+  const [width, setWidth] = useState<number>(3);
+  const [pagesBuffer, setPagesBuffer] = useState<Buffer[]>([]);
+  const [pageCount, setPageCount] = useState<number>(1);
+  const [imageBuffers, setImageBuffers] = useState<Buffer[]>([]);
+
+  useEffect(() => {
+    if (configFile)
+      handleFileSelect(configFile).then(arrayBuffer => {
+        const config = parseConfig(Buffer.from(arrayBuffer));
+        setImageBuffers(config.images);
+        setHeight(config.height);
+        setWidth(config.width);
+        setPagesBuffer(config.pages);
+        setPageCount(config.pageCount);
+      });
+  }, [configFile]);
+
   return (
     <Main>
-      <ImageColumn>
+      <SideBar>
         <form
           onSubmit={event => {
             event.preventDefault();
           }}
         >
           <input
-            disabled={true}
-            type="number"
-            min="0"
-            step="4"
-            max="1024"
-            value={width}
-            onChange={e => setWidth(parseInt(e.target.value))}
-          />
-          <Label>x</Label>
-          <input
-            disabled={true}
-            type="number"
-            min="0"
-            max="1024"
-            value={height}
-            onChange={e => setHeight(parseInt(e.target.value))}
-          />
-          <input
             type="file"
             onChange={async event => {
               if (event.target.files?.length) {
-                setImages([...images, event.target.files[0]]);
+                setConfigFile(event.target.files[0]);
               }
             }}
           ></input>
         </form>
-        {images.map((image, index) => (
-          <ImageConverter
+        <button onClick={() => setPageCount(pageCount + 1)}>add page</button>
+        <button
+          onClick={() => {
+            const header = new Buffer(HEADER_SIZE);
+            header.writeUInt8(3, 0);
+            header.writeUInt8(2, 1);
+            const offset = pageCount * width * height + 1;
+            header.writeUInt16BE(offset, 2);
+            const newConfig = Buffer.concat([
+              header,
+              ...pagesBuffer,
+              ...imageBuffers
+            ]);
+            download(newConfig);
+          }}
+        >
+          save new config
+        </button>
+      </SideBar>
+      <MainBar>
+        {pagesBuffer?.map((page, index) => (
+          <Page
             height={height}
             width={width}
-            key={image.name + index}
-            image={image}
-            deleteFunction={() => (
-              images.splice(index, 1), setImages([...images])
-            )}
-          ></ImageConverter>
+            pageIndex={index}
+            images={imageBuffers}
+            page={page}
+            key={index}
+            setImages={setImageBuffers}
+          />
         ))}
-      </ImageColumn>
-      <ConfigGrid width={2} height={2} />
+      </MainBar>
     </Main>
   );
 }

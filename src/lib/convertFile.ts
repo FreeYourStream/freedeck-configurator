@@ -2,17 +2,25 @@ import { PNG } from "pngjs";
 import Jimp from "jimp";
 import fs from "floyd-steinberg";
 import { bwConversion } from "./bwConversion";
-import { bitConversion } from "./bufferToHexString";
-import { encode } from "./uint8ToBase64";
+import {
+  bitConversion,
+  binaryConversion as byteConversion
+} from "./bufferToHexString";
+import { base64Encode } from "./uint8ToBase64";
 
-export const convertFile = (
+export interface IConverted {
+  bytes: Buffer;
+  base64: string;
+}
+
+export const composeImage = (
   imageArrayBuffer: ArrayBuffer,
   width: number,
   height: number,
   contrast: number,
   invert: boolean,
   dither: boolean
-): Promise<{ base64: string; hex: string; binary: Buffer }> => {
+): Promise<Buffer> => {
   return new Promise(async resolve => {
     const pngImage = new PNG();
     const jimpImage = await Jimp.read(Buffer.from(imageArrayBuffer));
@@ -32,13 +40,12 @@ export const convertFile = (
         height / 2 - jimpImage.getHeight() / 2
       );
       const converted = bwConversion(background, width, height);
-      // slice removes bitmap header
-      const hexConverted = bitConversion(converted.rgba.slice(55), width);
-      resolve({
-        base64: "data:image/bmp;base64," + encode(converted.rgb),
-        hex: hexConverted,
-        binary: converted.binary
-      });
+      const bytes = byteConversion(converted.binary);
+      resolve(bytes);
+      /*resolve({
+        bytes,
+        base64: "data:image/bmp;base64," + base64Encode(converted.rgb)
+      });*/
     });
   });
 };

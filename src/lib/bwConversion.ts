@@ -1,9 +1,9 @@
 import Jimp from "jimp";
-import { bmp } from "../definitions/headers";
+import { bmpHeader } from "../definitions/headers";
 
 export const bwConversion = (image: Jimp, width: number, height: number) => {
-  const newArrayRGBA: number[] = [...bmp(width, height)];
-  const newArrayRGB: number[] = [...bmp(width, height)];
+  const newArrayRGBA: number[] = [...bmpHeader(width, height)];
+  const newArrayRGB: number[] = [...bmpHeader(width, height)];
   const binary: number[] = [];
   for (var i = 0; i < height; i++) {
     for (var j = 0; j < width; j++) {
