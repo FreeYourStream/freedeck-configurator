@@ -57,7 +57,7 @@ export const Page: React.FC<IProps> = ({
   useEffect(() => {
     const rows = parsePage(page);
     setRowBuffers(rows);
-  }, [page, imageCount, width, height]);
+  }, [JSON.stringify(page), imageCount, width, height]);
   return (
     <Wrapper>
       <p>{pageIndex}</p>
