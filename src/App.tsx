@@ -6,6 +6,8 @@ import { parseConfig } from "./lib/parse/parseConfig";
 import { download } from "./lib/download";
 import { HEADER_SIZE, ROW_SIZE } from "./constants";
 import defaultRowBuffer from "./definitions/defaultRowBuffer";
+import { Button } from "./components/lib/button";
+import { File } from "./components/lib/file";
 
 const Main = styled.div`
   display: flex;
@@ -18,6 +20,10 @@ const SideBar = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
+`;
+const Horiz = styled.div`
+  display: flex;
+  margin-top: 24px;
 `;
 
 const MainBar = styled.div`
@@ -106,61 +112,63 @@ function App() {
             event.preventDefault();
           }}
         >
-          <input
-            type="file"
-            onChange={async event => {
-              if (event.target.files?.length) {
-                loadConfigFile(event.target.files[0]);
-              }
-            }}
-          ></input>
+          <Horiz>
+            <p style={{ color: "white" }}>Load ConfigFile</p>
+            <File
+              onChange={async event => {
+                if (event.target.files?.length) {
+                  loadConfigFile(event.target.files[0]);
+                }
+              }}
+            ></File>
+          </Horiz>
         </form>
-        <button
-          onClick={() => {
-            setPageBuffers([...pageBuffers, defaultRowBuffer(width, height)]);
-            const blankImages: Buffer[] = Array(width * height).fill(
-              new Buffer(1024)
-            );
-            setImageBuffers([...imageBuffers, ...blankImages]);
-          }}
-        >
-          add page
-        </button>
-        <button
-          onClick={() => {
-            const header = new Buffer(HEADER_SIZE);
-            header.writeUInt8(3, 0);
-            header.writeUInt8(2, 1);
-            const offset = pageBuffers.length * width * height + 1;
-            header.writeUInt16LE(offset, 2);
-            const newConfig = Buffer.concat([
-              header,
-              ...pageBuffers,
-              ...imageBuffers
-            ]);
-            download(newConfig);
-          }}
-        >
-          save new config
-        </button>
+        <Horiz>
+          <Button
+            onClick={() => {
+              setPageBuffers([...pageBuffers, defaultRowBuffer(width, height)]);
+              const blankImages: Buffer[] = Array(width * height).fill(
+                new Buffer(1024)
+              );
+              setImageBuffers([...imageBuffers, ...blankImages]);
+            }}
+          >
+            Add Page
+          </Button>
+          <Button
+            bgcolor="#00c3b0"
+            onClick={() => {
+              const header = new Buffer(HEADER_SIZE);
+              header.writeUInt8(3, 0);
+              header.writeUInt8(2, 1);
+              const offset = pageBuffers.length * width * height + 1;
+              header.writeUInt16LE(offset, 2);
+              const newConfig = Buffer.concat([
+                header,
+                ...pageBuffers,
+                ...imageBuffers
+              ]);
+              download(newConfig);
+            }}
+          >
+            Save Config
+          </Button>
+        </Horiz>
       </SideBar>
       <MainBar>
         {pageBuffers?.map((page, index) => (
-          <>
-            {JSON.stringify(page)}
-            <Page
-              height={height}
-              width={width}
-              pageIndex={index}
-              images={imageBuffers}
-              page={page}
-              key={index}
-              setImage={setImage}
-              setRow={setRow}
-              deletePage={deletePage}
-              pageCount={pageBuffers.length}
-            />
-          </>
+          <Page
+            height={height}
+            width={width}
+            pageIndex={index}
+            images={imageBuffers}
+            page={page}
+            key={index}
+            setImage={setImage}
+            setRow={setRow}
+            deletePage={deletePage}
+            pageCount={pageBuffers.length}
+          />
         ))}
       </MainBar>
     </Main>

@@ -70,7 +70,6 @@ export const Display: React.FC<{
   });
 
   useEffect(() => {
-    console.log("NEW ROW", rowBuffer);
     const parsedRow = parseRow(rowBuffer);
     setRow(parsedRow);
   }, [rowBuffer]);

@@ -65,10 +65,7 @@ export const Action: React.FC<{
       {mode === 0 && (
         <KeySelect
           value={keys}
-          onChange={e =>
-            //setNewRow([0, 128, 129, parseInt(e.target.value)]),
-            setKeys(parseInt(e.target.value))
-          }
+          onChange={e => setKeys(parseInt(e.target.value))}
         >
           {Keys.map(enumKey => (
             //@ts-ignore
