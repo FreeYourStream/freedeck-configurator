@@ -19,7 +19,6 @@ export const bwConversion = (image: Jimp, width: number, height: number) => {
       binary.push(bw);
     }
   }
-  console.log();
   return {
     rgba: new Buffer(newArrayRGBA),
     rgb: new Buffer(newArrayRGB),

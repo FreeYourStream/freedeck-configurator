@@ -35,7 +35,10 @@ interface IProps {
   height: number;
   page: Buffer;
   images: Buffer[];
-  setImages: (newImages: Buffer[]) => void;
+  deletePage: (pageIndex: number) => void;
+  setImage: (newImage: Buffer, pageIndex: number, displayIndex: number) => void;
+  setRow: (newRow: number[], pageIndex: number, displayIndex: number) => void;
+  pageCount: number;
 }
 
 export const Page: React.FC<IProps> = ({
@@ -44,26 +47,42 @@ export const Page: React.FC<IProps> = ({
   height,
   images,
   page,
-  setImages
+  setImage,
+  setRow,
+  deletePage,
+  pageCount
 }) => {
   const [rowBuffers, setRowBuffers] = useState<Buffer[]>([]);
   const imageCount = width * height;
-
   useEffect(() => {
     const rows = parsePage(page);
     setRowBuffers(rows);
   }, [page, imageCount, width, height]);
-
   return (
     <Wrapper>
       <p>{pageIndex}</p>
+      <button
+        onClick={() => {
+          const deleteConfirmed = window.confirm(
+            "Do you really want to delete this page forever?"
+          );
+          if (deleteConfirmed) deletePage(pageIndex);
+        }}
+      >
+        delete
+      </button>
       <Grid height={height} width={width}>
-        {rowBuffers.map((rowBuffer, index) => (
+        {rowBuffers.map((rowBuffer, imageIndex) => (
           <Display
             images={images}
             rowBuffer={rowBuffer}
-            key={index}
-            setImages={setImages}
+            key={imageIndex}
+            imageIndex={pageIndex * width * height + imageIndex}
+            setRow={newRow => setRow(newRow, pageIndex, imageIndex)}
+            setImage={newImage => setImage(newImage, pageIndex, imageIndex)}
+            pages={[...Array(pageCount).keys()].filter(
+              pageNumber => pageNumber != pageIndex
+            )}
           />
         ))}
       </Grid>

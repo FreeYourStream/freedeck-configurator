@@ -19,7 +19,6 @@ export const Settings: React.FC<{
   const [dither, setDither] = useState<boolean>(true);
   const [invert, setInvert] = useState<boolean>(false);
   useEffect(() => {
-    console.log(contrast);
     setSettings({ contrast, dither, invert });
   }, [contrast, dither, invert]);
   return (

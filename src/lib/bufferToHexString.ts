@@ -46,7 +46,6 @@ export const bitConversion = (data: Uint8Array, canvasWidth: number) => {
 };
 
 export const binaryConversion = (data: Buffer) => {
-  // console.log(data.byteLength);
   const reversed = data;
   const arr: number[] = [];
   for (let i = 0; i < data.byteLength / 8; i++) {
@@ -59,13 +58,7 @@ export const binaryConversion = (data: Buffer) => {
     pixels += 4 * (reversed[i * 8 + 5] / 255);
     pixels += 2 * (reversed[i * 8 + 6] / 255);
     pixels += 1 * (reversed[i * 8 + 7] / 255);
-    // console.log(pixels.toString(16));
     arr.push(pixels);
   }
   return Buffer.from(arr);
-
-  // data.forEach(eightByte => {
-  //   const value: boolean = eightByte.toString(16) === "ff";
-  //   console.log(value);
-  // });
 };

@@ -5,6 +5,7 @@ import { handleFileSelect } from "./lib/fileSelect";
 import { parseConfig } from "./lib/parse/parseConfig";
 import { download } from "./lib/download";
 import { HEADER_SIZE, ROW_SIZE } from "./constants";
+import defaultRowBuffer from "./definitions/defaultRowBuffer";
 
 const Main = styled.div`
   display: flex;
@@ -33,24 +34,69 @@ export interface IConfig {
 }
 
 function App() {
-  const [configFile, setConfigFile] = useState<File>();
   const [height, setHeight] = useState<number>(2);
   const [width, setWidth] = useState<number>(3);
-  const [pagesBuffer, setPagesBuffer] = useState<Buffer[]>([]);
-  const [pageCount, setPageCount] = useState<number>(1);
+  const [pageBuffers, setPageBuffers] = useState<Buffer[]>([]);
   const [imageBuffers, setImageBuffers] = useState<Buffer[]>([]);
 
-  useEffect(() => {
-    if (configFile)
-      handleFileSelect(configFile).then(arrayBuffer => {
-        const config = parseConfig(Buffer.from(arrayBuffer));
-        setImageBuffers(config.images);
-        setHeight(config.height);
-        setWidth(config.width);
-        setPagesBuffer(config.pages);
-        setPageCount(config.pageCount);
-      });
-  }, [configFile]);
+  const setImage = (
+    newImage: Buffer,
+    pageIndex: number,
+    displayIndex: number
+  ) => {
+    const newImages = [...imageBuffers];
+    newImages[width * height * pageIndex + displayIndex] = newImage;
+    setImageBuffers(newImages);
+  };
+
+  const setRow = (
+    newRow: number[],
+    pageIndex: number,
+    displayIndex: number
+  ) => {
+    console.log("SETTING ROW", newRow, pageIndex, displayIndex);
+    const newPageBuffers = [...pageBuffers];
+    const newPage = newPageBuffers[pageIndex];
+    newPage.set(newRow, displayIndex * ROW_SIZE);
+    setPageBuffers(newPageBuffers);
+  };
+
+  const deletePage = (pageIndex: number) => {
+    const pageSize = width * height;
+
+    const newImages = [...imageBuffers];
+    newImages.splice(pageSize * pageIndex, pageSize);
+    setImageBuffers(newImages);
+
+    const newPages = [...pageBuffers];
+    newPages.forEach((newPage, index) => {
+      if (index < pageIndex) {
+        for (let i = 0; i < width * height; i++) {
+          if (newPage.readUInt8(i * ROW_SIZE) === 1) {
+            const oldValue = newPage.readUInt8(i * ROW_SIZE + 1);
+            newPage.writeUInt8(i * ROW_SIZE + 1, oldValue - 1);
+            console.log(
+              oldValue,
+              newPage.slice(i * ROW_SIZE, i * ROW_SIZE + 16)
+            );
+          }
+        }
+      }
+    });
+    newPages.splice(pageIndex, 1);
+    //setPageCount(pageCount - 1);
+    setPageBuffers(newPages);
+  };
+
+  const loadConfigFile = (configFile: File) =>
+    handleFileSelect(configFile).then(arrayBuffer => {
+      const config = parseConfig(Buffer.from(arrayBuffer));
+      setHeight(config.height);
+      setWidth(config.width);
+      setPageBuffers(config.pages);
+      //setPageCount(config.pageCount);
+      setImageBuffers(config.images);
+    });
 
   return (
     <Main>
@@ -64,22 +110,32 @@ function App() {
             type="file"
             onChange={async event => {
               if (event.target.files?.length) {
-                setConfigFile(event.target.files[0]);
+                loadConfigFile(event.target.files[0]);
               }
             }}
           ></input>
         </form>
-        <button onClick={() => setPageCount(pageCount + 1)}>add page</button>
+        <button
+          onClick={() => {
+            setPageBuffers([...pageBuffers, defaultRowBuffer(width, height)]);
+            const blankImages: Buffer[] = Array(width * height).fill(
+              new Buffer(1024)
+            );
+            setImageBuffers([...imageBuffers, ...blankImages]);
+          }}
+        >
+          add page
+        </button>
         <button
           onClick={() => {
             const header = new Buffer(HEADER_SIZE);
             header.writeUInt8(3, 0);
             header.writeUInt8(2, 1);
-            const offset = pageCount * width * height + 1;
-            header.writeUInt16BE(offset, 2);
+            const offset = pageBuffers.length * width * height + 1;
+            header.writeUInt16LE(offset, 2);
             const newConfig = Buffer.concat([
               header,
-              ...pagesBuffer,
+              ...pageBuffers,
               ...imageBuffers
             ]);
             download(newConfig);
@@ -89,16 +145,22 @@ function App() {
         </button>
       </SideBar>
       <MainBar>
-        {pagesBuffer?.map((page, index) => (
-          <Page
-            height={height}
-            width={width}
-            pageIndex={index}
-            images={imageBuffers}
-            page={page}
-            key={index}
-            setImages={setImageBuffers}
-          />
+        {pageBuffers?.map((page, index) => (
+          <>
+            {JSON.stringify(page)}
+            <Page
+              height={height}
+              width={width}
+              pageIndex={index}
+              images={imageBuffers}
+              page={page}
+              key={index}
+              setImage={setImage}
+              setRow={setRow}
+              deletePage={deletePage}
+              pageCount={pageBuffers.length}
+            />
+          </>
         ))}
       </MainBar>
     </Main>
