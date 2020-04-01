@@ -13,13 +13,26 @@ import { Action } from "./Action";
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: green;
   flex-direction: column;
 `;
 
 const DeleteImage = styled.button`
+  background-color: white;
+  border-radius: 50%;
+  color: red;
+  font-size: 15px;
+  line-height: 15px;
+  text-align: center;
+  vertical-align: middle;
+  height: 22px;
+  width: 22px;
+  top: -8px;
+  left: -8px;
+  box-shadow: 0px 0px 0px 1px #0000003d;
+  font-weight: bold;
+  font-family: sans-serif;
   position: absolute;
+  border-style: none;
 `;
 
 const DropWrapper = styled.div`
@@ -103,12 +116,16 @@ export const Display: React.FC<{
     }
   }, [newImageFile, settings]);
 
+  const deleteImage = () => {
+    setNewImageBuffer(new Buffer(1024));
+    setNewImageFile(undefined);
+    setPreviewImage(getBase64Image(images, imageIndex));
+  };
+
   return (
     <Wrapper>
       <DropWrapper>
-        <DeleteImage onClick={() => setNewImageBuffer(new Buffer(1024))}>
-          x
-        </DeleteImage>
+        <DeleteImage onClick={deleteImage}>x</DeleteImage>
         <Drop {...getRootProps()}>
           <input {...getInputProps()} />
           {isDragActive ? (

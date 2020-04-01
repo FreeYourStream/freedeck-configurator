@@ -4,7 +4,7 @@ export const download = (data: Buffer) => {
   const blob = new Blob([data], { type: "octet/stream" });
   const url = window.URL.createObjectURL(blob);
   a.href = url;
-  a.download = "uff.bin";
+  a.download = "config.bin";
   a.click();
   window.URL.revokeObjectURL(url);
   a.remove();

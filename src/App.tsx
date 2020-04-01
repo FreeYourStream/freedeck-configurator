@@ -10,6 +10,9 @@ import { Button } from "./components/lib/button";
 import { File } from "./components/lib/file";
 
 const Main = styled.div`
+  * {
+    box-sizing: border-box;
+  }
   display: flex;
   height: 100%;
   width: 100%;
@@ -28,8 +31,11 @@ const Horiz = styled.div`
 
 const MainBar = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-around;
   align-items: center;
+  overflow: auto;
+  width: 100%;
 `;
 
 export interface IConfig {
@@ -60,9 +66,11 @@ function App() {
     pageIndex: number,
     displayIndex: number
   ) => {
-    console.log("SETTING ROW", newRow, pageIndex, displayIndex);
     const newPageBuffers = [...pageBuffers];
     const newPage = newPageBuffers[pageIndex];
+    while (newRow.length < ROW_SIZE) {
+      newRow.push(0);
+    }
     newPage.set(newRow, displayIndex * ROW_SIZE);
     setPageBuffers(newPageBuffers);
   };
@@ -80,11 +88,11 @@ function App() {
         for (let i = 0; i < width * height; i++) {
           if (newPage.readUInt8(i * ROW_SIZE) === 1) {
             const oldValue = newPage.readUInt8(i * ROW_SIZE + 1);
-            newPage.writeUInt8(i * ROW_SIZE + 1, oldValue - 1);
-            console.log(
-              oldValue,
-              newPage.slice(i * ROW_SIZE, i * ROW_SIZE + 16)
-            );
+            if (oldValue === pageIndex) {
+              newPage.writeUInt8(i * ROW_SIZE + 1, -1);
+            } else if (oldValue > pageIndex) {
+              newPage.writeUInt8(i * ROW_SIZE + 1, oldValue - 1);
+            }
           }
         }
       }
