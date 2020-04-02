@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Keys, EKeys } from "../definitions/keys";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+
+import { EKeys, Keys } from "../definitions/keys";
 import { EAction } from "../lib/parse/parsePage";
 
 const Wrapper = styled.div`
@@ -18,7 +19,13 @@ const StyledSelect = styled.select`
 `;
 const LabelRow = styled.div`
   display: flex;
+  justify-content: space-between;
 `;
+
+const CheckButton = styled.button<{uff: boolean}>`
+  color: ${p => p.uff ? 'white' : 'black'};
+  background-color: ${p => p.uff ? 'blue' : 'white'};
+`
 
 export const Action: React.FC<{
   setNewRow: (newRow: number[]) => void;
@@ -77,35 +84,14 @@ export const Action: React.FC<{
       >
         <option value="0">Send Keys</option>
         <option value="1">Change Page</option>
-        <option value="2">Empty</option>
+        <option value="2">Do nothing</option>
       </StyledSelect>
       {mode === 0 && (
         <>
           <LabelRow>
-            <label>
-              Ctrl
-              <input
-                type="checkbox"
-                checked={ctrl}
-                onChange={e => setCtrl(e.target.checked)}
-              />
-            </label>
-            <label>
-              Shift
-              <input
-                type="checkbox"
-                checked={shift}
-                onChange={e => setShift(e.target.checked)}
-              />
-            </label>
-            <label>
-              Alt
-              <input
-                type="checkbox"
-                checked={alt}
-                onChange={e => setAlt(e.target.checked)}
-              />
-            </label>
+            <CheckButton uff={ctrl} onClick={e=>setCtrl(!ctrl)} >Ctrl</CheckButton>
+            <CheckButton uff={shift} onClick={e=>setShift(!shift)} >Shift</CheckButton>
+            <CheckButton uff={alt} onClick={e=>setAlt(!alt)} >Alt</CheckButton>
           </LabelRow>
 
           <StyledSelect
@@ -126,7 +112,7 @@ export const Action: React.FC<{
           value={goTo}
           onChange={e => setGoTo(parseInt(e.target.value))}
         >
-          <option value={-1}>Select something</option>
+          <option value={-1}>Select Page</option>
           {pages.map(pageNumber => (
             <option key={pageNumber} value={pageNumber}>
               Go to {pageNumber}

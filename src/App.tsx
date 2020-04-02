@@ -1,35 +1,50 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Page } from "./components/Page";
-import { handleFileSelect } from "./lib/fileSelect";
-import { parseConfig } from "./lib/parse/parseConfig";
-import { download } from "./lib/download";
-import { HEADER_SIZE, ROW_SIZE } from "./constants";
-import defaultRowBuffer from "./definitions/defaultRowBuffer";
+
 import { Button } from "./components/lib/button";
 import { File } from "./components/lib/file";
+import { Page } from "./components/Page";
+import { HEADER_SIZE, ROW_SIZE } from "./constants";
+import defaultRowBuffer from "./definitions/defaultRowBuffer";
+import { download } from "./lib/download";
+import { handleFileSelect } from "./lib/fileSelect";
+import { parseConfig } from "./lib/parse/parseConfig";
 
 const Main = styled.div`
   * {
     box-sizing: border-box;
   }
   display: flex;
+  flex-direction: column;
   height: 100%;
   width: 100%;
 `;
 
-const SideBar = styled.div`
+const Header = styled.div`
   background-color: black;
-  display: flex;
+  display: grid;
+  grid-template-columns: 200px 1fr;
   align-items: center;
-  flex-direction: column;
-`;
-const Horiz = styled.div`
-  display: flex;
-  margin-top: 24px;
+  padding: 18px;
 `;
 
-const MainBar = styled.div`
+const HeadLine = styled.div`
+  color: white;
+  font-family: sans-serif;
+  font-size: 36px;
+  font-weight: bold;
+`
+
+const Buttons = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
+
+const Horiz = styled.div`
+  display: flex;
+`;
+
+const Content = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
@@ -37,6 +52,37 @@ const MainBar = styled.div`
   overflow: auto;
   width: 100%;
 `;
+
+const LoadConfigFile = styled.label`
+  user-select: none;
+  font-size: 24px;
+  font-family: sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1px solid black;
+  color: black;
+  background-color: white;
+  padding: 8px;
+  border-radius: 4px;
+`
+
+const InvisibleFile = styled.input.attrs({ type: "file"})`
+  display: none;
+`
+
+const SaveConfigFile = styled(Button)`
+font-size: 24px;
+  font-family: sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1px solid black;
+  color: white;
+  background-color: blue;
+  padding: 8px;
+  border-radius: 4px;
+  margin: 0;
+  margin-left: 16px;
+`
 
 export interface IConfig {
   width: number;
@@ -114,71 +160,79 @@ function App() {
 
   return (
     <Main>
-      <SideBar>
+      <Header>
+        <HeadLine>FreeDeck</HeadLine>
+        <Buttons>
+
         <form
           onSubmit={event => {
             event.preventDefault();
           }}
-        >
+          >
           <Horiz>
-            <p style={{ color: "white" }}>Load ConfigFile</p>
-            <File
+            <LoadConfigFile htmlFor="loadConfig">Load Config File</LoadConfigFile>
+            <InvisibleFile
+
+              id="loadConfig"
               onChange={async event => {
                 if (event.target.files?.length) {
                   loadConfigFile(event.target.files[0]);
                 }
               }}
-            ></File>
+              ></InvisibleFile>
+            <SaveConfigFile
+              bgcolor="#00c3b0"
+              onClick={() => {
+                const header = new Buffer(HEADER_SIZE);
+                header.writeUInt8(3, 0);
+                header.writeUInt8(2, 1);
+                const offset = pageBuffers.length * width * height + 1;
+                header.writeUInt16LE(offset, 2);
+                const newConfig = Buffer.concat([
+                  header,
+                  ...pageBuffers,
+                  ...imageBuffers
+                ]);
+                download(newConfig);
+              }}
+              >
+              Save Config
+            </SaveConfigFile>
           </Horiz>
         </form>
         <Horiz>
           <Button
+            bgcolor="white"
             onClick={() => {
               setPageBuffers([...pageBuffers, defaultRowBuffer(width, height)]);
               const blankImages: Buffer[] = Array(width * height).fill(
                 new Buffer(1024)
-              );
-              setImageBuffers([...imageBuffers, ...blankImages]);
-            }}
-          >
-            Add Page
+                );
+                setImageBuffers([...imageBuffers, ...blankImages]);
+              }}
+              >
+            Add Page +
           </Button>
-          <Button
-            bgcolor="#00c3b0"
-            onClick={() => {
-              const header = new Buffer(HEADER_SIZE);
-              header.writeUInt8(3, 0);
-              header.writeUInt8(2, 1);
-              const offset = pageBuffers.length * width * height + 1;
-              header.writeUInt16LE(offset, 2);
-              const newConfig = Buffer.concat([
-                header,
-                ...pageBuffers,
-                ...imageBuffers
-              ]);
-              download(newConfig);
-            }}
-          >
-            Save Config
-          </Button>
+          
         </Horiz>
-      </SideBar>
-      <MainBar>
+      </Buttons>
+      </Header>
+      <Content>
         {pageBuffers?.map((page, index) => (
           <Page
-            height={height}
-            width={width}
-            pageIndex={index}
-            images={imageBuffers}
-            page={page}
-            key={index}
+          height={height}
+          width={width}
+          pageIndex={index}
+          images={imageBuffers}
+          page={page}
+          key={index}
             setImage={setImage}
             setRow={setRow}
             deletePage={deletePage}
             pageCount={pageBuffers.length}
           />
         ))}
-      </MainBar>
+      </Content>
     </Main>
   );
 }

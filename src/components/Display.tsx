@@ -1,14 +1,15 @@
-import React, { useEffect, useState, useCallback } from "react";
-import styled from "styled-components";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { parseRow, IRow, EAction } from "../lib/parse/parsePage";
-import { getBase64Image } from "../lib/uint8ToBase64";
-import { handleFileSelect } from "../lib/fileSelect";
-import { composeImage } from "../lib/convertFile";
-import { Settings } from "./Settings";
+import styled from "styled-components";
+
 import { ROW_SIZE } from "../constants";
-import { Keys, EKeys } from "../definitions/keys";
+import { EKeys, Keys } from "../definitions/keys";
+import { composeImage } from "../lib/convertFile";
+import { handleFileSelect } from "../lib/fileSelect";
+import { EAction, IRow, parseRow } from "../lib/parse/parsePage";
+import { getBase64Image } from "../lib/uint8ToBase64";
 import { Action } from "./Action";
+import { Settings } from "./Settings";
 
 const Wrapper = styled.div`
   display: flex;
@@ -16,23 +17,21 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
-const DeleteImage = styled.button`
+const DeleteImage = styled.img`
+  cursor: pointer;
   background-color: white;
   border-radius: 50%;
-  color: red;
-  font-size: 15px;
-  line-height: 15px;
-  text-align: center;
-  vertical-align: middle;
   height: 22px;
   width: 22px;
   top: -8px;
-  left: -8px;
-  box-shadow: 0px 0px 0px 1px #0000003d;
-  font-weight: bold;
-  font-family: sans-serif;
+  right: -8px;
   position: absolute;
   border-style: none;
+  visibility: hidden;
+
+  ${Wrapper}:hover & {
+    visibility: visible;
+  }
 `;
 
 const DropWrapper = styled.div`
@@ -48,7 +47,14 @@ const DropHere = styled.div`
   font-size: 24px;
   color: white;
 `;
-
+const Border = styled.div`
+  padding: 4px;
+  border: 1px solid #555;
+  border-top: none;
+  min-height: 132px;
+  max-width: 128px;
+  border-radius: 0px 0px 2px 2px;
+`
 export const Display: React.FC<{
   rowBuffer: Buffer;
   images: Buffer[];
@@ -125,7 +131,7 @@ export const Display: React.FC<{
   return (
     <Wrapper>
       <DropWrapper>
-        <DeleteImage onClick={deleteImage}>x</DeleteImage>
+        <DeleteImage src="close.png" onClick={deleteImage} />
         <Drop {...getRootProps()}>
           <input {...getInputProps()} />
           {isDragActive ? (
@@ -136,6 +142,7 @@ export const Display: React.FC<{
         </Drop>
       </DropWrapper>
 
+<Border>
       {newImageFile && <Settings setSettings={setSettings} />}
       {row && (
         <Action
@@ -146,6 +153,7 @@ export const Display: React.FC<{
           loadPage={row.page}
         />
       )}
+</Border>
     </Wrapper>
   );
 };
