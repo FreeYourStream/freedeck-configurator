@@ -49,16 +49,15 @@ export const binaryConversion = (data: Buffer) => {
   const reversed = data;
   const arr: number[] = [];
   for (let i = 0; i < data.byteLength / 8; i++) {
-    let pixels = 0;
-    pixels += 128 * (reversed[i * 8] / 255);
-    pixels += 64 * (reversed[i * 8 + 1] / 255);
-    pixels += 32 * (reversed[i * 8 + 2] / 255);
-    pixels += 16 * (reversed[i * 8 + 3] / 255);
-    pixels += 8 * (reversed[i * 8 + 4] / 255);
-    pixels += 4 * (reversed[i * 8 + 5] / 255);
-    pixels += 2 * (reversed[i * 8 + 6] / 255);
-    pixels += 1 * (reversed[i * 8 + 7] / 255);
-    arr.push(pixels);
+    arr.push(
+      parseInt(
+        reversed
+          .slice(i * 8, (i + 1) * 8)
+          .map(byte => (byte === 255 ? 1 : 0))
+          .join(""),
+        2
+      )
+    );
   }
   return Buffer.from(arr);
 };

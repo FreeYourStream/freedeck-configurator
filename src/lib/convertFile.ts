@@ -1,12 +1,9 @@
-import { PNG } from "pngjs";
-import Jimp from "jimp";
 import fs from "floyd-steinberg";
-import { bwConversion } from "./bwConversion";
-import {
-  bitConversion,
-  binaryConversion as byteConversion
-} from "./bufferToHexString";
-import { base64Encode } from "./uint8ToBase64";
+import Jimp from "jimp";
+import { PNG } from "pngjs";
+
+import { binaryConversion } from "./bufferToHexString";
+import { imageToBinaryBuffer } from "./bwConversion";
 
 export interface IConverted {
   bytes: Buffer;
@@ -14,7 +11,7 @@ export interface IConverted {
 }
 
 export const composeImage = (
-  imageArrayBuffer: ArrayBuffer,
+  image: Jimp,
   width: number,
   height: number,
   contrast: number,
@@ -22,8 +19,8 @@ export const composeImage = (
   dither: boolean
 ): Promise<Buffer> => {
   return new Promise(async resolve => {
+    const jimpImage = new Jimp(image);
     const pngImage = new PNG();
-    const jimpImage = await Jimp.read(Buffer.from(imageArrayBuffer));
     if (invert) jimpImage.invert();
     await jimpImage.contrast(contrast);
     jimpImage.autocrop().scaleToFit(width, height);
@@ -39,13 +36,9 @@ export const composeImage = (
         width / 2 - jimpImage.getWidth() / 2,
         height / 2 - jimpImage.getHeight() / 2
       );
-      const converted = bwConversion(background, width, height);
-      const bytes = byteConversion(converted.binary);
+      const { binary } = imageToBinaryBuffer(background, width, height);
+      const bytes = binaryConversion(binary);
       resolve(bytes);
-      /*resolve({
-        bytes,
-        base64: "data:image/bmp;base64," + base64Encode(converted.rgb)
-      });*/
     });
   });
 };

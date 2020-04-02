@@ -3,7 +3,6 @@ import styled from "styled-components";
 
 import { parsePage } from "../lib/parse/parsePage";
 import { Display } from "./Display";
-import { Button } from "./lib/button";
 
 const Wrapper = styled.div`
   position: relative;  
@@ -50,9 +49,9 @@ border-style: none;
 const Grid = styled.div<{ width: number; height: number }>`
   display: grid;
   grid-template-columns: ${p => {
-    let fr = "128px";
+    let fr = "160px";
     for (var i = 0; i < p.width - 1; i++) {
-      fr += " 128px";
+      fr += " 160px";
     }
     return `${fr};`;
   }};

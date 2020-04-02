@@ -39,6 +39,7 @@ export const Action: React.FC<{
   const [alt, setAlt] = useState<boolean>(loadKeys.includes(130));
   const [ctrl, setCtrl] = useState<boolean>(loadKeys.includes(128));
   const [shift, setShift] = useState<boolean>(loadKeys.includes(129));
+  const [superKey, setSuper] = useState<boolean>(loadKeys.includes(131));
   const [keys, setKeys] = useState<number>(
     loadKeys?.[loadKeys.length - 1] ?? -1
   );
@@ -69,12 +70,13 @@ export const Action: React.FC<{
       if (ctrl) newRow.push(128);
       if (shift) newRow.push(129);
       if (alt) newRow.push(130);
+      if (superKey) newRow.push(131);
       newRow.push(keys);
       setNewRow(newRow);
     } else if (mode === EAction.noop) {
       setNewRow([2]);
     }
-  }, [mode, goTo, keys, ctrl, shift, alt]);
+  }, [mode, goTo, keys, ctrl, shift, alt, superKey]);
 
   return (
     <Wrapper>
@@ -92,6 +94,7 @@ export const Action: React.FC<{
             <CheckButton uff={ctrl} onClick={e=>setCtrl(!ctrl)} >Ctrl</CheckButton>
             <CheckButton uff={shift} onClick={e=>setShift(!shift)} >Shift</CheckButton>
             <CheckButton uff={alt} onClick={e=>setAlt(!alt)} >Alt</CheckButton>
+            <CheckButton uff={superKey} onClick={e=>setSuper(!superKey)} >Win</CheckButton>
           </LabelRow>
 
           <StyledSelect

@@ -1,12 +1,11 @@
+import Jimp from "jimp";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
 
-import { ROW_SIZE } from "../constants";
-import { EKeys, Keys } from "../definitions/keys";
 import { composeImage } from "../lib/convertFile";
 import { handleFileSelect } from "../lib/fileSelect";
-import { EAction, IRow, parseRow } from "../lib/parse/parsePage";
+import { IRow, parseRow } from "../lib/parse/parsePage";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { Action } from "./Action";
 import { Settings } from "./Settings";
@@ -16,7 +15,10 @@ const Wrapper = styled.div`
   align-items: center;
   flex-direction: column;
 `;
-
+const ImagePreview = styled.img`
+  width: 128px;
+  height: 64px;
+`
 const DeleteImage = styled.img`
   cursor: pointer;
   background-color: white;
@@ -39,8 +41,11 @@ const DropWrapper = styled.div`
 `;
 
 const Drop = styled.div`
-  width: 128px;
+  width: 128;
   height: 64px;
+  border: 16px solid black;
+  border-top: none;
+  border-bottom: none;
 `;
 
 const DropHere = styled.div`
@@ -51,8 +56,8 @@ const Border = styled.div`
   padding: 4px;
   border: 1px solid #555;
   border-top: none;
-  min-height: 132px;
-  max-width: 128px;
+  height: 132px;
+  width: 160px;
   border-radius: 0px 0px 2px 2px;
 `
 export const Display: React.FC<{
@@ -73,7 +78,8 @@ export const Display: React.FC<{
   const [row, setRow] = useState<IRow>();
   const [previewImage, setPreviewImage] = useState<string>("");
   const [newImageFile, setNewImageFile] = useState<File>();
-  const [newImageBuffer, setNewImageBuffer] = useState<Buffer>();
+  const [convertedImageBuffer, setConvertedImageBuffer] = useState<Buffer>();
+  const [croppedImage, setCroppedImage] = useState<Jimp>();
   const [settings, setSettings] = useState<{
     contrast: number;
     dither: boolean;
@@ -100,30 +106,40 @@ export const Display: React.FC<{
   }, [row, images]);
 
   useEffect(() => {
-    if (row && newImageBuffer) {
-      setImage(newImageBuffer);
+    if (row && convertedImageBuffer) {
+      setImage(convertedImageBuffer);
     }
-  }, [newImageBuffer]);
+  }, [convertedImageBuffer]);
 
   useEffect(() => {
-    if (newImageFile && settings) {
+    
+    if(newImageFile) {
+      handleFileSelect(newImageFile).then(async arrayBuffer =>{
+        const image = await Jimp.read(Buffer.from(arrayBuffer))
+        image.scaleToFit(256,128)
+        return setCroppedImage(image)
+      });
+    }
+  }, [newImageFile])
+
+  useEffect(() => {
+    if (croppedImage && settings) {
       (async () => {
-        const arrayBuffer = await handleFileSelect(newImageFile);
         const buffer = await composeImage(
-          arrayBuffer,
+          croppedImage,
           128,
           64,
           settings.contrast,
           settings.invert,
           settings.dither
         );
-        setNewImageBuffer(buffer);
+        setConvertedImageBuffer(buffer);
       })();
     }
-  }, [newImageFile, settings]);
+  }, [croppedImage, settings]);
 
   const deleteImage = () => {
-    setNewImageBuffer(new Buffer(1024));
+    setConvertedImageBuffer(new Buffer(1024));
     setNewImageFile(undefined);
     setPreviewImage(getBase64Image(images, imageIndex));
   };
@@ -137,7 +153,7 @@ export const Display: React.FC<{
           {isDragActive ? (
             <DropHere>Drop Here</DropHere>
           ) : (
-            <img src={previewImage} />
+            <ImagePreview src={previewImage} />
           )}
         </Drop>
       </DropWrapper>
