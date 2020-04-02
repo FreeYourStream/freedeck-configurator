@@ -5,6 +5,7 @@ import { Button } from "./components/lib/button";
 import { File } from "./components/lib/file";
 import { Page } from "./components/Page";
 import { HEADER_SIZE, ROW_SIZE } from "./constants";
+import { BACK_IMAGE } from "./definitions/defaultBackImage";
 import defaultRowBuffer from "./definitions/defaultRowBuffer";
 import { download } from "./lib/download";
 import { handleFileSelect } from "./lib/fileSelect";
@@ -129,22 +130,18 @@ function App() {
     setImageBuffers(newImages);
 
     const newPages = [...pageBuffers];
-    newPages.forEach((newPage, index) => {
-      if (index < pageIndex) {
+    newPages.splice(pageIndex, 1);
+    newPages.forEach((newPage) => {
         for (let i = 0; i < width * height; i++) {
           if (newPage.readUInt8(i * ROW_SIZE) === 1) {
             const oldValue = newPage.readUInt8(i * ROW_SIZE + 1);
-            if (oldValue === pageIndex) {
-              newPage.writeUInt8(i * ROW_SIZE + 1, -1);
-            } else if (oldValue > pageIndex) {
-              newPage.writeUInt8(i * ROW_SIZE + 1, oldValue - 1);
+            if (oldValue >= pageIndex) {
+              const newValue = Math.max(oldValue - 1,0)
+              newPage.set([newValue],i * ROW_SIZE + 1);
             }
           }
         }
-      }
     });
-    newPages.splice(pageIndex, 1);
-    //setPageCount(pageCount - 1);
     setPageBuffers(newPages);
   };
 
@@ -205,12 +202,12 @@ function App() {
             bgcolor="white"
             onClick={() => {
               setPageBuffers([...pageBuffers, defaultRowBuffer(width, height)]);
-              const blankImages: Buffer[] = Array(width * height).fill(
+              const blankImages: Buffer[] = Array(width * height-1).fill(
                 new Buffer(1024)
-                );
-                setImageBuffers([...imageBuffers, ...blankImages]);
-              }}
-              >
+              );
+              setImageBuffers([...imageBuffers, BACK_IMAGE ,...blankImages]);
+            }}
+          >
             Add Page +
           </Button>
           

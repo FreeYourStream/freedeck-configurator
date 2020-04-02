@@ -57,9 +57,7 @@ export const Action: React.FC<{
   }, [loadKeys]);
 
   useEffect(() => {
-    if (loadPage != -1) {
-      setGoTo(loadPage);
-    }
+    setGoTo(loadPage);
   }, [loadPage]);
 
   useEffect(() => {

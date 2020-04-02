@@ -158,18 +158,18 @@ export const Display: React.FC<{
         </Drop>
       </DropWrapper>
 
-<Border>
-      {newImageFile && <Settings setSettings={setSettings} />}
-      {row && (
-        <Action
-          setNewRow={setNewRow}
-          pages={pages}
-          loadMode={row.action}
-          loadKeys={row.keys}
-          loadPage={row.page}
-        />
-      )}
-</Border>
+      <Border>
+        {newImageFile && <Settings setSettings={setSettings} />}
+        {row && (
+          <Action
+            setNewRow={setNewRow}
+            pages={pages}
+            loadMode={row.action}
+            loadKeys={row.keys}
+            loadPage={row.page}
+          />
+        )}
+      </Border>
     </Wrapper>
   );
 };
