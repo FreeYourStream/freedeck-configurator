@@ -12,3 +12,6 @@ npm i; npm start
 ```
 
 thats it
+
+## To Do
+- allow for changing width and height
