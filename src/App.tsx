@@ -7,6 +7,7 @@ import { Page } from "./components/Page";
 import { HEADER_SIZE, ROW_SIZE } from "./constants";
 import { BACK_IMAGE } from "./definitions/defaultBackImage";
 import defaultRowBuffer from "./definitions/defaultRowBuffer";
+import { optimizeForSSD1306 } from "./lib/convertFile";
 import { download } from "./lib/download";
 import { handleFileSelect } from "./lib/fileSelect";
 import { parseConfig } from "./lib/parse/parseConfig";
@@ -197,7 +198,7 @@ function App() {
                 const newConfig = Buffer.concat([
                   header,
                   ...pageBuffers,
-                  ...imageBuffers
+                  ...(imageBuffers).map(imageBuffer => optimizeForSSD1306(imageBuffer))
                 ]);
                 download(newConfig);
               }}
