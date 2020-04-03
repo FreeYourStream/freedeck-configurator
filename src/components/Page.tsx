@@ -74,7 +74,7 @@ interface IProps {
   page: Buffer;
   images: Buffer[];
   deletePage: (pageIndex: number) => void;
-  addPage: () => void;
+  addPage: () => number;
   setImage: (newImage: Buffer, pageIndex: number, displayIndex: number) => void;
   setRow: (newRow: number[], pageIndex: number, displayIndex: number) => void;
   pageCount: number;
@@ -99,7 +99,7 @@ export const Page: React.FC<IProps> = ({
     setRowBuffers(rows);
   }, [JSON.stringify(page), imageCount, width, height]);
   return (
-    <Wrapper>
+    <Wrapper id={`page_${pageIndex}`}>
       <Header>
         <PageIndicator>{pageIndex}</PageIndicator>
         <DeletePage

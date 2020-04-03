@@ -161,11 +161,12 @@ function App() {
         new Buffer(1024)
       );
       setImageBuffers([...imageBuffers, BACK_IMAGE ,...blankImages]);
+      return pageBuffers.length
     }
 
   return (
     <Main>
-      <Header>
+      <Header id="header">
         <HeadLine>FreeDeck</HeadLine>
         <Buttons>
 
@@ -218,7 +219,7 @@ function App() {
         </Horiz>
       </Buttons>
       </Header>
-      <Content>
+      <Content id="pages">
         {pageBuffers?.map((page, index) => (
           <Page
           height={height}

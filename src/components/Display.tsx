@@ -63,7 +63,7 @@ const Border = styled.div`
 export const Display: React.FC<{
   rowBuffer: Buffer;
   images: Buffer[];
-  addPage: () => void;
+  addPage: () => number;
   setImage: (newImage: Buffer) => void;
   setRow: (newRow: number[]) => void;
   imageIndex: number;

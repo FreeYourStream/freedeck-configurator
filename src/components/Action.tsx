@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 import { EKeys, Keys } from "../definitions/keys";
 import { EAction } from "../lib/parse/parsePage";
+import { scrollToPage } from "../lib/scrollToPage";
 
 const Wrapper = styled.div`
   display: flex;
@@ -29,7 +30,7 @@ const CheckButton = styled.button<{uff: boolean}>`
 
 export const Action: React.FC<{
   setNewRow: (newRow: number[]) => void;
-  addPage: () => void;
+  addPage: () => number;
   pages: number[];
   loadMode: EAction;
   loadKeys: number[];
@@ -114,18 +115,26 @@ export const Action: React.FC<{
         </>
       )}
       {mode === 1 && (
-        <><StyledSelect
-          value={goTo}
-          onChange={e => setGoTo(parseInt(e.target.value))}
-        >
-          <option value={-1}>Select Page</option>
-          {pages.map(pageNumber => (
-            <option key={pageNumber} value={pageNumber}>
-              Go to {pageNumber}
-            </option>
-          ))}
-        </StyledSelect>{goTo === -1 && <button onClick={() => addPage()}>Add Page +</button>}</>
+        <>
+          <StyledSelect
+            value={goTo}
+            onChange={e => setGoTo(parseInt(e.target.value))}
+          >
+            <option value={-1}>Select Page</option>
+            {pages.map(pageNumber => (
+              <option key={pageNumber} value={pageNumber}>
+                Go to {pageNumber}
+              </option>
+            ))}
+          </StyledSelect>
+          {
+            goTo === -1
+            ? <button onClick={() => setGoTo(addPage())}>Add Page +</button>
+            :<button onClick={() => scrollToPage(goTo)} >Scroll To {goTo}</button>
+          }
+        </>
       )}
     </Wrapper>
   );
 };
+ 
