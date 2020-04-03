@@ -155,6 +155,14 @@ function App() {
       setImageBuffers(config.images);
     });
 
+    const addPage = (previousPageIndex: number) => {
+      setPageBuffers([...pageBuffers, defaultRowBuffer(width, height, previousPageIndex)]);
+      const blankImages: Buffer[] = Array(width * height-1).fill(
+        new Buffer(1024)
+      );
+      setImageBuffers([...imageBuffers, BACK_IMAGE ,...blankImages]);
+    }
+
   return (
     <Main>
       <Header>
@@ -201,11 +209,7 @@ function App() {
           <Button
             bgcolor="white"
             onClick={() => {
-              setPageBuffers([...pageBuffers, defaultRowBuffer(width, height)]);
-              const blankImages: Buffer[] = Array(width * height-1).fill(
-                new Buffer(1024)
-              );
-              setImageBuffers([...imageBuffers, BACK_IMAGE ,...blankImages]);
+              addPage(-1)
             }}
           >
             Add Page +
@@ -227,6 +231,7 @@ function App() {
             setRow={setRow}
             deletePage={deletePage}
             pageCount={pageBuffers.length}
+          addPage={() => addPage(index)}
           />
         ))}
       </Content>

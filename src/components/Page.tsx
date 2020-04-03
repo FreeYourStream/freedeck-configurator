@@ -74,6 +74,7 @@ interface IProps {
   page: Buffer;
   images: Buffer[];
   deletePage: (pageIndex: number) => void;
+  addPage: () => void;
   setImage: (newImage: Buffer, pageIndex: number, displayIndex: number) => void;
   setRow: (newRow: number[], pageIndex: number, displayIndex: number) => void;
   pageCount: number;
@@ -88,6 +89,7 @@ export const Page: React.FC<IProps> = ({
   setImage,
   setRow,
   deletePage,
+  addPage,
   pageCount
 }) => {
   const [rowBuffers, setRowBuffers] = useState<Buffer[]>([]);
@@ -122,6 +124,7 @@ export const Page: React.FC<IProps> = ({
             pages={[...Array(pageCount).keys()].filter(
               pageNumber => pageNumber != pageIndex
             )}
+            addPage={addPage}
           />
         ))}
       </Grid>

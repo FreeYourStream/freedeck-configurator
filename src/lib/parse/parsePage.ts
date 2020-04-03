@@ -30,7 +30,7 @@ export const parseRow = (row: Buffer): IRow => {
     }
   }
   if (action === 1) {
-    page = row.readUInt16LE(1);
+    page = row.readInt16LE(1);
   }
 
   return {

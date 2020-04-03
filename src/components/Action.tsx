@@ -29,11 +29,12 @@ const CheckButton = styled.button<{uff: boolean}>`
 
 export const Action: React.FC<{
   setNewRow: (newRow: number[]) => void;
+  addPage: () => void;
   pages: number[];
   loadMode: EAction;
   loadKeys: number[];
   loadPage: number;
-}> = ({ setNewRow, pages, loadMode, loadKeys, loadPage }) => {
+}> = ({ setNewRow, pages, loadMode, loadKeys, loadPage, addPage }) => {
   const [mode, setMode] = useState<EAction>(loadMode);
   const [goTo, setGoTo] = useState<number>(loadPage);
   const [alt, setAlt] = useState<boolean>(loadKeys.includes(130));
@@ -62,7 +63,11 @@ export const Action: React.FC<{
 
   useEffect(() => {
     if (mode === EAction.changeLayout) {
-      setNewRow([1, goTo]);
+      if(goTo === -1) {
+        setNewRow([1, 255,255])
+      }else {
+        setNewRow([1, goTo]);
+      }
     } else if (mode === EAction.keyboard) {
       const newRow = [0];
       if (ctrl) newRow.push(128);
@@ -109,7 +114,7 @@ export const Action: React.FC<{
         </>
       )}
       {mode === 1 && (
-        <StyledSelect
+        <><StyledSelect
           value={goTo}
           onChange={e => setGoTo(parseInt(e.target.value))}
         >
@@ -119,7 +124,7 @@ export const Action: React.FC<{
               Go to {pageNumber}
             </option>
           ))}
-        </StyledSelect>
+        </StyledSelect>{goTo === -1 && <button onClick={() => addPage()}>Add Page +</button>}</>
       )}
     </Wrapper>
   );
