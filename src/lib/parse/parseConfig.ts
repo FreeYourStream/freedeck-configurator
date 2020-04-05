@@ -1,4 +1,5 @@
-import { ROW_SIZE, IMAGE_SIZE, HEADER_SIZE } from "../../constants";
+import { HEADER_SIZE, IMAGE_SIZE, ROW_SIZE } from "../../constants";
+import { unoptimizeFromSSD1306 } from "../convertFile";
 
 export const parseConfig = (config: Buffer) => {
   // read offset info in header
@@ -11,7 +12,7 @@ export const parseConfig = (config: Buffer) => {
   let i = 0;
   let image = config.slice(start(i), end(i));
   while (image.byteLength) {
-    images.push(image);
+    images.push(unoptimizeFromSSD1306(image));
     i++;
     image = config.slice(start(i), end(i));
   }
@@ -34,6 +35,6 @@ export const parseConfig = (config: Buffer) => {
     height,
     pageCount,
     pages,
-    images
+    images,
   };
 };
