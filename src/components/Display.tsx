@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
 
+import { colors } from "../definitions/colors";
 import { composeImage } from "../lib/convertFile";
 import { handleFileSelect } from "../lib/fileSelect";
 import { IRow, parseRow } from "../lib/parse/parsePage";
@@ -43,7 +44,8 @@ const DropWrapper = styled.div`
 const Drop = styled.div`
   width: 128;
   height: 64px;
-  border: 16px solid black;
+  border: 16px solid ${colors.black};
+  border-radius: 8px;
   border-top: none;
   border-bottom: none;
 `;
@@ -52,9 +54,9 @@ const DropHere = styled.div`
   font-size: 24px;
   color: white;
 `;
-const Border = styled.div`
-  padding: 4px;
-  border: 1px solid #555;
+const Controls = styled.div`
+  padding: 4px 2px;
+  background: ${colors.gray};
   border-top: none;
   height: 132px;
   width: 160px;
@@ -160,7 +162,7 @@ export const Display: React.FC<{
         </Drop>
       </DropWrapper>
 
-      <Border>
+      <Controls>
         {newImageFile && <Settings setSettings={setSettings} />}
         {row && (
           <Action
@@ -172,7 +174,7 @@ export const Display: React.FC<{
             addPage={addPage}
           />
         )}
-      </Border>
+      </Controls>
     </Wrapper>
   );
 };

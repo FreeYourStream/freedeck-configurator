@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
+import { colors } from "../definitions/colors";
 import { EKeys, Keys } from "../definitions/keys";
 import { EAction } from "../lib/parse/parsePage";
 import { scrollToPage } from "../lib/scrollToPage";
+import { FDButton } from "./lib/button";
 
 const Wrapper = styled.div`
   display: flex;
@@ -12,22 +14,41 @@ const Wrapper = styled.div`
 `;
 
 const StyledSelect = styled.select`
-  background-color: white;
-  border-radius: 2px;
+  appearance: none;
+  color: ${colors.black};
+  padding: 2px 8px;
+  background-color: ${colors.white};
+  border-color: ${colors.accentDark};
+  border-radius: 5px;
   font-size: 16px;
   font-family: sans-serif;
   margin-top: 4px;
+  width:100%;
 `;
 const LabelRow = styled.div`
   display: flex;
   justify-content: space-between;
 `;
 
-const CheckButton = styled.button<{uff: boolean}>`
-  color: ${p => p.uff ? 'white' : 'black'};
-  background-color: ${p => p.uff ? 'blue' : 'white'};
+const CheckButton = styled(FDButton).attrs({size: 1, mt:4})<{uff: boolean}>`
+  background-color: ${p => p.uff ? 'darkgreen' : "red"};
+  padding: 0px 3px;
 `
 
+const SmallButton = styled(FDButton).attrs({mt: 4})`
+  font-weight: bold;
+`
+const SelectWrapper = styled.div`
+  position: relative;
+  ::before {
+    content: "\u25BE";
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    font-family: sans-serif;
+    color: ${colors.black};
+  }
+`
 export const Action: React.FC<{
   setNewRow: (newRow: number[]) => void;
   addPage: () => number;
@@ -84,14 +105,16 @@ export const Action: React.FC<{
 
   return (
     <Wrapper>
-      <StyledSelect
-        value={mode}
-        onChange={e => setMode(parseInt(e.target.value))}
-      >
-        <option value="0">Send Keys</option>
-        <option value="1">Change Page</option>
-        <option value="2">Do nothing</option>
-      </StyledSelect>
+      <SelectWrapper>
+        <StyledSelect
+          value={mode}
+          onChange={e => setMode(parseInt(e.target.value))}
+        >
+          <option value="0">Send Keys</option>
+          <option value="1">Change Page</option>
+          <option value="2">Do nothing</option>
+        </StyledSelect>
+      </SelectWrapper>
       {mode === 0 && (
         <>
           <LabelRow>
@@ -100,37 +123,40 @@ export const Action: React.FC<{
             <CheckButton uff={alt} onClick={e=>setAlt(!alt)} >Alt</CheckButton>
             <CheckButton uff={superKey} onClick={e=>setSuper(!superKey)} >Win</CheckButton>
           </LabelRow>
-
-          <StyledSelect
-            value={keys}
-            onChange={e => setKeys(parseInt(e.target.value))}
-          >
-            {Keys.map(enumKey => (
-              //@ts-ignore
-              <option key={enumKey} value={EKeys[enumKey]}>
-                {enumKey}
-              </option>
-            ))}
-          </StyledSelect>
+          <SelectWrapper>
+            <StyledSelect
+              value={keys}
+              onChange={e => setKeys(parseInt(e.target.value))}
+            >
+              {Keys.map(enumKey => (
+                //@ts-ignore
+                <option key={enumKey} value={EKeys[enumKey]}>
+                  {enumKey}
+                </option>
+              ))}
+            </StyledSelect>
+          </SelectWrapper>
         </>
       )}
       {mode === 1 && (
         <>
-          <StyledSelect
-            value={goTo}
-            onChange={e => setGoTo(parseInt(e.target.value))}
-          >
-            <option value={-1}>Select Page</option>
-            {pages.map(pageNumber => (
-              <option key={pageNumber} value={pageNumber}>
-                Go to {pageNumber}
-              </option>
-            ))}
-          </StyledSelect>
+          <SelectWrapper>
+            <StyledSelect
+              value={goTo}
+              onChange={e => setGoTo(parseInt(e.target.value))}
+            >
+              <option value={-1}>Select Page</option>
+              {pages.map(pageNumber => (
+                <option key={pageNumber} value={pageNumber}>
+                  Go to {pageNumber}
+                </option>
+              ))}
+            </StyledSelect>
+          </SelectWrapper>
           {
             goTo === -1
-            ? <button onClick={() => setGoTo(addPage())}>Add Page +</button>
-            :<button onClick={() => scrollToPage(goTo)} >Scroll To {goTo}</button>
+            ? <SmallButton size={1} onClick={() => setGoTo(addPage())}>Add Page +</SmallButton>
+            :<SmallButton size={1} onClick={() => scrollToPage(goTo)} >Scroll To {goTo}</SmallButton>
           }
         </>
       )}

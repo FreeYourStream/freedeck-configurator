@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import { Button } from "./components/lib/button";
+import { Button, FDButton } from "./components/lib/button";
 import { File } from "./components/lib/file";
 import { Page } from "./components/Page";
 import { HEADER_SIZE, ROW_SIZE } from "./constants";
+import { colors } from "./definitions/colors";
 import { BACK_IMAGE } from "./definitions/defaultBackImage";
 import defaultRowBuffer from "./definitions/defaultRowBuffer";
 import { optimizeForSSD1306 } from "./lib/convertFile";
@@ -23,7 +24,8 @@ const Main = styled.div`
 `;
 
 const Header = styled.div`
-  background-color: black;
+  background-color: ${colors.gray};
+  border-bottom: 1px solid ${colors.black}; 
   display: grid;
   grid-template-columns: 200px 1fr;
   align-items: center;
@@ -39,51 +41,76 @@ const HeadLine = styled.div`
 
 const Buttons = styled.div`
   display: flex;
+  height: 52px;
   justify-content: space-between;
 `
 
 const Horiz = styled.div`
   display: flex;
+  align-items: center;
 `;
 
 const Content = styled.div`
+  background-color: ${colors.gray};
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
   align-items: center;
   overflow: auto;
   width: 100%;
+  height: 100%;
 `;
 
-const LoadConfigFile = styled.label`
+const LoadConfigFileInner = styled.label`
   user-select: none;
   font-size: 24px;
+  padding: 8px;
   font-family: sans-serif;
   font-weight: bold;
+  position: relative;
+  width: auto;
+  color: #ecf0f1;
+  text-decoration: none;
+  border-radius: 5px;
+  border: solid 1px ${colors.accent};
+  background: ${colors.accentDark};
+  text-align: center;
+  /* padding: 16px 18px 14px; */
+  transition: all 0.1s;
+  box-shadow: 0px 0px 0px, 0px 0px 0px, 0px 6px 0px ${colors.accentDark},
+    0px 0px 0px;
   cursor: pointer;
-  border: 1px solid black;
-  color: black;
-  background-color: white;
-  padding: 8px;
-  border-radius: 4px;
+`
+
+const LoadConfigFile = styled.div`
+  transition: all 0.05s;
+  padding-bottom: 6px;
+  :hover {
+    padding-top: 4px;
+    padding-bottom: 2px;
+  }
+  &:hover ${LoadConfigFileInner} {
+    box-shadow: 0px 0px 0px, 0px 0px 0px, 0px 2px 0px ${colors.accentDark},
+    0px 0px 0px;
+  }
+
+  :active {
+    padding-top: 6px;
+    padding-bottom: 0px;
+  }
+  &:active ${LoadConfigFileInner} {
+    box-shadow: none;
+  }
 `
 
 const InvisibleFile = styled.input.attrs({ type: "file"})`
   display: none;
 `
 
-const SaveConfigFile = styled(Button)`
-font-size: 24px;
-  font-family: sans-serif;
-  font-weight: bold;
-  cursor: pointer;
-  border: 1px solid black;
-  color: white;
-  background-color: blue;
-  padding: 8px;
-  border-radius: 4px;
-  margin: 0;
-  margin-left: 16px;
+const SaveConfigFile = styled(FDButton)`
+`
+
+const AddPage = styled(FDButton)`
 `
 
 export interface IConfig {
@@ -177,7 +204,7 @@ function App() {
           }}
           >
           <Horiz>
-            <LoadConfigFile htmlFor="loadConfig">Load Config File</LoadConfigFile>
+            <LoadConfigFile><LoadConfigFileInner htmlFor="loadConfig">Load Config</LoadConfigFileInner></LoadConfigFile>
             <InvisibleFile
 
               id="loadConfig"
@@ -188,7 +215,8 @@ function App() {
               }}
               ></InvisibleFile>
             <SaveConfigFile
-              bgcolor="#00c3b0"
+              ml={16}
+              size={3}
               onClick={() => {
                 const header = new Buffer(HEADER_SIZE);
                 header.writeUInt8(3, 0);
@@ -208,14 +236,13 @@ function App() {
           </Horiz>
         </form>
         <Horiz>
-          <Button
-            bgcolor="white"
+          <AddPage
             onClick={() => {
               addPage(-1)
             }}
           >
             Add Page +
-          </Button>
+          </AddPage>
           
         </Horiz>
       </Buttons>

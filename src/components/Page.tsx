@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
+import { colors } from "../definitions/colors";
 import { parsePage } from "../lib/parse/parsePage";
 import { Display } from "./Display";
 
 const Wrapper = styled.div`
   position: relative;  
   margin: 24px;
-  border: 1px solid #555;
-  border-radius: 18px 4px 4px 4px;
+  padding: 18px;
+  /* border: 1px solid ${colors.white}; */
+  border-radius: 21px;
+  background: ${colors.gray};
+  box-shadow:  13px 13px 21px #11161d, 
+             -13px -13px 21px #2d3a49;
 `;
 
 const Header = styled.div`
@@ -24,14 +29,14 @@ const PageIndicator = styled.div`
   border: 1px solid #555;
   text-align: center;
   vertical-align: middle;
-  line-height: 28px;
-  width: 28px;
-  height: 28px;
-  color: white;
+  line-height: 38px;
+  width: 40px;
+  height: 40px;
+  color: ${colors.white};
   position: absolute;
-  top: -14px;
-  left: -14px;
-  background-color: black;
+  top: -20px;
+  left: -20px;
+  background-color: ${colors.black};
 `;
 
 const DeletePage=styled.img`
