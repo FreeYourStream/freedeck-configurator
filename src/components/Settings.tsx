@@ -1,5 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+
+import { colors } from "../definitions/colors";
+import { FDButton } from "./lib/button";
+
 function clamp(num: number, min: number, max: number) {
   return num <= min ? min : num >= max ? max : num;
 }
@@ -16,9 +20,17 @@ const SettingsButtons = styled.div`
 const ContrastValue = styled.p`
   line-height: 21px;
   margin: 0;
+  color: ${colors.white};
   font-family: sans-serif;
-  font-size: 12px;
+  font-size: 16px;
+  font-weight:bold;
 `;
+const MicroButton = styled(FDButton).attrs({size:1})`
+  min-width: 36px;
+`
+const MicroToggle = styled(FDButton).attrs({size:1})`
+  padding: 0px 4px;
+`
 export const Settings: React.FC<{
   setSettings: (settings: {
     contrast: number;
@@ -35,23 +47,23 @@ export const Settings: React.FC<{
   return (
     <SettingsButtons>
       <ButtonRow>
-        <button onClick={() => setContrast(clamp(contrast + 0.1, -1, 1))}>
+        <MicroButton onClick={() => setContrast(clamp(contrast + 0.1, -1, 1))}>
           ++
-        </button>
-        <button onClick={() => setContrast(clamp(contrast + 0.02, -1, 1))}>
+        </MicroButton>
+        <MicroButton onClick={() => setContrast(clamp(contrast + 0.02, -1, 1))}>
           +
-        </button>
-        <button onClick={() => setContrast(clamp(contrast - 0.02, -1, 1))}>
+        </MicroButton>
+        <MicroButton onClick={() => setContrast(clamp(contrast - 0.02, -1, 1))}>
           -
-        </button>
-        <button onClick={() => setContrast(clamp(contrast - 0.1, -1, 1))}>
+        </MicroButton>
+        <MicroButton onClick={() => setContrast(clamp(contrast - 0.1, -1, 1))}>
           --
-        </button>
+        </MicroButton>
       </ButtonRow>
       <ButtonRow>
-        <button onClick={() => setInvert(!invert)}>invert</button>
+        <MicroToggle onClick={() => setInvert(!invert)}>invert</MicroToggle>
         <ContrastValue>{contrast.toFixed(2)}</ContrastValue>
-        <button onClick={() => setDither(!dither)}>dither</button>
+        <MicroToggle onClick={() => setDither(!dither)}>dither</MicroToggle>
       </ButtonRow>
     </SettingsButtons>
   );
