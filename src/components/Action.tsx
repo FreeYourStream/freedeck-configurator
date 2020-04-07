@@ -140,7 +140,7 @@ export const Action: React.FC<{
       )}
       {mode === 1 && (
         <>
-          <SelectWrapper>
+          {pages.length ? <SelectWrapper>
             <StyledSelect
               value={goTo}
               onChange={e => setGoTo(parseInt(e.target.value))}
@@ -152,7 +152,7 @@ export const Action: React.FC<{
                 </option>
               ))}
             </StyledSelect>
-          </SelectWrapper>
+          </SelectWrapper> : null}
           {
             goTo === -1
             ? <SmallButton size={1} onClick={() => setGoTo(addPage())}>Add Page +</SmallButton>
