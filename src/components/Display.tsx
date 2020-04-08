@@ -197,6 +197,11 @@ export const Display: React.FC<{
       <DropWrapper>
         <DeleteImage src="close.png" onClick={deleteImage} />
         <HideSettings
+          title={
+            !allowSettings
+              ? "You cant edit this image because it was loaded from config. Delete it or load a new one"
+              : "show settings"
+          }
           show={!!newImageFile}
           src="settings.png"
           onClick={() => setShowSettings(allowSettings ? !showSettings : false)}
