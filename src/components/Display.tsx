@@ -181,6 +181,7 @@ export const Display: React.FC<{
   const deleteImage = () => {
     setConvertedImageBuffer(new Buffer(1024));
     setNewImageFile(undefined);
+    setCroppedImage(undefined);
     setPreviewImage(getBase64Image(images, imageIndex));
   };
 

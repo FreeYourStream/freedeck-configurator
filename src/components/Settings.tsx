@@ -1,8 +1,9 @@
-import Jimp from "jimp";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { colors } from "../definitions/colors";
+import { stringSplice } from "../lib/stringSplice";
+import useDebounce from "../lib/useDebounce";
 import { StyledSelect } from "./Action";
 import { FDButton } from "./lib/button";
 
@@ -19,14 +20,12 @@ const ButtonRow = styled.div`
   justify-content: space-between;
   margin: 2px;
 `;
-const SettingsButtons = styled.div<{ show: boolean }>`
+const Wrapper = styled.div<{ show: boolean }>`
   border: 1px solid ${colors.accent};
   position: absolute;
-  top: -145px;
+  bottom: 100%;
   display: ${(p) => (p.show ? "flex" : "none")};
   flex-direction: column;
-  width: 100%;
-  height: 140px;
   width: 158px;
   background: ${colors.black};
   border-radius: 4px;
@@ -86,62 +85,79 @@ export const Settings: React.FC<{
   const [textEnabled, setTextEnable] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const [fontName, setfontName] = useState<string>(textOnly ? large : medium);
-
+  const debouncedText = useDebounce(text, 250);
   useEffect(() => {
     setSettings({ contrast, dither, invert, text, textEnabled, fontName });
-  }, [contrast, dither, invert, text, textEnabled, fontName]);
+  }, [contrast, dither, invert, debouncedText, textEnabled, fontName]);
   useEffect(() => {
     setDither(textOnly ? false : true);
     setContrast(textOnly ? 0.12 : -0.12);
   }, [textOnly]);
   return (
-    <SettingsButtons show={show}>
-      <ButtonRow>
-        <MicroButton onClick={() => setContrast(clamp(contrast + 0.1, -1, 1))}>
-          ++
-        </MicroButton>
-        <MicroButton onClick={() => setContrast(clamp(contrast + 0.02, -1, 1))}>
-          +
-        </MicroButton>
-        <MicroButton onClick={() => setContrast(clamp(contrast - 0.02, -1, 1))}>
-          -
-        </MicroButton>
-        <MicroButton onClick={() => setContrast(clamp(contrast - 0.1, -1, 1))}>
-          --
-        </MicroButton>
-      </ButtonRow>
-      <ButtonRow>
-        <MicroToggle onClick={() => setInvert(!invert)}>invert</MicroToggle>
-        <ContrastValue>{contrast.toFixed(2)}</ContrastValue>
-        <MicroToggle onClick={() => setDither(!dither)}>dither</MicroToggle>
-      </ButtonRow>
-      <ButtonRow>
-        {!textOnly && (
-          <EnableTextButton
-            uff={textEnabled}
-            onClick={(e) => setTextEnable(!textEnabled)}
-          >
-            Text
-          </EnableTextButton>
-        )}
-        <StyledSelect
-          defaultValue={fontName}
-          onChange={(e) => setfontName(e.currentTarget.value)}
-        >
-          <option value={smaller}>smaller</option>
-          <option value={small}>small</option>
-          <option value={medium}>medium</option>
-          <option value={large}>large</option>
-        </StyledSelect>
-      </ButtonRow>
+    <Wrapper show={show}>
+      {!textOnly && (
+        <>
+          <ButtonRow>
+            <MicroButton
+              onClick={() => setContrast(clamp(contrast + 0.1, -1, 1))}
+            >
+              ++
+            </MicroButton>
+            <MicroButton
+              onClick={() => setContrast(clamp(contrast + 0.02, -1, 1))}
+            >
+              +
+            </MicroButton>
+            <MicroButton
+              onClick={() => setContrast(clamp(contrast - 0.02, -1, 1))}
+            >
+              -
+            </MicroButton>
+            <MicroButton
+              onClick={() => setContrast(clamp(contrast - 0.1, -1, 1))}
+            >
+              --
+            </MicroButton>
+          </ButtonRow>
+          <ButtonRow>
+            <MicroToggle onClick={() => setInvert(!invert)}>invert</MicroToggle>
+            <ContrastValue>{contrast.toFixed(2)}</ContrastValue>
+            <MicroToggle onClick={() => setDither(!dither)}>dither</MicroToggle>
+          </ButtonRow>
+          <ButtonRow>
+            {!textOnly && (
+              <EnableTextButton
+                uff={textEnabled}
+                onClick={(e) => setTextEnable(!textEnabled)}
+              >
+                Text
+              </EnableTextButton>
+            )}
+            <StyledSelect
+              defaultValue={fontName}
+              onChange={(e) => setfontName(e.currentTarget.value)}
+            >
+              <option value={smaller}>smaller</option>
+              <option value={small}>small</option>
+              <option value={medium}>medium</option>
+              <option value={large}>large</option>
+            </StyledSelect>
+          </ButtonRow>
+        </>
+      )}
+
       <ButtonRow>
         <TextInput
           placeholder={"Enter text"}
-          onKeyUp={(e) => e.keyCode === 13 && setText(text + "|")}
+          onKeyUp={(e) => {
+            if (e && e.keyCode === 13 && e.currentTarget.selectionStart) {
+              setText(stringSplice(text, e.currentTarget.selectionStart));
+            }
+          }}
           value={text}
           onChange={(e) => setText(e.currentTarget.value)}
         />
       </ButtonRow>
-    </SettingsButtons>
+    </Wrapper>
   );
 };

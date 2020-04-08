@@ -94,12 +94,16 @@ export const composeText = (
     let lines = text.split("|").filter((line) => line);
     const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
     const offset = (64 - overAllLineHeight) / 2;
-    await Promise.all(
-      lines.map(async (line, index) => {
-        const lineOffset = offset + fontSize * index;
-        await textImage.print(font, 0, lineOffset, line);
-      })
-    );
+    if (lines.length > 1) {
+      await Promise.all(
+        lines.map(async (line, index) => {
+          const lineOffset = offset + fontSize * index;
+          await textImage.print(font, 0, lineOffset, line);
+        })
+      );
+    } else {
+      await textImage.print(font, 0, 0, lines[0], 128, 64);
+    }
     textImage.autocrop().scaleToFit(width, height);
     const background = new Jimp(width, height, "black");
     background.composite(
