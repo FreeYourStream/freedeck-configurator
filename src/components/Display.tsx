@@ -1,10 +1,10 @@
 import Jimp from "jimp";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
 
 import { colors } from "../definitions/colors";
-import { composeImage } from "../lib/convertFile";
+import { composeImage, composeText } from "../lib/convertFile";
 import { handleFileSelect } from "../lib/fileSelect";
 import { IRow, parseRow } from "../lib/parse/parsePage";
 import { getBase64Image } from "../lib/uint8ToBase64";
@@ -15,11 +15,13 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
+  position: relative;
+  z-index: 10;
 `;
 const ImagePreview = styled.img`
   width: 128px;
   height: 64px;
-`
+`;
 const DeleteImage = styled.img`
   cursor: pointer;
   background-color: white;
@@ -31,7 +33,7 @@ const DeleteImage = styled.img`
   position: absolute;
   border-style: none;
   visibility: hidden;
-
+  z-index: 10;
   ${Wrapper}:hover & {
     visibility: visible;
   }
@@ -61,7 +63,22 @@ const Controls = styled.div`
   height: 132px;
   width: 160px;
   border-radius: 0px 0px 2px 2px;
-`
+`;
+const HideSettings = styled.img<{ show: boolean }>`
+  cursor: pointer;
+  border-radius: 50%;
+  height: 22px;
+  width: 22px;
+  top: -8px;
+  left: -8px;
+  position: absolute;
+  border-style: none;
+  visibility: ${(p) => (p.show ? "visible" : "hidden")};
+  z-index: 10;
+  ${Wrapper}:hover & {
+    visibility: visible;
+  }
+`;
 export const Display: React.FC<{
   rowBuffer: Buffer;
   images: Buffer[];
@@ -77,7 +94,7 @@ export const Display: React.FC<{
   setImage,
   setRow: setNewRow,
   imageIndex,
-  pages
+  pages,
 }) => {
   const [row, setRow] = useState<IRow>();
   const [previewImage, setPreviewImage] = useState<string>("");
@@ -88,14 +105,18 @@ export const Display: React.FC<{
     contrast: number;
     dither: boolean;
     invert: boolean;
+    text: string;
+    textEnabled: boolean;
+    fontName: string;
   }>();
+  const [showSettings, setShowSettings] = useState<boolean>(false);
 
-  const onDrop = useCallback(acceptedFiles => {
+  const onDrop = useCallback((acceptedFiles) => {
     setNewImageFile(acceptedFiles[0]);
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: [".jpg", ".jpeg", ".png"]
+    accept: [".jpg", ".jpeg", ".png"],
   });
 
   useEffect(() => {
@@ -116,15 +137,15 @@ export const Display: React.FC<{
   }, [convertedImageBuffer]);
 
   useEffect(() => {
-    
-    if(newImageFile) {
-      handleFileSelect(newImageFile).then(async arrayBuffer =>{
-        const image = await Jimp.read(Buffer.from(arrayBuffer))
-        image.scaleToFit(256,128)
-        return setCroppedImage(image)
+    if (newImageFile) {
+      handleFileSelect(newImageFile).then(async (arrayBuffer) => {
+        const image = await Jimp.read(Buffer.from(arrayBuffer));
+        image.scaleToFit(256, 128);
+        setShowSettings(true);
+        return setCroppedImage(image);
       });
     }
-  }, [newImageFile])
+  }, [newImageFile]);
 
   useEffect(() => {
     if (croppedImage && settings) {
@@ -135,7 +156,22 @@ export const Display: React.FC<{
           64,
           settings.contrast,
           settings.invert,
-          settings.dither
+          settings.dither,
+          settings.textEnabled,
+          settings.text,
+          settings.fontName
+        );
+        setConvertedImageBuffer(buffer);
+      })();
+    } else if (settings && settings.text.length) {
+      (async () => {
+        const buffer = await composeText(
+          128,
+          64,
+          settings.dither,
+          settings.text,
+          settings.fontName,
+          settings.contrast
         );
         setConvertedImageBuffer(buffer);
       })();
@@ -148,10 +184,23 @@ export const Display: React.FC<{
     setPreviewImage(getBase64Image(images, imageIndex));
   };
 
+  const isBlack = useMemo(() => !images[imageIndex]?.find((val) => val !== 0), [
+    images,
+  ]);
+  const allowSettings = useMemo(
+    () => isBlack || !!newImageFile || !!settings?.text.length,
+    [isBlack, newImageFile, settings?.text]
+  );
+
   return (
     <Wrapper>
       <DropWrapper>
         <DeleteImage src="close.png" onClick={deleteImage} />
+        <HideSettings
+          show={!!newImageFile}
+          src="settings.png"
+          onClick={() => setShowSettings(allowSettings ? !showSettings : false)}
+        />
         <Drop {...getRootProps()}>
           <input {...getInputProps()} />
           {isDragActive ? (
@@ -163,7 +212,11 @@ export const Display: React.FC<{
       </DropWrapper>
 
       <Controls>
-        {newImageFile && <Settings setSettings={setSettings} />}
+        <Settings
+          textOnly={!newImageFile}
+          show={showSettings}
+          setSettings={setSettings}
+        />
         {row && (
           <Action
             setNewRow={setNewRow}

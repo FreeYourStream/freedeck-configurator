@@ -13,7 +13,7 @@ const Wrapper = styled.div`
   width: 100%;
 `;
 
-const StyledSelect = styled.select`
+export const StyledSelect = styled.select`
   appearance: none;
   color: ${colors.black};
   padding: 2px 8px;

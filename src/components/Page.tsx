@@ -61,9 +61,9 @@ const Grid = styled.div<{ width: number; height: number }>`
     return `${fr};`;
   }};
   grid-template-rows: ${p => {
-    let fr = "210px";
+    let fr = "160px";
     for (var i = 0; i < p.height - 1; i++) {
-      fr += " 210px";
+      fr += " 160px";
     }
     return `${fr};`;
   }};

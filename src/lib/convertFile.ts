@@ -20,27 +20,100 @@ export const composeImage = (
   height: number,
   contrast: number,
   invert: boolean,
-  dither: boolean
+  dither: boolean,
+  textEnabled: boolean,
+  text: string,
+  fontName: string
 ): Promise<Buffer> => {
   return new Promise(async (resolve) => {
     const jimpImage = new Jimp(image);
     const pngImage = new PNG();
     if (invert) jimpImage.invert();
-    await jimpImage.contrast(contrast);
-    jimpImage.autocrop().scaleToFit(width, height);
-    const jimpPNG = await jimpImage.getBufferAsync("image/png");
+    const background = new Jimp(width, height, "black");
+    if (textEnabled) {
+      jimpImage.autocrop().scaleToFit(width / 2, height);
+      const font = await Jimp.loadFont(fontName);
+      const fontSize = font.common.lineHeight - 2;
+      let lines = text.split("|").filter((line) => line);
+      const overAllLineHeight =
+        lines.length * fontSize + (lines.length - 1) * 1;
+      const offset = (64 - overAllLineHeight) / 2;
+      await Promise.all(
+        lines.map(async (line, index) => {
+          const lineOffset = offset + fontSize * index;
+          await background.print(
+            font,
+            jimpImage.getWidth() + 3,
+            lineOffset,
+            line
+          );
+        })
+      );
 
-    pngImage.parse(jimpPNG, async (err, data) => {
-      if (dither) data = fs(data);
-      const buffer = PNG.sync.write(data);
-      const jimpImage = await Jimp.read(buffer);
-      const background = new Jimp(width, height, "black");
+      await background.contrast(-0.25);
+      await jimpImage.contrast(contrast);
+      background.composite(
+        jimpImage,
+        0,
+        height / 2 - jimpImage.getHeight() / 2
+      );
+    } else {
+      jimpImage.autocrop().scaleToFit(width, height);
       background.composite(
         jimpImage,
         width / 2 - jimpImage.getWidth() / 2,
         height / 2 - jimpImage.getHeight() / 2
       );
-      const { binary } = imageToBinaryBuffer(background, width, height);
+      await background.contrast(contrast);
+    }
+    const jimpPNG = await background.getBufferAsync("image/png");
+    pngImage.parse(jimpPNG, async (err, data) => {
+      if (dither) data = fs(data);
+      const buffer = PNG.sync.write(data);
+      const jimpImage = await Jimp.read(buffer);
+      const { binary } = imageToBinaryBuffer(jimpImage, width, height);
+      const bytes = pixelBufferToBitmapBuffer(binary);
+      resolve(bytes);
+    });
+  });
+};
+
+export const composeText = (
+  width: number,
+  height: number,
+  dither: boolean,
+  text: string,
+  fontName: string,
+  contrast: number
+): Promise<Buffer> => {
+  return new Promise(async (resolve) => {
+    const pngImage = new PNG();
+    const textImage = new Jimp(width, height, "black");
+    const font = await Jimp.loadFont(fontName);
+    const fontSize = font.common.lineHeight - 2;
+    let lines = text.split("|").filter((line) => line);
+    const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
+    const offset = (64 - overAllLineHeight) / 2;
+    await Promise.all(
+      lines.map(async (line, index) => {
+        const lineOffset = offset + fontSize * index;
+        await textImage.print(font, 0, lineOffset, line);
+      })
+    );
+    textImage.autocrop().scaleToFit(width, height);
+    const background = new Jimp(width, height, "black");
+    background.composite(
+      textImage,
+      (128 - textImage.getWidth()) / 2,
+      (64 - textImage.getHeight()) / 2
+    );
+    if (dither) background.contrast(contrast);
+    const jimpPNG = await background.getBufferAsync("image/png");
+    pngImage.parse(jimpPNG, async (err, data) => {
+      if (dither) data = fs(data);
+      const buffer = PNG.sync.write(data);
+      const jimpImage = await Jimp.read(buffer);
+      const { binary } = imageToBinaryBuffer(jimpImage, width, height);
       const bytes = pixelBufferToBitmapBuffer(binary);
       resolve(bytes);
     });
