@@ -2,6 +2,7 @@
 
 ## An OpenSource device inspired by the Elgato Stream Deck
 ### Live App hosted [HERE](http://freedeck.gosewis.ch/)
+### Discord Community [HERE](https://discord.gg/sEt2Rrd)
 This is the software to create the config file and converting the images for the FreeDeck
 
 The hardware related info can be found [here](https://github.com/koriwi/freedeck-hardware)
