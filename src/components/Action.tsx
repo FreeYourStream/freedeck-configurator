@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { colors } from "../definitions/colors";
-import { EKeys, Keys } from "../definitions/keys";
+import { EKeys, Keys, MediaKeys, EMediaKeys } from "../definitions/keys";
 import { EAction } from "../lib/parse/parsePage";
 import { scrollToPage } from "../lib/scrollToPage";
 import { FDButton } from "./lib/button";
@@ -23,21 +23,23 @@ export const StyledSelect = styled.select`
   font-size: 16px;
   font-family: sans-serif;
   margin-top: 4px;
-  width:100%;
+  width: 100%;
 `;
 const LabelRow = styled.div`
   display: flex;
   justify-content: space-between;
 `;
 
-const CheckButton = styled(FDButton).attrs({size: 1, mt:4})<{uff: boolean}>`
-  background-color: ${p => p.uff ? 'darkgreen' : "red"};
+const CheckButton = styled(FDButton).attrs({ size: 1, mt: 4 })<{
+  uff: boolean;
+}>`
+  background-color: ${(p) => (p.uff ? "darkgreen" : "red")};
   padding: 0px 3px;
-`
+`;
 
-const SmallButton = styled(FDButton).attrs({mt: 4})`
+const SmallButton = styled(FDButton).attrs({ mt: 4 })`
   font-weight: bold;
-`
+`;
 const SelectWrapper = styled.div`
   position: relative;
   ::before {
@@ -48,9 +50,9 @@ const SelectWrapper = styled.div`
     font-family: sans-serif;
     color: ${colors.black};
   }
-`
+`;
 export const Action: React.FC<{
-  setNewRow: (newRow: number[]) => void;
+  setNewRow: (newRow: Buffer) => void;
   addPage: () => number;
   pages: number[];
   loadMode: EAction;
@@ -85,21 +87,29 @@ export const Action: React.FC<{
 
   useEffect(() => {
     if (mode === EAction.changeLayout) {
-      if(goTo === -1) {
-        setNewRow([1, 255,255])
-      }else {
-        setNewRow([1, goTo]);
-      }
+      const row = new Buffer(16);
+      row.writeUInt8(1, 0);
+      row.writeInt16LE(goTo, 1);
+      setNewRow(row);
     } else if (mode === EAction.keyboard) {
-      const newRow = [0];
-      if (ctrl) newRow.push(128);
-      if (shift) newRow.push(129);
-      if (alt) newRow.push(130);
-      if (superKey) newRow.push(131);
-      newRow.push(keys);
-      setNewRow(newRow);
+      let i = 0;
+      const row = new Buffer(16);
+      row.writeUInt8(0, 0);
+      if (ctrl) row.writeInt16LE(128, i++ * 2 + 1);
+      if (shift) row.writeInt16LE(129, i++ * 2 + 1);
+      if (alt) row.writeInt16LE(130, i++ * 2 + 1);
+      if (superKey) row.writeInt16LE(131, i++ * 2 + 1);
+      row.writeInt16LE(keys, i * 2 + 1);
+      setNewRow(row);
+    } else if (mode === EAction.special_keys) {
+      const row = new Buffer(16);
+      row.writeUInt8(3, 0);
+      row.writeInt16LE(keys, 1);
+      setNewRow(row);
     } else if (mode === EAction.noop) {
-      setNewRow([2]);
+      const row = new Buffer(16);
+      row.writeUInt8(2, 0);
+      setNewRow(row);
     }
   }, [mode, goTo, keys, ctrl, shift, alt, superKey]);
 
@@ -108,9 +118,10 @@ export const Action: React.FC<{
       <SelectWrapper>
         <StyledSelect
           value={mode}
-          onChange={e => setMode(parseInt(e.target.value))}
+          onChange={(e) => setMode(parseInt(e.target.value))}
         >
           <option value="0">Send Keys</option>
+          <option value="3">Special Keys</option>
           <option value="1">Change Page</option>
           <option value="2">Do nothing</option>
         </StyledSelect>
@@ -118,17 +129,25 @@ export const Action: React.FC<{
       {mode === 0 && (
         <>
           <LabelRow>
-            <CheckButton uff={ctrl} onClick={e=>setCtrl(!ctrl)} >Ctrl</CheckButton>
-            <CheckButton uff={shift} onClick={e=>setShift(!shift)} >Shift</CheckButton>
-            <CheckButton uff={alt} onClick={e=>setAlt(!alt)} >Alt</CheckButton>
-            <CheckButton uff={superKey} onClick={e=>setSuper(!superKey)} >Win</CheckButton>
+            <CheckButton uff={ctrl} onClick={(e) => setCtrl(!ctrl)}>
+              Ctrl
+            </CheckButton>
+            <CheckButton uff={shift} onClick={(e) => setShift(!shift)}>
+              Shift
+            </CheckButton>
+            <CheckButton uff={alt} onClick={(e) => setAlt(!alt)}>
+              Alt
+            </CheckButton>
+            <CheckButton uff={superKey} onClick={(e) => setSuper(!superKey)}>
+              Win
+            </CheckButton>
           </LabelRow>
           <SelectWrapper>
             <StyledSelect
               value={keys}
-              onChange={e => setKeys(parseInt(e.target.value))}
+              onChange={(e) => setKeys(parseInt(e.target.value))}
             >
-              {Keys.map(enumKey => (
+              {Keys.map((enumKey) => (
                 //@ts-ignore
                 <option key={enumKey} value={EKeys[enumKey]}>
                   {enumKey}
@@ -140,27 +159,49 @@ export const Action: React.FC<{
       )}
       {mode === 1 && (
         <>
-          {pages.length ? <SelectWrapper>
+          {pages.length ? (
+            <SelectWrapper>
+              <StyledSelect
+                value={goTo}
+                onChange={(e) => setGoTo(parseInt(e.target.value))}
+              >
+                <option value={-1}>Select Page</option>
+                {pages.map((pageNumber) => (
+                  <option key={pageNumber} value={pageNumber}>
+                    Go to {pageNumber}
+                  </option>
+                ))}
+              </StyledSelect>
+            </SelectWrapper>
+          ) : null}
+          {goTo === -1 ? (
+            <SmallButton size={1} onClick={() => setGoTo(addPage())}>
+              Add Page +
+            </SmallButton>
+          ) : (
+            <SmallButton size={1} onClick={() => scrollToPage(goTo)}>
+              Scroll To {goTo}
+            </SmallButton>
+          )}
+        </>
+      )}
+      {mode === 3 && (
+        <>
+          <SelectWrapper>
             <StyledSelect
-              value={goTo}
-              onChange={e => setGoTo(parseInt(e.target.value))}
+              value={keys}
+              onChange={(e) => setKeys(parseInt(e.target.value))}
             >
-              <option value={-1}>Select Page</option>
-              {pages.map(pageNumber => (
-                <option key={pageNumber} value={pageNumber}>
-                  Go to {pageNumber}
+              {MediaKeys.map((enumKey) => (
+                //@ts-ignore
+                <option key={enumKey} value={EMediaKeys[enumKey]}>
+                  {enumKey}
                 </option>
               ))}
             </StyledSelect>
-          </SelectWrapper> : null}
-          {
-            goTo === -1
-            ? <SmallButton size={1} onClick={() => setGoTo(addPage())}>Add Page +</SmallButton>
-            :<SmallButton size={1} onClick={() => scrollToPage(goTo)} >Scroll To {goTo}</SmallButton>
-          }
+          </SelectWrapper>
         </>
       )}
     </Wrapper>
   );
 };
- 

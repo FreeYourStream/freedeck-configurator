@@ -39,28 +39,28 @@ const PageIndicator = styled.div`
   background-color: ${colors.black};
 `;
 
-const DeletePage=styled.img`
-cursor: pointer;
-background-color: white;
-border-radius: 50%;
-height: 22px;
-width: 22px;
-top: -8px;
-right: -8px;
-position: absolute;
-border-style: none;
-`
+const DeletePage = styled.img`
+  cursor: pointer;
+  background-color: white;
+  border-radius: 50%;
+  height: 22px;
+  width: 22px;
+  top: -8px;
+  right: -8px;
+  position: absolute;
+  border-style: none;
+`;
 
 const Grid = styled.div<{ width: number; height: number }>`
   display: grid;
-  grid-template-columns: ${p => {
+  grid-template-columns: ${(p) => {
     let fr = "160px";
     for (var i = 0; i < p.width - 1; i++) {
       fr += " 160px";
     }
     return `${fr};`;
   }};
-  grid-template-rows: ${p => {
+  grid-template-rows: ${(p) => {
     let fr = "160px";
     for (var i = 0; i < p.height - 1; i++) {
       fr += " 160px";
@@ -81,7 +81,7 @@ interface IProps {
   deletePage: (pageIndex: number) => void;
   addPage: () => number;
   setImage: (newImage: Buffer, pageIndex: number, displayIndex: number) => void;
-  setRow: (newRow: number[], pageIndex: number, displayIndex: number) => void;
+  setRow: (newRow: Buffer, pageIndex: number, displayIndex: number) => void;
   pageCount: number;
 }
 
@@ -95,7 +95,7 @@ export const Page: React.FC<IProps> = ({
   setRow,
   deletePage,
   addPage,
-  pageCount
+  pageCount,
 }) => {
   const [rowBuffers, setRowBuffers] = useState<Buffer[]>([]);
   const imageCount = width * height;
@@ -124,10 +124,10 @@ export const Page: React.FC<IProps> = ({
             rowBuffer={rowBuffer}
             key={imageIndex}
             imageIndex={pageIndex * width * height + imageIndex}
-            setRow={newRow => setRow(newRow, pageIndex, imageIndex)}
-            setImage={newImage => setImage(newImage, pageIndex, imageIndex)}
+            setRow={(newRow) => setRow(newRow, pageIndex, imageIndex)}
+            setImage={(newImage) => setImage(newImage, pageIndex, imageIndex)}
             pages={[...Array(pageCount).keys()].filter(
-              pageNumber => pageNumber != pageIndex
+              (pageNumber) => pageNumber != pageIndex
             )}
             addPage={addPage}
           />

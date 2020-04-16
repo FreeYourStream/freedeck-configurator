@@ -84,7 +84,7 @@ export const Display: React.FC<{
   images: Buffer[];
   addPage: () => number;
   setImage: (newImage: Buffer) => void;
-  setRow: (newRow: number[]) => void;
+  setRow: (newRow: Buffer) => void;
   imageIndex: number;
   pages: number[];
 }> = ({

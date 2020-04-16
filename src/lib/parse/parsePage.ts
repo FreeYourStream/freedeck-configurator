@@ -11,7 +11,8 @@ export const parsePage = (page: Buffer) => {
 export enum EAction {
   "keyboard",
   "changeLayout",
-  "noop"
+  "noop",
+  "special_keys",
 }
 export interface IRow {
   action: EAction;
@@ -23,9 +24,9 @@ export const parseRow = (row: Buffer): IRow => {
   const action = row.readUInt8(0);
   const keys: number[] = [];
   let page: number = -1;
-  if (action === 0) {
-    for (let i = 1; i < 16; i++) {
-      const key = row.readUInt8(i);
+  if (action === 0 || action === 3) {
+    for (let i = 0; i < 7; i++) {
+      const key = row.readInt16LE(i * 2 + 1);
       if (key != 0) keys.push(key);
     }
   }
@@ -36,6 +37,6 @@ export const parseRow = (row: Buffer): IRow => {
   return {
     action,
     page,
-    keys
+    keys,
   };
 };

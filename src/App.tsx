@@ -25,7 +25,7 @@ const Main = styled.div`
 
 const Header = styled.div`
   background-color: ${colors.gray};
-  border-bottom: 1px solid ${colors.black}; 
+  border-bottom: 1px solid ${colors.black};
   display: grid;
   grid-template-columns: 200px 1fr;
   align-items: center;
@@ -37,13 +37,13 @@ const HeadLine = styled.div`
   font-family: sans-serif;
   font-size: 36px;
   font-weight: bold;
-`
+`;
 
 const Buttons = styled.div`
   display: flex;
   height: 52px;
   justify-content: space-between;
-`
+`;
 
 const Horiz = styled.div`
   display: flex;
@@ -80,7 +80,7 @@ const LoadConfigFileInner = styled.label`
   box-shadow: 0px 0px 0px, 0px 0px 0px, 0px 6px 0px ${colors.accentDark},
     0px 0px 0px;
   cursor: pointer;
-`
+`;
 
 const LoadConfigFile = styled.div`
   transition: all 0.05s;
@@ -91,7 +91,7 @@ const LoadConfigFile = styled.div`
   }
   &:hover ${LoadConfigFileInner} {
     box-shadow: 0px 0px 0px, 0px 0px 0px, 0px 2px 0px ${colors.accentDark},
-    0px 0px 0px;
+      0px 0px 0px;
   }
 
   :active {
@@ -101,17 +101,15 @@ const LoadConfigFile = styled.div`
   &:active ${LoadConfigFileInner} {
     box-shadow: none;
   }
-`
+`;
 
-const InvisibleFile = styled.input.attrs({ type: "file"})`
+const InvisibleFile = styled.input.attrs({ type: "file" })`
   display: none;
-`
+`;
 
-const SaveConfigFile = styled(FDButton)`
-`
+const SaveConfigFile = styled(FDButton)``;
 
-const AddPage = styled(FDButton)`
-`
+const AddPage = styled(FDButton)``;
 
 export interface IConfig {
   width: number;
@@ -136,17 +134,14 @@ function App() {
     setImageBuffers(newImages);
   };
 
-  const setRow = (
-    newRow: number[],
-    pageIndex: number,
-    displayIndex: number
-  ) => {
+  const setRow = (newRow: Buffer, pageIndex: number, displayIndex: number) => {
     const newPageBuffers = [...pageBuffers];
     const newPage = newPageBuffers[pageIndex];
-    while (newRow.length < ROW_SIZE) {
-      newRow.push(0);
-    }
-    newPage.set(newRow, displayIndex * ROW_SIZE);
+    const newRowSlice = newPage.slice(
+      displayIndex * ROW_SIZE,
+      (displayIndex + 1) * ROW_SIZE
+    );
+    newRowSlice.set(newRow);
     setPageBuffers(newPageBuffers);
   };
 
@@ -160,21 +155,21 @@ function App() {
     const newPages = [...pageBuffers];
     newPages.splice(pageIndex, 1);
     newPages.forEach((newPage) => {
-        for (let i = 0; i < width * height; i++) {
-          if (newPage.readUInt8(i * ROW_SIZE) === 1) {
-            const oldValue = newPage.readUInt8(i * ROW_SIZE + 1);
-            if (oldValue >= pageIndex) {
-              const newValue = Math.max(oldValue - 1,0)
-              newPage.set([newValue],i * ROW_SIZE + 1);
-            }
+      for (let i = 0; i < width * height; i++) {
+        if (newPage.readUInt16LE(i * ROW_SIZE) === 1) {
+          const oldValue = newPage.readUInt16LE(i * ROW_SIZE + 1);
+          if (oldValue >= pageIndex) {
+            const newValue = Math.max(oldValue - 1, 0);
+            newPage.set([newValue], i * ROW_SIZE + 1);
           }
         }
+      }
     });
     setPageBuffers(newPages);
   };
 
   const loadConfigFile = (configFile: File) =>
-    handleFileSelect(configFile).then(arrayBuffer => {
+    handleFileSelect(configFile).then((arrayBuffer) => {
       const config = parseConfig(Buffer.from(arrayBuffer));
       setHeight(config.height);
       setWidth(config.width);
@@ -183,84 +178,97 @@ function App() {
       setImageBuffers(config.images);
     });
 
-    const addPage = (previousPageIndex: number) => {
-      setPageBuffers([...pageBuffers, defaultRowBuffer(width, height, previousPageIndex)]);
-      const blankImages: Buffer[] = Array(width * height-1).fill(
+  const addPage = (previousPageIndex: number) => {
+    setPageBuffers([
+      ...pageBuffers,
+      defaultRowBuffer(width, height, previousPageIndex),
+    ]);
+    if (pageBuffers.length !== 0) {
+      const blankImages: Buffer[] = Array(width * height - 1).fill(
         new Buffer(1024)
       );
-      setImageBuffers([...imageBuffers, BACK_IMAGE ,...blankImages]);
-      return pageBuffers.length
+      setImageBuffers([...imageBuffers, BACK_IMAGE, ...blankImages]);
+    } else {
+      const blankImages: Buffer[] = Array(width * height).fill(
+        new Buffer(1024)
+      );
+      setImageBuffers([...imageBuffers, ...blankImages]);
     }
+    return pageBuffers.length;
+  };
 
   return (
     <Main>
       <Header id="header">
         <HeadLine>FreeDeck</HeadLine>
         <Buttons>
-
-        <form
-          onSubmit={event => {
-            event.preventDefault();
-          }}
-          >
-          <Horiz>
-            <LoadConfigFile><LoadConfigFileInner htmlFor="loadConfig">Load Config</LoadConfigFileInner></LoadConfigFile>
-            <InvisibleFile
-
-              id="loadConfig"
-              onChange={async event => {
-                if (event.target.files?.length) {
-                  loadConfigFile(event.target.files[0]);
-                }
-              }}
-              ></InvisibleFile>
-            <SaveConfigFile
-              ml={16}
-              size={3}
-              onClick={() => {
-                const header = new Buffer(HEADER_SIZE);
-                header.writeUInt8(3, 0);
-                header.writeUInt8(2, 1);
-                const offset = pageBuffers.length * width * height + 1;
-                header.writeUInt16LE(offset, 2);
-                const newConfig = Buffer.concat([
-                  header,
-                  ...pageBuffers,
-                  ...(imageBuffers).map(imageBuffer => optimizeForSSD1306(imageBuffer))
-                ]);
-                download(newConfig);
-              }}
-              >
-              Save Config
-            </SaveConfigFile>
-          </Horiz>
-        </form>
-        <Horiz>
-          <AddPage
-            onClick={() => {
-              addPage(-1)
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
             }}
           >
-            Add Page +
-          </AddPage>
-          
-        </Horiz>
-      </Buttons>
+            <Horiz>
+              <LoadConfigFile>
+                <LoadConfigFileInner htmlFor="loadConfig">
+                  Load Config
+                </LoadConfigFileInner>
+              </LoadConfigFile>
+              <InvisibleFile
+                id="loadConfig"
+                onChange={async (event) => {
+                  if (event.target.files?.length) {
+                    loadConfigFile(event.target.files[0]);
+                  }
+                }}
+              ></InvisibleFile>
+              <SaveConfigFile
+                ml={16}
+                size={3}
+                onClick={() => {
+                  const header = new Buffer(HEADER_SIZE);
+                  header.writeUInt8(3, 0);
+                  header.writeUInt8(2, 1);
+                  const offset = pageBuffers.length * width * height + 1;
+                  header.writeUInt16LE(offset, 2);
+                  const newConfig = Buffer.concat([
+                    header,
+                    ...pageBuffers,
+                    ...imageBuffers.map((imageBuffer) =>
+                      optimizeForSSD1306(imageBuffer)
+                    ),
+                  ]);
+                  download(newConfig);
+                }}
+              >
+                Save Config
+              </SaveConfigFile>
+            </Horiz>
+          </form>
+          <Horiz>
+            <AddPage
+              onClick={() => {
+                addPage(-1);
+              }}
+            >
+              Add Page +
+            </AddPage>
+          </Horiz>
+        </Buttons>
       </Header>
       <Content id="pages">
         {pageBuffers?.map((page, index) => (
           <Page
-          height={height}
-          width={width}
-          pageIndex={index}
-          images={imageBuffers}
-          page={page}
-          key={index}
+            height={height}
+            width={width}
+            pageIndex={index}
+            images={imageBuffers}
+            page={page}
+            key={index}
             setImage={setImage}
             setRow={setRow}
             deletePage={deletePage}
             pageCount={pageBuffers.length}
-          addPage={() => addPage(index)}
+            addPage={() => addPage(index)}
           />
         ))}
       </Content>
