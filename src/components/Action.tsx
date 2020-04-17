@@ -147,6 +147,9 @@ export const Action: React.FC<{
               value={keys}
               onChange={(e) => setKeys(parseInt(e.target.value))}
             >
+              <option key={0} value={0}>
+                Nothing
+              </option>
               {Keys.map((enumKey) => (
                 //@ts-ignore
                 <option key={enumKey} value={EKeys[enumKey]}>
@@ -192,6 +195,9 @@ export const Action: React.FC<{
               value={keys}
               onChange={(e) => setKeys(parseInt(e.target.value))}
             >
+              <option key={0} value={0}>
+                Nothing
+              </option>
               {MediaKeys.map((enumKey) => (
                 //@ts-ignore
                 <option key={enumKey} value={EMediaKeys[enumKey]}>
