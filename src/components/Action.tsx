@@ -61,12 +61,12 @@ export const Action: React.FC<{
 }> = ({ setNewRow, pages, loadMode, loadKeys, loadPage, addPage }) => {
   const [mode, setMode] = useState<EAction>(loadMode);
   const [goTo, setGoTo] = useState<number>(loadPage);
-  const [alt, setAlt] = useState<boolean>(loadKeys.includes(130));
-  const [ctrl, setCtrl] = useState<boolean>(loadKeys.includes(128));
-  const [shift, setShift] = useState<boolean>(loadKeys.includes(129));
-  const [superKey, setSuper] = useState<boolean>(loadKeys.includes(131));
+  const [alt, setAlt] = useState<boolean>(loadKeys.includes(0xe2));
+  const [ctrl, setCtrl] = useState<boolean>(loadKeys.includes(0xe0));
+  const [shift, setShift] = useState<boolean>(loadKeys.includes(0xe1));
+  const [superKey, setSuper] = useState<boolean>(loadKeys.includes(0xe3));
   const [keys, setKeys] = useState<number>(
-    loadKeys?.[loadKeys.length - 1] ?? -1
+    loadKeys?.[loadKeys.length - 1] ?? 0
   );
 
   useEffect(() => {
@@ -92,14 +92,14 @@ export const Action: React.FC<{
       row.writeInt16LE(goTo, 1);
       setNewRow(row);
     } else if (mode === EAction.keyboard) {
-      let i = 0;
+      let i = 1;
       const row = new Buffer(16);
       row.writeUInt8(0, 0);
-      if (ctrl) row.writeInt16LE(128, i++ * 2 + 1);
-      if (shift) row.writeInt16LE(129, i++ * 2 + 1);
-      if (alt) row.writeInt16LE(130, i++ * 2 + 1);
-      if (superKey) row.writeInt16LE(131, i++ * 2 + 1);
-      row.writeInt16LE(keys, i * 2 + 1);
+      if (ctrl) row.writeUInt8(0xe0, i++);
+      if (shift) row.writeUInt8(0xe1, i++);
+      if (alt) row.writeUInt8(0xe2, i++);
+      if (superKey) row.writeUInt8(0xe3, i++);
+      row.writeUInt8(Math.max(0, Math.min(keys, 255)), i);
       setNewRow(row);
     } else if (mode === EAction.special_keys) {
       const row = new Buffer(16);
