@@ -20,25 +20,25 @@ export interface IRow {
   page: number;
 }
 
-export const parseRow = (row: Buffer): IRow => {
-  const action = row.readUInt8(0);
+export const parseRow = (row: Buffer, offset = 0): IRow => {
+  let action = row.readUInt8(0 + offset);
+  if (action >= 16) action -= 16;
   const keys: number[] = [];
   let page: number = -1;
   // send keys
-  console.log(row);
   if (action === 0) {
     for (let i = 1; i < 8; i++) {
-      const key = row.readUInt8(i);
+      const key = row.readUInt8(i + offset);
       if (key != 0) keys.push(key);
     }
   }
   // special keys
   if (action === 3) {
-    keys.push(row.readInt16LE(1));
+    keys.push(row.readInt16LE(1 + offset));
   }
   // change page
   if (action === 1) {
-    page = row.readInt16LE(1);
+    page = row.readInt16LE(1 + offset);
   }
 
   return {

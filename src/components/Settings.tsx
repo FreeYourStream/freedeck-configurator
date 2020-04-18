@@ -4,8 +4,17 @@ import styled from "styled-components";
 import { colors } from "../definitions/colors";
 import { stringSplice } from "../lib/stringSplice";
 import useDebounce from "../lib/useDebounce";
-import { StyledSelect } from "./Action";
-import { FDButton } from "./lib/button";
+import { StyledSelect, Row } from "./lib/misc";
+import { FDButton, Button } from "./lib/button";
+import {
+  Column,
+  Disabler,
+  Title,
+  Label,
+  TextInput,
+  CheckButton,
+  MicroButton,
+} from "./lib/misc";
 
 const smaller = "fonts/smaller.fnt";
 const small = "fonts/small.fnt";
@@ -15,22 +24,10 @@ const large = "fonts/large.fnt";
 function clamp(num: number, min: number, max: number) {
   return num <= min ? min : num >= max ? max : num;
 }
-const ButtonRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin: 2px;
-`;
 const Wrapper = styled.div<{ show: boolean }>`
-  border: 1px solid ${colors.accent};
-  position: absolute;
-  bottom: 100%;
   display: ${(p) => (p.show ? "flex" : "none")};
-  flex-direction: column;
-  width: 158px;
-  background: ${colors.black};
-  border-radius: 4px;
-  z-index: 1;
 `;
+
 const ContrastValue = styled.p`
   line-height: 21px;
   margin: 0;
@@ -39,32 +36,12 @@ const ContrastValue = styled.p`
   font-size: 16px;
   font-weight: bold;
 `;
-const MicroButton = styled(FDButton).attrs({ size: 1 })`
-  min-width: 36px;
-`;
 const MicroToggle = styled(FDButton).attrs({ size: 1 })`
   padding: 0px 4px;
 `;
-const CheckButton = styled(FDButton).attrs({ size: 1, mt: 4 })<{
-  uff: boolean;
-}>`
-  background-color: ${(p) => (p.uff ? "darkgreen" : "red")};
-  padding: 0px 3px;
-`;
+
 const EnableTextButton = styled(CheckButton)`
   margin-right: 4px;
-`;
-const TextInput = styled.input.attrs({ type: "text" })`
-  appearance: none;
-  color: ${colors.black};
-  padding: 2px 8px;
-  background-color: ${colors.white};
-  border-color: ${colors.accentDark};
-  border-radius: 5px;
-  font-size: 16px;
-  font-family: sans-serif;
-  margin-top: 4px;
-  width: 100%;
 `;
 
 export const Settings: React.FC<{
@@ -95,69 +72,77 @@ export const Settings: React.FC<{
   }, [textOnly]);
   return (
     <Wrapper show={show}>
-      {!textOnly && (
-        <>
-          <ButtonRow>
-            <MicroButton
-              onClick={() => setContrast(clamp(contrast + 0.1, -1, 1))}
-            >
-              ++
-            </MicroButton>
-            <MicroButton
-              onClick={() => setContrast(clamp(contrast + 0.02, -1, 1))}
-            >
-              +
-            </MicroButton>
-            <MicroButton
-              onClick={() => setContrast(clamp(contrast - 0.02, -1, 1))}
-            >
-              -
-            </MicroButton>
-            <MicroButton
-              onClick={() => setContrast(clamp(contrast - 0.1, -1, 1))}
-            >
-              --
-            </MicroButton>
-          </ButtonRow>
-          <ButtonRow>
-            <MicroToggle onClick={() => setInvert(!invert)}>invert</MicroToggle>
-            <ContrastValue>{contrast.toFixed(2)}</ContrastValue>
-            <MicroToggle onClick={() => setDither(!dither)}>dither</MicroToggle>
-          </ButtonRow>
-          <ButtonRow>
-            {!textOnly && (
-              <EnableTextButton
-                uff={textEnabled}
-                onClick={(e) => setTextEnable(!textEnabled)}
-              >
-                Text
-              </EnableTextButton>
-            )}
-            <StyledSelect
-              defaultValue={fontName}
-              onChange={(e) => setfontName(e.currentTarget.value)}
-            >
-              <option value={smaller}>smaller</option>
-              <option value={small}>small</option>
-              <option value={medium}>medium</option>
-              <option value={large}>large</option>
-            </StyledSelect>
-          </ButtonRow>
-        </>
-      )}
-
-      <ButtonRow>
-        <TextInput
-          placeholder={"Enter text"}
-          onKeyUp={(e) => {
-            if (e && e.keyCode === 13 && e.currentTarget.selectionStart) {
-              setText(stringSplice(text, e.currentTarget.selectionStart));
-            }
-          }}
-          value={text}
-          onChange={(e) => setText(e.currentTarget.value)}
+      <Column>
+        <Disabler
+          disable={textOnly}
+          title="These options are disable. Load an image by clicking on the black box or just enter some text"
         />
-      </ButtonRow>
+        <Title>Image Settings</Title>
+        <Row>
+          <Label>Contrast</Label>
+          <ContrastValue>{contrast.toFixed(2)}</ContrastValue>
+        </Row>
+        <Row>
+          <MicroButton
+            onClick={() => setContrast(clamp(contrast + 0.1, -1, 1))}
+          >
+            ++
+          </MicroButton>
+          <MicroButton
+            onClick={() => setContrast(clamp(contrast + 0.02, -1, 1))}
+          >
+            +
+          </MicroButton>
+          <MicroButton
+            onClick={() => setContrast(clamp(contrast - 0.02, -1, 1))}
+          >
+            -
+          </MicroButton>
+          <MicroButton
+            onClick={() => setContrast(clamp(contrast - 0.1, -1, 1))}
+          >
+            --
+          </MicroButton>
+        </Row>
+        <Row>
+          <MicroToggle width="48%" onClick={() => setInvert(!invert)}>
+            Invert
+          </MicroToggle>
+
+          <MicroToggle width="48%" onClick={() => setDither(!dither)}>
+            Dither
+          </MicroToggle>
+        </Row>
+        <Row>
+          <EnableTextButton
+            uff={textEnabled}
+            width="33%"
+            onClick={(e) => setTextEnable(!textEnabled)}
+          >
+            Text
+          </EnableTextButton>
+          <StyledSelect
+            defaultValue={fontName}
+            onChange={(e) => setfontName(e.currentTarget.value)}
+          >
+            <option value={smaller}>smaller</option>
+            <option value={small}>small</option>
+            <option value={medium}>medium</option>
+            <option value={large}>large</option>
+          </StyledSelect>
+        </Row>
+      </Column>
+
+      <Column>
+        <Title>Text</Title>
+        <Row>
+          <TextInput
+            placeholder={"Enter text"}
+            value={text}
+            onChange={(e) => setText(e.currentTarget.value)}
+          />
+        </Row>
+      </Column>
     </Wrapper>
   );
 };

@@ -54,22 +54,22 @@ const DeletePage = styled.img`
 const Grid = styled.div<{ width: number; height: number }>`
   display: grid;
   grid-template-columns: ${(p) => {
-    let fr = "160px";
+    let fr = "128px";
     for (var i = 0; i < p.width - 1; i++) {
-      fr += " 160px";
+      fr += " 128px";
     }
     return `${fr};`;
   }};
   grid-template-rows: ${(p) => {
-    let fr = "160px";
+    let fr = "64px";
     for (var i = 0; i < p.height - 1; i++) {
-      fr += " 160px";
+      fr += " 64px";
     }
     return `${fr};`;
   }};
   margin: 20px;
   grid-column-gap: 20px;
-  grid-row-gap: 10px;
+  grid-row-gap: 20px;
 `;
 
 interface IProps {

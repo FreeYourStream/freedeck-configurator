@@ -5,6 +5,8 @@ export default (width: number, height: number, previousPageIndex: number) => {
   for (let i = 0; i < width * height; i++) {
     buffer.writeUInt8(2, ROW_SIZE * i);
     buffer.writeInt16LE(-1, ROW_SIZE * i + 1);
+    buffer.writeUInt8(2, ROW_SIZE * i + 8);
+    buffer.writeInt16LE(-1, ROW_SIZE * i + 1 + 8);
   }
   if (previousPageIndex >= 0) {
     buffer.writeUInt8(1, 0);

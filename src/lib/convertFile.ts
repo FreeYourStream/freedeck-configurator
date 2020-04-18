@@ -34,7 +34,7 @@ export const composeImage = (
       jimpImage.autocrop().scaleToFit(width / 2, height);
       const font = await Jimp.loadFont(fontName);
       const fontSize = font.common.lineHeight - 2;
-      let lines = text.split("|").filter((line) => line);
+      let lines = text.split(/\r?\n/).filter((line) => line);
       const overAllLineHeight =
         lines.length * fontSize + (lines.length - 1) * 1;
       const offset = (64 - overAllLineHeight) / 2;
@@ -88,10 +88,16 @@ export const composeText = (
 ): Promise<Buffer> => {
   return new Promise(async (resolve) => {
     const pngImage = new PNG();
-    const textImage = new Jimp(width, height, "black");
+    const textImage = new Jimp(width * 4, height * 4, "black");
     const font = await Jimp.loadFont(fontName);
     const fontSize = font.common.lineHeight - 2;
-    let lines = text.split("|").filter((line) => line);
+    let lines = text
+      .split("\n")
+      .filter((line) => line)
+      .map(
+        (line) =>
+          line.startsWith("v", 0) || line.startsWith("V", 0) ? ` ${line}` : line //bug in jimp
+      );
     const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
     const offset = (64 - overAllLineHeight) / 2;
     if (lines.length > 1) {
@@ -104,7 +110,7 @@ export const composeText = (
     } else {
       await textImage.print(font, 0, 0, lines[0], 128, 64);
     }
-    textImage.autocrop().scaleToFit(width, height);
+    textImage.autocrop(0).scaleToFit(128, 64, Jimp.RESIZE_BEZIER);
     const background = new Jimp(width, height, "black");
     background.composite(
       textImage,

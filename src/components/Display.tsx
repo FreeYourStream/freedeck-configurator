@@ -10,6 +10,7 @@ import { IRow, parseRow } from "../lib/parse/parsePage";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { Action } from "./Action";
 import { Settings } from "./Settings";
+import { Modal } from "./modal";
 
 const Wrapper = styled.div`
   display: flex;
@@ -18,9 +19,18 @@ const Wrapper = styled.div`
   position: relative;
   z-index: 10;
 `;
-const ImagePreview = styled.img`
-  width: 128px;
-  height: 64px;
+const ImagePreview = styled.img<{ multiplier: number }>`
+  width: ${(p) => p.multiplier * 128}px;
+  height: ${(p) => p.multiplier * 64}px;
+  image-rendering: pixelated;
+`;
+const DropWrapper = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  height: 128px;
+  background-color: #000000a1;
+  border-radius: 16px;
 `;
 const DeleteImage = styled.img`
   cursor: pointer;
@@ -34,19 +44,12 @@ const DeleteImage = styled.img`
   border-style: none;
   visibility: hidden;
   z-index: 10;
-  ${Wrapper}:hover & {
+  ${DropWrapper}:hover & {
     visibility: visible;
   }
 `;
 
-const DropWrapper = styled.div`
-  position: relative;
-`;
-
 const Drop = styled.div`
-  width: 128;
-  height: 64px;
-  border: 16px solid ${colors.black};
   border-radius: 8px;
   border-top: none;
   border-bottom: none;
@@ -56,30 +59,8 @@ const DropHere = styled.div`
   font-size: 24px;
   color: white;
 `;
-const Controls = styled.div`
-  padding: 4px 2px;
-  background: ${colors.gray};
-  border-top: none;
-  height: 132px;
-  width: 160px;
-  border-radius: 0px 0px 2px 2px;
-`;
-const HideSettings = styled.img<{ show: boolean }>`
-  cursor: pointer;
-  border-radius: 50%;
-  height: 22px;
-  width: 22px;
-  top: -8px;
-  left: -8px;
-  position: absolute;
-  border-style: none;
-  visibility: ${(p) => (p.show ? "visible" : "hidden")};
-  z-index: 10;
-  ${Wrapper}:hover & {
-    visibility: visible;
-  }
-`;
-export const Display: React.FC<{
+
+const DisplayComponent: React.FC<{
   rowBuffer: Buffer;
   images: Buffer[];
   addPage: () => number;
@@ -97,6 +78,7 @@ export const Display: React.FC<{
   pages,
 }) => {
   const [row, setRow] = useState<IRow>();
+  const [secondary, setSecondary] = useState<IRow>();
   const [previewImage, setPreviewImage] = useState<string>("");
   const [newImageFile, setNewImageFile] = useState<File>();
   const [convertedImageBuffer, setConvertedImageBuffer] = useState<Buffer>();
@@ -121,7 +103,9 @@ export const Display: React.FC<{
 
   useEffect(() => {
     const parsedRow = parseRow(rowBuffer);
+    const parsedSecondary = parseRow(rowBuffer, 8);
     setRow(parsedRow);
+    setSecondary(parsedSecondary);
   }, [rowBuffer]);
 
   useEffect(() => {
@@ -132,6 +116,7 @@ export const Display: React.FC<{
 
   useEffect(() => {
     if (row && convertedImageBuffer) {
+      setPreviewImage(getBase64Image([convertedImageBuffer], 0));
       setImage(convertedImageBuffer);
     }
   }, [convertedImageBuffer]);
@@ -195,45 +180,47 @@ export const Display: React.FC<{
 
   return (
     <Wrapper>
-      <DropWrapper>
-        <DeleteImage src="close.png" onClick={deleteImage} />
-        <HideSettings
-          title={
-            !allowSettings
-              ? "You cant edit this image because it was loaded from config. Delete it or load a new one"
-              : "show settings"
-          }
-          show={!!newImageFile}
-          src="settings.png"
-          onClick={() => setShowSettings(allowSettings ? !showSettings : false)}
-        />
-        <Drop {...getRootProps()}>
-          <input {...getInputProps()} />
-          {isDragActive ? (
-            <DropHere>Drop Here</DropHere>
-          ) : (
-            <ImagePreview src={previewImage} />
-          )}
-        </Drop>
-      </DropWrapper>
-
-      <Controls>
+      <ImagePreview
+        multiplier={1}
+        onClick={() => setShowSettings(true)}
+        src={previewImage}
+      />
+      <Modal visible={showSettings} setClose={() => setShowSettings(false)}>
+        <DropWrapper>
+          <DeleteImage src="close.png" onClick={deleteImage} />
+          <Drop {...getRootProps()}>
+            <input {...getInputProps()} />
+            {isDragActive ? (
+              <DropHere>Drop Here</DropHere>
+            ) : (
+              <ImagePreview multiplier={2} src={previewImage} />
+            )}
+          </Drop>
+        </DropWrapper>
         <Settings
           textOnly={!newImageFile}
           show={showSettings}
           setSettings={setSettings}
         />
-        {row && (
+        {row && secondary && (
           <Action
             setNewRow={setNewRow}
             pages={pages}
             loadMode={row.action}
             loadKeys={row.keys}
             loadPage={row.page}
+            loadModeSecondary={secondary.action}
+            loadKeysSecondary={secondary.keys}
+            loadPageSecondary={secondary.page}
             addPage={addPage}
           />
         )}
-      </Controls>
+      </Modal>
     </Wrapper>
   );
 };
+
+export const Display = React.memo(DisplayComponent, (prev, next) => {
+  if (Buffer.compare(prev.rowBuffer, next.rowBuffer) !== 0) return false;
+  return true;
+});
