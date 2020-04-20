@@ -65,13 +65,11 @@ export const Settings: React.FC<{
   const [text, setText] = useState<string>(settings.text);
   const [fontName, setfontName] = useState<string>(settings.fontName);
   const debouncedText = useDebounce(text, 250);
+
   useEffect(() => {
     setSettings({ contrast, dither, invert, text, textEnabled, fontName });
   }, [contrast, dither, invert, debouncedText, textEnabled, fontName]);
-  useEffect(() => {
-    setDither(textOnly ? false : true);
-    setContrast(textOnly ? 0.12 : -0.12);
-  }, [textOnly]);
+
   useEffect(() => {
     if (textOnly) return;
     setContrast(settings.contrast);

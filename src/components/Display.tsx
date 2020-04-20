@@ -143,34 +143,42 @@ export const Display: React.FC<{
   }, [convertedImageBuffer]);
 
   useEffect(() => {
-    if (newImageFile) {
-      handleFileSelect(newImageFile).then(async (arrayBuffer) => {
+    (async () => {
+      if (newImageFile) {
+        const arrayBuffer = await handleFileSelect(newImageFile);
         const image = await Jimp.read(Buffer.from(arrayBuffer));
         image.scaleToFit(256, 128);
-        setShowSettings(true);
-        return setCroppedImage(image);
-      });
-    }
+        setCroppedImage(image);
+        setSettings({ ...settings, dither: true, contrast: -0.12 });
+      } else {
+        setSettings({
+          ...settings,
+          dither: false,
+          invert: false,
+          contrast: 0.12,
+        });
+      }
+    })();
   }, [newImageFile]);
 
   useEffect(() => {
-    if (croppedImage && settings) {
-      (async () => {
-        const buffer = await composeImage(
-          croppedImage,
-          128,
-          64,
-          settings.contrast,
-          settings.invert,
-          settings.dither,
-          settings.textEnabled,
-          settings.text,
-          settings.fontName
-        );
-        setConvertedImageBuffer(buffer);
-      })();
-    } else if (settings && settings.text.length) {
-      (async () => {
+    (async () => {
+      if (croppedImage) {
+        (async () => {
+          const buffer = await composeImage(
+            croppedImage,
+            128,
+            64,
+            settings.contrast,
+            settings.invert,
+            settings.dither,
+            settings.textEnabled,
+            settings.text,
+            settings.fontName
+          );
+          setConvertedImageBuffer(buffer);
+        })();
+      } else if (settings.text.length) {
         const buffer = await composeText(
           128,
           64,
@@ -180,8 +188,8 @@ export const Display: React.FC<{
           settings.contrast
         );
         setConvertedImageBuffer(buffer);
-      })();
-    }
+      }
+    })();
   }, [croppedImage, settings]);
 
   const deleteImage = () => {
