@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { DndProvider } from "react-dnd";
+import Backend from "react-dnd-html5-backend";
 
 import { colors } from "../definitions/colors";
 import { parsePage } from "../lib/parse/parsePage";
@@ -74,6 +76,7 @@ const Grid = styled.div<{ width: number; height: number }>`
 
 interface IProps {
   pageIndex: number;
+  affected: boolean;
   width: number;
   height: number;
   page: Buffer;
@@ -81,12 +84,19 @@ interface IProps {
   deletePage: (pageIndex: number) => void;
   addPage: () => number;
   setImage: (newImage: Buffer, pageIndex: number, displayIndex: number) => void;
-  setRow: (newRow: Buffer, pageIndex: number, displayIndex: number) => void;
+  setRow: (
+    newRow: Buffer,
+    pageIndex: number,
+    displayIndex: number,
+    offset: number
+  ) => void;
   pageCount: number;
+  switchDisplays: (aIndex: number, bIndex: number) => void;
 }
 
-export const Page: React.FC<IProps> = ({
+const PageComponent: React.FC<IProps> = ({
   pageIndex,
+  affected,
   width,
   height,
   images,
@@ -96,6 +106,7 @@ export const Page: React.FC<IProps> = ({
   deletePage,
   addPage,
   pageCount,
+  switchDisplays,
 }) => {
   const [rowBuffers, setRowBuffers] = useState<Buffer[]>([]);
   const imageCount = width * height;
@@ -118,21 +129,34 @@ export const Page: React.FC<IProps> = ({
         />
       </Header>
       <Grid height={height} width={width}>
-        {rowBuffers.map((rowBuffer, imageIndex) => (
-          <Display
-            images={images}
-            rowBuffer={rowBuffer}
-            key={imageIndex}
-            imageIndex={pageIndex * width * height + imageIndex}
-            setRow={(newRow) => setRow(newRow, pageIndex, imageIndex)}
-            setImage={(newImage) => setImage(newImage, pageIndex, imageIndex)}
-            pages={[...Array(pageCount).keys()].filter(
-              (pageNumber) => pageNumber != pageIndex
-            )}
-            addPage={addPage}
-          />
-        ))}
+        <DndProvider backend={Backend}>
+          {rowBuffers.map((rowBuffer, imageIndex) => (
+            <Display
+              images={images}
+              rowBuffer={rowBuffer}
+              key={imageIndex}
+              imageIndex={pageIndex * width * height + imageIndex}
+              setRow={(newRow, offset, secondaryAction) =>
+                setRow(newRow, pageIndex, imageIndex, offset)
+              }
+              setImage={(newImage) => setImage(newImage, pageIndex, imageIndex)}
+              pages={[...Array(pageCount).keys()].filter(
+                (pageNumber) => pageNumber != pageIndex
+              )}
+              addPage={addPage}
+              switchDisplays={switchDisplays}
+            />
+          ))}
+        </DndProvider>
       </Grid>
     </Wrapper>
   );
 };
+
+export const Page = React.memo(PageComponent, (prev, next) => {
+  if (next.affected) return false;
+  if (prev.height !== next.height) return false;
+  if (prev.pageCount !== next.pageCount) return false;
+  if (prev.pageIndex !== next.pageIndex) return false;
+  return true;
+});

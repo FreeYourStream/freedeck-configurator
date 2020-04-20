@@ -2,17 +2,19 @@ import Jimp from "jimp";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
+import { useDrag, useDrop } from "react-dnd";
 
-import { colors } from "../definitions/colors";
 import { composeImage, composeText } from "../lib/convertFile";
 import { handleFileSelect } from "../lib/fileSelect";
 import { IRow, parseRow } from "../lib/parse/parsePage";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { Action } from "./Action";
-import { Settings } from "./Settings";
+import { Settings, ISettings, fontLarge } from "./Settings";
 import { Modal } from "./modal";
+import { Column, Row } from "./lib/misc";
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ opacity: number }>`
+  opacity: ${(p) => p.opacity};
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -23,6 +25,7 @@ const ImagePreview = styled.img<{ multiplier: number }>`
   width: ${(p) => p.multiplier * 128}px;
   height: ${(p) => p.multiplier * 64}px;
   image-rendering: pixelated;
+  cursor: pointer;
 `;
 const DropWrapper = styled.div`
   position: relative;
@@ -60,14 +63,15 @@ const DropHere = styled.div`
   color: white;
 `;
 
-const DisplayComponent: React.FC<{
+export const Display: React.FC<{
   rowBuffer: Buffer;
   images: Buffer[];
   addPage: () => number;
   setImage: (newImage: Buffer) => void;
-  setRow: (newRow: Buffer) => void;
+  setRow: (newRow: Buffer, offset: number, secondaryAction?: number) => void;
   imageIndex: number;
   pages: number[];
+  switchDisplays: (aIndex: number, bIndex: number) => void;
 }> = ({
   rowBuffer,
   images,
@@ -76,6 +80,8 @@ const DisplayComponent: React.FC<{
   setRow: setNewRow,
   imageIndex,
   pages,
+  switchDisplays,
+  // connectDragSource,
 }) => {
   const [row, setRow] = useState<IRow>();
   const [secondary, setSecondary] = useState<IRow>();
@@ -83,15 +89,30 @@ const DisplayComponent: React.FC<{
   const [newImageFile, setNewImageFile] = useState<File>();
   const [convertedImageBuffer, setConvertedImageBuffer] = useState<Buffer>();
   const [croppedImage, setCroppedImage] = useState<Jimp>();
-  const [settings, setSettings] = useState<{
-    contrast: number;
-    dither: boolean;
-    invert: boolean;
-    text: string;
-    textEnabled: boolean;
-    fontName: string;
-  }>();
+  const [settings, setSettings] = useState<ISettings>({
+    contrast: -0.12,
+    dither: false,
+    fontName: fontLarge,
+    invert: false,
+    text: "",
+    textEnabled: false,
+  });
   const [showSettings, setShowSettings] = useState<boolean>(false);
+
+  const [{ opacity }, dragRef] = useDrag({
+    item: { type: "display", imageIndex },
+    collect: (monitor) => ({
+      opacity: monitor.isDragging() ? 0.5 : 1,
+    }),
+  });
+  const [{ targetDisplayIndex }, drop] = useDrop({
+    accept: "display",
+    drop: (item, monitor): undefined => (
+      switchDisplays(targetDisplayIndex, monitor.getItem().imageIndex),
+      undefined
+    ),
+    collect: () => ({ targetDisplayIndex: imageIndex }),
+  });
 
   const onDrop = useCallback((acceptedFiles) => {
     setNewImageFile(acceptedFiles[0]);
@@ -179,8 +200,9 @@ const DisplayComponent: React.FC<{
   );
 
   return (
-    <Wrapper>
+    <Wrapper ref={dragRef} opacity={opacity}>
       <ImagePreview
+        ref={drop}
         multiplier={1}
         onClick={() => setShowSettings(true)}
         src={previewImage}
@@ -201,26 +223,39 @@ const DisplayComponent: React.FC<{
           textOnly={!newImageFile}
           show={showSettings}
           setSettings={setSettings}
+          settings={settings}
         />
-        {row && secondary && (
-          <Action
-            setNewRow={setNewRow}
-            pages={pages}
-            loadMode={row.action}
-            loadKeys={row.keys}
-            loadPage={row.page}
-            loadModeSecondary={secondary.action}
-            loadKeysSecondary={secondary.keys}
-            loadPageSecondary={secondary.page}
-            addPage={addPage}
-          />
-        )}
+        <Row>
+          <Column>
+            {row && (
+              <Action
+                setNewRow={(newRow) => setNewRow(newRow, 0, secondary?.action)}
+                pages={pages}
+                title="Short Press"
+                loadMode={row.action}
+                loadKeys={row.keys}
+                loadPage={row.page}
+                addPage={addPage}
+                loadUserInteraction={false}
+              />
+            )}
+          </Column>
+          <Column>
+            {secondary && (
+              <Action
+                setNewRow={(newRow) => setNewRow(newRow, 8)}
+                pages={pages}
+                title="Long Press"
+                loadMode={secondary.action}
+                loadKeys={secondary.keys}
+                loadPage={secondary.page}
+                addPage={addPage}
+                loadUserInteraction={false}
+              />
+            )}
+          </Column>
+        </Row>
       </Modal>
     </Wrapper>
   );
 };
-
-export const Display = React.memo(DisplayComponent, (prev, next) => {
-  if (Buffer.compare(prev.rowBuffer, next.rowBuffer) !== 0) return false;
-  return true;
-});

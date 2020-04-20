@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
-import { Button, FDButton } from "./components/lib/button";
-import { File } from "./components/lib/file";
+import { FDButton } from "./components/lib/button";
 import { Page } from "./components/Page";
 import { HEADER_SIZE, ROW_SIZE } from "./constants";
 import { colors } from "./definitions/colors";
@@ -33,8 +32,18 @@ const Header = styled.div`
 `;
 
 const HeadLine = styled.div`
+  display: flex;
+`;
+
+const HeadLineThin = styled.div`
   color: white;
-  font-family: sans-serif;
+  font-family: "Barlow", sans-serif;
+  font-size: 36px;
+  font-weight: 100;
+`;
+const HeadLineThick = styled.div`
+  color: white;
+  font-family: "Barlow", sans-serif;
   font-size: 36px;
   font-weight: bold;
 `;
@@ -123,7 +132,7 @@ function App() {
   const [width, setWidth] = useState<number>(3);
   const [pageBuffers, setPageBuffers] = useState<Buffer[]>([]);
   const [imageBuffers, setImageBuffers] = useState<Buffer[]>([]);
-
+  const [affectedPages, setAffectedPages] = useState<number[]>();
   const setImage = (
     newImage: Buffer,
     pageIndex: number,
@@ -131,17 +140,57 @@ function App() {
   ) => {
     const newImages = [...imageBuffers];
     newImages[width * height * pageIndex + displayIndex] = newImage;
+    setAffectedPages([pageIndex]);
     setImageBuffers(newImages);
   };
 
-  const setRow = (newRow: Buffer, pageIndex: number, displayIndex: number) => {
+  const switchDisplays = (aIndex: number, bIndex: number) => {
+    const aPage = Math.floor(aIndex / (width * height));
+    const aPageIndex = aIndex % (width * height);
+
+    const bPage = Math.floor(bIndex / (width * height));
+    const bPageIndex = bIndex % (width * height);
+
+    let newImages: Buffer[] = [...imageBuffers];
+    [newImages[aIndex], newImages[bIndex]] = [
+      newImages[bIndex],
+      newImages[aIndex],
+    ];
+
+    let newPages = [...pageBuffers];
+    const aContent = Buffer.from(
+      newPages[aPage].slice(aPageIndex * ROW_SIZE, (aPageIndex + 1) * ROW_SIZE)
+    );
+    newPages[aPage].set(
+      Buffer.from(
+        newPages[aPage].slice(
+          bPageIndex * ROW_SIZE,
+          (bPageIndex + 1) * ROW_SIZE
+        )
+      ),
+      aPageIndex * ROW_SIZE
+    );
+    newPages[aPage].set(aContent, bPageIndex * ROW_SIZE);
+    setAffectedPages([aPage, bPage]);
+    setImageBuffers(newImages);
+    setPageBuffers(newPages);
+  };
+
+  const setRow = (
+    newRow: Buffer,
+    pageIndex: number,
+    displayIndex: number,
+    offset: number
+  ) => {
+    console.log("setrow", pageIndex, displayIndex);
     const newPageBuffers = [...pageBuffers];
     const newPage = newPageBuffers[pageIndex];
     const newRowSlice = newPage.slice(
       displayIndex * ROW_SIZE,
       (displayIndex + 1) * ROW_SIZE
     );
-    newRowSlice.set(newRow);
+    newRowSlice.set(newRow, offset);
+    setAffectedPages([pageIndex]);
     setPageBuffers(newPageBuffers);
   };
 
@@ -153,28 +202,36 @@ function App() {
     setImageBuffers(newImages);
 
     const newPages = [...pageBuffers];
+    const affectedPages: number[] = [];
     newPages.splice(pageIndex, 1);
     newPages.forEach((newPage) => {
       for (let i = 0; i < width * height; i++) {
-        if (newPage.readUInt16LE(i * ROW_SIZE) === 1) {
-          const oldValue = newPage.readUInt16LE(i * ROW_SIZE + 1);
-          if (oldValue >= pageIndex) {
-            const newValue = Math.max(oldValue - 1, 0);
-            newPage.set([newValue], i * ROW_SIZE + 1);
+        if (newPage.readUInt8(i * ROW_SIZE) === 1) {
+          const oldValuePrimary = newPage.readInt16LE(i * ROW_SIZE + 1);
+          const oldValueSecondary = newPage.readInt16LE(i * ROW_SIZE + 9);
+          if (oldValuePrimary >= pageIndex) {
+            affectedPages.push(pageIndex);
+            newPage.writeInt16LE(oldValuePrimary - 1, i * ROW_SIZE + 1);
+          }
+          if (oldValueSecondary >= pageIndex) {
+            affectedPages.push(pageIndex);
+            newPage.writeInt16LE(oldValueSecondary - 1, i * ROW_SIZE + 9);
           }
         }
       }
     });
+    setAffectedPages(affectedPages);
     setPageBuffers(newPages);
   };
 
   const loadConfigFile = (configFile: File) =>
     handleFileSelect(configFile).then((arrayBuffer) => {
       const config = parseConfig(Buffer.from(arrayBuffer));
+      const affectedPages = [...new Array(config.pageCount).keys()];
+      setAffectedPages(affectedPages);
       setHeight(config.height);
       setWidth(config.width);
       setPageBuffers(config.pages);
-      //setPageCount(config.pageCount);
       setImageBuffers(config.images);
     });
 
@@ -200,7 +257,10 @@ function App() {
   return (
     <Main>
       <Header id="header">
-        <HeadLine>FreeDeck</HeadLine>
+        <HeadLine>
+          <HeadLineThin>Free</HeadLineThin>
+          <HeadLineThick>Deck</HeadLineThick>
+        </HeadLine>
         <Buttons>
           <form
             onSubmit={(event) => {
@@ -260,6 +320,7 @@ function App() {
           <Page
             height={height}
             width={width}
+            affected={affectedPages?.includes(index) ?? false}
             pageIndex={index}
             images={imageBuffers}
             page={page}
@@ -269,6 +330,7 @@ function App() {
             deletePage={deletePage}
             pageCount={pageBuffers.length}
             addPage={() => addPage(index)}
+            switchDisplays={switchDisplays}
           />
         ))}
       </Content>

@@ -1,5 +1,5 @@
 import React from "react";
-import styled, { StyledComponent } from "styled-components";
+import styled from "styled-components";
 
 import { colors } from "../../definitions/colors";
 
@@ -26,8 +26,8 @@ export const FDButtonInner = styled.div<{
       ? "padding-left: " + p.px + "px;" + "padding-right: " + p.px + "px;"
       : ""}
   font-family: "Barlow", sans-serif;
-  font-weight: bold;
   position: relative;
+  font-weight: 500;
   width: auto;
   height: 100%;
   display: flex;

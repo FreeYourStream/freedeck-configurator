@@ -16,6 +16,8 @@
     "jimp": "^0.9.5",
     "pngjs": "^3.4.0",
     "react": "^16.13.0",
+    "react-dnd": "^10.0.2",
+    "react-dnd-html5-backend": "^10.0.2",
     "react-dom": "^16.13.0",
     "react-dropzone": "^10.2.2",
     "react-scripts": "3.4.0",

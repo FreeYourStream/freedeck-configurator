@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { colors } from "../definitions/colors";
-import { stringSplice } from "../lib/stringSplice";
 import useDebounce from "../lib/useDebounce";
 import { StyledSelect, Row } from "./lib/misc";
-import { FDButton, Button } from "./lib/button";
+import { FDButton } from "./lib/button";
 import {
   Column,
   Disabler,
@@ -16,10 +15,10 @@ import {
   MicroButton,
 } from "./lib/misc";
 
-const smaller = "fonts/smaller.fnt";
-const small = "fonts/small.fnt";
-const medium = "fonts/medium.fnt";
-const large = "fonts/large.fnt";
+export const fontSmaller = "fonts/smaller.fnt";
+export const fontSmall = "fonts/small.fnt";
+export const fontMedium = "fonts/medium.fnt";
+export const fontLarge = "fonts/large.fnt";
 
 function clamp(num: number, min: number, max: number) {
   return num <= min ? min : num >= max ? max : num;
@@ -44,24 +43,27 @@ const EnableTextButton = styled(CheckButton)`
   margin-right: 4px;
 `;
 
+export interface ISettings {
+  contrast: number;
+  dither: boolean;
+  invert: boolean;
+  text: string;
+  textEnabled: boolean;
+  fontName: string;
+}
+
 export const Settings: React.FC<{
-  setSettings: (settings: {
-    contrast: number;
-    dither: boolean;
-    invert: boolean;
-    text: string;
-    textEnabled: boolean;
-    fontName: string;
-  }) => void;
+  setSettings: (settings: ISettings) => void;
   show: boolean;
   textOnly: boolean;
-}> = ({ setSettings, show, textOnly }) => {
-  const [contrast, setContrast] = useState<number>(textOnly ? 0.12 : -0.12);
-  const [dither, setDither] = useState<boolean>(textOnly ? false : true);
-  const [invert, setInvert] = useState<boolean>(false);
-  const [textEnabled, setTextEnable] = useState<boolean>(false);
-  const [text, setText] = useState<string>("");
-  const [fontName, setfontName] = useState<string>(textOnly ? large : medium);
+  settings: ISettings;
+}> = ({ setSettings, show, textOnly, settings }) => {
+  const [contrast, setContrast] = useState<number>(settings.contrast);
+  const [dither, setDither] = useState<boolean>(settings.dither);
+  const [invert, setInvert] = useState<boolean>(settings.invert);
+  const [textEnabled, setTextEnable] = useState<boolean>(settings.textEnabled);
+  const [text, setText] = useState<string>(settings.text);
+  const [fontName, setfontName] = useState<string>(settings.fontName);
   const debouncedText = useDebounce(text, 250);
   useEffect(() => {
     setSettings({ contrast, dither, invert, text, textEnabled, fontName });
@@ -70,6 +72,15 @@ export const Settings: React.FC<{
     setDither(textOnly ? false : true);
     setContrast(textOnly ? 0.12 : -0.12);
   }, [textOnly]);
+  useEffect(() => {
+    if (textOnly) return;
+    setContrast(settings.contrast);
+    setDither(settings.dither);
+    setInvert(settings.invert);
+    setTextEnable(settings.textEnabled);
+    setText(settings.text);
+    setfontName(settings.fontName);
+  }, [settings]);
   return (
     <Wrapper show={show}>
       <Column>
@@ -125,10 +136,10 @@ export const Settings: React.FC<{
             defaultValue={fontName}
             onChange={(e) => setfontName(e.currentTarget.value)}
           >
-            <option value={smaller}>smaller</option>
-            <option value={small}>small</option>
-            <option value={medium}>medium</option>
-            <option value={large}>large</option>
+            <option value={fontSmaller}>smaller</option>
+            <option value={fontSmall}>small</option>
+            <option value={fontMedium}>medium</option>
+            <option value={fontLarge}>large</option>
           </StyledSelect>
         </Row>
       </Column>
