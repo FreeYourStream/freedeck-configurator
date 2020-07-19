@@ -169,7 +169,7 @@ export const Action: React.FC<{
           <SelectWrapper>
             <StyledSelect
               value={0}
-              onChange={(e) => setKeys([...keys, parseInt(e.target.value)])}
+              onChange={(e) => {if (keys.length < 7) setKeys([...keys, parseInt(e.target.value)])}}
             >
               <option key={0} value={0}>
                 Nothing
