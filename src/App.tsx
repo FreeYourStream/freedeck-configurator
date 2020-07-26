@@ -174,6 +174,7 @@ function App() {
     setAffectedPages([aPage, bPage]);
     setImageBuffers(newImages);
     setPageBuffers(newPages);
+    return undefined
   };
 
   const setRow = (
@@ -182,7 +183,6 @@ function App() {
     displayIndex: number,
     offset: number
   ) => {
-    console.log("setrow", pageIndex, displayIndex);
     const newPageBuffers = [...pageBuffers];
     const newPage = newPageBuffers[pageIndex];
     const newRowSlice = newPage.slice(

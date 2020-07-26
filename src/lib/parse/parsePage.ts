@@ -29,7 +29,7 @@ export const parseRow = (row: Buffer, offset = 0): IRow => {
   if (action === 0) {
     for (let i = 1; i < 8; i++) {
       const key = row.readUInt8(i + offset);
-      if (key != 0) keys.push(key);
+      if (key !== 0) keys.push(key);
     }
   }
   // special keys

@@ -1,17 +1,17 @@
 import Jimp from "jimp";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useDrag, useDrop } from "react-dnd";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
-import { useDrag, useDrop } from "react-dnd";
 
 import { composeImage, composeText } from "../lib/convertFile";
 import { handleFileSelect } from "../lib/fileSelect";
-import { IRow, parseRow } from "../lib/parse/parsePage";
+import { EAction, IRow, parseRow } from "../lib/parse/parsePage";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { Action } from "./Action";
-import { Settings, ISettings, fontLarge } from "./Settings";
-import { Modal } from "./modal";
 import { Column, Row } from "./lib/misc";
+import { Modal } from "./modal";
+import { ISettings, Settings, fontLarge } from "./Settings";
 
 const Wrapper = styled.div<{ opacity: number }>`
   opacity: ${(p) => p.opacity};
@@ -68,10 +68,10 @@ export const Display: React.FC<{
   images: Buffer[];
   addPage: () => number;
   setImage: (newImage: Buffer) => void;
-  setRow: (newRow: Buffer, offset: number, secondaryAction?: number) => void;
+  setRow: (newRow: Buffer, offset: number) => void;
   imageIndex: number;
   pages: number[];
-  switchDisplays: (aIndex: number, bIndex: number) => void;
+  switchDisplays: (aIndex: number, bIndex: number) => undefined;
 }> = ({
   rowBuffer,
   images,
@@ -108,8 +108,7 @@ export const Display: React.FC<{
   const [{ targetDisplayIndex }, drop] = useDrop({
     accept: "display",
     drop: (item, monitor): undefined => (
-      switchDisplays(targetDisplayIndex, monitor.getItem().imageIndex),
-      undefined
+      switchDisplays(targetDisplayIndex, monitor.getItem().imageIndex), undefined
     ),
     collect: () => ({ targetDisplayIndex: imageIndex }),
   });
@@ -133,14 +132,14 @@ export const Display: React.FC<{
     if (row) {
       setPreviewImage(getBase64Image(images, imageIndex));
     }
-  }, [row, images]);
+  }, [row, images, imageIndex]);
 
   useEffect(() => {
     if (row && convertedImageBuffer) {
       setPreviewImage(getBase64Image([convertedImageBuffer], 0));
       setImage(convertedImageBuffer);
     }
-  }, [convertedImageBuffer]);
+  }, [convertedImageBuffer, row]);
 
   useEffect(() => {
     (async () => {
@@ -192,6 +191,10 @@ export const Display: React.FC<{
     })();
   }, [croppedImage, settings]);
 
+  const hasSecondaryAction = useMemo(() => {
+    return secondary?.action !== EAction.noop
+  }, [secondary])
+
   const deleteImage = () => {
     setConvertedImageBuffer(new Buffer(1024));
     setNewImageFile(undefined);
@@ -199,13 +202,13 @@ export const Display: React.FC<{
     setPreviewImage(getBase64Image(images, imageIndex));
   };
 
-  const isBlack = useMemo(() => !images[imageIndex]?.find((val) => val !== 0), [
-    images,
-  ]);
-  const allowSettings = useMemo(
-    () => isBlack || !!newImageFile || !!settings?.text.length,
-    [isBlack, newImageFile, settings?.text]
-  );
+  // const isBlack = useMemo(() => !images[imageIndex]?.find((val) => val !== 0), [
+  //   images,
+  // ]);
+  // const allowSettings = useMemo(
+  //   () => isBlack || !!newImageFile || !!settings?.text.length,
+  //   [isBlack, newImageFile, settings]
+  // );
 
   return (
     <Wrapper ref={dragRef} opacity={opacity}>
@@ -237,8 +240,9 @@ export const Display: React.FC<{
           <Column>
             {row && (
               <Action
-                setNewRow={(newRow) => setNewRow(newRow, 0, secondary?.action)}
+                setNewRow={(newRow) => setNewRow(newRow, 0)}
                 pages={pages}
+                hasSecondaryAction={hasSecondaryAction}
                 title="Short Press"
                 loadMode={row.action}
                 loadKeys={row.keys}
@@ -253,6 +257,7 @@ export const Display: React.FC<{
               <Action
                 setNewRow={(newRow) => setNewRow(newRow, 8)}
                 pages={pages}
+                hasSecondaryAction={false}
                 title="Long Press"
                 loadMode={secondary.action}
                 loadKeys={secondary.keys}

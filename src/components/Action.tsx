@@ -1,20 +1,20 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { colors } from "../definitions/colors";
-import { EKeys, Keys, MediaKeys, EMediaKeys } from "../definitions/keys";
+import { EKeys, EMediaKeys, Keys, MediaKeys } from "../definitions/keys";
 import { EAction } from "../lib/parse/parsePage";
 import { scrollToPage } from "../lib/scrollToPage";
 import { FDButton } from "./lib/button";
 import {
+  CheckButton,
   Column,
   Label,
   MicroButton,
-  SelectWrapper,
   Row,
-  WrapRow,
-  CheckButton,
+  SelectWrapper,
   Title,
+  WrapRow,
 } from "./lib/misc";
 import { StyledSelect } from "./lib/misc";
 
@@ -36,7 +36,8 @@ export const Action: React.FC<{
   loadPage: number;
   title: string;
   loadUserInteraction: boolean;
-}> = ({ setNewRow, pages, loadMode, loadKeys, loadPage, addPage, title }) => {
+  hasSecondaryAction: boolean
+}> = ({ setNewRow, pages, loadMode, loadKeys, loadPage, addPage, title, hasSecondaryAction=false }) => {
   const [mode, setMode] = useState<EAction>(loadMode);
   const [goTo, setGoTo] = useState<number>(loadPage);
   const [alt, setAlt] = useState<boolean>(loadKeys.includes(0xe2));
@@ -60,15 +61,17 @@ export const Action: React.FC<{
         superKey: boolean;
       },
       keys: number[],
-      goTo: number
+      goTo: number,
+      hasSecondaryAction: boolean
     ) => {
+      const secondaryOffset = hasSecondaryAction?16:0
       if (mode === EAction.changeLayout) {
-        row.writeUInt8(1, 0);
+        row.writeUInt8(1+secondaryOffset, 0);
         row.writeInt16LE(goTo, 1);
         return row;
       } else if (mode === EAction.keyboard) {
         let i = 1;
-        row.writeUInt8(0, 0);
+        row.writeUInt8(0+secondaryOffset, 0);
         if (modifiers.ctrl) row.writeUInt8(0xe0, i++);
         if (modifiers.shift) row.writeUInt8(0xe1, i++);
         if (modifiers.alt) row.writeUInt8(0xe2, i++);
@@ -78,11 +81,11 @@ export const Action: React.FC<{
         });
         return row;
       } else if (mode === EAction.special_keys) {
-        row.writeUInt8(3, 0);
+        row.writeUInt8(3+secondaryOffset, 0);
         row.writeInt16LE(keys[0], 1);
         return row;
       } else if (mode === EAction.noop) {
-        row.writeUInt8(2, 0);
+        row.writeUInt8(2+secondaryOffset, 0);
         return row;
       }
     },
@@ -91,7 +94,7 @@ export const Action: React.FC<{
 
   useEffect(() => {
     const row = new Buffer(8);
-    buildNewRow(row, mode, { ctrl, shift, alt, superKey }, keys, goTo);
+    buildNewRow(row, mode, { ctrl, shift, alt, superKey }, keys, goTo, hasSecondaryAction);
     setNewRow(row);
   }, [mode, goTo, keys, ctrl, shift, alt, superKey]);
 

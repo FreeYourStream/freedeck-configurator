@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
+import styled from "styled-components";
 
 import { colors } from "../definitions/colors";
 import { parsePage } from "../lib/parse/parsePage";
@@ -91,7 +91,7 @@ interface IProps {
     offset: number
   ) => void;
   pageCount: number;
-  switchDisplays: (aIndex: number, bIndex: number) => void;
+  switchDisplays: (aIndex: number, bIndex: number) => undefined;
 }
 
 const PageComponent: React.FC<IProps> = ({
@@ -113,7 +113,7 @@ const PageComponent: React.FC<IProps> = ({
   useEffect(() => {
     const rows = parsePage(page);
     setRowBuffers(rows);
-  }, [JSON.stringify(page), imageCount, width, height]);
+  }, [page, imageCount, width, height]);
   return (
     <Wrapper id={`page_${pageIndex}`}>
       <Header>
@@ -136,12 +136,12 @@ const PageComponent: React.FC<IProps> = ({
               rowBuffer={rowBuffer}
               key={imageIndex}
               imageIndex={pageIndex * width * height + imageIndex}
-              setRow={(newRow, offset, secondaryAction) =>
+              setRow={(newRow, offset) =>
                 setRow(newRow, pageIndex, imageIndex, offset)
               }
               setImage={(newImage) => setImage(newImage, pageIndex, imageIndex)}
               pages={[...Array(pageCount).keys()].filter(
-                (pageNumber) => pageNumber != pageIndex
+                (pageNumber) => pageNumber !== pageIndex
               )}
               addPage={addPage}
               switchDisplays={switchDisplays}
@@ -154,9 +154,11 @@ const PageComponent: React.FC<IProps> = ({
 };
 
 export const Page = React.memo(PageComponent, (prev, next) => {
-  if (next.affected) return false;
-  if (prev.height !== next.height) return false;
-  if (prev.pageCount !== next.pageCount) return false;
-  if (prev.pageIndex !== next.pageIndex) return false;
-  return true;
+  // if (next.affected) return false;
+  // if (prev.height !== next.height) return false;
+  // if (prev.pageCount !== next.pageCount) return false;
+  // if (prev.pageIndex !== next.pageIndex) return false;
+  // if (prev.images)
+  // return true;
+  return false
 });
