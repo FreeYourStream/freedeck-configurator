@@ -4,6 +4,7 @@ import { useDrag, useDrop } from "react-dnd";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
 
+import { IDisplay } from "../App";
 import { composeImage, composeText } from "../lib/convertFile";
 import { handleFileSelect } from "../lib/fileSelect";
 import { EAction, IRow, parseRow } from "../lib/parse/parsePage";
@@ -64,39 +65,27 @@ const DropHere = styled.div`
 `;
 
 export const Display: React.FC<{
-  rowBuffer: Buffer;
-  images: Buffer[];
+  // rowBuffer: Buffer;
+  // images: Buffer[];
   addPage: () => number;
-  setImage: (newImage: Buffer) => void;
-  setRow: (newRow: Buffer, offset: number) => void;
+  // setImage: (newImage: Buffer) => void;
+  // setRow: (newRow: Buffer, offset: number) => void;
+  display: IDisplay
   imageIndex: number;
   pages: number[];
-  switchDisplays: (aIndex: number, bIndex: number) => undefined;
+  // switchDisplays: (aIndex: number, bIndex: number) => undefined;
 }> = ({
-  rowBuffer,
-  images,
+  // rowBuffer,
+  // images,
   addPage,
-  setImage,
-  setRow: setNewRow,
+  // setImage,
+  // setRow: setNewRow,
+  display,
   imageIndex,
   pages,
-  switchDisplays,
+  // switchDisplays,
   // connectDragSource,
 }) => {
-  const [row, setRow] = useState<IRow>();
-  const [secondary, setSecondary] = useState<IRow>();
-  const [previewImage, setPreviewImage] = useState<string>("");
-  const [newImageFile, setNewImageFile] = useState<File>();
-  const [convertedImageBuffer, setConvertedImageBuffer] = useState<Buffer>();
-  const [croppedImage, setCroppedImage] = useState<Jimp>();
-  const [settings, setSettings] = useState<ISettings>({
-    contrast: -0.12,
-    dither: false,
-    fontName: fontLarge,
-    invert: false,
-    text: "",
-    textEnabled: false,
-  });
   const [showSettings, setShowSettings] = useState<boolean>(false);
 
   const [{ opacity }, dragRef] = useDrag({
@@ -108,99 +97,50 @@ export const Display: React.FC<{
   const [{ targetDisplayIndex }, drop] = useDrop({
     accept: "display",
     drop: (item, monitor): undefined => (
-      switchDisplays(targetDisplayIndex, monitor.getItem().imageIndex), undefined
+      // switchDisplays(targetDisplayIndex, monitor.getItem().imageIndex), undefined
+      undefined
     ),
     collect: () => ({ targetDisplayIndex: imageIndex }),
   });
 
   const onDrop = useCallback((acceptedFiles) => {
-    setNewImageFile(acceptedFiles[0]);
+    // setNewImageFile(acceptedFiles[0]);
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: [".jpg", ".jpeg", ".png"],
   });
 
-  useEffect(() => {
-    const parsedRow = parseRow(rowBuffer);
-    const parsedSecondary = parseRow(rowBuffer, 8);
-    setRow(parsedRow);
-    setSecondary(parsedSecondary);
-  }, [rowBuffer]);
-
-  useEffect(() => {
-    if (row) {
-      setPreviewImage(getBase64Image(images, imageIndex));
-    }
-  }, [row, images, imageIndex]);
-
-  useEffect(() => {
-    if (row && convertedImageBuffer) {
-      setPreviewImage(getBase64Image([convertedImageBuffer], 0));
-      setImage(convertedImageBuffer);
-    }
-  }, [convertedImageBuffer, row]);
-
-  useEffect(() => {
-    (async () => {
-      if (newImageFile) {
-        const arrayBuffer = await handleFileSelect(newImageFile);
-        const image = await Jimp.read(Buffer.from(arrayBuffer));
-        image.scaleToFit(256, 128);
-        setCroppedImage(image);
-        setSettings({ ...settings, dither: true, contrast: -0.12 });
-      } else {
-        setSettings({
-          ...settings,
-          dither: false,
-          invert: false,
-          contrast: 0.12,
-        });
-      }
-    })();
-  }, [newImageFile]);
-
-  useEffect(() => {
-    (async () => {
-      if (croppedImage) {
-        (async () => {
-          const buffer = await composeImage(
-            croppedImage,
-            128,
-            64,
-            settings.contrast,
-            settings.invert,
-            settings.dither,
-            settings.textEnabled,
-            settings.text,
-            settings.fontName
-          );
-          setConvertedImageBuffer(buffer);
-        })();
-      } else if (settings.text.length) {
-        const buffer = await composeText(
-          128,
-          64,
-          settings.dither,
-          settings.text,
-          settings.fontName,
-          settings.contrast
-        );
-        setConvertedImageBuffer(buffer);
-      }
-    })();
-  }, [croppedImage, settings]);
-
-  const hasSecondaryAction = useMemo(() => {
-    return secondary?.action !== EAction.noop
-  }, [secondary])
-
-  const deleteImage = () => {
-    setConvertedImageBuffer(new Buffer(1024));
-    setNewImageFile(undefined);
-    setCroppedImage(undefined);
-    setPreviewImage(getBase64Image(images, imageIndex));
-  };
+  // useEffect(() => {
+  //   (async () => {
+  //     if (croppedImage) {
+  //       (async () => {
+  //         const buffer = await composeImage(
+  //           croppedImage,
+  //           128,
+  //           64,
+  //           settings.contrast,
+  //           settings.invert,
+  //           settings.dither,
+  //           settings.textEnabled,
+  //           settings.text,
+  //           settings.fontName
+  //         );
+  //         setConvertedImageBuffer(buffer);
+  //       })();
+  //     } else if (settings.text.length) {
+  //       const buffer = await composeText(
+  //         128,
+  //         64,
+  //         settings.dither,
+  //         settings.text,
+  //         settings.fontName,
+  //         settings.contrast
+  //       );
+  //       setConvertedImageBuffer(buffer);
+  //     }
+  //   })();
+  // }, [croppedImage, settings]);
 
   // const isBlack = useMemo(() => !images[imageIndex]?.find((val) => val !== 0), [
   //   images,
@@ -212,56 +152,52 @@ export const Display: React.FC<{
 
   return (
     <Wrapper ref={dragRef} opacity={opacity}>
-      <ImagePreview
+      {/* <ImagePreview
         ref={drop}
         multiplier={1}
         onClick={() => setShowSettings(true)}
         src={previewImage}
-      />
+      /> */}
       <Modal visible={showSettings} setClose={() => setShowSettings(false)}>
         <DropWrapper>
-          <DeleteImage src="close.png" onClick={deleteImage} />
+          <DeleteImage src="close.png" onClick={(...args) => undefined} />
           <Drop {...getRootProps()}>
             <input {...getInputProps()} />
             {isDragActive ? (
               <DropHere>Drop Here</DropHere>
             ) : (
-              <ImagePreview multiplier={2} src={previewImage} />
+              <ImagePreview multiplier={2} />
             )}
           </Drop>
         </DropWrapper>
         <Settings
-          textOnly={!newImageFile}
+          textOnly={!display.imageIsConverted}
           show={showSettings}
-          setSettings={setSettings}
-          settings={settings}
+          setSettings={(...args) => console.log('setsettings', args)}
+          settings={display.iconSettings}
+          text={display.text}
+          setText={(...args) => console.log('setText', args)}
+          setTextSettings={(...args) => console.log('setTextSettings', args)}
+          textSettings={display.textWithIconSettings}
         />
         <Row>
           <Column>
-            {row && (
+            {display && (
               <Action
-                setNewRow={(newRow) => setNewRow(newRow, 0)}
+                setNewRow={(newRow) => console.log('set new row', newRow) }
                 pages={pages}
-                hasSecondaryAction={hasSecondaryAction}
-                title="Short Press"
-                loadMode={row.action}
-                loadKeys={row.keys}
-                loadPage={row.page}
+                action={display.actionSettings.primary}
                 addPage={addPage}
                 loadUserInteraction={false}
               />
             )}
           </Column>
           <Column>
-            {secondary && (
+            {display.actionSettings.secondary.enabled && (
               <Action
-                setNewRow={(newRow) => setNewRow(newRow, 8)}
+                setNewRow={(newRow) => console.log('set new row', newRow) }
                 pages={pages}
-                hasSecondaryAction={false}
-                title="Long Press"
-                loadMode={secondary.action}
-                loadKeys={secondary.keys}
-                loadPage={secondary.page}
+                action={display.actionSettings.secondary}
                 addPage={addPage}
                 loadUserInteraction={false}
               />

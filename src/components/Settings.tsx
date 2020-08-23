@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 
+import { IDisplay } from "../App";
 import { colors } from "../definitions/colors";
 import useDebounce from "../lib/useDebounce";
-import { StyledSelect, Row } from "./lib/misc";
 import { FDButton } from "./lib/button";
+import { Row, StyledSelect } from "./lib/misc";
 import {
+  CheckButton,
   Column,
   Disabler,
-  Title,
   Label,
-  TextInput,
-  CheckButton,
   MicroButton,
+  TextInput,
+  Title,
 } from "./lib/misc";
 
 export const fontSmaller = "fonts/smaller.fnt";
@@ -53,85 +54,125 @@ export interface ISettings {
 }
 
 export const Settings: React.FC<{
-  setSettings: (settings: ISettings) => void;
+  setSettings: (settings: IDisplay["iconSettings"]) => void;
+  setTextSettings: (settings: IDisplay['textWithIconSettings']) => void;
   show: boolean;
   textOnly: boolean;
-  settings: ISettings;
-}> = ({ setSettings, show, textOnly, settings }) => {
-  const [contrast, setContrast] = useState<number>(settings.contrast);
-  const [dither, setDither] = useState<boolean>(settings.dither);
-  const [invert, setInvert] = useState<boolean>(settings.invert);
-  const [textEnabled, setTextEnable] = useState<boolean>(settings.textEnabled);
-  const [text, setText] = useState<string>(settings.text);
-  const [fontName, setfontName] = useState<string>(settings.fontName);
-  const debouncedText = useDebounce(text, 250);
+  settings: IDisplay["iconSettings"];
+  textSettings: IDisplay['textWithIconSettings']
+  text: IDisplay['text']
+  setText: (text: string) => void
+}> = ({ setSettings, show, textOnly, settings, setTextSettings, text, textSettings, setText: setTextValue }) => {
+  // const [contrast, setContrast] = useState<number>(settings.contrast);
+  // const [dither, setDither] = useState<boolean>(settings.dither);
+  // const [invert, setInvert] = useState<boolean>(settings.invert);
+  // const [textEnabled, setTextEnable] = useState<boolean>(settings.textEnabled);
+  // const [text, setText] = useState<string>(settings.text);
+  // const [fontName, setfontName] = useState<string>(settings.fontName);
+  // const debouncedText = useDebounce(text, 250);
 
-  useEffect(() => {
-    setSettings({ contrast, dither, invert, text, textEnabled, fontName });
-  }, [contrast, dither, invert, debouncedText, textEnabled, fontName]);
+  // useEffect(() => {
+  //   setSettings({ contrast, dither, invert, text, textEnabled, fontName });
+  // }, [contrast, dither, invert, debouncedText, textEnabled, fontName]);
 
-  useEffect(() => {
-    if (textOnly) return;
-    setContrast(settings.contrast);
-    setDither(settings.dither);
-    setInvert(settings.invert);
-    setTextEnable(settings.textEnabled);
-    setText(settings.text);
-    setfontName(settings.fontName);
-  }, [settings]);
+  // useEffect(() => {
+  //   if (textOnly) return;
+  //   setContrast(settings.contrast);
+  //   setDither(settings.dither);
+  //   setInvert(settings.invert);
+  //   setTextEnable(settings.textEnabled);
+  //   setText(settings.text);
+  //   setfontName(settings.fontName);
+  // }, [settings]);
+  const setContrast = useCallback(
+    (contrast: number) => {
+      setSettings({ ...settings, contrast });
+    },
+    [settings, setSettings]
+  );
+  const setInvert = useCallback(
+    (invert: boolean) => {
+      setSettings({ ...settings, invert });
+    },
+    [settings, setSettings]
+  );
+  const setDither = useCallback(
+    (dither: any) => {
+      setSettings({ ...settings, dither });
+    },
+    [settings, setSettings]
+  );
+  const setTextEnable = useCallback(
+    (enabled: boolean) => {
+      setTextSettings({ ...textSettings, enabled });
+    },
+    [textSettings, setTextSettings]
+  );
+  const setfontName = useCallback(
+    (font: string) => {
+      setTextSettings({ ...textSettings, font });
+    },
+    [textSettings, setTextSettings]
+  );
+  const setText = useCallback(
+    (text: string) => {
+      setTextValue(text)
+    },
+    [text, setTextValue]
+  );
   return (
     <Wrapper show={show}>
       <Column>
         <Disabler
           disable={textOnly}
-          title="These options are disable. Load an image by clicking on the black box or just enter some text"
+          title="These options are disabled. Load an image by clicking on the black box or just enter some text"
         />
         <Title>Image Settings</Title>
         <Row>
           <Label>Contrast</Label>
-          <ContrastValue>{contrast.toFixed(2)}</ContrastValue>
+          <ContrastValue>{settings.contrast.toFixed(2)}</ContrastValue>
         </Row>
         <Row>
           <MicroButton
-            onClick={() => setContrast(clamp(contrast + 0.1, -1, 1))}
+            onClick={() => setContrast(clamp(settings.contrast + 0.1, -1, 1))}
           >
             ++
           </MicroButton>
           <MicroButton
-            onClick={() => setContrast(clamp(contrast + 0.02, -1, 1))}
+            onClick={() => setContrast(clamp(settings.contrast + 0.02, -1, 1))}
           >
             +
           </MicroButton>
           <MicroButton
-            onClick={() => setContrast(clamp(contrast - 0.02, -1, 1))}
+            onClick={() => setContrast(clamp(settings.contrast - 0.02, -1, 1))}
           >
             -
           </MicroButton>
           <MicroButton
-            onClick={() => setContrast(clamp(contrast - 0.1, -1, 1))}
+            onClick={() => setContrast(clamp(settings.contrast - 0.1, -1, 1))}
           >
             --
           </MicroButton>
         </Row>
         <Row>
-          <MicroToggle width="48%" onClick={() => setInvert(!invert)}>
+          <MicroToggle width="48%" onClick={() => setInvert(!settings.invert)}>
             Invert
           </MicroToggle>
 
-          <MicroToggle width="48%" onClick={() => setDither(!dither)}>
+          <MicroToggle width="48%" onClick={() => setDither(!settings.dither)}>
             Dither
           </MicroToggle>
         </Row>
         <Row>
           <EnableTextButton
-            uff={textEnabled}
+            uff={textSettings.enabled}
             width="33%"
-            onClick={(e) => setTextEnable(!textEnabled)}
+            onClick={(e) => setTextEnable(!textSettings.enabled)}
           >
             Text
           </EnableTextButton>
           <StyledSelect
-            defaultValue={fontName}
+            defaultValue={textSettings.font}
             onChange={(e) => setfontName(e.currentTarget.value)}
           >
             <option value={fontSmaller}>smaller</option>
@@ -148,7 +189,7 @@ export const Settings: React.FC<{
           <TextInput
             placeholder={"Enter text"}
             value={text}
-            onChange={(e) => setText(e.currentTarget.value)}
+            onChange={(e) => setTextValue(e.currentTarget.value)}
           />
         </Row>
       </Column>

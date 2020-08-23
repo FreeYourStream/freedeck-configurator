@@ -3,6 +3,7 @@ import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
 import styled from "styled-components";
 
+import { IPage } from "../App";
 import { colors } from "../definitions/colors";
 import { parsePage } from "../lib/parse/parsePage";
 import { Display } from "./Display";
@@ -76,44 +77,38 @@ const Grid = styled.div<{ width: number; height: number }>`
 
 interface IProps {
   pageIndex: number;
-  affected: boolean;
+  // affected: boolean;
   width: number;
   height: number;
-  page: Buffer;
-  images: Buffer[];
-  deletePage: (pageIndex: number) => void;
+  page: IPage;
+  // images: Buffer[];
+  // deletePage: (pageIndex: number) => void;
   addPage: () => number;
-  setImage: (newImage: Buffer, pageIndex: number, displayIndex: number) => void;
-  setRow: (
-    newRow: Buffer,
-    pageIndex: number,
-    displayIndex: number,
-    offset: number
-  ) => void;
+  // setImage: (newImage: Buffer, pageIndex: number, displayIndex: number) => void;
+  // setRow: (
+  //   newRow: Buffer,
+  //   pageIndex: number,
+  //   displayIndex: number,
+  //   offset: number
+  // ) => void;
   pageCount: number;
-  switchDisplays: (aIndex: number, bIndex: number) => undefined;
+  // switchDisplays: (aIndex: number, bIndex: number) => undefined;
 }
 
 const PageComponent: React.FC<IProps> = ({
   pageIndex,
-  affected,
+  // affected,
   width,
   height,
-  images,
+  // images,
   page,
-  setImage,
-  setRow,
-  deletePage,
+  // setImage,
+  // setRow,
+  // deletePage,
   addPage,
   pageCount,
-  switchDisplays,
+  // switchDisplays,
 }) => {
-  const [rowBuffers, setRowBuffers] = useState<Buffer[]>([]);
-  const imageCount = width * height;
-  useEffect(() => {
-    const rows = parsePage(page);
-    setRowBuffers(rows);
-  }, [page, imageCount, width, height]);
   return (
     <Wrapper id={`page_${pageIndex}`}>
       <Header>
@@ -124,27 +119,27 @@ const PageComponent: React.FC<IProps> = ({
             const deleteConfirmed = window.confirm(
               "Do you really want to delete this page forever?"
             );
-            if (deleteConfirmed) deletePage(pageIndex);
+            // if (deleteConfirmed) deletePage(pageIndex);
           }}
         />
       </Header>
       <Grid height={height} width={width}>
         <DndProvider backend={Backend}>
-          {rowBuffers.map((rowBuffer, imageIndex) => (
+          {page.displays.map((display, imageIndex) => (
             <Display
-              images={images}
-              rowBuffer={rowBuffer}
+              // images={images}
+              display={display}
               key={imageIndex}
               imageIndex={pageIndex * width * height + imageIndex}
-              setRow={(newRow, offset) =>
-                setRow(newRow, pageIndex, imageIndex, offset)
-              }
-              setImage={(newImage) => setImage(newImage, pageIndex, imageIndex)}
+              // setRow={(newRow, offset) =>
+              //   setRow(newRow, pageIndex, imageIndex, offset)
+              // }
+              // setImage={(newImage) => setImage(newImage, pageIndex, imageIndex)}
               pages={[...Array(pageCount).keys()].filter(
                 (pageNumber) => pageNumber !== pageIndex
               )}
               addPage={addPage}
-              switchDisplays={switchDisplays}
+              // switchDisplays={switchDisplays}
             />
           ))}
         </DndProvider>

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 
+import { IDisplay } from "../App";
 import { colors } from "../definitions/colors";
 import { EKeys, EMediaKeys, Keys, MediaKeys } from "../definitions/keys";
 import { EAction } from "../lib/parse/parsePage";
@@ -31,24 +32,20 @@ export const Action: React.FC<{
   setNewRow: (newRow: Buffer) => void;
   addPage: () => number;
   pages: number[];
-  loadMode: EAction;
-  loadKeys: number[];
-  loadPage: number;
-  title: string;
+  action: IDisplay['actionSettings']['primary'] | IDisplay['actionSettings']['secondary']
   loadUserInteraction: boolean;
-  hasSecondaryAction: boolean
-}> = ({ setNewRow, pages, loadMode, loadKeys, loadPage, addPage, title, hasSecondaryAction=false }) => {
-  const [mode, setMode] = useState<EAction>(loadMode);
-  const [goTo, setGoTo] = useState<number>(loadPage);
-  const [alt, setAlt] = useState<boolean>(loadKeys.includes(0xe2));
-  const [ctrl, setCtrl] = useState<boolean>(loadKeys.includes(0xe0));
-  const [shift, setShift] = useState<boolean>(loadKeys.includes(0xe1));
-  const [superKey, setSuper] = useState<boolean>(loadKeys.includes(0xe3));
-  const [keys, setKeys] = useState<number[]>(
-    loadKeys?.filter(
-      (key) => key !== 0xe2 && key !== 0xe0 && key !== 0xe1 && key !== 0xe3
-    ) ?? []
-  );
+}> = ({ setNewRow, pages, action, addPage }) => {
+  // const [mode, setMode] = useState<EAction>(loadMode);
+  // const [goTo, setGoTo] = useState<number>(loadPage);
+  // const [alt, setAlt] = useState<boolean>(loadKeys.includes(0xe2));
+  // const [ctrl, setCtrl] = useState<boolean>(loadKeys.includes(0xe0));
+  // const [shift, setShift] = useState<boolean>(loadKeys.includes(0xe1));
+  // const [superKey, setSuper] = useState<boolean>(loadKeys.includes(0xe3));
+  // const [keys, setKeys] = useState<number[]>(
+  //   loadKeys?.filter(
+  //     (key) => key !== 0xe2 && key !== 0xe0 && key !== 0xe1 && key !== 0xe3
+  //   ) ?? []
+  // );
 
   const buildNewRow = useCallback(
     (
@@ -92,39 +89,39 @@ export const Action: React.FC<{
     []
   );
 
-  useEffect(() => {
-    const row = new Buffer(8);
-    buildNewRow(row, mode, { ctrl, shift, alt, superKey }, keys, goTo, hasSecondaryAction);
-    setNewRow(row);
-  }, [mode, goTo, keys, ctrl, shift, alt, superKey]);
+  // useEffect(() => {
+  //   const row = new Buffer(8);
+  //   buildNewRow(row, mode, { ctrl, shift, alt, superKey }, keys, goTo, hasSecondaryAction);
+  //   setNewRow(row);
+  // }, [mode, goTo, keys, ctrl, shift, alt, superKey]);
 
-  useEffect(() => {
-    if (loadMode !== mode) {
-      setMode(loadMode);
-    }
-  }, [loadMode]);
+  // useEffect(() => {
+  //   if (loadMode !== mode) {
+  //     setMode(loadMode);
+  //   }
+  // }, [loadMode]);
 
-  useEffect(() => {
-    if (loadKeys?.[loadKeys.length - 1]) {
-      setKeys(
-        loadKeys?.filter(
-          (key) => key !== 0xe2 && key !== 0xe0 && key !== 0xe1 && key !== 0xe3
-        ) ?? []
-      );
-    }
-  }, [loadKeys]);
+  // useEffect(() => {
+  //   if (loadKeys?.[loadKeys.length - 1]) {
+  //     setKeys(
+  //       loadKeys?.filter(
+  //         (key) => key !== 0xe2 && key !== 0xe0 && key !== 0xe1 && key !== 0xe3
+  //       ) ?? []
+  //     );
+  //   }
+  // }, [loadKeys]);
 
-  useEffect(() => {
-    setGoTo(loadPage);
-  }, [loadPage]);
+  // useEffect(() => {
+  //   setGoTo(loadPage);
+  // }, [loadPage]);
 
   return (
     <Wrapper>
-      <Title>{title}</Title>
+      <Title>{'UFFF'}</Title>
       <SelectWrapper>
         <StyledSelect
-          value={mode}
-          onChange={(e) => setMode(parseInt(e.target.value))}
+          value={action.mode}
+          onChange={(e) => console.log('setMode', parseInt(e.target.value))}
         >
           <option value="0">Send Keys</option>
           <option value="3">Special Keys</option>
@@ -132,37 +129,15 @@ export const Action: React.FC<{
           <option value="2">Do nothing</option>
         </StyledSelect>
       </SelectWrapper>
-      {mode === 0 && (
+      {action.mode === 0 && (
         <>
-          <Row>
-            <CheckButton width="24%" uff={ctrl} onClick={(e) => setCtrl(!ctrl)}>
-              Ctrl
-            </CheckButton>
-            <CheckButton
-              width="24%"
-              uff={shift}
-              onClick={(e) => setShift(!shift)}
-            >
-              Shift
-            </CheckButton>
-            <CheckButton width="24%" uff={alt} onClick={(e) => setAlt(!alt)}>
-              Alt
-            </CheckButton>
-            <CheckButton
-              width="24%"
-              uff={superKey}
-              onClick={(e) => setSuper(!superKey)}
-            >
-              Win
-            </CheckButton>
-          </Row>
           <WrapRow>
-            {keys.map((key, index) => (
+            {action.values.map((key, index) => (
               <MicroButton
                 onClick={() => {
-                  const newKeys = [...keys];
+                  const newKeys = [...action.values];
                   newKeys.splice(index, 1);
-                  setKeys(newKeys.slice(0, 7));
+                  // setKeys(newKeys.slice(0, 7));
                 }}
               >
                 {EKeys[key].toString()}
@@ -172,7 +147,7 @@ export const Action: React.FC<{
           <SelectWrapper>
             <StyledSelect
               value={0}
-              onChange={(e) => {if (keys.length < 7) setKeys([...keys, parseInt(e.target.value)])}}
+              onChange={(e) => {if (action.values.length < 7) /*setKeys*/console.log([...action.values, parseInt(e.target.value)])}}
             >
               <option key={0} value={0}>
                 Nothing
@@ -187,13 +162,13 @@ export const Action: React.FC<{
           </SelectWrapper>
         </>
       )}
-      {mode === 1 && (
+      {action.mode === 1 && (
         <>
           {pages.length ? (
             <SelectWrapper>
               <StyledSelect
-                value={goTo}
-                onChange={(e) => setGoTo(parseInt(e.target.value))}
+                value={action.values[0]}
+                onChange={(e) => /*setGoTo*/console.log(parseInt(e.target.value))}
               >
                 <option value={-1}>Select Page</option>
                 {pages.map((pageNumber) => (
@@ -204,23 +179,23 @@ export const Action: React.FC<{
               </StyledSelect>
             </SelectWrapper>
           ) : null}
-          {goTo === -1 ? (
-            <SmallButton size={1} onClick={() => setGoTo(addPage())}>
+          {!action.values?.length ? (
+            <SmallButton size={1} onClick={() => /*setGoTo*/console.log(addPage())}>
               Add Page +
             </SmallButton>
           ) : (
-            <SmallButton size={1} onClick={() => scrollToPage(goTo)}>
-              Scroll To {goTo}
+            <SmallButton size={1} onClick={() => scrollToPage(action.values[0])}>
+              Scroll To {action.values[0]}
             </SmallButton>
           )}
         </>
       )}
-      {mode === 3 && (
+      {action.mode === 3 && (
         <>
           <SelectWrapper>
             <StyledSelect
-              value={keys[0]}
-              onChange={(e) => setKeys([parseInt(e.target.value)])}
+              value={action.values[0]}
+              onChange={(e) => /*setKeys*/console.log([parseInt(e.target.value)])}
             >
               <option key={0} value={0}>
                 Nothing

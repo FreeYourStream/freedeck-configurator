@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
 import { FDButton } from "./components/lib/button";
@@ -6,11 +6,13 @@ import { Page } from "./components/Page";
 import { HEADER_SIZE, ROW_SIZE } from "./constants";
 import { colors } from "./definitions/colors";
 import { BACK_IMAGE } from "./definitions/defaultBackImage";
+import { getDefaultPage } from "./definitions/defaultPage";
 import defaultRowBuffer from "./definitions/defaultRowBuffer";
 import { optimizeForSSD1306 } from "./lib/convertFile";
 import { download } from "./lib/download";
 import { handleFileSelect } from "./lib/fileSelect";
 import { parseConfig } from "./lib/parse/parseConfig";
+import { EAction } from "./lib/parse/parsePage";
 
 const Main = styled.div`
   * {
@@ -120,6 +122,39 @@ const SaveConfigFile = styled(FDButton)``;
 
 const AddPage = styled(FDButton)``;
 
+export interface IPrimaryActionSetting {
+  mode: EAction;
+  values: number[];
+}
+export interface ISecondaryActionSetting extends IPrimaryActionSetting {
+  enabled: boolean
+}
+
+export interface ITextWithIconSettings {
+  font: string;
+  enabled: boolean;
+}
+
+export interface IIconSettings {
+  dither: boolean;
+  contrast: number;
+  invert: boolean;
+}
+
+export interface IDisplay {
+  imageIsConverted: boolean
+  text: string
+  textWithIconSettings: ITextWithIconSettings
+  iconSettings: IIconSettings
+  actionSettings: {
+    primary: IPrimaryActionSetting
+    secondary: ISecondaryActionSetting
+  }
+}
+export interface IPage {
+  displays: IDisplay[]
+}
+
 export interface IConfig {
   width: number;
   height: number;
@@ -130,129 +165,136 @@ export interface IConfig {
 function App() {
   const [height, setHeight] = useState<number>(2);
   const [width, setWidth] = useState<number>(3);
-  const [pageBuffers, setPageBuffers] = useState<Buffer[]>([]);
-  const [imageBuffers, setImageBuffers] = useState<Buffer[]>([]);
-  const [affectedPages, setAffectedPages] = useState<number[]>();
-  const setImage = (
-    newImage: Buffer,
-    pageIndex: number,
-    displayIndex: number
-  ) => {
-    const newImages = [...imageBuffers];
-    newImages[width * height * pageIndex + displayIndex] = newImage;
-    setAffectedPages([pageIndex]);
-    setImageBuffers(newImages);
-  };
+  const [pages, setPages] = useState<IPage[]>([]);
+  const [originalImages, setOriginalImages] = useState<Buffer[]>([]);
+  // const [pageBuffers, setPageBuffers] = useState<Buffer[]>([]);
+  // const [imageBuffers, setImageBuffers] = useState<Buffer[]>([]);
+  // const [affectedPages, setAffectedPages] = useState<number[]>();
+  console.log(pages[0])
+  const addPage = useCallback((previousPageIndex?: number) => {
+    setPages([...pages, getDefaultPage(height, width, previousPageIndex)])
+    return pages.length
+  }, [pages, height, width])
+  // const setImage = (
+  //   newImage: Buffer,
+  //   pageIndex: number,
+  //   displayIndex: number
+  // ) => {
+  //   const newImages = [...imageBuffers];
+  //   newImages[width * height * pageIndex + displayIndex] = newImage;
+  //   setAffectedPages([pageIndex]);
+  //   setImageBuffers(newImages);
+  // };
 
-  const switchDisplays = (aIndex: number, bIndex: number) => {
-    const aPage = Math.floor(aIndex / (width * height));
-    const aPageIndex = aIndex % (width * height);
+  // const switchDisplays = (aIndex: number, bIndex: number) => {
+  //   const aPage = Math.floor(aIndex / (width * height));
+  //   const aPageIndex = aIndex % (width * height);
 
-    const bPage = Math.floor(bIndex / (width * height));
-    const bPageIndex = bIndex % (width * height);
+  //   const bPage = Math.floor(bIndex / (width * height));
+  //   const bPageIndex = bIndex % (width * height);
 
-    let newImages: Buffer[] = [...imageBuffers];
-    [newImages[aIndex], newImages[bIndex]] = [
-      newImages[bIndex],
-      newImages[aIndex],
-    ];
+  //   let newImages: Buffer[] = [...imageBuffers];
+  //   [newImages[aIndex], newImages[bIndex]] = [
+  //     newImages[bIndex],
+  //     newImages[aIndex],
+  //   ];
 
-    let newPages = [...pageBuffers];
-    const aContent = Buffer.from(
-      newPages[aPage].slice(aPageIndex * ROW_SIZE, (aPageIndex + 1) * ROW_SIZE)
-    );
-    newPages[aPage].set(
-      Buffer.from(
-        newPages[aPage].slice(
-          bPageIndex * ROW_SIZE,
-          (bPageIndex + 1) * ROW_SIZE
-        )
-      ),
-      aPageIndex * ROW_SIZE
-    );
-    newPages[aPage].set(aContent, bPageIndex * ROW_SIZE);
-    setAffectedPages([aPage, bPage]);
-    setImageBuffers(newImages);
-    setPageBuffers(newPages);
-    return undefined
-  };
+  //   let newPages = [...pageBuffers];
+  //   const aContent = Buffer.from(
+  //     newPages[aPage].slice(aPageIndex * ROW_SIZE, (aPageIndex + 1) * ROW_SIZE)
+  //   );
+  //   newPages[aPage].set(
+  //     Buffer.from(
+  //       newPages[aPage].slice(
+  //         bPageIndex * ROW_SIZE,
+  //         (bPageIndex + 1) * ROW_SIZE
+  //       )
+  //     ),
+  //     aPageIndex * ROW_SIZE
+  //   );
+  //   newPages[aPage].set(aContent, bPageIndex * ROW_SIZE);
+  //   setAffectedPages([aPage, bPage]);
+  //   setImageBuffers(newImages);
+  //   setPageBuffers(newPages);
+  //   return undefined
+  // };
 
-  const setRow = (
-    newRow: Buffer,
-    pageIndex: number,
-    displayIndex: number,
-    offset: number
-  ) => {
-    const newPageBuffers = [...pageBuffers];
-    const newPage = newPageBuffers[pageIndex];
-    const newRowSlice = newPage.slice(
-      displayIndex * ROW_SIZE,
-      (displayIndex + 1) * ROW_SIZE
-    );
-    newRowSlice.set(newRow, offset);
-    setAffectedPages([pageIndex]);
-    setPageBuffers(newPageBuffers);
-  };
+  // const setRow = (
+  //   newRow: Buffer,
+  //   pageIndex: number,
+  //   displayIndex: number,
+  //   offset: number
+  // ) => {
+  //   const newPageBuffers = [...pageBuffers];
+  //   const newPage = newPageBuffers[pageIndex];
+  //   const newRowSlice = newPage.slice(
+  //     displayIndex * ROW_SIZE,
+  //     (displayIndex + 1) * ROW_SIZE
+  //   );
+  //   newRowSlice.set(newRow, offset);
+  //   setAffectedPages([pageIndex]);
+  //   setPageBuffers(newPageBuffers);
+  // };
 
-  const deletePage = (pageIndex: number) => {
-    const pageSize = width * height;
+  // const deletePage = (pageIndex: number) => {
+  //   const pageSize = width * height;
 
-    const newImages = [...imageBuffers];
-    newImages.splice(pageSize * pageIndex, pageSize);
-    setImageBuffers(newImages);
+  //   const newImages = [...imageBuffers];
+  //   newImages.splice(pageSize * pageIndex, pageSize);
+  //   setImageBuffers(newImages);
 
-    const newPages = [...pageBuffers];
-    const affectedPages: number[] = [];
-    newPages.splice(pageIndex, 1);
-    newPages.forEach((newPage) => {
-      for (let i = 0; i < width * height; i++) {
-        if (newPage.readUInt8(i * ROW_SIZE) === 1) {
-          const oldValuePrimary = newPage.readInt16LE(i * ROW_SIZE + 1);
-          const oldValueSecondary = newPage.readInt16LE(i * ROW_SIZE + 9);
-          if (oldValuePrimary >= pageIndex) {
-            affectedPages.push(pageIndex);
-            newPage.writeInt16LE(oldValuePrimary - 1, i * ROW_SIZE + 1);
-          }
-          if (oldValueSecondary >= pageIndex) {
-            affectedPages.push(pageIndex);
-            newPage.writeInt16LE(oldValueSecondary - 1, i * ROW_SIZE + 9);
-          }
-        }
-      }
-    });
-    setAffectedPages(affectedPages);
-    setPageBuffers(newPages);
-  };
+  //   const newPages = [...pageBuffers];
+  //   const affectedPages: number[] = [];
+  //   newPages.splice(pageIndex, 1);
+  //   newPages.forEach((newPage) => {
+  //     for (let i = 0; i < width * height; i++) {
+  //       if (newPage.readUInt8(i * ROW_SIZE) === 1) {
+  //         const oldValuePrimary = newPage.readInt16LE(i * ROW_SIZE + 1);
+  //         const oldValueSecondary = newPage.readInt16LE(i * ROW_SIZE + 9);
+  //         if (oldValuePrimary >= pageIndex) {
+  //           affectedPages.push(pageIndex);
+  //           newPage.writeInt16LE(oldValuePrimary - 1, i * ROW_SIZE + 1);
+  //         }
+  //         if (oldValueSecondary >= pageIndex) {
+  //           affectedPages.push(pageIndex);
+  //           newPage.writeInt16LE(oldValueSecondary - 1, i * ROW_SIZE + 9);
+  //         }
+  //       }
+  //     }
+  //   });
+  //   setAffectedPages(affectedPages);
+  //   setPageBuffers(newPages);
+  // };
 
-  const loadConfigFile = (configFile: File) =>
-    handleFileSelect(configFile).then((arrayBuffer) => {
-      const config = parseConfig(Buffer.from(arrayBuffer));
-      const affectedPages = [...new Array(config.pageCount).keys()];
-      setAffectedPages(affectedPages);
-      setHeight(config.height);
-      setWidth(config.width);
-      setPageBuffers(config.pages);
-      setImageBuffers(config.images);
-    });
+  // const loadConfigFile = (configFile: File) =>
+  //   handleFileSelect(configFile).then((arrayBuffer) => {
+  //     const config = parseConfig(Buffer.from(arrayBuffer));
+  //     const affectedPages = [...new Array(config.pageCount).keys()];
+  //     setAffectedPages(affectedPages);
+  //     setHeight(config.height);
+  //     setWidth(config.width);
+  //     setPageBuffers(config.pages);
+  //     setImageBuffers(config.images);
+  //   });
 
-  const addPage = (previousPageIndex: number) => {
-    setPageBuffers([
-      ...pageBuffers,
-      defaultRowBuffer(width, height, previousPageIndex),
-    ]);
-    if (pageBuffers.length !== 0) {
-      const blankImages: Buffer[] = Array(width * height - 1).fill(
-        new Buffer(1024)
-      );
-      setImageBuffers([...imageBuffers, BACK_IMAGE, ...blankImages]);
-    } else {
-      const blankImages: Buffer[] = Array(width * height).fill(
-        new Buffer(1024)
-      );
-      setImageBuffers([...imageBuffers, ...blankImages]);
-    }
-    return pageBuffers.length;
-  };
+  // const addPage = (previousPageIndex: number) => {
+  //   setPageBuffers([
+  //     ...pageBuffers,
+  //     defaultRowBuffer(width, height, previousPageIndex),
+  //   ]);
+  //   if (pageBuffers.length !== 0) {
+  //     const blankImages: Buffer[] = Array(width * height - 1).fill(
+  //       new Buffer(1024)
+  //     );
+  //     setImageBuffers([...imageBuffers, BACK_IMAGE, ...blankImages]);
+  //   } else {
+  //     const blankImages: Buffer[] = Array(width * height).fill(
+  //       new Buffer(1024)
+  //     );
+  //     setImageBuffers([...imageBuffers, ...blankImages]);
+  //   }
+  //   return pageBuffers.length;
+  // };
 
   return (
     <Main>
@@ -276,28 +318,28 @@ function App() {
               <InvisibleFile
                 id="loadConfig"
                 onChange={async (event) => {
-                  if (event.target.files?.length) {
-                    loadConfigFile(event.target.files[0]);
-                  }
+                  // if (event.target.files?.length) {
+                  //   loadConfigFile(event.target.files[0]);
+                  // }
                 }}
               ></InvisibleFile>
               <SaveConfigFile
                 ml={16}
                 size={3}
                 onClick={() => {
-                  const header = new Buffer(HEADER_SIZE);
-                  header.writeUInt8(3, 0);
-                  header.writeUInt8(2, 1);
-                  const offset = pageBuffers.length * width * height + 1;
-                  header.writeUInt16LE(offset, 2);
-                  const newConfig = Buffer.concat([
-                    header,
-                    ...pageBuffers,
-                    ...imageBuffers.map((imageBuffer) =>
-                      optimizeForSSD1306(imageBuffer)
-                    ),
-                  ]);
-                  download(newConfig);
+                  // const header = new Buffer(HEADER_SIZE);
+                  // header.writeUInt8(3, 0);
+                  // header.writeUInt8(2, 1);
+                  // const offset = pageBuffers.length * width * height + 1;
+                  // header.writeUInt16LE(offset, 2);
+                  // const newConfig = Buffer.concat([
+                  //   header,
+                  //   ...pageBuffers,
+                  //   ...imageBuffers.map((imageBuffer) =>
+                  //     optimizeForSSD1306(imageBuffer)
+                  //   ),
+                  // ]);
+                  // download(newConfig);
                 }}
               >
                 Save Config
@@ -307,7 +349,7 @@ function App() {
           <Horiz>
             <AddPage
               onClick={() => {
-                addPage(-1);
+                addPage();
               }}
             >
               Add Page +
@@ -316,21 +358,21 @@ function App() {
         </Buttons>
       </Header>
       <Content id="pages">
-        {pageBuffers?.map((page, index) => (
+        {pages.map((page, index) => (
           <Page
             height={height}
             width={width}
-            affected={affectedPages?.includes(index) ?? false}
+            // affected={affectedPages?.includes(index) ?? false}
             pageIndex={index}
-            images={imageBuffers}
+            // images={imageBuffers}
             page={page}
             key={index}
-            setImage={setImage}
-            setRow={setRow}
-            deletePage={deletePage}
-            pageCount={pageBuffers.length}
+            // setImage={setImage}
+            // setRow={setRow}
+            // deletePage={deletePage}
+            pageCount={pages.length}
             addPage={() => addPage(index)}
-            switchDisplays={switchDisplays}
+            // switchDisplays={switchDisplays}
           />
         ))}
       </Content>
