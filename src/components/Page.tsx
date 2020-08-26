@@ -75,7 +75,7 @@ const Grid = styled.div<{ width: number; height: number }>`
 
 interface IProps {
   pageIndex: number;
-  // affected: boolean;
+  hasOriginalImage: (imageIndex: number) => boolean;
   width: number;
   height: number;
   actionPage: IActionPage;
@@ -95,12 +95,12 @@ interface IProps {
     displayIndex: number,
     newPageImage: IImagePage
   ) => void;
-  // switchDisplays: (aIndex: number, bIndex: number) => undefined;
+  switchDisplays: (aIndex: number, bIndex: number) => void;
 }
 
 const PageComponent: React.FC<IProps> = ({
   pageIndex,
-  // affected,
+  hasOriginalImage,
   width,
   height,
   convertedImages,
@@ -112,7 +112,7 @@ const PageComponent: React.FC<IProps> = ({
   setActionPage: b,
   setImagePage: c,
   pageCount,
-  // switchDisplays,
+  switchDisplays,
 }) => {
   const setOriginalImage = useCallback(
     (displayIndex: number, image: Buffer) => {
@@ -186,7 +186,8 @@ const PageComponent: React.FC<IProps> = ({
                 (pageNumber) => pageNumber !== pageIndex
               )}
               addPage={addPage}
-              // switchDisplays={switchDisplays}
+              hasOriginalImage={hasOriginalImage}
+              switchDisplays={switchDisplays}
             />
           ))}
         </DndProvider>
@@ -196,38 +197,39 @@ const PageComponent: React.FC<IProps> = ({
 };
 
 export const Page = React.memo(PageComponent, (prev, next) => {
-  if (prev.setActionPage !== next.setActionPage) return false;
-  if (prev.setImagePage !== next.setImagePage) return false;
-  if (prev.setOriginalImage !== next.setOriginalImage) return false;
-  const prevRevisionImage = prev.convertedImages.reduce(
-    (acc, image) => acc + image._revision,
-    0
-  );
-  const nextRevisionImage = next.convertedImages.reduce(
-    (acc, image) => acc + image._revision,
-    0
-  );
-  if (prevRevisionImage !== nextRevisionImage) return false;
+  return false;
+  // if (prev.setActionPage !== next.setActionPage) return false;
+  // if (prev.setImagePage !== next.setImagePage) return false;
+  // if (prev.setOriginalImage !== next.setOriginalImage) return false;
+  // const prevRevisionImage = prev.convertedImages.reduce(
+  //   (acc, image) => acc + image._revision,
+  //   0
+  // );
+  // const nextRevisionImage = next.convertedImages.reduce(
+  //   (acc, image) => acc + image._revision,
+  //   0
+  // );
+  // if (prevRevisionImage !== nextRevisionImage) return false;
 
-  const prevRevisionImagePage = prev.imagePage.displays.reduce(
-    (acc, display) => acc + display._revision,
-    0
-  );
-  const nextRevisionImagePage = next.imagePage.displays.reduce(
-    (acc, display) => acc + display._revision,
-    0
-  );
-  if (prevRevisionImagePage !== nextRevisionImagePage) return false;
+  // const prevRevisionImagePage = prev.imagePage.displays.reduce(
+  //   (acc, display) => acc + display._revision,
+  //   0
+  // );
+  // const nextRevisionImagePage = next.imagePage.displays.reduce(
+  //   (acc, display) => acc + display._revision,
+  //   0
+  // );
+  // if (prevRevisionImagePage !== nextRevisionImagePage) return false;
 
-  const prevRevisionActionPage = prev.actionPage.displays.reduce(
-    (acc, display) => acc + display._revision,
-    0
-  );
-  const nextRevisionActionPage = next.actionPage.displays.reduce(
-    (acc, display) => acc + display._revision,
-    0
-  );
-  if (prevRevisionActionPage !== nextRevisionActionPage) return false;
+  // const prevRevisionActionPage = prev.actionPage.displays.reduce(
+  //   (acc, display) => acc + display._revision,
+  //   0
+  // );
+  // const nextRevisionActionPage = next.actionPage.displays.reduce(
+  //   (acc, display) => acc + display._revision,
+  //   0
+  // );
+  // if (prevRevisionActionPage !== nextRevisionActionPage) return false;
 
-  return true;
+  // return true;
 });

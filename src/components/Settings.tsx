@@ -1,8 +1,9 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { IImageDisplay } from "../App";
 import { colors } from "../definitions/colors";
+import useDebounce from "../lib/useDebounce";
 import { FDButton } from "./lib/button";
 import { Row, StyledSelect } from "./lib/misc";
 import {
@@ -71,27 +72,9 @@ export const Settings: React.FC<{
   textSettings,
   setText: setTextValue,
 }) => {
-  // const [contrast, setContrast] = useState<number>(settings.contrast);
-  // const [dither, setDither] = useState<boolean>(settings.dither);
-  // const [invert, setInvert] = useState<boolean>(settings.invert);
-  // const [textEnabled, setTextEnable] = useState<boolean>(settings.textEnabled);
-  // const [text, setText] = useState<string>(settings.text);
-  // const [fontName, setfontName] = useState<string>(settings.fontName);
-  // const debouncedText = useDebounce(text, 250);
+  const [localText, setLocalText] = useState<string>(text);
+  const debouncedText = useDebounce(localText, 300);
 
-  // useEffect(() => {
-  //   setSettings({ contrast, dither, invert, text, textEnabled, fontName });
-  // }, [contrast, dither, invert, debouncedText, textEnabled, fontName]);
-
-  // useEffect(() => {
-  //   if (textOnly) return;
-  //   setContrast(settings.contrast);
-  //   setDither(settings.dither);
-  //   setInvert(settings.invert);
-  //   setTextEnable(settings.textEnabled);
-  //   setText(settings.text);
-  //   setfontName(settings.fontName);
-  // }, [settings]);
   const setContrast = useCallback(
     (contrast: number) => {
       setSettings({ ...settings, contrast });
@@ -128,6 +111,11 @@ export const Settings: React.FC<{
     },
     [setTextValue]
   );
+  useEffect(() => {
+    setText(debouncedText);
+    // dont put setText there, we will have an endless loop if you do
+    // @ts-ignore
+  }, [debouncedText]);
   return (
     <Wrapper show={show}>
       <Column>
@@ -196,8 +184,8 @@ export const Settings: React.FC<{
         <Row>
           <TextInput
             placeholder={"Enter text"}
-            value={text}
-            onChange={(e) => setText(e.currentTarget.value)}
+            value={localText}
+            onChange={(e) => setLocalText(e.currentTarget.value)}
           />
         </Row>
       </Column>

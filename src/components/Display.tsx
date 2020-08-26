@@ -64,19 +64,20 @@ const DropHere = styled.div`
 `;
 
 const DisplayComponent: React.FC<{
-  // rowBuffer: Buffer;
   image: { _revision: number; image: Buffer };
   addPage: () => number;
   setOriginalImage: (displayIndex: number, newImage: Buffer) => void;
   setDisplayAction: (displayIndex: number, display: IActionDisplay) => void;
   setDisplayImage: (displayIndex: number, display: IImageDisplay) => void;
+  hasOriginalImage: (imageIndex: number) => boolean;
   actionDisplay: IActionDisplay;
   imageDisplay: IImageDisplay;
   imageIndex: number;
   pages: number[];
   displayIndex: number;
-  // switchDisplays: (aIndex: number, bIndex: number) => undefined;
+  switchDisplays: (aIndex: number, bIndex: number) => void;
 }> = ({
+  hasOriginalImage,
   image,
   addPage,
   setOriginalImage: a,
@@ -87,17 +88,16 @@ const DisplayComponent: React.FC<{
   imageIndex,
   pages,
   displayIndex,
-  // switchDisplays,
+  switchDisplays,
   // connectDragSource,
 }) => {
   const [showSettings, setShowSettings] = useState<boolean>(false);
-  const [localText, setLocalText] = useState<string>("");
-  const debouncedText = useDebounce(localText, 300);
 
   const previewImage = useMemo(() => {
     const b64img = getBase64Image(image.image);
+    console.log(image._revision);
     return b64img;
-  }, [image]);
+  }, [image._revision]);
   const [{ opacity }, dragRef] = useDrag({
     item: { type: "display", imageIndex },
     collect: (monitor) => ({
@@ -106,9 +106,8 @@ const DisplayComponent: React.FC<{
   });
   const [{ targetDisplayIndex }, drop] = useDrop({
     accept: "display",
-    drop: (item, monitor): undefined =>
-      // switchDisplays(targetDisplayIndex, monitor.getItem().imageIndex), undefined
-      undefined,
+    drop: (item, monitor): void =>
+      switchDisplays(targetDisplayIndex, monitor.getItem().imageIndex),
     collect: () => ({ targetDisplayIndex: imageIndex }),
   });
 
@@ -161,12 +160,6 @@ const DisplayComponent: React.FC<{
     [imageDisplay, setDisplayImage]
   );
 
-  useEffect(() => {
-    setText(debouncedText);
-    // dont put setText there, we will have an endless loop if you do
-    // @ts-ignore
-  }, [debouncedText]);
-
   const setTextSettings = useCallback(
     (textWithIconSettings: IImageDisplay["textWithIconSettings"]) => {
       setDisplayImage({
@@ -196,6 +189,7 @@ const DisplayComponent: React.FC<{
     },
     [actionDisplay, setDisplayAction]
   );
+
   return (
     <Wrapper ref={dragRef} opacity={opacity}>
       <ImagePreview
@@ -204,65 +198,68 @@ const DisplayComponent: React.FC<{
         onClick={() => setShowSettings(true)}
         src={previewImage}
       />
-      <Modal visible={showSettings} setClose={() => setShowSettings(false)}>
-        <DropWrapper>
-          <DeleteImage src="close.png" onClick={(...args) => undefined} />
-          <Drop {...getRootProps()}>
-            <input {...getInputProps()} />
-            {isDragActive ? (
-              <DropHere>Drop Here</DropHere>
-            ) : (
-              <ImagePreview multiplier={2} src={previewImage} />
-            )}
-          </Drop>
-        </DropWrapper>
-        <Settings
-          textOnly={image._revision === 0}
-          show={showSettings}
-          setSettings={setSettings}
-          settings={imageDisplay.imageSettings}
-          text={localText}
-          setText={setLocalText}
-          setTextSettings={setTextSettings}
-          textSettings={imageDisplay.textWithIconSettings}
-        />
-        <Row>
-          <Column>
-            {actionDisplay && (
-              <Action
-                setActionSetting={setPrimaryAction}
-                pages={pages}
-                action={actionDisplay.primary}
-                addPage={addPage}
-                loadUserInteraction={false}
-              />
-            )}
-          </Column>
-          <Column>
-            {actionDisplay.secondary.enabled && (
-              <Action
-                setActionSetting={setSecondaryAction}
-                pages={pages}
-                action={actionDisplay.secondary}
-                addPage={addPage}
-                loadUserInteraction={false}
-              />
-            )}
-          </Column>
-        </Row>
-      </Modal>
+      {showSettings && (
+        <Modal visible={showSettings} setClose={() => setShowSettings(false)}>
+          <DropWrapper>
+            <DeleteImage src="close.png" onClick={(...args) => undefined} />
+            <Drop {...getRootProps()}>
+              <input {...getInputProps()} />
+              {isDragActive ? (
+                <DropHere>Drop Here</DropHere>
+              ) : (
+                <ImagePreview multiplier={2} src={previewImage} />
+              )}
+            </Drop>
+          </DropWrapper>
+          <Settings
+            textOnly={!hasOriginalImage(imageIndex)}
+            show={showSettings}
+            setSettings={setSettings}
+            settings={imageDisplay.imageSettings}
+            text={imageDisplay.text}
+            setText={setText}
+            setTextSettings={setTextSettings}
+            textSettings={imageDisplay.textWithIconSettings}
+          />
+          <Row>
+            <Column>
+              {actionDisplay && (
+                <Action
+                  setActionSetting={setPrimaryAction}
+                  pages={pages}
+                  action={actionDisplay.primary}
+                  addPage={addPage}
+                  loadUserInteraction={false}
+                />
+              )}
+            </Column>
+            <Column>
+              {actionDisplay.secondary.enabled && (
+                <Action
+                  setActionSetting={setSecondaryAction}
+                  pages={pages}
+                  action={actionDisplay.secondary}
+                  addPage={addPage}
+                  loadUserInteraction={false}
+                />
+              )}
+            </Column>
+          </Row>
+        </Modal>
+      )}
     </Wrapper>
   );
 };
 
 export const Display = React.memo(DisplayComponent, (prev, next) => {
-  if (prev.setDisplayAction !== next.setDisplayAction) return false;
-  if (prev.setDisplayImage !== next.setDisplayImage) return false;
-  if (prev.setOriginalImage !== next.setOriginalImage) return false;
-  if (prev.actionDisplay._revision !== next.actionDisplay._revision)
-    return false;
-  if (prev.imageDisplay._revision === next.imageDisplay._revision) return false;
-  if (prev.image._revision !== next.image._revision) return false;
+  return false;
+  // if (prev.setDisplayAction !== next.setDisplayAction) return false;
+  // if (prev.setDisplayImage !== next.setDisplayImage) return false;
+  // if (prev.setOriginalImage !== next.setOriginalImage) return false;
+  // if (prev.actionDisplay._revision !== next.actionDisplay._revision)
+  //   return false;
+  // if (prev.imageDisplay._revision === next.imageDisplay._revision) return false;
+  // if (prev.image._revision !== next.image._revision) return false;
 
-  return true;
+  // return true;
 });
