@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import { colors } from "../definitions/colors";
+import React from "react";
 import ReactDOM from "react-dom";
+import styled from "styled-components";
+
+import { colors } from "../definitions/colors";
 
 const Wrapper = styled.div<{ visible: boolean }>`
   position: fixed;
@@ -46,7 +47,7 @@ export const Modal: React.FC<{ visible: boolean; setClose: () => void }> = ({
     <Wrapper visible={visible}>
       <Content>
         <Close onClick={() => setClose()}>
-          <img width="24px" src="./close.png" />
+          <img width="24px" src="./close.png" alt="close" />
         </Close>
         {children}
       </Content>

@@ -21,10 +21,7 @@ export const FDButtonInner = styled.div<{
   py?: number;
 }>`
   padding: ${(p) => (p.size === 1 ? "0px" : p.size === 2 ? "4px" : "8px")};
-  ${(p) =>
-    p.px
-      ? "padding-left: " + p.px + "px;" + "padding-right: " + p.px + "px;"
-      : ""}
+  ${(p) => (p.px ? `padding-left: ${p.px}px;padding-right: ${p.px}px;` : "")}
   font-family: "Barlow", sans-serif;
   position: relative;
   font-weight: 500;

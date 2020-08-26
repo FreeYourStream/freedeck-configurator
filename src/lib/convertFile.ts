@@ -4,6 +4,7 @@ import fs from "floyd-steinberg";
 import Jimp from "jimp";
 import { PNG } from "pngjs";
 
+import { IImageDisplay } from "../App";
 import { imageToBinaryBuffer } from "./bwConversion";
 import { dec2bin } from "./dec2binString";
 import { rotateCCW } from "./matrix";
@@ -15,18 +16,17 @@ export interface IConverted {
 }
 
 export const composeImage = (
-  image: Jimp,
+  image: Buffer,
   width: number,
   height: number,
-  contrast: number,
-  invert: boolean,
-  dither: boolean,
-  textEnabled: boolean,
-  text: string,
-  fontName: string
+  imageOptions: IImageDisplay["imageSettings"],
+  textOptions: IImageDisplay["textWithIconSettings"],
+  text: string
 ): Promise<Buffer> => {
+  const { contrast, invert, dither } = imageOptions;
+  const { enabled: textEnabled, font: fontName } = textOptions;
   return new Promise(async (resolve) => {
-    const jimpImage = new Jimp(image);
+    const jimpImage = await Jimp.read(image);
     const pngImage = new PNG();
     if (invert) jimpImage.invert();
     const background = new Jimp(width, height, "black");

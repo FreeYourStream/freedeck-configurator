@@ -14,6 +14,6 @@ export const imageToBinaryBuffer = (
     }
   }
   return {
-    binary: new Buffer(binary)
+    binary: new Buffer(binary),
   };
 };

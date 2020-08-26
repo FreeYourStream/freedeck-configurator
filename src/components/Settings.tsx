@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import styled from "styled-components";
 
-import { IDisplay } from "../App";
+import { IImageDisplay } from "../App";
 import { colors } from "../definitions/colors";
-import useDebounce from "../lib/useDebounce";
 import { FDButton } from "./lib/button";
 import { Row, StyledSelect } from "./lib/misc";
 import {
@@ -54,15 +53,24 @@ export interface ISettings {
 }
 
 export const Settings: React.FC<{
-  setSettings: (settings: IDisplay["iconSettings"]) => void;
-  setTextSettings: (settings: IDisplay['textWithIconSettings']) => void;
+  setSettings: (settings: IImageDisplay["imageSettings"]) => void;
+  setTextSettings: (settings: IImageDisplay["textWithIconSettings"]) => void;
   show: boolean;
   textOnly: boolean;
-  settings: IDisplay["iconSettings"];
-  textSettings: IDisplay['textWithIconSettings']
-  text: IDisplay['text']
-  setText: (text: string) => void
-}> = ({ setSettings, show, textOnly, settings, setTextSettings, text, textSettings, setText: setTextValue }) => {
+  settings: IImageDisplay["imageSettings"];
+  textSettings: IImageDisplay["textWithIconSettings"];
+  text: IImageDisplay["text"];
+  setText: (text: string) => void;
+}> = ({
+  setSettings,
+  show,
+  textOnly,
+  settings,
+  setTextSettings,
+  text,
+  textSettings,
+  setText: setTextValue,
+}) => {
   // const [contrast, setContrast] = useState<number>(settings.contrast);
   // const [dither, setDither] = useState<boolean>(settings.dither);
   // const [invert, setInvert] = useState<boolean>(settings.invert);
@@ -116,9 +124,9 @@ export const Settings: React.FC<{
   );
   const setText = useCallback(
     (text: string) => {
-      setTextValue(text)
+      setTextValue(text);
     },
-    [text, setTextValue]
+    [setTextValue]
   );
   return (
     <Wrapper show={show}>
@@ -189,7 +197,7 @@ export const Settings: React.FC<{
           <TextInput
             placeholder={"Enter text"}
             value={text}
-            onChange={(e) => setTextValue(e.currentTarget.value)}
+            onChange={(e) => setText(e.currentTarget.value)}
           />
         </Row>
       </Column>

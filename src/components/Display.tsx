@@ -4,15 +4,14 @@ import { useDrag, useDrop } from "react-dnd";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
 
-import { IDisplay } from "../App";
-import { composeImage, composeText } from "../lib/convertFile";
+import { IActionDisplay, IImageDisplay } from "../App";
 import { handleFileSelect } from "../lib/fileSelect";
-import { EAction, IRow, parseRow } from "../lib/parse/parsePage";
 import { getBase64Image } from "../lib/uint8ToBase64";
+import useDebounce from "../lib/useDebounce";
 import { Action } from "./Action";
 import { Column, Row } from "./lib/misc";
 import { Modal } from "./modal";
-import { ISettings, Settings, fontLarge } from "./Settings";
+import { Settings } from "./Settings";
 
 const Wrapper = styled.div<{ opacity: number }>`
   opacity: ${(p) => p.opacity};
@@ -64,30 +63,41 @@ const DropHere = styled.div`
   color: white;
 `;
 
-export const Display: React.FC<{
+const DisplayComponent: React.FC<{
   // rowBuffer: Buffer;
-  // images: Buffer[];
+  image: { _revision: number; image: Buffer };
   addPage: () => number;
-  // setImage: (newImage: Buffer) => void;
-  // setRow: (newRow: Buffer, offset: number) => void;
-  display: IDisplay
+  setOriginalImage: (displayIndex: number, newImage: Buffer) => void;
+  setDisplayAction: (displayIndex: number, display: IActionDisplay) => void;
+  setDisplayImage: (displayIndex: number, display: IImageDisplay) => void;
+  actionDisplay: IActionDisplay;
+  imageDisplay: IImageDisplay;
   imageIndex: number;
   pages: number[];
+  displayIndex: number;
   // switchDisplays: (aIndex: number, bIndex: number) => undefined;
 }> = ({
-  // rowBuffer,
-  // images,
+  image,
   addPage,
-  // setImage,
-  // setRow: setNewRow,
-  display,
+  setOriginalImage: a,
+  setDisplayAction: b,
+  setDisplayImage: c,
+  actionDisplay,
+  imageDisplay,
   imageIndex,
   pages,
+  displayIndex,
   // switchDisplays,
   // connectDragSource,
 }) => {
   const [showSettings, setShowSettings] = useState<boolean>(false);
+  const [localText, setLocalText] = useState<string>("");
+  const debouncedText = useDebounce(localText, 300);
 
+  const previewImage = useMemo(() => {
+    const b64img = getBase64Image(image.image);
+    return b64img;
+  }, [image]);
   const [{ opacity }, dragRef] = useDrag({
     item: { type: "display", imageIndex },
     collect: (monitor) => ({
@@ -96,68 +106,104 @@ export const Display: React.FC<{
   });
   const [{ targetDisplayIndex }, drop] = useDrop({
     accept: "display",
-    drop: (item, monitor): undefined => (
+    drop: (item, monitor): undefined =>
       // switchDisplays(targetDisplayIndex, monitor.getItem().imageIndex), undefined
-      undefined
-    ),
+      undefined,
     collect: () => ({ targetDisplayIndex: imageIndex }),
   });
 
-  const onDrop = useCallback((acceptedFiles) => {
-    // setNewImageFile(acceptedFiles[0]);
-  }, []);
+  const setOriginalImage = useCallback(
+    (newImage: Buffer) => {
+      a(displayIndex, newImage);
+    },
+    [a, displayIndex]
+  );
+  const setDisplayAction = useCallback(
+    (display: IActionDisplay) => {
+      b(displayIndex, display);
+    },
+    [b, displayIndex]
+  );
+  const setDisplayImage = useCallback(
+    (display: IImageDisplay) => {
+      c(displayIndex, display);
+    },
+    [c, displayIndex]
+  );
+
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      const buffer = await handleFileSelect(acceptedFiles[0]);
+      const jimage = await Jimp.read(Buffer.from(buffer));
+      const resizedBuffer = await jimage
+        .scaleToFit(256, 128, "")
+        .getBufferAsync("image/bmp");
+      setOriginalImage(resizedBuffer);
+    },
+    [setOriginalImage]
+  );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: [".jpg", ".jpeg", ".png"],
   });
 
-  // useEffect(() => {
-  //   (async () => {
-  //     if (croppedImage) {
-  //       (async () => {
-  //         const buffer = await composeImage(
-  //           croppedImage,
-  //           128,
-  //           64,
-  //           settings.contrast,
-  //           settings.invert,
-  //           settings.dither,
-  //           settings.textEnabled,
-  //           settings.text,
-  //           settings.fontName
-  //         );
-  //         setConvertedImageBuffer(buffer);
-  //       })();
-  //     } else if (settings.text.length) {
-  //       const buffer = await composeText(
-  //         128,
-  //         64,
-  //         settings.dither,
-  //         settings.text,
-  //         settings.fontName,
-  //         settings.contrast
-  //       );
-  //       setConvertedImageBuffer(buffer);
-  //     }
-  //   })();
-  // }, [croppedImage, settings]);
+  const setSettings = useCallback(
+    (imageSettings: IImageDisplay["imageSettings"]) => {
+      setDisplayImage({ ...imageDisplay, imageSettings });
+    },
+    [imageDisplay, setDisplayImage]
+  );
 
-  // const isBlack = useMemo(() => !images[imageIndex]?.find((val) => val !== 0), [
-  //   images,
-  // ]);
-  // const allowSettings = useMemo(
-  //   () => isBlack || !!newImageFile || !!settings?.text.length,
-  //   [isBlack, newImageFile, settings]
-  // );
+  const setText = useCallback(
+    (text: IImageDisplay["text"]) => {
+      setDisplayImage({ ...imageDisplay, text });
+    },
+    [imageDisplay, setDisplayImage]
+  );
 
+  useEffect(() => {
+    setText(debouncedText);
+    // dont put setText there, we will have an endless loop if you do
+    // @ts-ignore
+  }, [debouncedText]);
+
+  const setTextSettings = useCallback(
+    (textWithIconSettings: IImageDisplay["textWithIconSettings"]) => {
+      setDisplayImage({
+        ...imageDisplay,
+        textWithIconSettings,
+      });
+    },
+    [imageDisplay, setDisplayImage]
+  );
+
+  const setPrimaryAction = useCallback(
+    (primary: IActionDisplay["primary"]) => {
+      setDisplayAction({
+        ...actionDisplay,
+        primary,
+      });
+    },
+    [actionDisplay, setDisplayAction]
+  );
+
+  const setSecondaryAction = useCallback(
+    (secondary: IActionDisplay["secondary"]) => {
+      setDisplayAction({
+        ...actionDisplay,
+        secondary,
+      });
+    },
+    [actionDisplay, setDisplayAction]
+  );
   return (
     <Wrapper ref={dragRef} opacity={opacity}>
-      {/* <ImagePreview
+      <ImagePreview
         ref={drop}
         multiplier={1}
         onClick={() => setShowSettings(true)}
         src={previewImage}
-      /> */}
+      />
       <Modal visible={showSettings} setClose={() => setShowSettings(false)}>
         <DropWrapper>
           <DeleteImage src="close.png" onClick={(...args) => undefined} />
@@ -166,38 +212,38 @@ export const Display: React.FC<{
             {isDragActive ? (
               <DropHere>Drop Here</DropHere>
             ) : (
-              <ImagePreview multiplier={2} />
+              <ImagePreview multiplier={2} src={previewImage} />
             )}
           </Drop>
         </DropWrapper>
         <Settings
-          textOnly={!display.imageIsConverted}
+          textOnly={image._revision === 0}
           show={showSettings}
-          setSettings={(...args) => console.log('setsettings', args)}
-          settings={display.iconSettings}
-          text={display.text}
-          setText={(...args) => console.log('setText', args)}
-          setTextSettings={(...args) => console.log('setTextSettings', args)}
-          textSettings={display.textWithIconSettings}
+          setSettings={setSettings}
+          settings={imageDisplay.imageSettings}
+          text={localText}
+          setText={setLocalText}
+          setTextSettings={setTextSettings}
+          textSettings={imageDisplay.textWithIconSettings}
         />
         <Row>
           <Column>
-            {display && (
+            {actionDisplay && (
               <Action
-                setNewRow={(newRow) => console.log('set new row', newRow) }
+                setActionSetting={setPrimaryAction}
                 pages={pages}
-                action={display.actionSettings.primary}
+                action={actionDisplay.primary}
                 addPage={addPage}
                 loadUserInteraction={false}
               />
             )}
           </Column>
           <Column>
-            {display.actionSettings.secondary.enabled && (
+            {actionDisplay.secondary.enabled && (
               <Action
-                setNewRow={(newRow) => console.log('set new row', newRow) }
+                setActionSetting={setSecondaryAction}
                 pages={pages}
-                action={display.actionSettings.secondary}
+                action={actionDisplay.secondary}
                 addPage={addPage}
                 loadUserInteraction={false}
               />
@@ -208,3 +254,15 @@ export const Display: React.FC<{
     </Wrapper>
   );
 };
+
+export const Display = React.memo(DisplayComponent, (prev, next) => {
+  if (prev.setDisplayAction !== next.setDisplayAction) return false;
+  if (prev.setDisplayImage !== next.setDisplayImage) return false;
+  if (prev.setOriginalImage !== next.setOriginalImage) return false;
+  if (prev.actionDisplay._revision !== next.actionDisplay._revision)
+    return false;
+  if (prev.imageDisplay._revision === next.imageDisplay._revision) return false;
+  if (prev.image._revision !== next.image._revision) return false;
+
+  return true;
+});

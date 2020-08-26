@@ -31,10 +31,8 @@ export const base64Encode = (input: Buffer) => {
   return output;
 };
 
-export const getBase64Image = (images: Buffer[], imageIndex: number) => {
+export const getBase64Image = (image: Buffer) => {
   const prefix = "data:image/bmp;base64,";
   const headerBuffer = Buffer.from(bmpHeader());
-  return (
-    prefix + base64Encode(Buffer.concat([headerBuffer, images[imageIndex]]))
-  );
+  return prefix + base64Encode(Buffer.concat([headerBuffer, image]));
 };
