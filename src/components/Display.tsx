@@ -1,5 +1,5 @@
 import Jimp from "jimp";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
@@ -7,7 +7,6 @@ import styled from "styled-components";
 import { IActionDisplay, IImageDisplay } from "../App";
 import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
-import useDebounce from "../lib/useDebounce";
 import { Action } from "./Action";
 import { Column, Row } from "./lib/misc";
 import { Modal } from "./modal";
@@ -64,28 +63,35 @@ const DropHere = styled.div`
 `;
 
 const DisplayComponent: React.FC<{
-  image: { _revision: number; image: Buffer };
+  image: Buffer;
   addPage: () => number;
-  setOriginalImage: (displayIndex: number, newImage: Buffer) => void;
-  setDisplayAction: (displayIndex: number, display: IActionDisplay) => void;
-  setDisplayImage: (displayIndex: number, display: IImageDisplay) => void;
-  hasOriginalImage: (imageIndex: number) => boolean;
+  deleteImage: () => void;
+  setOriginalImage: (newImage: Buffer) => void;
+  setDisplayAction: (display: IActionDisplay) => void;
+  setDisplayImage: (display: IImageDisplay) => void;
+  hasOriginalImage: boolean;
   actionDisplay: IActionDisplay;
   imageDisplay: IImageDisplay;
-  imageIndex: number;
+  pageIndex: number;
   pages: number[];
   displayIndex: number;
-  switchDisplays: (aIndex: number, bIndex: number) => void;
+  switchDisplays: (
+    aPageIndex: number,
+    bPageIndex: number,
+    aDisplayIndex: number,
+    bDisplayIndex: number
+  ) => void;
 }> = ({
   hasOriginalImage,
   image,
   addPage,
-  setOriginalImage: a,
-  setDisplayAction: b,
-  setDisplayImage: c,
+  deleteImage,
+  setOriginalImage,
+  setDisplayAction,
+  setDisplayImage,
   actionDisplay,
   imageDisplay,
-  imageIndex,
+  pageIndex,
   pages,
   displayIndex,
   switchDisplays,
@@ -94,41 +100,29 @@ const DisplayComponent: React.FC<{
   const [showSettings, setShowSettings] = useState<boolean>(false);
 
   const previewImage = useMemo(() => {
-    const b64img = getBase64Image(image.image);
-    console.log(image._revision);
+    const b64img = getBase64Image(image);
     return b64img;
-  }, [image._revision]);
+  }, [image]);
   const [{ opacity }, dragRef] = useDrag({
-    item: { type: "display", imageIndex },
+    item: { type: "display", pageIndex, displayIndex },
     collect: (monitor) => ({
       opacity: monitor.isDragging() ? 0.5 : 1,
     }),
   });
-  const [{ targetDisplayIndex }, drop] = useDrop({
+  const [{ targetDisplayIndex, targetPageIndex }, drop] = useDrop({
     accept: "display",
     drop: (item, monitor): void =>
-      switchDisplays(targetDisplayIndex, monitor.getItem().imageIndex),
-    collect: () => ({ targetDisplayIndex: imageIndex }),
+      switchDisplays(
+        targetPageIndex,
+        monitor.getItem().pageIndex,
+        targetDisplayIndex,
+        monitor.getItem().displayIndex
+      ),
+    collect: () => ({
+      targetDisplayIndex: displayIndex,
+      targetPageIndex: pageIndex,
+    }),
   });
-
-  const setOriginalImage = useCallback(
-    (newImage: Buffer) => {
-      a(displayIndex, newImage);
-    },
-    [a, displayIndex]
-  );
-  const setDisplayAction = useCallback(
-    (display: IActionDisplay) => {
-      b(displayIndex, display);
-    },
-    [b, displayIndex]
-  );
-  const setDisplayImage = useCallback(
-    (display: IImageDisplay) => {
-      c(displayIndex, display);
-    },
-    [c, displayIndex]
-  );
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -146,50 +140,6 @@ const DisplayComponent: React.FC<{
     accept: [".jpg", ".jpeg", ".png"],
   });
 
-  const setSettings = useCallback(
-    (imageSettings: IImageDisplay["imageSettings"]) => {
-      setDisplayImage({ ...imageDisplay, imageSettings });
-    },
-    [imageDisplay, setDisplayImage]
-  );
-
-  const setText = useCallback(
-    (text: IImageDisplay["text"]) => {
-      setDisplayImage({ ...imageDisplay, text });
-    },
-    [imageDisplay, setDisplayImage]
-  );
-
-  const setTextSettings = useCallback(
-    (textWithIconSettings: IImageDisplay["textWithIconSettings"]) => {
-      setDisplayImage({
-        ...imageDisplay,
-        textWithIconSettings,
-      });
-    },
-    [imageDisplay, setDisplayImage]
-  );
-
-  const setPrimaryAction = useCallback(
-    (primary: IActionDisplay["primary"]) => {
-      setDisplayAction({
-        ...actionDisplay,
-        primary,
-      });
-    },
-    [actionDisplay, setDisplayAction]
-  );
-
-  const setSecondaryAction = useCallback(
-    (secondary: IActionDisplay["secondary"]) => {
-      setDisplayAction({
-        ...actionDisplay,
-        secondary,
-      });
-    },
-    [actionDisplay, setDisplayAction]
-  );
-
   return (
     <Wrapper ref={dragRef} opacity={opacity}>
       <ImagePreview
@@ -201,7 +151,7 @@ const DisplayComponent: React.FC<{
       {showSettings && (
         <Modal visible={showSettings} setClose={() => setShowSettings(false)}>
           <DropWrapper>
-            <DeleteImage src="close.png" onClick={(...args) => undefined} />
+            <DeleteImage src="close.png" onClick={deleteImage} />
             <Drop {...getRootProps()}>
               <input {...getInputProps()} />
               {isDragActive ? (
@@ -212,20 +162,26 @@ const DisplayComponent: React.FC<{
             </Drop>
           </DropWrapper>
           <Settings
-            textOnly={!hasOriginalImage(imageIndex)}
+            textOnly={!hasOriginalImage}
             show={showSettings}
-            setSettings={setSettings}
+            setSettings={(imageSettings) =>
+              setDisplayImage({ ...imageDisplay, imageSettings })
+            }
             settings={imageDisplay.imageSettings}
             text={imageDisplay.text}
-            setText={setText}
-            setTextSettings={setTextSettings}
+            setText={(text) => setDisplayImage({ ...imageDisplay, text })}
+            setTextSettings={(textWithIconSettings) =>
+              setDisplayImage({ ...imageDisplay, textWithIconSettings })
+            }
             textSettings={imageDisplay.textWithIconSettings}
           />
           <Row>
             <Column>
               {actionDisplay && (
                 <Action
-                  setActionSetting={setPrimaryAction}
+                  setActionSetting={(primary) =>
+                    setDisplayAction({ ...actionDisplay, primary })
+                  }
                   pages={pages}
                   action={actionDisplay.primary}
                   addPage={addPage}
@@ -236,7 +192,9 @@ const DisplayComponent: React.FC<{
             <Column>
               {actionDisplay.secondary.enabled && (
                 <Action
-                  setActionSetting={setSecondaryAction}
+                  setActionSetting={(secondary) =>
+                    setDisplayAction({ ...actionDisplay, secondary })
+                  }
                   pages={pages}
                   action={actionDisplay.secondary}
                   addPage={addPage}

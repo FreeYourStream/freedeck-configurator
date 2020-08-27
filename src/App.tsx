@@ -1,3 +1,5 @@
+import { type } from "os";
+
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
@@ -5,6 +7,7 @@ import { FDButton } from "./components/lib/button";
 import { Page } from "./components/Page";
 import { colors } from "./definitions/colors";
 import {
+  defaultImageDisplay,
   getDefaultActionPage,
   getDefaultImagePage,
 } from "./definitions/defaultPage";
@@ -119,16 +122,6 @@ const SaveConfigFile = styled(FDButton)``;
 
 const AddPage = styled(FDButton)``;
 
-interface IOriginalImage {
-  _revision: number;
-  image: Buffer | null;
-}
-
-interface IConvertedImage {
-  _revision: number;
-  image: Buffer;
-}
-
 export interface IActionSetting {
   mode: EAction;
   values: number[];
@@ -149,106 +142,176 @@ export interface IImageSettings {
 export interface IActionDisplay {
   primary: IActionSetting;
   secondary: IActionSetting;
-  _revision: number;
 }
 export interface IImageDisplay {
   imageSettings: IImageSettings;
   imageIsConverted: boolean;
   text: string;
   textWithIconSettings: ITextWithIconSettings;
-  _revision: number;
 }
-export interface IActionPage {
-  displays: IActionDisplay[];
-}
-export interface IImagePage {
-  displays: IImageDisplay[];
-}
+export type IOriginalImage = Buffer | null;
+export type IConvertedImage = Buffer;
+export type IOriginalImagePage = Array<IOriginalImage>;
+export type IConvertedImagePage = Array<IConvertedImage>;
+export type IActionSettingPage = IActionDisplay[];
+export type IImageSettingPage = IImageDisplay[];
 
 function App() {
   const [height] = useState<number>(2);
   const [width] = useState<number>(3);
-  const [actionPages, setActionPages] = useState<IActionPage[]>([]);
-  const [imagePages, setImagePages] = useState<IImagePage[]>([]);
+  const [actionSettingPages, setActionSettingPages] = useState<
+    IActionSettingPage[]
+  >([]);
+  const [imageSettingPages, setImageSettingPages] = useState<
+    IImageSettingPage[]
+  >([]);
 
-  const [originalImages, setOriginalImages] = useState<IOriginalImage[]>([]);
+  const [originalImagePages, setOriginalImagePages] = useState<
+    IOriginalImagePage[]
+  >([]);
 
-  const [convertedImages, setConvertedImages] = useState<IConvertedImage[]>([]);
+  const [convertedImagePages, setConvertedImagePages] = useState<
+    IConvertedImagePage[]
+  >([]);
 
   const setOriginalImage = useCallback(
-    async (pageIndex: number, displayIndex: number, image: Buffer) => {
+    async (pageIndex: number, displayIndex: number, image: Buffer | null) => {
       const offset = width * height * pageIndex + displayIndex;
 
-      const display = imagePages[pageIndex].displays[displayIndex];
-      const convertedImage = await composeImage(
-        image,
-        128,
-        64,
-        display.imageSettings,
-        display.textWithIconSettings,
-        display.text
-      );
-      const newOriginalImages = [...originalImages];
-      newOriginalImages[offset] = {
-        image,
-        _revision: newOriginalImages[offset]._revision + 1,
-      };
-      setOriginalImages(newOriginalImages);
+      const display = imageSettingPages[pageIndex][displayIndex];
+      let convertedImage: IConvertedImage;
+      if (image !== null) {
+        convertedImage = await composeImage(
+          image,
+          128,
+          64,
+          display.imageSettings,
+          display.textWithIconSettings,
+          display.text
+        );
+      } else {
+        convertedImage = new Buffer(1024);
+      }
+      const newOriginalImages = [...originalImagePages];
+      newOriginalImages[offset][displayIndex] = image;
+      setOriginalImagePages(newOriginalImages);
 
-      const newConvertedImages = [...convertedImages];
-      newConvertedImages[offset] = {
-        image: convertedImage,
-        _revision: newConvertedImages[offset]._revision + 1,
-      };
-      setConvertedImages(newConvertedImages);
+      const newConvertedImages = [...convertedImagePages];
+      newConvertedImages[offset][displayIndex] = convertedImage;
+      setConvertedImagePages(newConvertedImages);
     },
-    [height, width, convertedImages, originalImages, imagePages]
+    [height, width, convertedImagePages, originalImagePages, imageSettingPages]
   );
-
+  const setActionDisplay = useCallback(
+    (pageIndex: number, displayIndex: number, newDisplay: IActionDisplay) => {
+      const newPages = [...actionSettingPages];
+      newPages[pageIndex][displayIndex] = newDisplay;
+      setActionSettingPages([...newPages]);
+    },
+    [actionSettingPages]
+  );
+  const setImageSettingsDisplay = useCallback(
+    async (
+      pageIndex: number,
+      displayIndex: number,
+      newDisplay: IImageDisplay
+    ) => {
+      const newPages = [...imageSettingPages];
+      newPages[pageIndex][displayIndex] = newDisplay;
+      setImageSettingPages([...newPages]);
+      const originalImage = originalImagePages[pageIndex][displayIndex];
+      let convertedImage;
+      if (originalImage !== null) {
+        convertedImage = await composeImage(
+          originalImage,
+          128,
+          64,
+          newDisplay.imageSettings,
+          newDisplay.textWithIconSettings,
+          newDisplay.text
+        );
+      } else if (newDisplay.text.length > 0) {
+        convertedImage = await composeText(
+          128,
+          64,
+          newDisplay.imageSettings.dither,
+          newDisplay.text,
+          newDisplay.textWithIconSettings.font,
+          newDisplay.imageSettings.contrast
+        );
+      } else {
+        convertedImage = new Buffer(1024);
+      }
+      const newConvertedImages = [...convertedImagePages];
+      newConvertedImages[pageIndex][displayIndex] = convertedImage;
+      setConvertedImagePages(newConvertedImages);
+    },
+    [convertedImagePages, imageSettingPages, originalImagePages]
+  );
   const addPage = useCallback(
     (previousPageIndex?: number) => {
-      const newOriginalImages = [...originalImages];
-      const newConvertedImages = [...convertedImages];
+      const newOriginalImagePage = [];
+      const newConvertedImagePage = [];
       for (let i = 0; i < width * height; i++) {
-        newOriginalImages.push({ _revision: 0, image: null });
-        newConvertedImages.push({ _revision: 0, image: new Buffer(1024) });
+        newOriginalImagePage.push(null);
+        newConvertedImagePage.push(new Buffer(1024));
       }
-      setOriginalImages([...newOriginalImages]);
-      setConvertedImages([...newConvertedImages]);
+      const newOriginalImagePages = [
+        ...originalImagePages,
+        newOriginalImagePage,
+      ];
+      const newConvertedImagePages = [
+        ...convertedImagePages,
+        newConvertedImagePage,
+      ];
+      setOriginalImagePages([...newOriginalImagePages]);
+      setConvertedImagePages([...newConvertedImagePages]);
 
-      setImagePages([...imagePages, getDefaultImagePage(width, height)]);
-      setActionPages([
-        ...actionPages,
+      setImageSettingPages([
+        ...imageSettingPages,
+        getDefaultImagePage(width, height),
+      ]);
+      setActionSettingPages([
+        ...actionSettingPages,
         getDefaultActionPage(height, width, previousPageIndex),
       ]);
 
-      return actionPages.length;
+      return actionSettingPages.length;
     },
-    [actionPages, height, width, imagePages, originalImages, convertedImages]
+    [
+      actionSettingPages,
+      height,
+      width,
+      imageSettingPages,
+      originalImagePages,
+      convertedImagePages,
+    ]
   );
-
+  const deleteImage = useCallback(
+    (pageIndex: number, displayIndex: number) => {
+      setImageSettingsDisplay(pageIndex, displayIndex, defaultImageDisplay);
+      setOriginalImage(pageIndex, displayIndex, null);
+    },
+    [setImageSettingsDisplay, setOriginalImage]
+  );
   const deletePage = useCallback(
     (pageIndex: number) => {
-      const pageSize = width * height;
+      const newOriginalImages = [...originalImagePages];
+      const newConvertedImages = [...convertedImagePages];
+      newOriginalImages.splice(pageIndex, 1);
+      newConvertedImages.splice(pageIndex, 1);
+      setOriginalImagePages(newOriginalImages);
+      setConvertedImagePages(newConvertedImages);
 
-      const newOriginalImages = [...originalImages];
-      const newConvertedImages = [...convertedImages];
-      newOriginalImages.splice(pageSize * pageIndex, pageSize);
-      newConvertedImages.splice(pageSize * pageIndex, pageSize);
-      setOriginalImages(newOriginalImages);
-      setConvertedImages(newConvertedImages);
-
-      let newActionPages = [...actionPages];
-      let newImagePages = [...imagePages];
+      let newActionPages = [...actionSettingPages];
+      let newImagePages = [...imageSettingPages];
       newActionPages.splice(pageIndex, 1);
       newImagePages.splice(pageIndex, 1);
-      newActionPages = newActionPages.map<IActionPage>((newPage) => {
-        const displays = newPage.displays.map<IActionDisplay>((display) => {
-          let _revision = display._revision;
+      newActionPages = newActionPages.map<IActionSettingPage>((newPage) => {
+        const displays = newPage.map<IActionDisplay>((display) => {
           if (display.primary.mode === EAction.changeLayout) {
             if (display.primary.values[0] >= pageIndex) {
               display.primary.values[0] -= 1;
-              _revision = 0;
             }
           }
           if (
@@ -257,151 +320,78 @@ function App() {
           ) {
             if (display.secondary.values[0] >= pageIndex) {
               display.secondary.values[0] -= 1;
-              _revision = 0;
             }
           }
-          return { ...display, _revision };
+          return { ...display };
         });
-        return { ...newPage, displays };
+        return displays;
       });
-      setActionPages(newActionPages);
-      setImagePages(newImagePages);
+      setActionSettingPages(newActionPages);
+      setImageSettingPages(newImagePages);
     },
-    [actionPages, convertedImages, height, imagePages, originalImages, width]
-  );
-
-  const setActionPage = useCallback(
-    (pageIndex: number, newPage: IActionPage) => {
-      const newPages = [...actionPages];
-      newPages[pageIndex] = newPage;
-      setActionPages([...newPages]);
-    },
-    [actionPages]
-  );
-  const setImagePage = useCallback(
-    async (pageIndex: number, displayIndex: number, newPage: IImagePage) => {
-      const newPages = [...imagePages];
-      newPages[pageIndex] = newPage;
-      setImagePages([...newPages]);
-      const offset = pageIndex * width * height + displayIndex;
-      const originalImage = originalImages[offset];
-      const display = newPage.displays[displayIndex];
-      let convertedImage;
-      if (originalImage.image !== null) {
-        convertedImage = await composeImage(
-          originalImage.image,
-          128,
-          64,
-          display.imageSettings,
-          display.textWithIconSettings,
-          display.text
-        );
-      } else if (display.text.length > 0) {
-        convertedImage = await composeText(
-          128,
-          64,
-          display.imageSettings.dither,
-          display.text,
-          display.textWithIconSettings.font,
-          display.imageSettings.contrast
-        );
-      } else {
-        convertedImage = new Buffer(1024);
-      }
-      const newConvertedImages = [...convertedImages];
-      newConvertedImages[offset] = {
-        image: convertedImage,
-        _revision: newConvertedImages[offset]._revision + 1,
-      };
-      setConvertedImages(newConvertedImages);
-    },
-    [convertedImages, height, imagePages, originalImages, width]
-  );
-
-  const convertedImagesForPage = useCallback(
-    (pageIndex: number) => {
-      const images = convertedImages.slice(
-        width * height * pageIndex,
-        width * height * (pageIndex + 1)
-      );
-      return images;
-    },
-    [convertedImages, height, width]
+    [
+      actionSettingPages,
+      convertedImagePages,
+      imageSettingPages,
+      originalImagePages,
+    ]
   );
 
   const switchDisplays = useCallback(
-    (aIndex: number, bIndex: number) => {
-      const aPageIndex: number = Math.floor(aIndex / (width * height));
-      const bPageIndex: number = Math.floor(bIndex / (width * height));
-      const aDisplayIndex: number = aIndex - aPageIndex;
-      const bDisplayIndex: number = bIndex - bPageIndex;
-
+    (
+      aPageIndex: number,
+      bPageIndex: number,
+      aDisplayIndex: number,
+      bDisplayIndex: number
+    ) => {
       const aDisplayAction = {
-        ...actionPages[aPageIndex].displays[aDisplayIndex],
+        ...actionSettingPages[aPageIndex][aDisplayIndex],
       };
       const bDisplayAction = {
-        ...actionPages[bPageIndex].displays[bDisplayIndex],
+        ...actionSettingPages[bPageIndex][bDisplayIndex],
       };
-      const newActionPages = [...actionPages];
-      newActionPages[aPageIndex].displays[aDisplayIndex] = {
-        ...bDisplayAction,
-        _revision: aDisplayAction._revision + 1,
-      };
-      newActionPages[bPageIndex].displays[bDisplayIndex] = {
-        ...aDisplayAction,
-        _revision: bDisplayAction._revision + 1,
-      };
-      setActionPages(newActionPages);
+      const newActionPages = [...actionSettingPages];
+      newActionPages[aPageIndex][aDisplayIndex] = bDisplayAction;
+      newActionPages[bPageIndex][bDisplayIndex] = aDisplayAction;
+      setActionSettingPages(newActionPages);
 
       const aDisplayImage = {
-        ...imagePages[aPageIndex].displays[aDisplayIndex],
+        ...imageSettingPages[aPageIndex][aDisplayIndex],
       };
       const bDisplayImage = {
-        ...imagePages[bPageIndex].displays[bDisplayIndex],
+        ...imageSettingPages[bPageIndex][bDisplayIndex],
       };
-      const newImagePages = [...imagePages];
-      newImagePages[aPageIndex].displays[aDisplayIndex] = {
-        ...bDisplayImage,
-        _revision: aDisplayImage._revision + 1,
-      };
-      newImagePages[bPageIndex].displays[bDisplayIndex] = {
-        ...aDisplayImage,
-        _revision: bDisplayImage._revision + 1,
-      };
-      setImagePages(newImagePages);
+      const newImagePages = [...imageSettingPages];
+      newImagePages[aPageIndex][aDisplayIndex] = bDisplayImage;
+      newImagePages[bPageIndex][bDisplayIndex] = aDisplayImage;
+      setImageSettingPages(newImagePages);
 
-      const aOriginalImage = originalImages[aIndex];
-      const bOriginalImage = originalImages[bIndex];
-      const newOriginalImages = [...originalImages];
-      newOriginalImages[aIndex] = {
-        ...bOriginalImage,
-        _revision: aOriginalImage._revision + 1,
-      };
-      newOriginalImages[bIndex] = {
-        ...aOriginalImage,
-        _revision: bOriginalImage._revision + 1,
-      };
-      setOriginalImages(newOriginalImages);
+      const aOriginalImage = originalImagePages[aPageIndex][aDisplayIndex];
+      const bOriginalImage = originalImagePages[bPageIndex][bDisplayIndex];
+      const newOriginalImages = [...originalImagePages];
+      newOriginalImages[aPageIndex][aDisplayIndex] = bOriginalImage;
+      newOriginalImages[bPageIndex][bDisplayIndex] = aOriginalImage;
+      setOriginalImagePages(newOriginalImages);
 
-      const aConvertedImage = convertedImages[aIndex];
-      const bConvertedImage = convertedImages[bIndex];
-      const newConvertedImages = [...convertedImages];
-      newConvertedImages[aIndex] = {
-        ...bConvertedImage,
-        _revision: aConvertedImage._revision + 1,
-      };
-      newConvertedImages[bIndex] = {
-        ...aConvertedImage,
-        _revision: bConvertedImage._revision + 1,
-      };
-      setConvertedImages(newConvertedImages);
+      const aConvertedImage = convertedImagePages[aPageIndex][aDisplayIndex];
+      const bConvertedImage = convertedImagePages[bPageIndex][bDisplayIndex];
+      const newConvertedImages = [...convertedImagePages];
+      newConvertedImages[aPageIndex][aDisplayIndex] = bConvertedImage;
+      newConvertedImages[bPageIndex][bDisplayIndex] = aConvertedImage;
+      setConvertedImagePages(newConvertedImages);
     },
-    [actionPages, convertedImages, height, imagePages, originalImages, width]
+    [
+      actionSettingPages,
+      convertedImagePages,
+      imageSettingPages,
+      originalImagePages,
+    ]
   );
 
   const hasOriginalImage = useCallback(
-    (imageIndex: number) => !!originalImages[imageIndex].image,
-    [originalImages]
+    (pageIndex: number, displayIndex: number) =>
+      !!originalImagePages[pageIndex][displayIndex],
+    [originalImagePages]
   );
 
   // const loadConfigFile = (configFile: File) =>
@@ -419,7 +409,7 @@ function App() {
     <Main>
       <Header id="header">
         <HeadLine>
-          <HeadLineThin>Free{originalImages.length}</HeadLineThin>
+          <HeadLineThin>Free</HeadLineThin>
           <HeadLineThick>Deck</HeadLineThick>
         </HeadLine>
         <Buttons>
@@ -477,23 +467,35 @@ function App() {
         </Buttons>
       </Header>
       <Content id="pages">
-        {actionPages.map((actionPage, pageIndex) => (
+        {actionSettingPages.map((actionPage, pageIndex) => (
           <Page
             height={height}
             width={width}
-            // affected={affectedPages?.includes(index) ?? false}
+            deleteImage={(displayIndex: number) =>
+              deleteImage(pageIndex, displayIndex)
+            }
             pageIndex={pageIndex}
-            hasOriginalImage={hasOriginalImage}
-            convertedImages={convertedImagesForPage(pageIndex)}
+            hasOriginalImage={(displayIndex: number) =>
+              hasOriginalImage(pageIndex, displayIndex)
+            }
+            convertedImages={convertedImagePages[pageIndex]}
             actionPage={actionPage}
-            imagePage={imagePages[pageIndex]}
+            imagePage={imageSettingPages[pageIndex]}
             key={pageIndex}
-            setOriginalImage={setOriginalImage}
+            setOriginalImage={(displayIndex: number, image: IOriginalImage) =>
+              setOriginalImage(pageIndex, displayIndex, image)
+            }
             deletePage={deletePage}
-            pageCount={actionPages.length}
+            pageCount={actionSettingPages.length}
             addPage={() => addPage(pageIndex)}
-            setActionPage={setActionPage}
-            setImagePage={setImagePage}
+            setDisplayActionSettings={(
+              displayIndex: number,
+              newDisplay: IActionDisplay
+            ) => setActionDisplay(pageIndex, displayIndex, newDisplay)}
+            setDisplayImageSettings={(
+              displayIndex: number,
+              newDisplay: IImageDisplay
+            ) => setImageSettingsDisplay(pageIndex, displayIndex, newDisplay)}
             switchDisplays={switchDisplays}
           />
         ))}
