@@ -24,10 +24,16 @@ export const Action: React.FC<{
   pages: number[];
   action: IActionSetting;
   loadUserInteraction: boolean;
-}> = ({ setActionSetting, pages, addPage, action }) => {
+  title: string;
+}> = ({ setActionSetting, pages, addPage, action, title }) => {
   const setMode = useCallback(
     (mode: EAction) => {
-      setActionSetting({ ...action, mode, enabled: mode !== EAction.noop });
+      setActionSetting({
+        ...action,
+        mode,
+        enabled: mode !== EAction.noop,
+        values: [],
+      });
     },
     [action, setActionSetting]
   );
@@ -45,7 +51,7 @@ export const Action: React.FC<{
   );
   return (
     <Wrapper>
-      <Title>{"UFFF"}</Title>
+      <Title>{title}</Title>
       <SelectWrapper>
         <StyledSelect
           value={action.mode}
@@ -62,6 +68,7 @@ export const Action: React.FC<{
           <WrapRow>
             {action.values.map((key, index) => (
               <MicroButton
+                key={key}
                 onClick={() => {
                   const newKeys = [...action.values];
                   newKeys.splice(index, 1);
@@ -111,7 +118,7 @@ export const Action: React.FC<{
             </SelectWrapper>
           ) : null}
           {!action.values?.length ? (
-            <SmallButton size={1} onClick={() => setGoTo(addPage())}>
+            <SmallButton size={1} onClick={() => addPage()}>
               Add Page +
             </SmallButton>
           ) : (
@@ -119,7 +126,7 @@ export const Action: React.FC<{
               size={1}
               onClick={() => scrollToPage(action.values[0])}
             >
-              Scroll To {action.values[0]}
+              Scroll To {action.values[0].toString()}
             </SmallButton>
           )}
         </>

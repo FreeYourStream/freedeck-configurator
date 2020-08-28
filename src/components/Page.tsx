@@ -11,6 +11,7 @@ import {
 } from "../App";
 import { colors } from "../definitions/colors";
 import { Display } from "./Display";
+import { FDButton } from "./lib/button";
 
 const Wrapper = styled.div`
   position: relative;
@@ -89,7 +90,7 @@ interface IProps {
   convertedImages: Buffer[];
   setOriginalImage: (displayIndex: number, image: Buffer) => void;
   deletePage: (pageIndex: number) => void;
-  addPage: () => number;
+  addPage: (displayIndex: number, primary: boolean) => number;
   pageCount: number;
   setDisplayActionSettings: (
     displayIndex: number,
@@ -140,29 +141,29 @@ const PageComponent: React.FC<IProps> = ({
       </Header>
       <Grid height={height} width={width}>
         <DndProvider backend={Backend}>
-          {actionPage.map((actionDisplay, actionDisplayIndex) => (
+          {imagePage.map((imageDisplay, displayIndex) => (
             <Display
-              deleteImage={() => deleteImage(actionDisplayIndex)}
-              image={convertedImages[actionDisplayIndex]}
-              setDisplayAction={(displayAction: IActionDisplay) =>
-                setDisplayActionSettings(actionDisplayIndex, displayAction)
+              deleteImage={() => deleteImage(displayIndex)}
+              image={convertedImages[displayIndex]}
+              setDisplayAction={(displayAction) =>
+                setDisplayActionSettings(displayIndex, displayAction)
               }
-              setDisplayImage={(displayImage: IImageDisplay) =>
-                setDisplayImageSettings(actionDisplayIndex, displayImage)
+              setDisplayImage={(displayImage) =>
+                setDisplayImageSettings(displayIndex, displayImage)
               }
-              actionDisplay={actionDisplay}
-              imageDisplay={imagePage[actionDisplayIndex]}
-              key={actionDisplayIndex}
-              displayIndex={actionDisplayIndex}
+              actionDisplay={actionPage[displayIndex]}
+              imageDisplay={imagePage[displayIndex]}
+              key={displayIndex}
+              displayIndex={displayIndex}
               pageIndex={pageIndex}
               setOriginalImage={(image) =>
-                setOriginalImage(actionDisplayIndex, image)
+                setOriginalImage(displayIndex, image)
               }
               pages={[...Array(pageCount).keys()].filter(
                 (pageNumber) => pageNumber !== pageIndex
               )}
-              addPage={addPage}
-              hasOriginalImage={hasOriginalImage(actionDisplayIndex)}
+              addPage={(primary: boolean) => addPage(displayIndex, primary)}
+              hasOriginalImage={hasOriginalImage(displayIndex)}
               switchDisplays={switchDisplays}
             />
           ))}

@@ -8,6 +8,7 @@ import { IActionDisplay, IImageDisplay } from "../App";
 import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { Action } from "./Action";
+import { FDButton } from "./lib/button";
 import { Column, Row } from "./lib/misc";
 import { Modal } from "./modal";
 import { Settings } from "./Settings";
@@ -64,7 +65,7 @@ const DropHere = styled.div`
 
 const DisplayComponent: React.FC<{
   image: Buffer;
-  addPage: () => number;
+  addPage: (primary: boolean) => number;
   deleteImage: () => void;
   setOriginalImage: (newImage: Buffer) => void;
   setDisplayAction: (display: IActionDisplay) => void;
@@ -177,30 +178,28 @@ const DisplayComponent: React.FC<{
           />
           <Row>
             <Column>
-              {actionDisplay && (
-                <Action
-                  setActionSetting={(primary) =>
-                    setDisplayAction({ ...actionDisplay, primary })
-                  }
-                  pages={pages}
-                  action={actionDisplay.primary}
-                  addPage={addPage}
-                  loadUserInteraction={false}
-                />
-              )}
+              <Action
+                setActionSetting={(primary) =>
+                  setDisplayAction({ ...actionDisplay, primary })
+                }
+                title="Short press"
+                pages={pages}
+                action={actionDisplay.primary}
+                addPage={() => addPage(true)}
+                loadUserInteraction={false}
+              />
             </Column>
             <Column>
-              {actionDisplay.secondary.enabled && (
-                <Action
-                  setActionSetting={(secondary) =>
-                    setDisplayAction({ ...actionDisplay, secondary })
-                  }
-                  pages={pages}
-                  action={actionDisplay.secondary}
-                  addPage={addPage}
-                  loadUserInteraction={false}
-                />
-              )}
+              <Action
+                setActionSetting={(secondary) =>
+                  setDisplayAction({ ...actionDisplay, secondary })
+                }
+                title="Long press"
+                pages={pages}
+                action={actionDisplay.secondary}
+                addPage={() => addPage(false)}
+                loadUserInteraction={false}
+              />
             </Column>
           </Row>
         </Modal>

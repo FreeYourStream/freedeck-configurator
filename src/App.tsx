@@ -7,8 +7,8 @@ import { FDButton } from "./components/lib/button";
 import { Page } from "./components/Page";
 import { colors } from "./definitions/colors";
 import {
-  defaultImageDisplay,
   getDefaultActionPage,
+  getDefaultImageDisplay,
   getDefaultImagePage,
 } from "./definitions/defaultPage";
 import { composeImage, composeText } from "./lib/convertFile";
@@ -249,7 +249,11 @@ function App() {
     [convertedImagePages, imageSettingPages, originalImagePages]
   );
   const addPage = useCallback(
-    (previousPageIndex?: number) => {
+    (
+      previousPageIndex?: number,
+      previousDisplayIndex?: number,
+      primary?: boolean
+    ) => {
       const newOriginalImagePage = [];
       const newConvertedImagePage = [];
       for (let i = 0; i < width * height; i++) {
@@ -264,17 +268,28 @@ function App() {
         ...convertedImagePages,
         newConvertedImagePage,
       ];
-      setOriginalImagePages([...newOriginalImagePages]);
-      setConvertedImagePages([...newConvertedImagePages]);
+      setOriginalImagePages(newOriginalImagePages);
+      setConvertedImagePages(newConvertedImagePages);
 
       setImageSettingPages([
         ...imageSettingPages,
         getDefaultImagePage(width, height),
       ]);
-      setActionSettingPages([
+
+      const newActionSettingPages = [
         ...actionSettingPages,
-        getDefaultActionPage(height, width, previousPageIndex),
-      ]);
+        getDefaultActionPage(width, height, previousPageIndex),
+      ];
+      if (
+        previousDisplayIndex !== undefined &&
+        previousPageIndex !== undefined &&
+        primary !== undefined
+      ) {
+        newActionSettingPages[previousPageIndex][previousDisplayIndex][
+          primary ? "primary" : "secondary"
+        ].values = [actionSettingPages.length];
+      }
+      setActionSettingPages(newActionSettingPages);
 
       return actionSettingPages.length;
     },
@@ -289,7 +304,11 @@ function App() {
   );
   const deleteImage = useCallback(
     (pageIndex: number, displayIndex: number) => {
-      setImageSettingsDisplay(pageIndex, displayIndex, defaultImageDisplay);
+      setImageSettingsDisplay(
+        pageIndex,
+        displayIndex,
+        getDefaultImageDisplay()
+      );
       setOriginalImage(pageIndex, displayIndex, null);
     },
     [setImageSettingsDisplay, setOriginalImage]
@@ -404,7 +423,6 @@ function App() {
   //     setPageBuffers(config.pages);
   //     setImageBuffers(config.images);
   //   });
-
   return (
     <Main>
       <Header id="header">
@@ -456,18 +474,12 @@ function App() {
             </Horiz>
           </form>
           <Horiz>
-            <AddPage
-              onClick={() => {
-                addPage();
-              }}
-            >
-              Add Page +
-            </AddPage>
+            <AddPage onClick={() => addPage()}>Add Page +</AddPage>
           </Horiz>
         </Buttons>
       </Header>
       <Content id="pages">
-        {actionSettingPages.map((actionPage, pageIndex) => (
+        {imageSettingPages.map((imagePage, pageIndex) => (
           <Page
             height={height}
             width={width}
@@ -479,7 +491,7 @@ function App() {
               hasOriginalImage(pageIndex, displayIndex)
             }
             convertedImages={convertedImagePages[pageIndex]}
-            actionPage={actionPage}
+            actionPage={actionSettingPages[pageIndex]}
             imagePage={imageSettingPages[pageIndex]}
             key={pageIndex}
             setOriginalImage={(displayIndex: number, image: IOriginalImage) =>
@@ -487,7 +499,9 @@ function App() {
             }
             deletePage={deletePage}
             pageCount={actionSettingPages.length}
-            addPage={() => addPage(pageIndex)}
+            addPage={(displayIndex, primary) =>
+              addPage(pageIndex, displayIndex, primary)
+            }
             setDisplayActionSettings={(
               displayIndex: number,
               newDisplay: IActionDisplay
