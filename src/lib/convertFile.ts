@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
 
 import fs from "floyd-steinberg";
-import Jimp from "jimp";
+import Jimp, { BLEND_OVERLAY } from "jimp";
 import { PNG } from "pngjs";
 
 import { IImageDisplay } from "../App";
@@ -15,7 +15,19 @@ export interface IConverted {
   base64: string;
 }
 
-export const composeImage = (
+export const ditherImage = (image: Buffer): Promise<Jimp> => {
+  return new Promise((resolve, reject) => {
+    const pngImage = new PNG();
+    pngImage.parse(image, async (err, data) => {
+      const dithered = fs(data);
+      const buffer = PNG.sync.write(dithered);
+      const jimpImage = await Jimp.read(buffer);
+      resolve(jimpImage);
+    });
+  });
+};
+
+export const composeImage = async (
   image: Buffer,
   width: number,
   height: number,
@@ -25,57 +37,55 @@ export const composeImage = (
 ): Promise<Buffer> => {
   const { contrast, invert, dither } = imageOptions;
   const { enabled: textEnabled, font: fontName } = textOptions;
-  return new Promise(async (resolve) => {
-    const jimpImage = await Jimp.read(image);
-    const pngImage = new PNG();
-    if (invert) jimpImage.invert();
-    const background = new Jimp(width, height, "black");
-    if (textEnabled) {
-      jimpImage.autocrop().scaleToFit(width / 2, height);
-      const font = await Jimp.loadFont(fontName);
-      const fontSize = font.common.lineHeight - 2;
-      let lines = text.split(/\r?\n/).filter((line) => line);
-      const overAllLineHeight =
-        lines.length * fontSize + (lines.length - 1) * 1;
-      const offset = (64 - overAllLineHeight) / 2;
-      await Promise.all(
-        lines.map(async (line, index) => {
-          const lineOffset = offset + fontSize * index;
-          await background.print(
-            font,
-            jimpImage.getWidth() + 3,
-            lineOffset,
-            line
-          );
-        })
-      );
 
-      await background.contrast(-0.25);
-      await jimpImage.contrast(contrast);
-      background.composite(
-        jimpImage,
-        0,
-        height / 2 - jimpImage.getHeight() / 2
+  let jimpImage = await Jimp.read(image);
+  if (invert) jimpImage.invert();
+  await jimpImage.contrast(contrast);
+  await jimpImage.autocrop();
+
+  const background = new Jimp(width, height, "black");
+
+  if (textEnabled) {
+    jimpImage.scaleToFit(width * textOptions.iconWidthMultiplier, height);
+    if (dither)
+      jimpImage = await ditherImage(
+        await jimpImage.getBufferAsync("image/png")
       );
-    } else {
-      jimpImage.autocrop().scaleToFit(width, height);
-      background.composite(
-        jimpImage,
-        width / 2 - jimpImage.getWidth() / 2,
-        height / 2 - jimpImage.getHeight() / 2
+    const font = await Jimp.loadFont(fontName);
+    const fontSize = font.common.lineHeight - 2;
+    let lines = text.split(/\r?\n/).filter((line) => line);
+    const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
+    const offset = (64 - overAllLineHeight) / 2;
+    await Promise.all(
+      lines.map(async (line, index) => {
+        const lineOffset = offset + fontSize * index;
+        await background.print(
+          font,
+          jimpImage.getWidth() + 3,
+          lineOffset,
+          line
+        );
+      })
+    );
+
+    // await background.contrast(-0.25);
+
+    background.composite(jimpImage, 0, height / 2 - jimpImage.getHeight() / 2);
+  } else {
+    if (dither)
+      jimpImage = await ditherImage(
+        await jimpImage.getBufferAsync("image/png")
       );
-      await background.contrast(contrast);
-    }
-    const jimpPNG = await background.getBufferAsync("image/png");
-    pngImage.parse(jimpPNG, async (err, data) => {
-      if (dither) data = fs(data);
-      const buffer = PNG.sync.write(data);
-      const jimpImage = await Jimp.read(buffer);
-      const { binary } = imageToBinaryBuffer(jimpImage, width, height);
-      const bytes = pixelBufferToBitmapBuffer(binary);
-      resolve(bytes);
-    });
-  });
+    jimpImage.scaleToFit(width, height);
+    background.composite(
+      jimpImage,
+      width / 2 - jimpImage.getWidth() / 2,
+      height / 2 - jimpImage.getHeight() / 2
+    );
+  }
+  const { binary } = imageToBinaryBuffer(background, width, height);
+  const bytes = pixelBufferToBitmapBuffer(binary);
+  return bytes;
 };
 
 export const composeText = (

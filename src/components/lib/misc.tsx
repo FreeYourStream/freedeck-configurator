@@ -1,4 +1,5 @@
 import styled from "styled-components";
+
 import { colors } from "../../definitions/colors";
 import { FDButton } from "./button";
 
@@ -26,7 +27,9 @@ export const Title = styled.div`
 `;
 export const Label = styled.div`
   color: ${colors.white};
+  white-space: nowrap;
   font-size: 16px;
+  margin-right: 4px;
   font-family: "Barlow", sans-serif;
 `;
 export const Column = styled.div`
@@ -80,8 +83,11 @@ export const SelectWrapper = styled.div`
 `;
 export const Row = styled.div`
   display: flex;
+  width: 100%;
   justify-content: space-between;
+  align-content: center;
   margin-top: 8px;
+  min-height: 20px;
 `;
 export const WrapRow = styled.div`
   display: flex;

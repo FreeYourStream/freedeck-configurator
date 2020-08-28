@@ -128,6 +128,7 @@ export interface IActionSetting {
 export interface ITextWithIconSettings {
   font: string;
   enabled: boolean;
+  iconWidthMultiplier: number;
 }
 
 export interface IImageSettings {
@@ -198,8 +199,6 @@ function App() {
 
   const setOriginalImage = useCallback(
     async (pageIndex: number, displayIndex: number, image: Buffer | null) => {
-      const offset = width * height * pageIndex + displayIndex;
-
       const display = imageSettingPages[pageIndex][displayIndex];
       let convertedImage: IConvertedImage;
       if (image !== null) {
@@ -215,14 +214,14 @@ function App() {
         convertedImage = new Buffer(1024);
       }
       const newOriginalImages = [...originalImagePages];
-      newOriginalImages[offset][displayIndex] = image;
+      newOriginalImages[pageIndex][displayIndex] = image;
       setOriginalImagePages(newOriginalImages);
 
       const newConvertedImages = [...convertedImagePages];
-      newConvertedImages[offset][displayIndex] = convertedImage;
+      newConvertedImages[pageIndex][displayIndex] = convertedImage;
       setConvertedImagePages(newConvertedImages);
     },
-    [height, width, convertedImagePages, originalImagePages, imageSettingPages]
+    [convertedImagePages, originalImagePages, imageSettingPages]
   );
   const setActionDisplay = useCallback(
     (pageIndex: number, displayIndex: number, newDisplay: IActionDisplay) => {
@@ -281,8 +280,6 @@ function App() {
       let imageSettingPage = getDefaultImagePage(width, height);
       for (let i = 0; i < width * height; i++) {
         if (previousPageIndex !== undefined && i === 0) {
-          // newOriginalImagePage.push(null);
-          // console.log(defaultBackImage);
           newOriginalImagePage.push(defaultBackImage.image);
           imageSettingPage[i] = defaultBackImage.settings;
           newConvertedImagePage.push(
@@ -488,6 +485,14 @@ function App() {
                 ml={4}
                 size={3}
                 onClick={() => {
+                  const config = {
+                    imageSettingPages,
+                    actionSettingPages,
+                  };
+                  //save this at the end of the config
+                  const buffer = Buffer.from(JSON.stringify(config), "binary");
+                  console.log(buffer.byteLength);
+                  console.log(JSON.parse(buffer.toString()));
                   // const header = new Buffer(HEADER_SIZE);
                   // header.writeUInt8(3, 0);
                   // header.writeUInt8(2, 1);

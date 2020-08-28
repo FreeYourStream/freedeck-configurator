@@ -34,6 +34,7 @@ export const getDefaultImageDisplay: (
       textWithIconSettings: {
         enabled: false,
         font: fontMedium,
+        iconWidthMultiplier: 0.35,
       },
     },
     options

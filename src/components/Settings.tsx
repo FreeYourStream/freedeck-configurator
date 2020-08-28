@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
+import { useDebounce } from "use-debounce";
 
 import { IImageDisplay } from "../App";
 import { colors } from "../definitions/colors";
-import useDebounce from "../lib/useDebounce";
 import { FDButton } from "./lib/button";
 import { Row, StyledSelect } from "./lib/misc";
 import {
@@ -11,7 +11,6 @@ import {
   Column,
   Disabler,
   Label,
-  MicroButton,
   TextInput,
   Title,
 } from "./lib/misc";
@@ -21,14 +20,11 @@ export const fontSmall = "fonts/small.fnt";
 export const fontMedium = "fonts/medium.fnt";
 export const fontLarge = "fonts/large.fnt";
 
-function clamp(num: number, min: number, max: number) {
-  return num <= min ? min : num >= max ? max : num;
-}
 const Wrapper = styled.div<{ show: boolean }>`
   display: ${(p) => (p.show ? "flex" : "none")};
 `;
 
-const ContrastValue = styled.p`
+const Value = styled.p`
   line-height: 21px;
   margin: 0;
   color: ${colors.white};
@@ -44,6 +40,9 @@ const EnableTextButton = styled(CheckButton)`
   margin-right: 4px;
 `;
 
+const StyledSlider = styled.input.attrs({ type: "range" })`
+  width: 200px;
+`;
 export interface ISettings {
   contrast: number;
   dither: boolean;
@@ -73,7 +72,22 @@ export const Settings: React.FC<{
   setText: setTextValue,
 }) => {
   const [localText, setLocalText] = useState<string>(text);
-  const debouncedText = useDebounce(localText, 300);
+  const [localContrast, setLocalContrast] = useState<number>(settings.contrast);
+  const [localIconWidth, setLocalIconWidth] = useState<number>(
+    textSettings.iconWidthMultiplier
+  );
+  const [debouncedText] = useDebounce(localText, 33, {
+    maxWait: 33,
+    leading: true,
+  });
+  const [debouncedContrast] = useDebounce(localContrast, 33, {
+    maxWait: 33,
+    leading: true,
+  });
+  const [debouncedIconWidth] = useDebounce(localIconWidth, 33, {
+    maxWait: 33,
+    leading: true,
+  });
 
   const setContrast = useCallback(
     (contrast: number) => {
@@ -111,11 +125,23 @@ export const Settings: React.FC<{
     },
     [setTextValue]
   );
+  const setIconWidthMultiplier = useCallback(
+    (value: number) => {
+      setTextSettings({ ...textSettings, iconWidthMultiplier: value });
+    },
+    [setTextSettings, textSettings]
+  );
   useEffect(() => {
     setText(debouncedText);
     // dont put setText there, we will have an endless loop if you do
     // @ts-ignore
   }, [debouncedText]);
+  useEffect(() => {
+    setContrast(debouncedContrast);
+  }, [debouncedContrast]);
+  useEffect(() => {
+    setIconWidthMultiplier(debouncedIconWidth);
+  }, [debouncedIconWidth]);
   return (
     <Wrapper show={show}>
       <Column>
@@ -126,29 +152,18 @@ export const Settings: React.FC<{
         <Title>Image Settings</Title>
         <Row>
           <Label>Contrast</Label>
-          <ContrastValue>{settings.contrast.toFixed(2)}</ContrastValue>
+          <Value>{settings.contrast.toFixed(2)}</Value>
         </Row>
         <Row>
-          <MicroButton
-            onClick={() => setContrast(clamp(settings.contrast + 0.1, -1, 1))}
-          >
-            ++
-          </MicroButton>
-          <MicroButton
-            onClick={() => setContrast(clamp(settings.contrast + 0.02, -1, 1))}
-          >
-            +
-          </MicroButton>
-          <MicroButton
-            onClick={() => setContrast(clamp(settings.contrast - 0.02, -1, 1))}
-          >
-            -
-          </MicroButton>
-          <MicroButton
-            onClick={() => setContrast(clamp(settings.contrast - 0.1, -1, 1))}
-          >
-            --
-          </MicroButton>
+          <StyledSlider
+            min={-1}
+            max={1}
+            step={0.02}
+            value={localContrast}
+            onChange={(event) =>
+              setLocalContrast(event.currentTarget.valueAsNumber)
+            }
+          />
         </Row>
         <Row>
           <MicroToggle width="48%" onClick={() => setInvert(!settings.invert)}>
@@ -176,6 +191,22 @@ export const Settings: React.FC<{
             <option value={fontMedium}>medium</option>
             <option value={fontLarge}>large</option>
           </StyledSelect>
+        </Row>
+        <Row>
+          <Label>Icon width:</Label>
+          <Value>{textSettings.iconWidthMultiplier.toFixed(2)}</Value>
+        </Row>
+        <Row>
+          <StyledSlider
+            disabled={!textSettings.enabled}
+            min={0.1}
+            max={0.9}
+            step={0.01}
+            value={localIconWidth}
+            onChange={(event) =>
+              setLocalIconWidth(event.currentTarget.valueAsNumber)
+            }
+          />
         </Row>
       </Column>
 
