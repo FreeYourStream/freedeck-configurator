@@ -2,13 +2,13 @@ import Jimp from "jimp";
 import React, { useCallback, useMemo, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { useDropzone } from "react-dropzone";
+import { FaTrashAlt } from "react-icons/fa";
 import styled from "styled-components";
 
 import { IActionDisplay, IImageDisplay } from "../App";
 import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { Action } from "./Action";
-import { FDButton } from "./lib/button";
 import { Column, Row } from "./lib/misc";
 import { Modal } from "./modal";
 import { Settings } from "./Settings";
@@ -35,12 +35,15 @@ const DropWrapper = styled.div`
   background-color: #000000a1;
   border-radius: 16px;
 `;
-const DeleteImage = styled.img`
+const DeleteImage = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
-  background-color: white;
+  background-color: red;
   border-radius: 50%;
-  height: 22px;
-  width: 22px;
+  height: 28px;
+  width: 28px;
   top: -8px;
   right: -8px;
   position: absolute;
@@ -65,7 +68,7 @@ const DropHere = styled.div`
 
 const DisplayComponent: React.FC<{
   image: Buffer;
-  addPage: (primary: boolean) => number;
+  addPage: (primary: boolean) => Promise<number>;
   deleteImage: () => void;
   setOriginalImage: (newImage: Buffer) => void;
   setDisplayAction: (display: IActionDisplay) => void;
@@ -152,7 +155,9 @@ const DisplayComponent: React.FC<{
       {showSettings && (
         <Modal visible={showSettings} setClose={() => setShowSettings(false)}>
           <DropWrapper>
-            <DeleteImage src="close.png" onClick={deleteImage} />
+            <DeleteImage onClick={deleteImage}>
+              <FaTrashAlt size={18} color="white" />
+            </DeleteImage>
             <Drop {...getRootProps()}>
               <input {...getInputProps()} />
               {isDragActive ? (

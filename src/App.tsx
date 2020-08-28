@@ -1,10 +1,11 @@
-import { type } from "os";
-
-import React, { useCallback, useState } from "react";
+import Jimp from "jimp";
+import React, { useCallback, useEffect, useState } from "react";
+import { HiDocumentAdd } from "react-icons/hi";
 import styled from "styled-components";
 
-import { FDButton } from "./components/lib/button";
+import { FDIconButton } from "./components/lib/button";
 import { Page } from "./components/Page";
+import * as backImage from "./definitions/back.png";
 import { colors } from "./definitions/colors";
 import {
   getDefaultActionPage,
@@ -94,7 +95,7 @@ const LoadConfigFileInner = styled.label`
 `;
 
 const LoadConfigFile = styled.div`
-  transition: all 0.05s;
+  /* transition: all 0.05s;
   padding-bottom: 6px;
   :hover {
     padding-top: 4px;
@@ -111,16 +112,12 @@ const LoadConfigFile = styled.div`
   }
   &:active ${LoadConfigFileInner} {
     box-shadow: none;
-  }
+  } */
 `;
 
 const InvisibleFile = styled.input.attrs({ type: "file" })`
   display: none;
 `;
-
-const SaveConfigFile = styled(FDButton)``;
-
-const AddPage = styled(FDButton)``;
 
 export interface IActionSetting {
   mode: EAction;
@@ -157,6 +154,13 @@ export type IActionSettingPage = IActionDisplay[];
 export type IImageSettingPage = IImageDisplay[];
 
 function App() {
+  const [defaultBackImage, setDefaultBackImage] = useState<{
+    image: Buffer;
+    settings: IImageDisplay;
+  }>({
+    image: new Buffer(1024),
+    settings: getDefaultImageDisplay({ imageSettings: { invert: true } }),
+  });
   const [height] = useState<number>(2);
   const [width] = useState<number>(3);
   const [actionSettingPages, setActionSettingPages] = useState<
@@ -173,6 +177,24 @@ function App() {
   const [convertedImagePages, setConvertedImagePages] = useState<
     IConvertedImagePage[]
   >([]);
+
+  useEffect(() => {
+    const localDefaultBackImage = localStorage.getItem("defaultBackImage");
+    const localDefaultBackImageSettings = localStorage.getItem(
+      "defaultBackImageSettings"
+    );
+    if (!localDefaultBackImage || !localDefaultBackImageSettings) {
+      Jimp.read(backImage.default).then((image) =>
+        image.getBuffer("image/bmp", (error, buffer) =>
+          setDefaultBackImage({ ...defaultBackImage, image: buffer })
+        )
+      );
+    } else {
+      const buffer = Buffer.from(JSON.parse(localDefaultBackImage).data);
+      const settings = JSON.parse(localDefaultBackImageSettings);
+      setDefaultBackImage({ settings, image: buffer });
+    }
+  }, []);
 
   const setOriginalImage = useCallback(
     async (pageIndex: number, displayIndex: number, image: Buffer | null) => {
@@ -249,32 +271,38 @@ function App() {
     [convertedImagePages, imageSettingPages, originalImagePages]
   );
   const addPage = useCallback(
-    (
+    async (
       previousPageIndex?: number,
       previousDisplayIndex?: number,
       primary?: boolean
     ) => {
       const newOriginalImagePage = [];
       const newConvertedImagePage = [];
+      let imageSettingPage = getDefaultImagePage(width, height);
       for (let i = 0; i < width * height; i++) {
-        newOriginalImagePage.push(null);
-        newConvertedImagePage.push(new Buffer(1024));
+        if (previousPageIndex !== undefined && i === 0) {
+          // newOriginalImagePage.push(null);
+          // console.log(defaultBackImage);
+          newOriginalImagePage.push(defaultBackImage.image);
+          imageSettingPage[i] = defaultBackImage.settings;
+          newConvertedImagePage.push(
+            await composeImage(
+              defaultBackImage.image,
+              128,
+              64,
+              imageSettingPage[i].imageSettings,
+              imageSettingPage[i].textWithIconSettings,
+              ""
+            )
+          );
+        } else {
+          newOriginalImagePage.push(null);
+          newConvertedImagePage.push(new Buffer(1024));
+        }
       }
-      const newOriginalImagePages = [
-        ...originalImagePages,
-        newOriginalImagePage,
-      ];
-      const newConvertedImagePages = [
-        ...convertedImagePages,
-        newConvertedImagePage,
-      ];
-      setOriginalImagePages(newOriginalImagePages);
-      setConvertedImagePages(newConvertedImagePages);
 
-      setImageSettingPages([
-        ...imageSettingPages,
-        getDefaultImagePage(width, height),
-      ]);
+      setOriginalImagePages([...originalImagePages, newOriginalImagePage]);
+      setConvertedImagePages([...convertedImagePages, newConvertedImagePage]);
 
       const newActionSettingPages = [
         ...actionSettingPages,
@@ -290,16 +318,17 @@ function App() {
         ].values = [actionSettingPages.length];
       }
       setActionSettingPages(newActionSettingPages);
-
+      setImageSettingPages([...imageSettingPages, imageSettingPage]);
       return actionSettingPages.length;
     },
     [
-      actionSettingPages,
-      height,
-      width,
-      imageSettingPages,
       originalImagePages,
       convertedImagePages,
+      imageSettingPages,
+      width,
+      height,
+      actionSettingPages,
+      defaultBackImage,
     ]
   );
   const deleteImage = useCallback(
@@ -438,9 +467,13 @@ function App() {
           >
             <Horiz>
               <LoadConfigFile>
-                <LoadConfigFileInner htmlFor="loadConfig">
+                <FDIconButton
+                  size={3}
+                  icon={"fa/FaFileUpload"}
+                  htmlFor="loadConfig"
+                >
                   Load Config
-                </LoadConfigFileInner>
+                </FDIconButton>
               </LoadConfigFile>
               <InvisibleFile
                 id="loadConfig"
@@ -450,8 +483,9 @@ function App() {
                   // }
                 }}
               ></InvisibleFile>
-              <SaveConfigFile
-                ml={16}
+              <FDIconButton
+                icon="fa/FaSave"
+                ml={4}
                 size={3}
                 onClick={() => {
                   // const header = new Buffer(HEADER_SIZE);
@@ -470,11 +504,23 @@ function App() {
                 }}
               >
                 Save Config
-              </SaveConfigFile>
+              </FDIconButton>
             </Horiz>
           </form>
           <Horiz>
-            <AddPage onClick={() => addPage()}>Add Page +</AddPage>
+            <FDIconButton
+              ml={5}
+              icon="ai/AiFillSetting"
+              onClick={() =>
+                alert("coming soon (changing default back image, etc...)")
+              }
+            >
+              Settings
+            </FDIconButton>
+            <FDIconButton ml={5} onClick={() => addPage()}>
+              <HiDocumentAdd size={22} />
+              Add Page
+            </FDIconButton>
           </Horiz>
         </Buttons>
       </Header>

@@ -1,6 +1,7 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
+import { FaTrashAlt } from "react-icons/fa";
 import styled from "styled-components";
 
 import {
@@ -11,7 +12,6 @@ import {
 } from "../App";
 import { colors } from "../definitions/colors";
 import { Display } from "./Display";
-import { FDButton } from "./lib/button";
 
 const Wrapper = styled.div`
   position: relative;
@@ -46,14 +46,17 @@ const PageIndicator = styled.div`
   background-color: ${colors.black};
 `;
 
-const DeletePage = styled.img`
+const DeletePage = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
-  background-color: white;
+  background-color: red;
   border-radius: 50%;
-  height: 22px;
-  width: 22px;
-  top: -8px;
-  right: -8px;
+  height: 30px;
+  width: 30px;
+  top: -15px;
+  right: -15px;
   position: absolute;
   border-style: none;
 `;
@@ -90,7 +93,7 @@ interface IProps {
   convertedImages: Buffer[];
   setOriginalImage: (displayIndex: number, image: Buffer) => void;
   deletePage: (pageIndex: number) => void;
-  addPage: (displayIndex: number, primary: boolean) => number;
+  addPage: (displayIndex: number, primary: boolean) => Promise<number>;
   pageCount: number;
   setDisplayActionSettings: (
     displayIndex: number,
@@ -130,14 +133,15 @@ const PageComponent: React.FC<IProps> = ({
       <Header>
         <PageIndicator>{pageIndex}</PageIndicator>
         <DeletePage
-          src="close.png"
           onClick={() => {
             const deleteConfirmed = window.confirm(
               "Do you really want to delete this page forever?"
             );
             if (deleteConfirmed) deletePage(pageIndex);
           }}
-        />
+        >
+          <FaTrashAlt size={18} color="white" />
+        </DeletePage>
       </Header>
       <Grid height={height} width={width}>
         <DndProvider backend={Backend}>

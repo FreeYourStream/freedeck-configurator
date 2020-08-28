@@ -1,6 +1,12 @@
+import { merge } from "lodash";
+
 import { IActionDisplay, IActionSettingPage, IImageDisplay } from "../App";
 import { fontMedium } from "../components/Settings";
 import { EAction } from "../lib/parse/parsePage";
+
+type RecursivePartial<T> = {
+  [P in keyof T]?: RecursivePartial<T[P]>;
+};
 export const getDefaultActionDisplay: () => IActionDisplay = () => ({
   primary: {
     mode: EAction.noop,
@@ -13,19 +19,25 @@ export const getDefaultActionDisplay: () => IActionDisplay = () => ({
     enabled: false,
   },
 });
-export const getDefaultImageDisplay: () => IImageDisplay = () => ({
-  text: "",
-  imageSettings: {
-    contrast: 0,
-    dither: false,
-    invert: false,
-  },
-  imageIsConverted: true,
-  textWithIconSettings: {
-    enabled: false,
-    font: fontMedium,
-  },
-});
+export const getDefaultImageDisplay: (
+  options?: RecursivePartial<IImageDisplay>
+) => IImageDisplay = (options) =>
+  merge(
+    {
+      text: "",
+      imageSettings: {
+        contrast: 0,
+        dither: false,
+        invert: false,
+      },
+      imageIsConverted: true,
+      textWithIconSettings: {
+        enabled: false,
+        font: fontMedium,
+      },
+    },
+    options
+  );
 export const getDefaultActionPage = (
   width: number,
   height: number,

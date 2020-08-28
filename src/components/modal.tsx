@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { AiFillCloseSquare } from "react-icons/ai";
 import styled from "styled-components";
 
 import { colors } from "../definitions/colors";
@@ -21,7 +22,7 @@ const Content = styled.div`
   position: relative;
   border: 1px solid ${colors.black};
   background: ${colors.gray};
-  border-radius: 8px;
+  border-radius: 8px 0px 8px 8px;
   min-width: 200px;
   min-height: 200px;
   justify-content: center;
@@ -31,11 +32,19 @@ const Content = styled.div`
 
 const Close = styled.div`
   position: absolute;
-  top: -12px;
-  right: -12px;
-  width: 24px;
-  height: 24px;
+  top: 0px;
+  right: 0px;
+  width: 30px;
+  height: 30px;
   cursor: pointer;
+`;
+const CloseBackground = styled.div`
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  background-color: white;
 `;
 
 export const Modal: React.FC<{ visible: boolean; setClose: () => void }> = ({
@@ -46,8 +55,9 @@ export const Modal: React.FC<{ visible: boolean; setClose: () => void }> = ({
   const content = (
     <Wrapper visible={visible}>
       <Content>
+        <CloseBackground />
         <Close onClick={() => setClose()}>
-          <img width="24px" src="./close.png" alt="close" />
+          <AiFillCloseSquare size={30} color="red" />
         </Close>
         {children}
       </Content>

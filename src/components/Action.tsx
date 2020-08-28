@@ -20,7 +20,7 @@ const SmallButton = styled(FDButton).attrs({ mt: 4 })`
 `;
 export const Action: React.FC<{
   setActionSetting: (newActionSetting: IActionSetting) => void;
-  addPage: () => number;
+  addPage: () => Promise<number>;
   pages: number[];
   action: IActionSetting;
   loadUserInteraction: boolean;
@@ -118,7 +118,7 @@ export const Action: React.FC<{
             </SelectWrapper>
           ) : null}
           {!action.values?.length ? (
-            <SmallButton size={1} onClick={() => addPage()}>
+            <SmallButton size={1} onClick={async () => await addPage()}>
               Add Page +
             </SmallButton>
           ) : (
