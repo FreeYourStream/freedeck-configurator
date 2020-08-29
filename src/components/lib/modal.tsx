@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { AiFillCloseSquare } from "react-icons/ai";
 import styled from "styled-components";
 
-import { colors } from "../definitions/colors";
+import { colors } from "../../definitions/colors";
 
 const Wrapper = styled.div<{ visible: boolean }>`
   position: fixed;
@@ -47,13 +47,13 @@ const CloseBackground = styled.div`
   background-color: white;
 `;
 
-export const Modal: React.FC<{ visible: boolean; setClose: () => void }> = ({
+export const Modal: React.FC<{ visible?: boolean; setClose: () => void }> = ({
   visible,
   setClose,
   children,
 }) => {
   const content = (
-    <Wrapper visible={visible}>
+    <Wrapper visible={visible ?? true}>
       <Content>
         <CloseBackground />
         <Close onClick={() => setClose()}>

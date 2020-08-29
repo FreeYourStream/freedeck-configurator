@@ -5,6 +5,7 @@ import styled from "styled-components";
 
 import { FDIconButton } from "./components/lib/button";
 import { Page } from "./components/Page";
+import { SettingsModal } from "./components/SettingsModal";
 import * as backImage from "./definitions/back.png";
 import { colors } from "./definitions/colors";
 import {
@@ -153,20 +154,22 @@ export type IOriginalImagePage = Array<IOriginalImage>;
 export type IConvertedImagePage = Array<IConvertedImage>;
 export type IActionSettingPage = IActionDisplay[];
 export type IImageSettingPage = IImageDisplay[];
-
+export interface IDefaultBackImage {
+  image: Buffer;
+  settings: IImageDisplay;
+}
 function App() {
-  const [defaultBackImage, setDefaultBackImage] = useState<{
-    image: Buffer;
-    settings: IImageDisplay;
-  }>({
+  const [defaultBackImage, setDefaultBackImage] = useState<IDefaultBackImage>({
     image: new Buffer(1024),
     settings: getDefaultImageDisplay({ imageSettings: { invert: true } }),
   });
   const [height] = useState<number>(2);
   const [width] = useState<number>(3);
+
   const [actionSettingPages, setActionSettingPages] = useState<
     IActionSettingPage[]
   >([]);
+
   const [imageSettingPages, setImageSettingPages] = useState<
     IImageSettingPage[]
   >([]);
@@ -179,12 +182,14 @@ function App() {
     IConvertedImagePage[]
   >([]);
 
+  const [showSettings, setShowSettings] = useState<boolean>(false);
   useEffect(() => {
     const localDefaultBackImage = localStorage.getItem("defaultBackImage");
     const localDefaultBackImageSettings = localStorage.getItem(
       "defaultBackImageSettings"
     );
     if (!localDefaultBackImage || !localDefaultBackImageSettings) {
+      console.log("using stock image");
       Jimp.read(backImage.default).then((image) =>
         image.getBuffer("image/bmp", (error, buffer) =>
           setDefaultBackImage({ ...defaultBackImage, image: buffer })
@@ -516,9 +521,7 @@ function App() {
             <FDIconButton
               ml={5}
               icon="ai/AiFillSetting"
-              onClick={() =>
-                alert("coming soon (changing default back image, etc...)")
-              }
+              onClick={() => setShowSettings(true)}
             >
               Settings
             </FDIconButton>
@@ -565,6 +568,13 @@ function App() {
           />
         ))}
       </Content>
+      {showSettings && (
+        <SettingsModal
+          setClose={() => setShowSettings(false)}
+          defaultBackImage={defaultBackImage}
+          setDefaultBackImage={setDefaultBackImage}
+        />
+      )}
     </Main>
   );
 }

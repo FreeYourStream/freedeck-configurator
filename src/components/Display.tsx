@@ -3,14 +3,16 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { useDropzone } from "react-dropzone";
 import { FaTrashAlt } from "react-icons/fa";
-import styled from "styled-components";
+import styled, { StyledComponent } from "styled-components";
 
 import { IActionDisplay, IImageDisplay } from "../App";
 import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { Action } from "./Action";
+import { ImagePreview } from "./lib/bwImagePreview";
+import { DropDisplay } from "./lib/dropDisplay";
 import { Column, Row } from "./lib/misc";
-import { Modal } from "./modal";
+import { Modal } from "./lib/modal";
 import { Settings } from "./Settings";
 
 const Wrapper = styled.div<{ opacity: number }>`
@@ -20,50 +22,6 @@ const Wrapper = styled.div<{ opacity: number }>`
   flex-direction: column;
   position: relative;
   z-index: 10;
-`;
-const ImagePreview = styled.img<{ multiplier: number }>`
-  width: ${(p) => p.multiplier * 128}px;
-  height: ${(p) => p.multiplier * 64}px;
-  image-rendering: pixelated;
-  cursor: pointer;
-`;
-const DropWrapper = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  height: 128px;
-  background-color: #000000a1;
-  border-radius: 16px;
-`;
-const DeleteImage = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  background-color: red;
-  border-radius: 50%;
-  height: 28px;
-  width: 28px;
-  top: -8px;
-  right: -8px;
-  position: absolute;
-  border-style: none;
-  visibility: hidden;
-  z-index: 10;
-  ${DropWrapper}:hover & {
-    visibility: visible;
-  }
-`;
-
-const Drop = styled.div`
-  border-radius: 8px;
-  border-top: none;
-  border-bottom: none;
-`;
-
-const DropHere = styled.div`
-  font-size: 24px;
-  color: white;
 `;
 
 const DisplayComponent: React.FC<{
@@ -102,11 +60,11 @@ const DisplayComponent: React.FC<{
   // connectDragSource,
 }) => {
   const [showSettings, setShowSettings] = useState<boolean>(false);
-
   const previewImage = useMemo(() => {
     const b64img = getBase64Image(image);
     return b64img;
   }, [image]);
+
   const [{ opacity }, dragRef] = useDrag({
     item: { type: "display", pageIndex, displayIndex },
     collect: (monitor) => ({
@@ -139,10 +97,6 @@ const DisplayComponent: React.FC<{
     },
     [setOriginalImage]
   );
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: [".jpg", ".jpeg", ".png"],
-  });
 
   return (
     <Wrapper ref={dragRef} opacity={opacity}>
@@ -154,19 +108,11 @@ const DisplayComponent: React.FC<{
       />
       {showSettings && (
         <Modal visible={showSettings} setClose={() => setShowSettings(false)}>
-          <DropWrapper>
-            <DeleteImage onClick={deleteImage}>
-              <FaTrashAlt size={18} color="white" />
-            </DeleteImage>
-            <Drop {...getRootProps()}>
-              <input {...getInputProps()} />
-              {isDragActive ? (
-                <DropHere>Drop Here</DropHere>
-              ) : (
-                <ImagePreview multiplier={2} src={previewImage} />
-              )}
-            </Drop>
-          </DropWrapper>
+          <DropDisplay
+            deleteImage={deleteImage}
+            onDrop={onDrop}
+            previewImage={previewImage}
+          />
           <Settings
             textOnly={!hasOriginalImage}
             show={showSettings}
