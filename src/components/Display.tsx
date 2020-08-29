@@ -107,7 +107,11 @@ const DisplayComponent: React.FC<{
         src={previewImage}
       />
       {showSettings && (
-        <Modal visible={showSettings} setClose={() => setShowSettings(false)}>
+        <Modal
+          title={`Page #${pageIndex} | Display #${displayIndex}`}
+          visible={showSettings}
+          setClose={() => setShowSettings(false)}
+        >
           <DropDisplay
             deleteImage={deleteImage}
             onDrop={onDrop}
@@ -115,7 +119,6 @@ const DisplayComponent: React.FC<{
           />
           <Settings
             textOnly={!hasOriginalImage}
-            show={showSettings}
             setSettings={(imageSettings) =>
               setDisplayImage({ ...imageDisplay, imageSettings })
             }

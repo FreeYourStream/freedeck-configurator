@@ -5,7 +5,13 @@ import { useDebounce } from "use-debounce";
 import { IImageDisplay } from "../App";
 import { colors } from "../definitions/colors";
 import { FDButton } from "./lib/button";
-import { Row, StyledSelect } from "./lib/misc";
+import {
+  MicroToggle,
+  Row,
+  StyledSelect,
+  StyledSlider,
+  Value,
+} from "./lib/misc";
 import {
   CheckButton,
   Column,
@@ -20,29 +26,10 @@ export const fontSmall = "fonts/small.fnt";
 export const fontMedium = "fonts/medium.fnt";
 export const fontLarge = "fonts/large.fnt";
 
-const Wrapper = styled.div<{ show: boolean }>`
-  display: ${(p) => (p.show ? "flex" : "none")};
+const Wrapper = styled.div`
+  display: flex;
 `;
 
-const Value = styled.p`
-  line-height: 21px;
-  margin: 0;
-  color: ${colors.white};
-  font-family: sans-serif;
-  font-size: 16px;
-  font-weight: bold;
-`;
-const MicroToggle = styled(FDButton).attrs({ size: 1 })`
-  padding: 0px 4px;
-`;
-
-const EnableTextButton = styled(CheckButton)`
-  margin-right: 4px;
-`;
-
-const StyledSlider = styled.input.attrs({ type: "range" })`
-  width: 200px;
-`;
 export interface ISettings {
   contrast: number;
   dither: boolean;
@@ -55,7 +42,6 @@ export interface ISettings {
 export const Settings: React.FC<{
   setSettings: (settings: IImageDisplay["imageSettings"]) => void;
   setTextSettings: (settings: IImageDisplay["textWithIconSettings"]) => void;
-  show: boolean;
   textOnly: boolean;
   settings: IImageDisplay["imageSettings"];
   textSettings: IImageDisplay["textWithIconSettings"];
@@ -63,7 +49,6 @@ export const Settings: React.FC<{
   setText: (text: string) => void;
 }> = ({
   setSettings,
-  show,
   textOnly,
   settings,
   setTextSettings,
@@ -143,7 +128,7 @@ export const Settings: React.FC<{
     setIconWidthMultiplier(debouncedIconWidth);
   }, [debouncedIconWidth]);
   return (
-    <Wrapper show={show}>
+    <Wrapper>
       <Column>
         <Disabler
           disable={textOnly}
@@ -151,7 +136,7 @@ export const Settings: React.FC<{
         />
         <Title>Image Settings</Title>
         <Row>
-          <Label>Contrast</Label>
+          <Label>Contrast:</Label>
           <Value>{settings.contrast.toFixed(2)}</Value>
         </Row>
         <Row>
@@ -166,31 +151,28 @@ export const Settings: React.FC<{
           />
         </Row>
         <Row>
-          <MicroToggle width="48%" onClick={() => setInvert(!settings.invert)}>
+          <MicroToggle
+            activated={settings.invert}
+            width="30%"
+            onClick={() => setInvert(!settings.invert)}
+          >
             Invert
           </MicroToggle>
 
-          <MicroToggle width="48%" onClick={() => setDither(!settings.dither)}>
+          <MicroToggle
+            activated={settings.dither}
+            width="30%"
+            onClick={() => setDither(!settings.dither)}
+          >
             Dither
           </MicroToggle>
-        </Row>
-        <Row>
-          <EnableTextButton
-            uff={textSettings.enabled}
-            width="33%"
+          <MicroToggle
+            activated={textSettings.enabled}
+            width="30%"
             onClick={(e) => setTextEnable(!textSettings.enabled)}
           >
             Text
-          </EnableTextButton>
-          <StyledSelect
-            defaultValue={textSettings.font}
-            onChange={(e) => setfontName(e.currentTarget.value)}
-          >
-            <option value={fontSmaller}>smaller</option>
-            <option value={fontSmall}>small</option>
-            <option value={fontMedium}>medium</option>
-            <option value={fontLarge}>large</option>
-          </StyledSelect>
+          </MicroToggle>
         </Row>
         <Row>
           <Label>Icon width:</Label>
@@ -218,6 +200,18 @@ export const Settings: React.FC<{
             value={localText}
             onChange={(e) => setLocalText(e.currentTarget.value)}
           />
+        </Row>
+        <Row>
+          <Label>Font:</Label>
+          <StyledSelect
+            defaultValue={textSettings.font}
+            onChange={(e) => setfontName(e.currentTarget.value)}
+          >
+            <option value={fontSmaller}>smaller</option>
+            <option value={fontSmall}>small</option>
+            <option value={fontMedium}>medium</option>
+            <option value={fontLarge}>large</option>
+          </StyledSelect>
         </Row>
       </Column>
     </Wrapper>

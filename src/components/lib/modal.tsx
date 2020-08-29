@@ -5,7 +5,7 @@ import styled from "styled-components";
 
 import { colors } from "../../definitions/colors";
 
-const Wrapper = styled.div<{ visible: boolean }>`
+const Wrapper = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -13,9 +13,24 @@ const Wrapper = styled.div<{ visible: boolean }>`
   bottom: 0;
   background: #555555db;
   z-index: 1000;
-  display: ${(p) => (p.visible ? "flex" : "none")};
+  display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const TitleBar = styled.div`
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: ${colors.white};
+  font-family: "Barlow", sans-serif;
+  background-color: ${colors.black};
 `;
 
 const Content = styled.div`
@@ -25,8 +40,6 @@ const Content = styled.div`
   border-radius: 8px 0px 8px 8px;
   min-width: 200px;
   min-height: 200px;
-  justify-content: center;
-  align-items: center;
   padding: 64px;
 `;
 
@@ -47,14 +60,15 @@ const CloseBackground = styled.div`
   background-color: white;
 `;
 
-export const Modal: React.FC<{ visible?: boolean; setClose: () => void }> = ({
-  visible,
-  setClose,
-  children,
-}) => {
+export const Modal: React.FC<{
+  visible?: boolean;
+  setClose: () => void;
+  title?: string;
+}> = ({ visible, setClose, children, title }) => {
   const content = (
-    <Wrapper visible={visible ?? true}>
+    <Wrapper>
       <Content>
+        {title && <TitleBar>{title}</TitleBar>}
         <CloseBackground />
         <Close onClick={() => setClose()}>
           <AiFillCloseSquare size={30} color="red" />

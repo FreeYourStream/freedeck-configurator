@@ -7,6 +7,7 @@ import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { DropDisplay } from "./lib/dropDisplay";
 import { Modal } from "./lib/modal";
+import { Settings } from "./Settings";
 
 export const SettingsModal: React.FC<{
   setClose: () => void;
@@ -44,17 +45,41 @@ export const SettingsModal: React.FC<{
       const jimage = await Jimp.read(Buffer.from(buffer));
       const resizedBuffer = await jimage
         .scaleToFit(256, 128, "")
-        .getBufferAsync("image/bmp");
+        .getBufferAsync("image/png");
       setDefaultBackImage({ ...defaultBackImage, image: resizedBuffer });
     },
     [defaultBackImage, setDefaultBackImage]
   );
   return (
-    <Modal setClose={setClose}>
+    <Modal setClose={setClose} title="Default back button settings">
       <DropDisplay
         deleteImage={() => console.log("delete image")}
         onDrop={onDrop}
         previewImage={previewImage}
+      />
+      <Settings
+        textOnly={false}
+        setSettings={(imageSettings) =>
+          setDefaultBackImage({
+            ...defaultBackImage,
+            settings: { ...defaultBackImage.settings, imageSettings },
+          })
+        }
+        settings={defaultBackImage.settings.imageSettings}
+        text={defaultBackImage.settings.text}
+        setText={(text) =>
+          setDefaultBackImage({
+            ...defaultBackImage,
+            settings: { ...defaultBackImage.settings, text },
+          })
+        }
+        setTextSettings={(textWithIconSettings) =>
+          setDefaultBackImage({
+            ...defaultBackImage,
+            settings: { ...defaultBackImage.settings, textWithIconSettings },
+          })
+        }
+        textSettings={defaultBackImage.settings.textWithIconSettings}
       />
     </Modal>
   );

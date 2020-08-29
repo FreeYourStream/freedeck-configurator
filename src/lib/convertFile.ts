@@ -1,8 +1,7 @@
 import { Buffer } from "buffer";
 
 import fs from "floyd-steinberg";
-import Jimp, { BLEND_OVERLAY } from "jimp";
-import { PNG } from "pngjs";
+import Jimp from "jimp";
 
 import { IImageDisplay } from "../App";
 import { imageToBinaryBuffer } from "./bwConversion";
@@ -14,18 +13,6 @@ export interface IConverted {
   bytes: Buffer;
   base64: string;
 }
-
-export const ditherImage = (image: Buffer): Promise<Jimp> => {
-  return new Promise((resolve, reject) => {
-    const pngImage = new PNG();
-    pngImage.parse(image, async (err, data) => {
-      const dithered = fs(data);
-      const buffer = PNG.sync.write(dithered);
-      const jimpImage = await Jimp.read(buffer);
-      resolve(jimpImage);
-    });
-  });
-};
 
 export const composeImage = async (
   image: Buffer,
@@ -39,18 +26,21 @@ export const composeImage = async (
   const { enabled: textEnabled, font: fontName } = textOptions;
 
   let jimpImage = await Jimp.read(image);
-  if (invert) jimpImage.invert();
+  const ditherBackground = await Jimp.create(
+    jimpImage.getWidth(),
+    jimpImage.getHeight(),
+    invert ? "#ffffff" : "#000000"
+  );
+  jimpImage = await ditherBackground.composite(jimpImage, 0, 0);
   await jimpImage.contrast(contrast);
   await jimpImage.autocrop();
+  if (dither) jimpImage.bitmap = fs(jimpImage.bitmap); //await ditherImage(await jimpImage.getBufferAsync("image/png"));
+  if (invert) jimpImage.invert();
 
   const background = new Jimp(width, height, "black");
 
   if (textEnabled) {
     jimpImage.scaleToFit(width * textOptions.iconWidthMultiplier, height);
-    if (dither)
-      jimpImage = await ditherImage(
-        await jimpImage.getBufferAsync("image/png")
-      );
     const font = await Jimp.loadFont(fontName);
     const fontSize = font.common.lineHeight - 2;
     let lines = text.split(/\r?\n/).filter((line) => line);
@@ -67,15 +57,8 @@ export const composeImage = async (
         );
       })
     );
-
-    // await background.contrast(-0.25);
-
     background.composite(jimpImage, 0, height / 2 - jimpImage.getHeight() / 2);
   } else {
-    if (dither)
-      jimpImage = await ditherImage(
-        await jimpImage.getBufferAsync("image/png")
-      );
     jimpImage.scaleToFit(width, height);
     background.composite(
       jimpImage,
@@ -88,7 +71,7 @@ export const composeImage = async (
   return bytes;
 };
 
-export const composeText = (
+export const composeText = async (
   width: number,
   height: number,
   dither: boolean,
@@ -96,48 +79,33 @@ export const composeText = (
   fontName: string,
   contrast: number
 ): Promise<Buffer> => {
-  return new Promise(async (resolve) => {
-    const pngImage = new PNG();
-    const textImage = new Jimp(width * 4, height * 4, "black");
-    const font = await Jimp.loadFont(fontName);
-    const fontSize = font.common.lineHeight - 2;
-    let lines = text
-      .split("\n")
-      .filter((line) => line)
-      .map(
-        (line) =>
-          line.startsWith("v", 0) || line.startsWith("V", 0) ? ` ${line}` : line //bug in jimp
+  const image = await Jimp.create(128, 64, "black");
+  const font = await Jimp.loadFont(fontName);
+  const fontSize = font.common.lineHeight - 2;
+  console.log(fontSize);
+  let lines = text.split(/\r?\n/).filter((line) => line);
+  const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
+  const offset = (64 - overAllLineHeight) / 2;
+  await Promise.all(
+    lines.map(async (line, index) => {
+      const lineOffset = offset + fontSize * index;
+      await image.print(
+        font,
+        (128 - (line.length * fontSize) / 2) / 2,
+        lineOffset,
+        line
       );
-    const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
-    const offset = (64 - overAllLineHeight) / 2;
-    if (lines.length > 1) {
-      await Promise.all(
-        lines.map(async (line, index) => {
-          const lineOffset = offset + fontSize * index;
-          await textImage.print(font, 0, lineOffset, line);
-        })
-      );
-    } else {
-      await textImage.print(font, 0, 0, lines[0], 128, 64);
-    }
-    textImage.autocrop(0).scaleToFit(128, 64, Jimp.RESIZE_BEZIER);
-    const background = new Jimp(width, height, "black");
-    background.composite(
-      textImage,
-      (128 - textImage.getWidth()) / 2,
-      (64 - textImage.getHeight()) / 2
-    );
-    if (dither) background.contrast(contrast);
-    const jimpPNG = await background.getBufferAsync("image/png");
-    pngImage.parse(jimpPNG, async (err, data) => {
-      if (dither) data = fs(data);
-      const buffer = PNG.sync.write(data);
-      const jimpImage = await Jimp.read(buffer);
-      const { binary } = imageToBinaryBuffer(jimpImage, width, height);
-      const bytes = pixelBufferToBitmapBuffer(binary);
-      resolve(bytes);
-    });
-  });
+    })
+  );
+  const background = await Jimp.create(128, 64, "black");
+  background.composite(
+    image,
+    (128 - image.getWidth()) / 2,
+    (64 - image.getHeight()) / 2
+  );
+  const { binary } = imageToBinaryBuffer(background, width, height);
+  const bytes = pixelBufferToBitmapBuffer(binary);
+  return bytes;
 };
 
 export const optimizeForSSD1306 = (buffer: Buffer) => {
