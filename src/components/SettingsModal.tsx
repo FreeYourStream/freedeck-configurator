@@ -27,10 +27,17 @@ export const SettingsModal: React.FC<{
         defaultBackImage.settings.textWithIconSettings,
         defaultBackImage.settings.text
       );
+      setTimeout(() =>
+        localStorage.setItem(
+          "defaultBackImageSettings",
+          JSON.stringify(defaultBackImage.settings)
+        )
+      );
       setConvertedPreviewImage(image);
     })();
   }, [
     defaultBackImage.image,
+    defaultBackImage.settings,
     defaultBackImage.settings.imageSettings,
     defaultBackImage.settings.text,
     defaultBackImage.settings.textWithIconSettings,
@@ -46,6 +53,7 @@ export const SettingsModal: React.FC<{
       const resizedBuffer = await jimage
         .scaleToFit(256, 128, "")
         .getBufferAsync("image/png");
+      localStorage.setItem("defaultBackImage", JSON.stringify(resizedBuffer));
       setDefaultBackImage({ ...defaultBackImage, image: resizedBuffer });
     },
     [defaultBackImage, setDefaultBackImage]
