@@ -12,8 +12,9 @@ import { Settings } from "./Settings";
 export const SettingsModal: React.FC<{
   setClose: () => void;
   defaultBackImage: IDefaultBackImage;
+  onClose: () => void;
   setDefaultBackImage: (newDefault: IDefaultBackImage) => void;
-}> = ({ setClose, defaultBackImage, setDefaultBackImage }) => {
+}> = ({ setClose, defaultBackImage, setDefaultBackImage, onClose }) => {
   const [convertedPreviewImage, setConvertedPreviewImage] = useState<Buffer>(
     new Buffer(1024)
   );
@@ -23,9 +24,7 @@ export const SettingsModal: React.FC<{
         defaultBackImage.image,
         128,
         64,
-        defaultBackImage.settings.imageSettings,
-        defaultBackImage.settings.textWithIconSettings,
-        defaultBackImage.settings.text
+        defaultBackImage.settings
       );
       setTimeout(() =>
         localStorage.setItem(
@@ -35,13 +34,7 @@ export const SettingsModal: React.FC<{
       );
       setConvertedPreviewImage(image);
     })();
-  }, [
-    defaultBackImage.image,
-    defaultBackImage.settings,
-    defaultBackImage.settings.imageSettings,
-    defaultBackImage.settings.text,
-    defaultBackImage.settings.textWithIconSettings,
-  ]);
+  }, [defaultBackImage.image, defaultBackImage.settings]);
   const previewImage = useMemo(() => {
     const b64img = getBase64Image(convertedPreviewImage);
     return b64img;
@@ -59,35 +52,42 @@ export const SettingsModal: React.FC<{
     [defaultBackImage, setDefaultBackImage]
   );
   return (
-    <Modal setClose={setClose} title="Default back button settings">
+    <Modal
+      setClose={() => {
+        onClose();
+        setClose();
+      }}
+      title="Default back button settings"
+    >
       <DropDisplay
         deleteImage={() => console.log("delete image")}
+        resetImage={true}
         onDrop={onDrop}
         previewImage={previewImage}
       />
       <Settings
         textOnly={false}
-        setSettings={(imageSettings) =>
+        imageSettings={defaultBackImage.settings.imageSettings}
+        textSettings={defaultBackImage.settings.textSettings}
+        textWithIconSettings={defaultBackImage.settings.textWithIconSettings}
+        setImageSettings={(imageSettings) =>
           setDefaultBackImage({
             ...defaultBackImage,
             settings: { ...defaultBackImage.settings, imageSettings },
           })
         }
-        settings={defaultBackImage.settings.imageSettings}
-        text={defaultBackImage.settings.text}
-        setText={(text) =>
+        setTextSettings={(textSettings) =>
           setDefaultBackImage({
             ...defaultBackImage,
-            settings: { ...defaultBackImage.settings, text },
+            settings: { ...defaultBackImage.settings, textSettings },
           })
         }
-        setTextSettings={(textWithIconSettings) =>
+        setTextWithIconSettings={(textWithIconSettings) =>
           setDefaultBackImage({
             ...defaultBackImage,
             settings: { ...defaultBackImage.settings, textWithIconSettings },
           })
         }
-        textSettings={defaultBackImage.settings.textWithIconSettings}
       />
     </Modal>
   );

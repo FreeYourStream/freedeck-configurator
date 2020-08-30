@@ -40,26 +40,30 @@ export interface ISettings {
 }
 
 export const Settings: React.FC<{
-  setSettings: (settings: IImageDisplay["imageSettings"]) => void;
-  setTextSettings: (settings: IImageDisplay["textWithIconSettings"]) => void;
+  setImageSettings: (settings: IImageDisplay["imageSettings"]) => void;
+  setTextSettings: (settings: IImageDisplay["textSettings"]) => void;
+  setTextWithIconSettings: (
+    settings: IImageDisplay["textWithIconSettings"]
+  ) => void;
   textOnly: boolean;
-  settings: IImageDisplay["imageSettings"];
-  textSettings: IImageDisplay["textWithIconSettings"];
-  text: IImageDisplay["text"];
-  setText: (text: string) => void;
+  imageSettings: IImageDisplay["imageSettings"];
+  textWithIconSettings: IImageDisplay["textWithIconSettings"];
+  textSettings: IImageDisplay["textSettings"];
 }> = ({
-  setSettings,
-  textOnly,
-  settings,
+  setImageSettings,
   setTextSettings,
-  text,
+  setTextWithIconSettings,
+  textOnly,
+  imageSettings,
+  textWithIconSettings,
   textSettings,
-  setText: setTextValue,
 }) => {
-  const [localText, setLocalText] = useState<string>(text);
-  const [localContrast, setLocalContrast] = useState<number>(settings.contrast);
+  const [localText, setLocalText] = useState<string>(textSettings.text);
+  const [localContrast, setLocalContrast] = useState<number>(
+    imageSettings.contrast
+  );
   const [localIconWidth, setLocalIconWidth] = useState<number>(
-    textSettings.iconWidthMultiplier
+    textWithIconSettings.iconWidthMultiplier
   );
   const [debouncedText] = useDebounce(localText, 33, {
     maxWait: 33,
@@ -76,27 +80,27 @@ export const Settings: React.FC<{
 
   const setContrast = useCallback(
     (contrast: number) => {
-      setSettings({ ...settings, contrast });
+      setImageSettings({ ...imageSettings, contrast });
     },
-    [settings, setSettings]
+    [imageSettings, setImageSettings]
   );
   const setInvert = useCallback(
     (invert: boolean) => {
-      setSettings({ ...settings, invert });
+      setImageSettings({ ...imageSettings, invert });
     },
-    [settings, setSettings]
+    [imageSettings, setImageSettings]
   );
   const setDither = useCallback(
     (dither: any) => {
-      setSettings({ ...settings, dither });
+      setImageSettings({ ...imageSettings, dither });
     },
-    [settings, setSettings]
+    [imageSettings, setImageSettings]
   );
   const setTextEnable = useCallback(
     (enabled: boolean) => {
-      setTextSettings({ ...textSettings, enabled });
+      setTextWithIconSettings({ ...textWithIconSettings, enabled });
     },
-    [textSettings, setTextSettings]
+    [setTextWithIconSettings, textWithIconSettings]
   );
   const setfontName = useCallback(
     (font: string) => {
@@ -106,15 +110,18 @@ export const Settings: React.FC<{
   );
   const setText = useCallback(
     (text: string) => {
-      setTextValue(text);
+      setTextSettings({ ...textSettings, text });
     },
-    [setTextValue]
+    [setTextSettings, textSettings]
   );
   const setIconWidthMultiplier = useCallback(
     (value: number) => {
-      setTextSettings({ ...textSettings, iconWidthMultiplier: value });
+      setTextWithIconSettings({
+        ...textWithIconSettings,
+        iconWidthMultiplier: value,
+      });
     },
-    [setTextSettings, textSettings]
+    [setTextWithIconSettings, textWithIconSettings]
   );
   useEffect(() => {
     setText(debouncedText);
@@ -137,7 +144,7 @@ export const Settings: React.FC<{
         <Title>Image Settings</Title>
         <Row>
           <Label>Contrast:</Label>
-          <Value>{settings.contrast.toFixed(2)}</Value>
+          <Value>{imageSettings.contrast.toFixed(2)}</Value>
         </Row>
         <Row>
           <StyledSlider
@@ -152,35 +159,35 @@ export const Settings: React.FC<{
         </Row>
         <Row>
           <MicroToggle
-            activated={settings.invert}
+            activated={imageSettings.invert}
             width="30%"
-            onClick={() => setInvert(!settings.invert)}
+            onClick={() => setInvert(!imageSettings.invert)}
           >
             Invert
           </MicroToggle>
 
           <MicroToggle
-            activated={settings.dither}
+            activated={imageSettings.dither}
             width="30%"
-            onClick={() => setDither(!settings.dither)}
+            onClick={() => setDither(!imageSettings.dither)}
           >
             Dither
           </MicroToggle>
           <MicroToggle
-            activated={textSettings.enabled}
+            activated={textWithIconSettings.enabled}
             width="30%"
-            onClick={(e) => setTextEnable(!textSettings.enabled)}
+            onClick={(e) => setTextEnable(!textWithIconSettings.enabled)}
           >
             Text
           </MicroToggle>
         </Row>
         <Row>
           <Label>Icon width:</Label>
-          <Value>{textSettings.iconWidthMultiplier.toFixed(2)}</Value>
+          <Value>{textWithIconSettings.iconWidthMultiplier.toFixed(2)}</Value>
         </Row>
         <Row>
           <StyledSlider
-            disabled={!textSettings.enabled}
+            disabled={!textWithIconSettings.enabled}
             min={0.1}
             max={0.9}
             step={0.01}

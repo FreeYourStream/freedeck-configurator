@@ -4,9 +4,10 @@ import { IActionDisplay, IActionSettingPage, IImageDisplay } from "../App";
 import { fontMedium } from "../components/Settings";
 import { EAction } from "../lib/parse/parsePage";
 
-type RecursivePartial<T> = {
+export type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
 };
+export type IDefaultImageDisplayOptions = RecursivePartial<IImageDisplay>;
 export const getDefaultActionDisplay: () => IActionDisplay = () => ({
   primary: {
     mode: EAction.noop,
@@ -20,22 +21,25 @@ export const getDefaultActionDisplay: () => IActionDisplay = () => ({
   },
 });
 export const getDefaultImageDisplay: (
-  options?: RecursivePartial<IImageDisplay>
+  options?: IDefaultImageDisplayOptions
 ) => IImageDisplay = (options) =>
   merge(
     {
-      text: "",
+      imageIsConverted: true,
       imageSettings: {
         contrast: 0,
         dither: false,
         invert: false,
       },
-      imageIsConverted: true,
+      textSettings: {
+        font: fontMedium,
+        text: "",
+      },
       textWithIconSettings: {
         enabled: false,
-        font: fontMedium,
         iconWidthMultiplier: 0.35,
       },
+      isGeneratedFromDefaultBackImage: false,
     },
     options
   );
@@ -55,9 +59,13 @@ export const getDefaultActionPage = (
   displays.unshift(backButton);
   return [...displays];
 };
-export const getDefaultImagePage = (width: number, height: number) => {
+export const getDefaultImagePage = (
+  width: number,
+  height: number,
+  options?: IDefaultImageDisplayOptions
+) => {
   const displays = Array<IImageDisplay>(width * height).fill(
-    getDefaultImageDisplay()
+    getDefaultImageDisplay(options)
   );
   return [...displays];
 };

@@ -119,16 +119,21 @@ const DisplayComponent: React.FC<{
           />
           <Settings
             textOnly={!hasOriginalImage}
-            setSettings={(imageSettings) =>
+            setImageSettings={(imageSettings) =>
               setDisplayImage({ ...imageDisplay, imageSettings })
             }
-            settings={imageDisplay.imageSettings}
-            text={imageDisplay.text}
-            setText={(text) => setDisplayImage({ ...imageDisplay, text })}
-            setTextSettings={(textWithIconSettings) =>
+            imageSettings={imageDisplay.imageSettings}
+            textSettings={imageDisplay.textSettings}
+            textWithIconSettings={imageDisplay.textWithIconSettings}
+            setTextSettings={(textSettings) =>
+              setDisplayImage({
+                ...imageDisplay,
+                ...textSettings,
+              })
+            }
+            setTextWithIconSettings={(textWithIconSettings) =>
               setDisplayImage({ ...imageDisplay, textWithIconSettings })
             }
-            textSettings={imageDisplay.textWithIconSettings}
           />
           <Row>
             <Column>

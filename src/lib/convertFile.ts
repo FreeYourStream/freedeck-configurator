@@ -18,32 +18,32 @@ export const composeImage = async (
   image: Buffer,
   width: number,
   height: number,
-  imageOptions: IImageDisplay["imageSettings"],
-  textOptions: IImageDisplay["textWithIconSettings"],
-  text: string
+  settings: IImageDisplay
 ): Promise<Buffer> => {
-  const { contrast, invert, dither } = imageOptions;
-  const { enabled: textEnabled, font: fontName } = textOptions;
+  const { imageSettings, textWithIconSettings, textSettings } = settings;
 
   let jimpImage = await Jimp.read(image);
   const ditherBackground = await Jimp.create(
     jimpImage.getWidth(),
     jimpImage.getHeight(),
-    invert ? "#ffffff" : "#000000"
+    imageSettings.invert ? "#ffffff" : "#000000"
   );
   jimpImage = await ditherBackground.composite(jimpImage, 0, 0);
-  await jimpImage.contrast(contrast);
+  await jimpImage.contrast(imageSettings.contrast);
   await jimpImage.autocrop();
-  if (dither) jimpImage.bitmap = fs(jimpImage.bitmap); //await ditherImage(await jimpImage.getBufferAsync("image/png"));
-  if (invert) jimpImage.invert();
+  if (imageSettings.dither) jimpImage.bitmap = fs(jimpImage.bitmap); //await ditherImage(await jimpImage.getBufferAsync("image/png"));
+  if (imageSettings.invert) jimpImage.invert();
 
   const background = new Jimp(width, height, "black");
 
-  if (textEnabled) {
-    jimpImage.scaleToFit(width * textOptions.iconWidthMultiplier, height);
-    const font = await Jimp.loadFont(fontName);
+  if (textWithIconSettings.enabled) {
+    jimpImage.scaleToFit(
+      width * textWithIconSettings.iconWidthMultiplier,
+      height
+    );
+    const font = await Jimp.loadFont(textSettings.font);
     const fontSize = font.common.lineHeight - 2;
-    let lines = text.split(/\r?\n/).filter((line) => line);
+    let lines = textSettings.text.split(/\r?\n/).filter((line) => line);
     const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
     const offset = (64 - overAllLineHeight) / 2;
     await Promise.all(
@@ -74,16 +74,13 @@ export const composeImage = async (
 export const composeText = async (
   width: number,
   height: number,
-  dither: boolean,
-  text: string,
-  fontName: string,
-  contrast: number
+  settings: IImageDisplay
 ): Promise<Buffer> => {
+  const { textSettings } = settings;
   const image = await Jimp.create(128, 64, "black");
-  const font = await Jimp.loadFont(fontName);
+  const font = await Jimp.loadFont(textSettings.font);
   const fontSize = font.common.lineHeight - 2;
-  console.log(fontSize);
-  let lines = text.split(/\r?\n/).filter((line) => line);
+  let lines = textSettings.text.split(/\r?\n/).filter((line) => line);
   const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
   const offset = (64 - overAllLineHeight) / 2;
   await Promise.all(

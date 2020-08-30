@@ -9,6 +9,7 @@ import { SettingsModal } from "./components/SettingsModal";
 import * as backImage from "./definitions/back.png";
 import { colors } from "./definitions/colors";
 import {
+  IDefaultImageDisplayOptions,
   getDefaultActionPage,
   getDefaultImageDisplay,
   getDefaultImagePage,
@@ -127,7 +128,6 @@ export interface IActionSetting {
 }
 
 export interface ITextWithIconSettings {
-  font: string;
   enabled: boolean;
   iconWidthMultiplier: number;
 }
@@ -142,11 +142,19 @@ export interface IActionDisplay {
   primary: IActionSetting;
   secondary: IActionSetting;
 }
+export interface ITextSettings {
+  text: string;
+  font: string;
+}
+
 export interface IImageDisplay {
   imageSettings: IImageSettings;
   imageIsConverted: boolean;
-  text: string;
+  textSettings: ITextSettings;
   textWithIconSettings: ITextWithIconSettings;
+  isGeneratedFromDefaultBackImage: boolean;
+  previousPage?: number;
+  previousDisplay?: number;
 }
 export type IOriginalImage = Buffer | null;
 export type IConvertedImage = Buffer;
@@ -208,14 +216,7 @@ function App() {
       const display = imageSettingPages[pageIndex][displayIndex];
       let convertedImage: IConvertedImage;
       if (image !== null) {
-        convertedImage = await composeImage(
-          image,
-          128,
-          64,
-          display.imageSettings,
-          display.textWithIconSettings,
-          display.text
-        );
+        convertedImage = await composeImage(image, 128, 64, display);
       } else {
         convertedImage = new Buffer(1024);
       }
@@ -249,23 +250,9 @@ function App() {
       const originalImage = originalImagePages[pageIndex][displayIndex];
       let convertedImage;
       if (originalImage !== null) {
-        convertedImage = await composeImage(
-          originalImage,
-          128,
-          64,
-          newDisplay.imageSettings,
-          newDisplay.textWithIconSettings,
-          newDisplay.text
-        );
-      } else if (newDisplay.text.length > 0) {
-        convertedImage = await composeText(
-          128,
-          64,
-          newDisplay.imageSettings.dither,
-          newDisplay.text,
-          newDisplay.textWithIconSettings.font,
-          newDisplay.imageSettings.contrast
-        );
+        convertedImage = await composeImage(originalImage, 128, 64, newDisplay);
+      } else if (newDisplay.textSettings.text.length > 0) {
+        convertedImage = await composeText(128, 64, newDisplay);
       } else {
         convertedImage = new Buffer(1024);
       }
@@ -283,7 +270,19 @@ function App() {
     ) => {
       const newOriginalImagePage = [];
       const newConvertedImagePage = [];
-      let imageSettingPage = getDefaultImagePage(width, height);
+      const defaultImagePageOptions: IDefaultImageDisplayOptions =
+        previousPageIndex !== undefined
+          ? {
+              isGeneratedFromDefaultBackImage: true,
+              previousDisplay: previousDisplayIndex,
+              previousPage: previousPageIndex,
+            }
+          : {};
+      let imageSettingPage = getDefaultImagePage(
+        width,
+        height,
+        defaultImagePageOptions
+      );
       for (let i = 0; i < width * height; i++) {
         if (previousPageIndex !== undefined && i === 0) {
           newOriginalImagePage.push(defaultBackImage.image);
@@ -293,9 +292,7 @@ function App() {
               defaultBackImage.image,
               128,
               64,
-              imageSettingPage[i].imageSettings,
-              imageSettingPage[i].textWithIconSettings,
-              ""
+              defaultBackImage.settings
             )
           );
         } else {
@@ -335,13 +332,13 @@ function App() {
     ]
   );
   const deleteImage = useCallback(
-    (pageIndex: number, displayIndex: number) => {
+    async (pageIndex: number, displayIndex: number) => {
+      await setOriginalImage(pageIndex, displayIndex, null);
       setImageSettingsDisplay(
         pageIndex,
         displayIndex,
         getDefaultImageDisplay()
       );
-      setOriginalImage(pageIndex, displayIndex, null);
     },
     [setImageSettingsDisplay, setOriginalImage]
   );
@@ -572,6 +569,7 @@ function App() {
       {showSettings && (
         <SettingsModal
           setClose={() => setShowSettings(false)}
+          onClose={() => console.log("close")}
           defaultBackImage={defaultBackImage}
           setDefaultBackImage={setDefaultBackImage}
         />

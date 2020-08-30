@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { useDropzone } from "react-dropzone";
+import { BiReset } from "react-icons/bi";
 import { FaTrashAlt } from "react-icons/fa";
 import styled, { StyledComponent } from "styled-components";
 
@@ -48,8 +49,9 @@ const DropHere = styled.div`
 export const DropDisplay: React.FC<{
   deleteImage: () => void;
   onDrop: (acceptedFiles: File[]) => Promise<void> | void;
+  resetImage?: boolean;
   previewImage: string;
-}> = ({ deleteImage, onDrop, previewImage }) => {
+}> = ({ deleteImage, onDrop, previewImage, resetImage }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: [".jpg", ".jpeg", ".png"],
@@ -57,7 +59,11 @@ export const DropDisplay: React.FC<{
   return (
     <DropWrapper>
       <DeleteImage parent={DropWrapper} onClick={deleteImage}>
-        <FaTrashAlt size={18} color="white" />
+        {resetImage ? (
+          <BiReset size={18} color="white" />
+        ) : (
+          <FaTrashAlt size={18} color="white" />
+        )}
       </DeleteImage>
       <Drop {...getRootProps()}>
         <input {...getInputProps()} />
