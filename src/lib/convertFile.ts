@@ -3,7 +3,7 @@ import { Buffer } from "buffer";
 import fs from "floyd-steinberg";
 import Jimp from "jimp";
 
-import { IImageDisplay } from "../App";
+import { IDisplay } from "../App";
 import { imageToBinaryBuffer } from "./bwConversion";
 import { dec2bin } from "./dec2binString";
 import { rotateCCW } from "./matrix";
@@ -18,7 +18,7 @@ export const composeImage = async (
   image: Buffer,
   width: number,
   height: number,
-  settings: IImageDisplay
+  settings: IDisplay
 ): Promise<Buffer> => {
   const { imageSettings, textWithIconSettings, textSettings } = settings;
 
@@ -74,7 +74,7 @@ export const composeImage = async (
 export const composeText = async (
   width: number,
   height: number,
-  settings: IImageDisplay
+  settings: IDisplay
 ): Promise<Buffer> => {
   const { textSettings } = settings;
   const image = await Jimp.create(128, 64, "black");

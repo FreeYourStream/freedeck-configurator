@@ -1,14 +1,14 @@
 import { merge } from "lodash";
 
-import { IActionDisplay, IActionSettingPage, IImageDisplay } from "../App";
+import { IButton, IButtonPage, IDisplay } from "../App";
 import { fontMedium } from "../components/Settings";
 import { EAction } from "../lib/parse/parsePage";
 
 export type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
 };
-export type IDefaultImageDisplayOptions = RecursivePartial<IImageDisplay>;
-export const getDefaultActionDisplay: () => IActionDisplay = () => ({
+export type IDefaultImageDisplayOptions = RecursivePartial<IDisplay>;
+export const getDefaultActionDisplay: () => IButton = () => ({
   primary: {
     mode: EAction.noop,
     values: [],
@@ -22,7 +22,7 @@ export const getDefaultActionDisplay: () => IActionDisplay = () => ({
 });
 export const getDefaultImageDisplay: (
   options?: IDefaultImageDisplayOptions
-) => IImageDisplay = (options) =>
+) => IDisplay = (options) =>
   merge(
     {
       imageIsConverted: true,
@@ -47,11 +47,11 @@ export const getDefaultActionPage = (
   width: number,
   height: number,
   previousPageIndex?: number
-): IActionSettingPage => {
-  const backButton: IActionDisplay = getDefaultActionDisplay();
-  const displays: IActionSettingPage = Array<IActionDisplay>(
-    width * height - 1
-  ).fill(getDefaultActionDisplay());
+): IButtonPage => {
+  const backButton: IButton = getDefaultActionDisplay();
+  const displays: IButtonPage = Array<IButton>(width * height - 1).fill(
+    getDefaultActionDisplay()
+  );
   if (previousPageIndex !== undefined) {
     backButton.primary.mode = EAction.changeLayout;
     backButton.primary.values = [previousPageIndex];
@@ -64,7 +64,7 @@ export const getDefaultImagePage = (
   height: number,
   options?: IDefaultImageDisplayOptions
 ) => {
-  const displays = Array<IImageDisplay>(width * height).fill(
+  const displays = Array<IDisplay>(width * height).fill(
     getDefaultImageDisplay(options)
   );
   return [...displays];

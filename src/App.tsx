@@ -138,7 +138,7 @@ export interface IImageSettings {
   invert: boolean;
 }
 
-export interface IActionDisplay {
+export interface IButton {
   primary: IActionSetting;
   secondary: IActionSetting;
 }
@@ -147,7 +147,7 @@ export interface ITextSettings {
   font: string;
 }
 
-export interface IImageDisplay {
+export interface IDisplay {
   imageSettings: IImageSettings;
   imageIsConverted: boolean;
   textSettings: ITextSettings;
@@ -160,11 +160,11 @@ export type IOriginalImage = Buffer | null;
 export type IConvertedImage = Buffer;
 export type IOriginalImagePage = Array<IOriginalImage>;
 export type IConvertedImagePage = Array<IConvertedImage>;
-export type IActionSettingPage = IActionDisplay[];
-export type IImageSettingPage = IImageDisplay[];
+export type IButtonPage = IButton[];
+export type IDisplayPage = IDisplay[];
 export interface IDefaultBackImage {
   image: Buffer;
-  settings: IImageDisplay;
+  settings: IDisplay;
 }
 function App() {
   const [defaultBackImage, setDefaultBackImage] = useState<IDefaultBackImage>({
@@ -174,13 +174,13 @@ function App() {
   const [height] = useState<number>(2);
   const [width] = useState<number>(3);
 
-  const [actionSettingPages, setActionSettingPages] = useState<
-    IActionSettingPage[]
-  >([]);
+  const [actionSettingPages, setActionSettingPages] = useState<IButtonPage[]>(
+    []
+  );
 
-  const [imageSettingPages, setImageSettingPages] = useState<
-    IImageSettingPage[]
-  >([]);
+  const [imageSettingPages, setImageSettingPages] = useState<IDisplayPage[]>(
+    []
+  );
 
   const [originalImagePages, setOriginalImagePages] = useState<
     IOriginalImagePage[]
@@ -231,7 +231,7 @@ function App() {
     [convertedImagePages, originalImagePages, imageSettingPages]
   );
   const setActionDisplay = useCallback(
-    (pageIndex: number, displayIndex: number, newDisplay: IActionDisplay) => {
+    (pageIndex: number, displayIndex: number, newDisplay: IButton) => {
       const newPages = [...actionSettingPages];
       newPages[pageIndex][displayIndex] = newDisplay;
       setActionSettingPages([...newPages]);
@@ -239,11 +239,7 @@ function App() {
     [actionSettingPages]
   );
   const setImageSettingsDisplay = useCallback(
-    async (
-      pageIndex: number,
-      displayIndex: number,
-      newDisplay: IImageDisplay
-    ) => {
+    async (pageIndex: number, displayIndex: number, newDisplay: IDisplay) => {
       const newPages = [...imageSettingPages];
       newPages[pageIndex][displayIndex] = newDisplay;
       setImageSettingPages([...newPages]);
@@ -355,8 +351,8 @@ function App() {
       let newImagePages = [...imageSettingPages];
       newActionPages.splice(pageIndex, 1);
       newImagePages.splice(pageIndex, 1);
-      newActionPages = newActionPages.map<IActionSettingPage>((newPage) => {
-        const displays = newPage.map<IActionDisplay>((display) => {
+      newActionPages = newActionPages.map<IButtonPage>((newPage) => {
+        const displays = newPage.map<IButton>((display) => {
           if (display.primary.mode === EAction.changeLayout) {
             if (display.primary.values[0] >= pageIndex) {
               display.primary.values[0] -= 1;
@@ -556,11 +552,11 @@ function App() {
             }
             setDisplayActionSettings={(
               displayIndex: number,
-              newDisplay: IActionDisplay
+              newDisplay: IButton
             ) => setActionDisplay(pageIndex, displayIndex, newDisplay)}
             setDisplayImageSettings={(
               displayIndex: number,
-              newDisplay: IImageDisplay
+              newDisplay: IDisplay
             ) => setImageSettingsDisplay(pageIndex, displayIndex, newDisplay)}
             switchDisplays={switchDisplays}
           />

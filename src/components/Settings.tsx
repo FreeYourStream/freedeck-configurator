@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDebounce } from "use-debounce";
 
-import { IImageDisplay } from "../App";
+import { IDisplay } from "../App";
 import { colors } from "../definitions/colors";
 import { FDButton } from "./lib/button";
 import {
@@ -40,15 +40,13 @@ export interface ISettings {
 }
 
 export const Settings: React.FC<{
-  setImageSettings: (settings: IImageDisplay["imageSettings"]) => void;
-  setTextSettings: (settings: IImageDisplay["textSettings"]) => void;
-  setTextWithIconSettings: (
-    settings: IImageDisplay["textWithIconSettings"]
-  ) => void;
+  setImageSettings: (settings: IDisplay["imageSettings"]) => void;
+  setTextSettings: (settings: IDisplay["textSettings"]) => void;
+  setTextWithIconSettings: (settings: IDisplay["textWithIconSettings"]) => void;
   textOnly: boolean;
-  imageSettings: IImageDisplay["imageSettings"];
-  textWithIconSettings: IImageDisplay["textWithIconSettings"];
-  textSettings: IImageDisplay["textSettings"];
+  imageSettings: IDisplay["imageSettings"];
+  textWithIconSettings: IDisplay["textWithIconSettings"];
+  textSettings: IDisplay["textSettings"];
 }> = ({
   setImageSettings,
   setTextSettings,

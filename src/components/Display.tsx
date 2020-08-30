@@ -5,7 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { FaTrashAlt } from "react-icons/fa";
 import styled, { StyledComponent } from "styled-components";
 
-import { IActionDisplay, IImageDisplay } from "../App";
+import { IButton, IDisplay } from "../App";
 import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { Action } from "./Action";
@@ -29,11 +29,11 @@ const DisplayComponent: React.FC<{
   addPage: (primary: boolean) => Promise<number>;
   deleteImage: () => void;
   setOriginalImage: (newImage: Buffer) => void;
-  setDisplayAction: (display: IActionDisplay) => void;
-  setDisplayImage: (display: IImageDisplay) => void;
+  setDisplayAction: (display: IButton) => void;
+  setDisplayImage: (display: IDisplay) => void;
   hasOriginalImage: boolean;
-  actionDisplay: IActionDisplay;
-  imageDisplay: IImageDisplay;
+  actionDisplay: IButton;
+  imageDisplay: IDisplay;
   pageIndex: number;
   pages: number[];
   displayIndex: number;

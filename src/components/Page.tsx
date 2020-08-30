@@ -4,12 +4,7 @@ import Backend from "react-dnd-html5-backend";
 import { FaTrashAlt } from "react-icons/fa";
 import styled from "styled-components";
 
-import {
-  IActionDisplay,
-  IActionSettingPage,
-  IImageDisplay,
-  IImageSettingPage,
-} from "../App";
+import { IButton, IButtonPage, IDisplay, IDisplayPage } from "../App";
 import { colors } from "../definitions/colors";
 import { Display } from "./Display";
 
@@ -88,21 +83,15 @@ interface IProps {
   hasOriginalImage: (displayIndex: number) => boolean;
   width: number;
   height: number;
-  actionPage: IActionSettingPage;
-  imagePage: IImageSettingPage;
+  actionPage: IButtonPage;
+  imagePage: IDisplayPage;
   convertedImages: Buffer[];
   setOriginalImage: (displayIndex: number, image: Buffer) => void;
   deletePage: (pageIndex: number) => void;
   addPage: (displayIndex: number, primary: boolean) => Promise<number>;
   pageCount: number;
-  setDisplayActionSettings: (
-    displayIndex: number,
-    newDisplay: IActionDisplay
-  ) => void;
-  setDisplayImageSettings: (
-    displayIndex: number,
-    newDisplay: IImageDisplay
-  ) => void;
+  setDisplayActionSettings: (displayIndex: number, newDisplay: IButton) => void;
+  setDisplayImageSettings: (displayIndex: number, newDisplay: IDisplay) => void;
   switchDisplays: (
     aPageIndex: number,
     bPageIndex: number,
