@@ -1,14 +1,14 @@
 import { merge } from "lodash";
 
 import { IButton, IButtonPage, IDisplay } from "../App";
-import { fontMedium } from "../components/Settings";
 import { EAction } from "../lib/parse/parsePage";
+import { fontMedium } from "./fonts";
 
 export type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
 };
 export type IDefaultImageDisplayOptions = RecursivePartial<IDisplay>;
-export const getDefaultActionDisplay: () => IButton = () => ({
+export const getDefaultButton: () => IButton = () => ({
   primary: {
     mode: EAction.noop,
     values: [],
@@ -20,10 +20,10 @@ export const getDefaultActionDisplay: () => IButton = () => ({
     enabled: false,
   },
 });
-export const getDefaultImageDisplay: (
+export const getDefaultDisplay: (
   options?: IDefaultImageDisplayOptions
 ) => IDisplay = (options) =>
-  merge(
+  merge<IDisplay, IDefaultImageDisplayOptions | undefined>(
     {
       imageIsConverted: true,
       imageSettings: {
@@ -40,17 +40,19 @@ export const getDefaultImageDisplay: (
         iconWidthMultiplier: 0.35,
       },
       isGeneratedFromDefaultBackImage: false,
+      previousDisplay: undefined,
+      previousPage: undefined,
     },
     options
   );
-export const getDefaultActionPage = (
+export const getDefaultButtonPage = (
   width: number,
   height: number,
   previousPageIndex?: number
 ): IButtonPage => {
-  const backButton: IButton = getDefaultActionDisplay();
+  const backButton: IButton = getDefaultButton();
   const displays: IButtonPage = Array<IButton>(width * height - 1).fill(
-    getDefaultActionDisplay()
+    getDefaultButton()
   );
   if (previousPageIndex !== undefined) {
     backButton.primary.mode = EAction.changeLayout;
@@ -59,13 +61,13 @@ export const getDefaultActionPage = (
   displays.unshift(backButton);
   return [...displays];
 };
-export const getDefaultImagePage = (
+export const getDefaultDisplayPage = (
   width: number,
   height: number,
   options?: IDefaultImageDisplayOptions
 ) => {
   const displays = Array<IDisplay>(width * height).fill(
-    getDefaultImageDisplay(options)
+    getDefaultDisplay(options)
   );
   return [...displays];
 };

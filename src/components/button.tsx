@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { colors } from "../../definitions/colors";
+import { colors } from "../definitions/colors";
 import { Icons } from "./icons";
 
 export const Button = styled.button<{ bgcolor?: string }>`

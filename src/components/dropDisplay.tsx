@@ -1,10 +1,9 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useDropzone } from "react-dropzone";
 import { BiReset } from "react-icons/bi";
 import { FaTrashAlt } from "react-icons/fa";
 import styled, { StyledComponent } from "styled-components";
 
-import { getBase64Image } from "../../lib/uint8ToBase64";
 import { ImagePreview } from "./bwImagePreview";
 
 export const DropWrapper = styled.div`

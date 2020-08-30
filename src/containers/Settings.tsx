@@ -3,28 +3,24 @@ import styled from "styled-components";
 import { useDebounce } from "use-debounce";
 
 import { IDisplay } from "../App";
-import { colors } from "../definitions/colors";
-import { FDButton } from "./lib/button";
 import {
+  Column,
+  Disabler,
+  Label,
   MicroToggle,
   Row,
   StyledSelect,
   StyledSlider,
-  Value,
-} from "./lib/misc";
-import {
-  CheckButton,
-  Column,
-  Disabler,
-  Label,
   TextInput,
   Title,
-} from "./lib/misc";
-
-export const fontSmaller = "fonts/smaller.fnt";
-export const fontSmall = "fonts/small.fnt";
-export const fontMedium = "fonts/medium.fnt";
-export const fontLarge = "fonts/large.fnt";
+  Value,
+} from "../components/misc";
+import {
+  fontLarge,
+  fontMedium,
+  fontSmall,
+  fontSmaller,
+} from "../definitions/fonts";
 
 const Wrapper = styled.div`
   display: flex;
@@ -108,6 +104,7 @@ export const Settings: React.FC<{
   );
   const setText = useCallback(
     (text: string) => {
+      console.log({ ...textSettings, text });
       setTextSettings({ ...textSettings, text });
     },
     [setTextSettings, textSettings]
@@ -122,6 +119,7 @@ export const Settings: React.FC<{
     [setTextWithIconSettings, textWithIconSettings]
   );
   useEffect(() => {
+    console.log(debouncedText);
     setText(debouncedText);
     // dont put setText there, we will have an endless loop if you do
     // @ts-ignore

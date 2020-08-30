@@ -1,18 +1,16 @@
 import Jimp from "jimp";
 import React, { useCallback, useMemo, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { useDropzone } from "react-dropzone";
-import { FaTrashAlt } from "react-icons/fa";
-import styled, { StyledComponent } from "styled-components";
+import styled from "styled-components";
 
 import { IButton, IDisplay } from "../App";
+import { ImagePreview } from "../components/bwImagePreview";
+import { DropDisplay } from "../components/dropDisplay";
+import { Column, Row } from "../components/misc";
+import { Modal } from "../components/modal";
 import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { Action } from "./Action";
-import { ImagePreview } from "./lib/bwImagePreview";
-import { DropDisplay } from "./lib/dropDisplay";
-import { Column, Row } from "./lib/misc";
-import { Modal } from "./lib/modal";
 import { Settings } from "./Settings";
 
 const Wrapper = styled.div<{ opacity: number }>`
@@ -128,7 +126,7 @@ const DisplayComponent: React.FC<{
             setTextSettings={(textSettings) =>
               setDisplayImage({
                 ...imageDisplay,
-                ...textSettings,
+                textSettings,
               })
             }
             setTextWithIconSettings={(textWithIconSettings) =>

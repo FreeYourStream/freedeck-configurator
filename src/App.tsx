@@ -3,18 +3,27 @@ import React, { useCallback, useEffect, useState } from "react";
 import { HiDocumentAdd } from "react-icons/hi";
 import styled from "styled-components";
 
-import { FDIconButton } from "./components/lib/button";
-import { Page } from "./components/Page";
-import { SettingsModal } from "./components/SettingsModal";
+import { FDIconButton } from "./components/button";
+import { Page } from "./containers/Page";
+import { SettingsModal } from "./containers/SettingsModal";
 import * as backImage from "./definitions/back.png";
 import { colors } from "./definitions/colors";
 import {
   IDefaultImageDisplayOptions,
-  getDefaultActionPage,
-  getDefaultImageDisplay,
-  getDefaultImagePage,
+  getDefaultButtonPage,
+  getDefaultDisplay,
+  getDefaultDisplayPage,
 } from "./definitions/defaultPage";
+import {
+  useActionSettingPages,
+  useConvertedImagePages,
+  useImageSettingPages,
+  useOriginalImagePages,
+} from "./hooks.ts/states";
+import { useDefaultBackImage } from "./hooks.ts/useDefaultBackImage";
+import { useSetOriginalImageCallback } from "./hooks.ts/useSetOriginalImageCallback";
 import { composeImage, composeText } from "./lib/convertFile";
+import { loadDefaultBackImage } from "./lib/defaultBackImage";
 import { EAction } from "./lib/parse/parsePage";
 
 const Main = styled.div`
@@ -167,68 +176,33 @@ export interface IDefaultBackImage {
   settings: IDisplay;
 }
 function App() {
-  const [defaultBackImage, setDefaultBackImage] = useState<IDefaultBackImage>({
-    image: new Buffer(1024),
-    settings: getDefaultImageDisplay({ imageSettings: { invert: true } }),
-  });
+  const [defaultBackImage, setDefaultBackImage] = useDefaultBackImage();
   const [height] = useState<number>(2);
   const [width] = useState<number>(3);
 
-  const [actionSettingPages, setActionSettingPages] = useState<IButtonPage[]>(
-    []
-  );
+  const [actionSettingPages, setActionSettingPages] = useActionSettingPages();
 
-  const [imageSettingPages, setImageSettingPages] = useState<IDisplayPage[]>(
-    []
-  );
+  const [imageSettingPages, setImageSettingPages] = useImageSettingPages();
 
-  const [originalImagePages, setOriginalImagePages] = useState<
-    IOriginalImagePage[]
-  >([]);
+  const [originalImagePages, setOriginalImagePages] = useOriginalImagePages();
 
-  const [convertedImagePages, setConvertedImagePages] = useState<
-    IConvertedImagePage[]
-  >([]);
+  const [
+    convertedImagePages,
+    setConvertedImagePages,
+  ] = useConvertedImagePages();
 
   const [showSettings, setShowSettings] = useState<boolean>(false);
+  // only execute on page load
   useEffect(() => {
-    const localDefaultBackImage = localStorage.getItem("defaultBackImage");
-    const localDefaultBackImageSettings = localStorage.getItem(
-      "defaultBackImageSettings"
-    );
-    if (!localDefaultBackImage || !localDefaultBackImageSettings) {
-      console.log("using stock image");
-      Jimp.read(backImage.default).then((image) =>
-        image.getBuffer("image/bmp", (error, buffer) =>
-          setDefaultBackImage({ ...defaultBackImage, image: buffer })
-        )
-      );
-    } else {
-      const buffer = Buffer.from(JSON.parse(localDefaultBackImage).data);
-      const settings = JSON.parse(localDefaultBackImageSettings);
-      console.log(settings);
-      setDefaultBackImage({ settings, image: buffer });
-    }
+    loadDefaultBackImage(defaultBackImage, setDefaultBackImage);
   }, []);
 
-  const setOriginalImage = useCallback(
-    async (pageIndex: number, displayIndex: number, image: Buffer | null) => {
-      const display = imageSettingPages[pageIndex][displayIndex];
-      let convertedImage: IConvertedImage;
-      if (image !== null) {
-        convertedImage = await composeImage(image, 128, 64, display);
-      } else {
-        convertedImage = new Buffer(1024);
-      }
-      const newOriginalImages = [...originalImagePages];
-      newOriginalImages[pageIndex][displayIndex] = image;
-      setOriginalImagePages(newOriginalImages);
-
-      const newConvertedImages = [...convertedImagePages];
-      newConvertedImages[pageIndex][displayIndex] = convertedImage;
-      setConvertedImagePages(newConvertedImages);
-    },
-    [convertedImagePages, originalImagePages, imageSettingPages]
+  const setOriginalImage = useSetOriginalImageCallback(
+    convertedImagePages,
+    originalImagePages,
+    imageSettingPages,
+    setOriginalImagePages,
+    setConvertedImagePages
   );
   const setActionDisplay = useCallback(
     (pageIndex: number, displayIndex: number, newDisplay: IButton) => {
@@ -236,7 +210,7 @@ function App() {
       newPages[pageIndex][displayIndex] = newDisplay;
       setActionSettingPages([...newPages]);
     },
-    [actionSettingPages]
+    [actionSettingPages, setActionSettingPages]
   );
   const setImageSettingsDisplay = useCallback(
     async (pageIndex: number, displayIndex: number, newDisplay: IDisplay) => {
@@ -274,7 +248,7 @@ function App() {
               previousPage: previousPageIndex,
             }
           : {};
-      let imageSettingPage = getDefaultImagePage(
+      let imageSettingPage = getDefaultDisplayPage(
         width,
         height,
         defaultImagePageOptions
@@ -302,7 +276,7 @@ function App() {
 
       const newActionSettingPages = [
         ...actionSettingPages,
-        getDefaultActionPage(width, height, previousPageIndex),
+        getDefaultButtonPage(width, height, previousPageIndex),
       ];
       if (
         previousDisplayIndex !== undefined &&
@@ -330,11 +304,7 @@ function App() {
   const deleteImage = useCallback(
     async (pageIndex: number, displayIndex: number) => {
       await setOriginalImage(pageIndex, displayIndex, null);
-      setImageSettingsDisplay(
-        pageIndex,
-        displayIndex,
-        getDefaultImageDisplay()
-      );
+      setImageSettingsDisplay(pageIndex, displayIndex, getDefaultDisplay());
     },
     [setImageSettingsDisplay, setOriginalImage]
   );

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { colors } from "../../definitions/colors";
+import { colors } from "../definitions/colors";
 import { FDButton } from "./button";
 
 export const TextInput = styled.textarea.attrs({ rows: 4 })`

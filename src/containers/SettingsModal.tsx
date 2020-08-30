@@ -2,11 +2,11 @@ import Jimp from "jimp/";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { IDefaultBackImage } from "../App";
+import { DropDisplay } from "../components/dropDisplay";
+import { Modal } from "../components/modal";
 import { composeImage } from "../lib/convertFile";
 import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
-import { DropDisplay } from "./lib/dropDisplay";
-import { Modal } from "./lib/modal";
 import { Settings } from "./Settings";
 
 export const SettingsModal: React.FC<{
