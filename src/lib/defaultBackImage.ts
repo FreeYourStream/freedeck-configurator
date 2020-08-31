@@ -21,7 +21,6 @@ export const loadDefaultBackImage = function (
   } else {
     const buffer = Buffer.from(JSON.parse(localDefaultBackImage).data);
     const settings = JSON.parse(localDefaultBackImageSettings);
-    console.log(settings);
     setDefaultBackImage({ settings, image: buffer });
   }
 };

@@ -13,6 +13,7 @@ export const DropWrapper = styled.div`
   height: 128px;
   background-color: #000000a1;
   border-radius: 16px;
+  margin-bottom: 8px;
 `;
 export const DeleteImage = styled.div<{ parent: StyledComponent<any, any> }>`
   display: flex;

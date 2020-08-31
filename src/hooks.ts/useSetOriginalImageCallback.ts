@@ -11,7 +11,7 @@ import { composeImage } from "../lib/convertFile";
 export const useSetOriginalImageCallback = function (
   convertedImagePages: IConvertedImagePage[],
   originalImagePages: IOriginalImagePage[],
-  imageSettingPages: IDisplayPage[],
+  displayPages: IDisplayPage[],
   setOriginalImagePages: (
     value: React.SetStateAction<IOriginalImagePage[]>
   ) => void,
@@ -21,7 +21,8 @@ export const useSetOriginalImageCallback = function (
 ) {
   return useCallback(
     async (pageIndex: number, displayIndex: number, image: Buffer | null) => {
-      const display = imageSettingPages[pageIndex][displayIndex];
+      const display = displayPages[pageIndex][displayIndex];
+      console.log("display", display);
       let convertedImage: IConvertedImage;
       if (image !== null) {
         convertedImage = await composeImage(image, 128, 64, display);
@@ -39,7 +40,7 @@ export const useSetOriginalImageCallback = function (
     [
       convertedImagePages,
       originalImagePages,
-      imageSettingPages,
+      displayPages,
       setOriginalImagePages,
       setConvertedImagePages,
     ]

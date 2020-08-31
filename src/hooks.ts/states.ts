@@ -7,10 +7,10 @@ import {
   IOriginalImagePage,
 } from "../App";
 
-export const useActionSettingPages = function () {
+export const useButtonSettingsPages = function () {
   return useState<IButtonPage[]>([]);
 };
-export const useImageSettingPages = function () {
+export const useDisplaySettingsPages = function () {
   return useState<IDisplayPage[]>([]);
 };
 export const useOriginalImagePages = function () {

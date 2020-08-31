@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { IButton, IDisplay } from "../App";
 import { ImagePreview } from "../components/bwImagePreview";
 import { DropDisplay } from "../components/dropDisplay";
-import { Column, Row } from "../components/misc";
+import { Column, Row, Title } from "../components/misc";
 import { Modal } from "../components/modal";
 import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
@@ -27,8 +27,8 @@ const DisplayComponent: React.FC<{
   addPage: (primary: boolean) => Promise<number>;
   deleteImage: () => void;
   setOriginalImage: (newImage: Buffer) => void;
-  setDisplayAction: (display: IButton) => void;
-  setDisplayImage: (display: IDisplay) => void;
+  setButtonSettings: (display: IButton) => void;
+  setDisplaySettings: (display: IDisplay) => void;
   hasOriginalImage: boolean;
   actionDisplay: IButton;
   imageDisplay: IDisplay;
@@ -47,8 +47,8 @@ const DisplayComponent: React.FC<{
   addPage,
   deleteImage,
   setOriginalImage,
-  setDisplayAction,
-  setDisplayImage,
+  setButtonSettings,
+  setDisplaySettings,
   actionDisplay,
   imageDisplay,
   pageIndex,
@@ -106,7 +106,7 @@ const DisplayComponent: React.FC<{
       />
       {showSettings && (
         <Modal
-          title={`Page #${pageIndex} | Display #${displayIndex}`}
+          title={`Page ${pageIndex} | Display and Button ${displayIndex}`}
           visible={showSettings}
           setClose={() => setShowSettings(false)}
         >
@@ -115,29 +115,35 @@ const DisplayComponent: React.FC<{
             onDrop={onDrop}
             previewImage={previewImage}
           />
+          <Title divider big>
+            Display Settings
+          </Title>
           <Settings
             textOnly={!hasOriginalImage}
             setImageSettings={(imageSettings) =>
-              setDisplayImage({ ...imageDisplay, imageSettings })
+              setDisplaySettings({ ...imageDisplay, imageSettings })
             }
             imageSettings={imageDisplay.imageSettings}
             textSettings={imageDisplay.textSettings}
             textWithIconSettings={imageDisplay.textWithIconSettings}
             setTextSettings={(textSettings) =>
-              setDisplayImage({
+              setDisplaySettings({
                 ...imageDisplay,
                 textSettings,
               })
             }
             setTextWithIconSettings={(textWithIconSettings) =>
-              setDisplayImage({ ...imageDisplay, textWithIconSettings })
+              setDisplaySettings({ ...imageDisplay, textWithIconSettings })
             }
           />
+          <Title divider big>
+            Button Settings
+          </Title>
           <Row>
             <Column>
               <Action
                 setActionSetting={(primary) =>
-                  setDisplayAction({ ...actionDisplay, primary })
+                  setButtonSettings({ ...actionDisplay, primary })
                 }
                 title="Short press"
                 pages={pages}
@@ -149,7 +155,7 @@ const DisplayComponent: React.FC<{
             <Column>
               <Action
                 setActionSetting={(secondary) =>
-                  setDisplayAction({ ...actionDisplay, secondary })
+                  setButtonSettings({ ...actionDisplay, secondary })
                 }
                 title="Long press"
                 pages={pages}

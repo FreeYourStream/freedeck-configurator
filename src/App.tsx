@@ -6,18 +6,16 @@ import styled from "styled-components";
 import { FDIconButton } from "./components/button";
 import { Page } from "./containers/Page";
 import { SettingsModal } from "./containers/SettingsModal";
-import * as backImage from "./definitions/back.png";
 import { colors } from "./definitions/colors";
 import {
-  IDefaultImageDisplayOptions,
   getDefaultButtonPage,
   getDefaultDisplay,
   getDefaultDisplayPage,
 } from "./definitions/defaultPage";
 import {
-  useActionSettingPages,
+  useButtonSettingsPages,
   useConvertedImagePages,
-  useImageSettingPages,
+  useDisplaySettingsPages,
   useOriginalImagePages,
 } from "./hooks.ts/states";
 import { useDefaultBackImage } from "./hooks.ts/useDefaultBackImage";
@@ -84,53 +82,11 @@ const Content = styled.div`
   height: 100%;
 `;
 
-const LoadConfigFileInner = styled.label`
-  user-select: none;
-  font-size: 24px;
-  padding: 8px;
-  font-family: sans-serif;
-  font-weight: bold;
-  position: relative;
-  width: auto;
-  color: #ecf0f1;
-  text-decoration: none;
-  border-radius: 5px;
-  border: solid 1px ${colors.accent};
-  background: ${colors.accentDark};
-  text-align: center;
-  /* padding: 16px 18px 14px; */
-  transition: all 0.1s;
-  box-shadow: 0px 0px 0px, 0px 0px 0px, 0px 6px 0px ${colors.accentDark},
-    0px 0px 0px;
-  cursor: pointer;
-`;
-
-const LoadConfigFile = styled.div`
-  /* transition: all 0.05s;
-  padding-bottom: 6px;
-  :hover {
-    padding-top: 4px;
-    padding-bottom: 2px;
-  }
-  &:hover ${LoadConfigFileInner} {
-    box-shadow: 0px 0px 0px, 0px 0px 0px, 0px 2px 0px ${colors.accentDark},
-      0px 0px 0px;
-  }
-
-  :active {
-    padding-top: 6px;
-    padding-bottom: 0px;
-  }
-  &:active ${LoadConfigFileInner} {
-    box-shadow: none;
-  } */
-`;
-
 const InvisibleFile = styled.input.attrs({ type: "file" })`
   display: none;
 `;
 
-export interface IActionSetting {
+export interface IButtonSettings {
   mode: EAction;
   values: number[];
   enabled: boolean;
@@ -143,13 +99,14 @@ export interface ITextWithIconSettings {
 
 export interface IImageSettings {
   dither: boolean;
+  brightness: number;
   contrast: number;
   invert: boolean;
 }
 
 export interface IButton {
-  primary: IActionSetting;
-  secondary: IActionSetting;
+  primary: IButtonSettings;
+  secondary: IButtonSettings;
 }
 export interface ITextSettings {
   text: string;
@@ -180,9 +137,15 @@ function App() {
   const [height] = useState<number>(2);
   const [width] = useState<number>(3);
 
-  const [actionSettingPages, setActionSettingPages] = useActionSettingPages();
+  const [
+    buttonSettingsPages,
+    setButtonSettingsPages,
+  ] = useButtonSettingsPages();
 
-  const [imageSettingPages, setImageSettingPages] = useImageSettingPages();
+  const [
+    displaySettingsPages,
+    setDisplaySettingsPages,
+  ] = useDisplaySettingsPages();
 
   const [originalImagePages, setOriginalImagePages] = useOriginalImagePages();
 
@@ -196,27 +159,42 @@ function App() {
   useEffect(() => {
     loadDefaultBackImage(defaultBackImage, setDefaultBackImage);
   }, []);
-
   const setOriginalImage = useSetOriginalImageCallback(
     convertedImagePages,
     originalImagePages,
-    imageSettingPages,
+    displaySettingsPages,
     setOriginalImagePages,
     setConvertedImagePages
   );
-  const setActionDisplay = useCallback(
+  const setButtonSettings = useCallback(
     (pageIndex: number, displayIndex: number, newDisplay: IButton) => {
-      const newPages = [...actionSettingPages];
+      const newPages = [...buttonSettingsPages];
       newPages[pageIndex][displayIndex] = newDisplay;
-      setActionSettingPages([...newPages]);
+      setButtonSettingsPages([...newPages]);
     },
-    [actionSettingPages, setActionSettingPages]
+    [buttonSettingsPages, setButtonSettingsPages]
   );
-  const setImageSettingsDisplay = useCallback(
+  const setDisplaySettings = useCallback(
     async (pageIndex: number, displayIndex: number, newDisplay: IDisplay) => {
-      const newPages = [...imageSettingPages];
+      const newPages = [...displaySettingsPages];
+      const oldDisplay = displaySettingsPages[pageIndex][displayIndex];
+      if (
+        newDisplay.textWithIconSettings.enabled ===
+          oldDisplay.textWithIconSettings.enabled &&
+        newDisplay.textSettings.text !== "" &&
+        originalImagePages[pageIndex][displayIndex] !== null
+      ) {
+        newDisplay.textWithIconSettings.enabled = true;
+      }
+      if (
+        newDisplay.textSettings.text === "" &&
+        oldDisplay.textSettings.text !== "" &&
+        originalImagePages[pageIndex][displayIndex] !== null
+      ) {
+        newDisplay.textWithIconSettings.enabled = false;
+      }
       newPages[pageIndex][displayIndex] = newDisplay;
-      setImageSettingPages([...newPages]);
+      setDisplaySettingsPages([...newPages]);
       const originalImage = originalImagePages[pageIndex][displayIndex];
       let convertedImage;
       if (originalImage !== null) {
@@ -230,8 +208,45 @@ function App() {
       newConvertedImages[pageIndex][displayIndex] = convertedImage;
       setConvertedImagePages(newConvertedImages);
     },
-    [convertedImagePages, imageSettingPages, originalImagePages]
+    [
+      convertedImagePages,
+      displaySettingsPages,
+      originalImagePages,
+      setConvertedImagePages,
+      setDisplaySettingsPages,
+    ]
   );
+  const updateAllDefaultBackImages = useCallback(
+    (newDefaultBackImage: IDefaultBackImage) => {
+      setDefaultBackImage(newDefaultBackImage);
+      [...displaySettingsPages].forEach((page, pageIndex) => {
+        [...page].forEach((display, displayIndex) => {
+          if (display.isGeneratedFromDefaultBackImage) {
+            console.log(
+              newDefaultBackImage.settings.isGeneratedFromDefaultBackImage
+            );
+            setDisplaySettings(
+              pageIndex,
+              displayIndex,
+              newDefaultBackImage.settings
+            );
+            setOriginalImage(
+              pageIndex,
+              displayIndex,
+              newDefaultBackImage.image
+            );
+          }
+        });
+      });
+    },
+    [
+      displaySettingsPages,
+      setDefaultBackImage,
+      setDisplaySettings,
+      setOriginalImage,
+    ]
+  );
+
   const addPage = useCallback(
     async (
       previousPageIndex?: number,
@@ -240,23 +255,14 @@ function App() {
     ) => {
       const newOriginalImagePage = [];
       const newConvertedImagePage = [];
-      const defaultImagePageOptions: IDefaultImageDisplayOptions =
-        previousPageIndex !== undefined
-          ? {
-              isGeneratedFromDefaultBackImage: true,
-              previousDisplay: previousDisplayIndex,
-              previousPage: previousPageIndex,
-            }
-          : {};
-      let imageSettingPage = getDefaultDisplayPage(
-        width,
-        height,
-        defaultImagePageOptions
-      );
+      let newDisplayPage = getDefaultDisplayPage(width, height);
       for (let i = 0; i < width * height; i++) {
         if (previousPageIndex !== undefined && i === 0) {
-          newOriginalImagePage.push(defaultBackImage.image);
-          imageSettingPage[i] = defaultBackImage.settings;
+          newOriginalImagePage.push(Buffer.from(defaultBackImage.image));
+          newDisplayPage[i] = {
+            ...defaultBackImage.settings,
+            isGeneratedFromDefaultBackImage: true,
+          };
           newConvertedImagePage.push(
             await composeImage(
               defaultBackImage.image,
@@ -275,7 +281,7 @@ function App() {
       setConvertedImagePages([...convertedImagePages, newConvertedImagePage]);
 
       const newActionSettingPages = [
-        ...actionSettingPages,
+        ...buttonSettingsPages,
         getDefaultButtonPage(width, height, previousPageIndex),
       ];
       if (
@@ -285,28 +291,33 @@ function App() {
       ) {
         newActionSettingPages[previousPageIndex][previousDisplayIndex][
           primary ? "primary" : "secondary"
-        ].values = [actionSettingPages.length];
+        ].values = [buttonSettingsPages.length];
       }
-      setActionSettingPages(newActionSettingPages);
-      setImageSettingPages([...imageSettingPages, imageSettingPage]);
-      return actionSettingPages.length;
+      setButtonSettingsPages(newActionSettingPages);
+      setDisplaySettingsPages([...displaySettingsPages, newDisplayPage]);
+      return buttonSettingsPages.length;
     },
     [
-      originalImagePages,
-      convertedImagePages,
-      imageSettingPages,
       width,
       height,
-      actionSettingPages,
-      defaultBackImage,
+      setOriginalImagePages,
+      originalImagePages,
+      setConvertedImagePages,
+      convertedImagePages,
+      buttonSettingsPages,
+      setButtonSettingsPages,
+      setDisplaySettingsPages,
+      displaySettingsPages,
+      defaultBackImage.image,
+      defaultBackImage.settings,
     ]
   );
   const deleteImage = useCallback(
     async (pageIndex: number, displayIndex: number) => {
       await setOriginalImage(pageIndex, displayIndex, null);
-      setImageSettingsDisplay(pageIndex, displayIndex, getDefaultDisplay());
+      setDisplaySettings(pageIndex, displayIndex, getDefaultDisplay());
     },
-    [setImageSettingsDisplay, setOriginalImage]
+    [setDisplaySettings, setOriginalImage]
   );
   const deletePage = useCallback(
     (pageIndex: number) => {
@@ -317,8 +328,8 @@ function App() {
       setOriginalImagePages(newOriginalImages);
       setConvertedImagePages(newConvertedImages);
 
-      let newActionPages = [...actionSettingPages];
-      let newImagePages = [...imageSettingPages];
+      let newActionPages = [...buttonSettingsPages];
+      let newImagePages = [...displaySettingsPages];
       newActionPages.splice(pageIndex, 1);
       newImagePages.splice(pageIndex, 1);
       newActionPages = newActionPages.map<IButtonPage>((newPage) => {
@@ -340,14 +351,18 @@ function App() {
         });
         return displays;
       });
-      setActionSettingPages(newActionPages);
-      setImageSettingPages(newImagePages);
+      setButtonSettingsPages(newActionPages);
+      setDisplaySettingsPages(newImagePages);
     },
     [
-      actionSettingPages,
+      buttonSettingsPages,
       convertedImagePages,
-      imageSettingPages,
+      displaySettingsPages,
       originalImagePages,
+      setButtonSettingsPages,
+      setConvertedImagePages,
+      setDisplaySettingsPages,
+      setOriginalImagePages,
     ]
   );
 
@@ -359,26 +374,26 @@ function App() {
       bDisplayIndex: number
     ) => {
       const aDisplayAction = {
-        ...actionSettingPages[aPageIndex][aDisplayIndex],
+        ...buttonSettingsPages[aPageIndex][aDisplayIndex],
       };
       const bDisplayAction = {
-        ...actionSettingPages[bPageIndex][bDisplayIndex],
+        ...buttonSettingsPages[bPageIndex][bDisplayIndex],
       };
-      const newActionPages = [...actionSettingPages];
+      const newActionPages = [...buttonSettingsPages];
       newActionPages[aPageIndex][aDisplayIndex] = bDisplayAction;
       newActionPages[bPageIndex][bDisplayIndex] = aDisplayAction;
-      setActionSettingPages(newActionPages);
+      setButtonSettingsPages(newActionPages);
 
       const aDisplayImage = {
-        ...imageSettingPages[aPageIndex][aDisplayIndex],
+        ...displaySettingsPages[aPageIndex][aDisplayIndex],
       };
       const bDisplayImage = {
-        ...imageSettingPages[bPageIndex][bDisplayIndex],
+        ...displaySettingsPages[bPageIndex][bDisplayIndex],
       };
-      const newImagePages = [...imageSettingPages];
+      const newImagePages = [...displaySettingsPages];
       newImagePages[aPageIndex][aDisplayIndex] = bDisplayImage;
       newImagePages[bPageIndex][bDisplayIndex] = aDisplayImage;
-      setImageSettingPages(newImagePages);
+      setDisplaySettingsPages(newImagePages);
 
       const aOriginalImage = originalImagePages[aPageIndex][aDisplayIndex];
       const bOriginalImage = originalImagePages[bPageIndex][bDisplayIndex];
@@ -395,10 +410,14 @@ function App() {
       setConvertedImagePages(newConvertedImages);
     },
     [
-      actionSettingPages,
+      buttonSettingsPages,
       convertedImagePages,
-      imageSettingPages,
+      displaySettingsPages,
       originalImagePages,
+      setButtonSettingsPages,
+      setConvertedImagePages,
+      setDisplaySettingsPages,
+      setOriginalImagePages,
     ]
   );
 
@@ -432,15 +451,13 @@ function App() {
             }}
           >
             <Horiz>
-              <LoadConfigFile>
-                <FDIconButton
-                  size={3}
-                  icon={"fa/FaFileUpload"}
-                  htmlFor="loadConfig"
-                >
-                  Load Config
-                </FDIconButton>
-              </LoadConfigFile>
+              <FDIconButton
+                size={3}
+                icon={"fa/FaFileUpload"}
+                htmlFor="loadConfig"
+              >
+                Load Config
+              </FDIconButton>
               <InvisibleFile
                 id="loadConfig"
                 onChange={async (event) => {
@@ -455,13 +472,11 @@ function App() {
                 size={3}
                 onClick={() => {
                   const config = {
-                    imageSettingPages,
-                    actionSettingPages,
+                    imageSettingPages: displaySettingsPages,
+                    actionSettingPages: buttonSettingsPages,
                   };
                   //save this at the end of the config
                   const buffer = Buffer.from(JSON.stringify(config), "binary");
-                  console.log(buffer.byteLength);
-                  console.log(JSON.parse(buffer.toString()));
                   // const header = new Buffer(HEADER_SIZE);
                   // header.writeUInt8(3, 0);
                   // header.writeUInt8(2, 1);
@@ -497,7 +512,7 @@ function App() {
         </Buttons>
       </Header>
       <Content id="pages">
-        {imageSettingPages.map((imagePage, pageIndex) => (
+        {displaySettingsPages.map((imagePage, pageIndex) => (
           <Page
             height={height}
             width={width}
@@ -509,25 +524,23 @@ function App() {
               hasOriginalImage(pageIndex, displayIndex)
             }
             convertedImages={convertedImagePages[pageIndex]}
-            actionPage={actionSettingPages[pageIndex]}
-            imagePage={imageSettingPages[pageIndex]}
+            buttonSettingsPages={buttonSettingsPages[pageIndex]}
+            displaySettingsPages={displaySettingsPages[pageIndex]}
             key={pageIndex}
             setOriginalImage={(displayIndex: number, image: IOriginalImage) =>
               setOriginalImage(pageIndex, displayIndex, image)
             }
             deletePage={deletePage}
-            pageCount={actionSettingPages.length}
+            pageCount={buttonSettingsPages.length}
             addPage={(displayIndex, primary) =>
               addPage(pageIndex, displayIndex, primary)
             }
-            setDisplayActionSettings={(
-              displayIndex: number,
-              newDisplay: IButton
-            ) => setActionDisplay(pageIndex, displayIndex, newDisplay)}
-            setDisplayImageSettings={(
-              displayIndex: number,
-              newDisplay: IDisplay
-            ) => setImageSettingsDisplay(pageIndex, displayIndex, newDisplay)}
+            setButtonSettings={(displayIndex: number, newDisplay: IButton) =>
+              setButtonSettings(pageIndex, displayIndex, newDisplay)
+            }
+            setDisplaySettings={(displayIndex: number, newDisplay: IDisplay) =>
+              setDisplaySettings(pageIndex, displayIndex, newDisplay)
+            }
             switchDisplays={switchDisplays}
           />
         ))}
@@ -535,7 +548,7 @@ function App() {
       {showSettings && (
         <SettingsModal
           setClose={() => setShowSettings(false)}
-          onClose={() => console.log("close")}
+          onClose={() => updateAllDefaultBackImages(defaultBackImage)}
           defaultBackImage={defaultBackImage}
           setDefaultBackImage={setDefaultBackImage}
         />

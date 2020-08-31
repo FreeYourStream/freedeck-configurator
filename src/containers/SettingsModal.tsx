@@ -15,9 +15,12 @@ export const SettingsModal: React.FC<{
   onClose: () => void;
   setDefaultBackImage: (newDefault: IDefaultBackImage) => void;
 }> = ({ setClose, defaultBackImage, setDefaultBackImage, onClose }) => {
+  // store converted image for backbutton locally
   const [convertedPreviewImage, setConvertedPreviewImage] = useState<Buffer>(
     new Buffer(1024)
   );
+
+  // the localStorage stuff should NOT happen here
   useEffect(() => {
     (async () => {
       const image = await composeImage(
@@ -32,13 +35,22 @@ export const SettingsModal: React.FC<{
           JSON.stringify(defaultBackImage.settings)
         )
       );
+      setTimeout(() =>
+        localStorage.setItem(
+          "defaultBackImage",
+          JSON.stringify(defaultBackImage.image)
+        )
+      );
       setConvertedPreviewImage(image);
     })();
   }, [defaultBackImage.image, defaultBackImage.settings]);
+
+  //generate base64 string for live preview
   const previewImage = useMemo(() => {
     const b64img = getBase64Image(convertedPreviewImage);
     return b64img;
   }, [convertedPreviewImage]);
+  //image loading
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       const buffer = await handleFileSelect(acceptedFiles[0]);
@@ -51,6 +63,7 @@ export const SettingsModal: React.FC<{
     },
     [defaultBackImage, setDefaultBackImage]
   );
+
   return (
     <Modal
       setClose={() => {

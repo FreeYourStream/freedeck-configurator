@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
 
-import { IActionSetting } from "../App";
+import { IButtonSettings } from "../App";
 import { FDButton } from "../components/button";
 import {
   MicroButton,
@@ -24,10 +24,10 @@ const SmallButton = styled(FDButton).attrs({ mt: 4 })`
   font-weight: bold;
 `;
 export const Action: React.FC<{
-  setActionSetting: (newActionSetting: IActionSetting) => void;
+  setActionSetting: (newActionSetting: IButtonSettings) => void;
   addPage: () => Promise<number>;
   pages: number[];
-  action: IActionSetting;
+  action: IButtonSettings;
   loadUserInteraction: boolean;
   title: string;
 }> = ({ setActionSetting, pages, addPage, action, title }) => {

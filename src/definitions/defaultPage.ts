@@ -27,7 +27,8 @@ export const getDefaultDisplay: (
     {
       imageIsConverted: true,
       imageSettings: {
-        contrast: 0,
+        contrast: 0.3,
+        brightness: 0.3,
         dither: false,
         invert: false,
       },
@@ -66,8 +67,6 @@ export const getDefaultDisplayPage = (
   height: number,
   options?: IDefaultImageDisplayOptions
 ) => {
-  const displays = Array<IDisplay>(width * height).fill(
-    getDefaultDisplay(options)
-  );
+  const displays = Array<IDisplay>(width * height).fill(getDefaultDisplay());
   return [...displays];
 };

@@ -16,9 +16,14 @@ export const TextInput = styled.textarea.attrs({ rows: 4 })`
   font-family: sans-serif;
   width: 100%;
 `;
-export const Title = styled.div`
+export const Title = styled.div<{ divider?: boolean; big?: boolean }>`
   color: ${colors.white};
-  font-size: 24px;
+  ${(p) => (p.divider ? `border-bottom: 1px solid ${colors.white};` : "")}
+
+  ${(p) =>
+    p.big
+      ? `font-size: 28px;`
+      : "font-size: 24px;"}
   font-family: "Barlow", sans-serif;
   text-align: center;
   line-height: 32px;

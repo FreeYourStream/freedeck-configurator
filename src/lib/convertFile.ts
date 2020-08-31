@@ -29,7 +29,9 @@ export const composeImage = async (
     imageSettings.invert ? "#ffffff" : "#000000"
   );
   jimpImage = await ditherBackground.composite(jimpImage, 0, 0);
-  await jimpImage.contrast(imageSettings.contrast);
+  const brightnessMultiplier = imageSettings.invert ? -0.25 : 0.25;
+  await jimpImage.contrast(imageSettings.contrast * brightnessMultiplier * -1);
+  await jimpImage.brightness(imageSettings.brightness * brightnessMultiplier);
   await jimpImage.autocrop();
   if (imageSettings.dither) jimpImage.bitmap = fs(jimpImage.bitmap); //await ditherImage(await jimpImage.getBufferAsync("image/png"));
   if (imageSettings.invert) jimpImage.invert();

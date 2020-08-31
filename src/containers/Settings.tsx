@@ -53,6 +53,9 @@ export const Settings: React.FC<{
   textSettings,
 }) => {
   const [localText, setLocalText] = useState<string>(textSettings.text);
+  const [localBrightness, setLocalBrightness] = useState<number>(
+    imageSettings.brightness
+  );
   const [localContrast, setLocalContrast] = useState<number>(
     imageSettings.contrast
   );
@@ -60,6 +63,10 @@ export const Settings: React.FC<{
     textWithIconSettings.iconWidthMultiplier
   );
   const [debouncedText] = useDebounce(localText, 33, {
+    maxWait: 33,
+    leading: true,
+  });
+  const [debouncedBrightness] = useDebounce(localBrightness, 33, {
     maxWait: 33,
     leading: true,
   });
@@ -71,7 +78,12 @@ export const Settings: React.FC<{
     maxWait: 33,
     leading: true,
   });
-
+  const setBrightness = useCallback(
+    (brightness: number) => {
+      setImageSettings({ ...imageSettings, brightness });
+    },
+    [imageSettings, setImageSettings]
+  );
   const setContrast = useCallback(
     (contrast: number) => {
       setImageSettings({ ...imageSettings, contrast });
@@ -119,7 +131,6 @@ export const Settings: React.FC<{
     [setTextWithIconSettings, textWithIconSettings]
   );
   useEffect(() => {
-    console.log(debouncedText);
     setText(debouncedText);
     // dont put setText there, we will have an endless loop if you do
     // @ts-ignore
@@ -127,6 +138,9 @@ export const Settings: React.FC<{
   useEffect(() => {
     setContrast(debouncedContrast);
   }, [debouncedContrast]);
+  useEffect(() => {
+    setBrightness(debouncedBrightness);
+  }, [debouncedBrightness]);
   useEffect(() => {
     setIconWidthMultiplier(debouncedIconWidth);
   }, [debouncedIconWidth]);
@@ -139,6 +153,21 @@ export const Settings: React.FC<{
         />
         <Title>Image Settings</Title>
         <Row>
+          <Label>Brightness:</Label>
+          <Value>{imageSettings.brightness.toFixed(2)}</Value>
+        </Row>
+        <Row>
+          <StyledSlider
+            min={-1}
+            max={1}
+            step={0.01}
+            value={localBrightness}
+            onChange={(event) =>
+              setLocalBrightness(event.currentTarget.valueAsNumber)
+            }
+          />
+        </Row>
+        <Row>
           <Label>Contrast:</Label>
           <Value>{imageSettings.contrast.toFixed(2)}</Value>
         </Row>
@@ -146,7 +175,7 @@ export const Settings: React.FC<{
           <StyledSlider
             min={-1}
             max={1}
-            step={0.02}
+            step={0.01}
             value={localContrast}
             onChange={(event) =>
               setLocalContrast(event.currentTarget.valueAsNumber)

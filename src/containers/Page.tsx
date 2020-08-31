@@ -83,15 +83,15 @@ interface IProps {
   hasOriginalImage: (displayIndex: number) => boolean;
   width: number;
   height: number;
-  actionPage: IButtonPage;
-  imagePage: IDisplayPage;
+  buttonSettingsPages: IButtonPage;
+  displaySettingsPages: IDisplayPage;
   convertedImages: Buffer[];
   setOriginalImage: (displayIndex: number, image: Buffer) => void;
   deletePage: (pageIndex: number) => void;
   addPage: (displayIndex: number, primary: boolean) => Promise<number>;
   pageCount: number;
-  setDisplayActionSettings: (displayIndex: number, newDisplay: IButton) => void;
-  setDisplayImageSettings: (displayIndex: number, newDisplay: IDisplay) => void;
+  setButtonSettings: (displayIndex: number, newDisplay: IButton) => void;
+  setDisplaySettings: (displayIndex: number, newDisplay: IDisplay) => void;
   switchDisplays: (
     aPageIndex: number,
     bPageIndex: number,
@@ -108,12 +108,12 @@ const PageComponent: React.FC<IProps> = ({
   height,
   convertedImages,
   setOriginalImage,
-  actionPage,
-  imagePage,
+  buttonSettingsPages,
+  displaySettingsPages,
   deletePage,
   addPage,
-  setDisplayActionSettings,
-  setDisplayImageSettings,
+  setButtonSettings,
+  setDisplaySettings,
   pageCount,
   switchDisplays,
 }) => {
@@ -134,18 +134,18 @@ const PageComponent: React.FC<IProps> = ({
       </Header>
       <Grid height={height} width={width}>
         <DndProvider backend={Backend}>
-          {imagePage.map((imageDisplay, displayIndex) => (
+          {displaySettingsPages.map((imageDisplay, displayIndex) => (
             <Display
               deleteImage={() => deleteImage(displayIndex)}
               image={convertedImages[displayIndex]}
-              setDisplayAction={(displayAction) =>
-                setDisplayActionSettings(displayIndex, displayAction)
+              setButtonSettings={(displayAction) =>
+                setButtonSettings(displayIndex, displayAction)
               }
-              setDisplayImage={(displayImage) =>
-                setDisplayImageSettings(displayIndex, displayImage)
+              setDisplaySettings={(displayImage) =>
+                setDisplaySettings(displayIndex, displayImage)
               }
-              actionDisplay={actionPage[displayIndex]}
-              imageDisplay={imagePage[displayIndex]}
+              actionDisplay={buttonSettingsPages[displayIndex]}
+              imageDisplay={displaySettingsPages[displayIndex]}
               key={displayIndex}
               displayIndex={displayIndex}
               pageIndex={pageIndex}
