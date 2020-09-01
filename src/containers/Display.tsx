@@ -1,10 +1,15 @@
 import Jimp from "jimp";
 import React, { useCallback, useMemo, useState } from "react";
+import {
+  ContextMenuWrapper,
+  useContextMenuTrigger,
+} from "react-context-menu-wrapper";
 import { useDrag, useDrop } from "react-dnd";
 import styled from "styled-components";
 
 import { IButton, IDisplay } from "../App";
 import { ImagePreview } from "../components/bwImagePreview";
+import { ContextMenu, ContextMenuItem } from "../components/contextMenu";
 import { DropDisplay } from "../components/dropDisplay";
 import { Column, Row, Title } from "../components/misc";
 import { Modal } from "../components/modal";
@@ -19,7 +24,6 @@ const Wrapper = styled.div<{ opacity: number }>`
   align-items: center;
   flex-direction: column;
   position: relative;
-  z-index: 10;
 `;
 
 const DisplayComponent: React.FC<{
@@ -96,6 +100,9 @@ const DisplayComponent: React.FC<{
     [setOriginalImage]
   );
 
+  const menuId = `${pageIndex}:${displayIndex}`;
+  const menuRef = useContextMenuTrigger<HTMLDivElement>({ menuId });
+
   return (
     <Wrapper ref={dragRef} opacity={opacity}>
       <ImagePreview
@@ -104,17 +111,24 @@ const DisplayComponent: React.FC<{
         onClick={() => setShowSettings(true)}
         src={previewImage}
       />
+
       {showSettings && (
         <Modal
           title={`Page ${pageIndex} | Display and Button ${displayIndex}`}
           visible={showSettings}
           setClose={() => setShowSettings(false)}
         >
-          <DropDisplay
-            deleteImage={deleteImage}
-            onDrop={onDrop}
-            previewImage={previewImage}
-          />
+          <ContextMenu menuId={menuId}>
+            <ContextMenuItem
+              text="Delete Image"
+              icon="fa/FaTrash"
+              onClick={() => deleteImage()}
+              dangerous
+            ></ContextMenuItem>
+          </ContextMenu>
+          <div ref={menuRef}>
+            <DropDisplay onDrop={onDrop} previewImage={previewImage} />
+          </div>
           <Title divider big>
             Display Settings
           </Title>

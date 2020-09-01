@@ -116,7 +116,6 @@ export const Settings: React.FC<{
   );
   const setText = useCallback(
     (text: string) => {
-      console.log({ ...textSettings, text });
       setTextSettings({ ...textSettings, text });
     },
     [setTextSettings, textSettings]

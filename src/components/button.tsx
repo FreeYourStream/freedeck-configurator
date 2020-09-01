@@ -50,9 +50,11 @@ const Font = styled.div<{ size: number }>`
   justify-content: center;
   font-size: ${(p) => (p.size === 1 ? "16px" : p.size === 2 ? "20px" : "24px")};
 `;
-const Spacer = styled.div`
+export const Spacer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-right: 4px;
-  height: 22px;
 `;
 const Wrapper = styled.div<{ ml: number; mt: number; width: string }>`
   transition: all 0.1s;

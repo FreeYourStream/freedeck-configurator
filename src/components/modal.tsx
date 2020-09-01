@@ -78,6 +78,5 @@ export const Modal: React.FC<{
     </Wrapper>
   );
 
-  // @ts-ignore
-  return ReactDOM.createPortal(content, document.querySelector("#modal"));
+  return ReactDOM.createPortal(content, document.querySelector("#modal")!);
 };

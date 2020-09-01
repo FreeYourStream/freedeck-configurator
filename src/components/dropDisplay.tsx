@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
+import { useContextMenuTrigger } from "react-context-menu-wrapper";
 import { useDropzone } from "react-dropzone";
 import { BiReset } from "react-icons/bi";
+import { BsThreeDots } from "react-icons/bs";
 import { FaTrashAlt } from "react-icons/fa";
 import styled, { StyledComponent } from "styled-components";
 
+import { colors } from "../definitions/colors";
 import { ImagePreview } from "./bwImagePreview";
+import { ContextMenu, ContextMenuItem } from "./contextMenu";
 
 export const DropWrapper = styled.div`
   position: relative;
@@ -15,21 +19,20 @@ export const DropWrapper = styled.div`
   border-radius: 16px;
   margin-bottom: 8px;
 `;
-export const DeleteImage = styled.div<{ parent: StyledComponent<any, any> }>`
+export const CornerIcon = styled.div<{ parent: StyledComponent<any, any> }>`
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  background-color: red;
+  background-color: ${colors.white};
   border-radius: 50%;
+  border: 1px solid ${colors.black};
   height: 28px;
   width: 28px;
   top: -8px;
   right: -8px;
   position: absolute;
-  border-style: none;
   visibility: hidden;
-  z-index: 10;
   ${(p) => p.parent}:hover & {
     visibility: visible;
   }
@@ -47,24 +50,15 @@ const DropHere = styled.div`
 `;
 
 export const DropDisplay: React.FC<{
-  deleteImage: () => void;
   onDrop: (acceptedFiles: File[]) => Promise<void> | void;
-  resetImage?: boolean;
   previewImage: string;
-}> = ({ deleteImage, onDrop, previewImage, resetImage }) => {
+}> = ({ onDrop, previewImage }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: [".jpg", ".jpeg", ".png"],
   });
   return (
     <DropWrapper>
-      <DeleteImage parent={DropWrapper} onClick={deleteImage}>
-        {resetImage ? (
-          <BiReset size={18} color="white" />
-        ) : (
-          <FaTrashAlt size={18} color="white" />
-        )}
-      </DeleteImage>
       <Drop {...getRootProps()}>
         <input {...getInputProps()} />
         {isDragActive ? (

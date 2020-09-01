@@ -1,4 +1,3 @@
-import Jimp from "jimp";
 import React, { useCallback, useEffect, useState } from "react";
 import { HiDocumentAdd } from "react-icons/hi";
 import styled from "styled-components";
@@ -222,9 +221,6 @@ function App() {
       [...displaySettingsPages].forEach((page, pageIndex) => {
         [...page].forEach((display, displayIndex) => {
           if (display.isGeneratedFromDefaultBackImage) {
-            console.log(
-              newDefaultBackImage.settings.isGeneratedFromDefaultBackImage
-            );
             setDisplaySettings(
               pageIndex,
               displayIndex,
@@ -315,7 +311,7 @@ function App() {
   const deleteImage = useCallback(
     async (pageIndex: number, displayIndex: number) => {
       await setOriginalImage(pageIndex, displayIndex, null);
-      setDisplaySettings(pageIndex, displayIndex, getDefaultDisplay());
+      await setDisplaySettings(pageIndex, displayIndex, getDefaultDisplay());
     },
     [setDisplaySettings, setOriginalImage]
   );

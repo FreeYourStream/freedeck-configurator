@@ -30,10 +30,10 @@ export const Title = styled.div<{ divider?: boolean; big?: boolean }>`
   vertical-align: middle;
   margin-bottom: 8px;
 `;
-export const Label = styled.div`
+export const Label = styled.div<{ color?: string }>`
   display: flex;
   align-items: center;
-  color: ${colors.white};
+  color: ${(p) => (p.color ? p.color : colors.white)};
   white-space: nowrap;
   font-size: 20px;
   margin-right: 8px;

@@ -22,7 +22,6 @@ export const useSetOriginalImageCallback = function (
   return useCallback(
     async (pageIndex: number, displayIndex: number, image: Buffer | null) => {
       const display = displayPages[pageIndex][displayIndex];
-      console.log("display", display);
       let convertedImage: IConvertedImage;
       if (image !== null) {
         convertedImage = await composeImage(image, 128, 64, display);

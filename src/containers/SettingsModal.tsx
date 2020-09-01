@@ -1,10 +1,13 @@
 import Jimp from "jimp/";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useContextMenuTrigger } from "react-context-menu-wrapper";
 
 import { IDefaultBackImage } from "../App";
+import { ContextMenu, ContextMenuItem } from "../components/contextMenu";
 import { DropDisplay } from "../components/dropDisplay";
 import { Modal } from "../components/modal";
 import { composeImage } from "../lib/convertFile";
+import { loadDefaultBackImage } from "../lib/defaultBackImage";
 import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { Settings } from "./Settings";
@@ -13,7 +16,7 @@ export const SettingsModal: React.FC<{
   setClose: () => void;
   defaultBackImage: IDefaultBackImage;
   onClose: () => void;
-  setDefaultBackImage: (newDefault: IDefaultBackImage) => void;
+  setDefaultBackImage: React.Dispatch<React.SetStateAction<IDefaultBackImage>>;
 }> = ({ setClose, defaultBackImage, setDefaultBackImage, onClose }) => {
   // store converted image for backbutton locally
   const [convertedPreviewImage, setConvertedPreviewImage] = useState<Buffer>(
@@ -63,6 +66,8 @@ export const SettingsModal: React.FC<{
     },
     [defaultBackImage, setDefaultBackImage]
   );
+  const menuId = `globalSettings`;
+  const menuRef = useContextMenuTrigger<HTMLDivElement>({ menuId });
 
   return (
     <Modal
@@ -72,12 +77,19 @@ export const SettingsModal: React.FC<{
       }}
       title="Default back button settings"
     >
-      <DropDisplay
-        deleteImage={() => console.log("delete image")}
-        resetImage={true}
-        onDrop={onDrop}
-        previewImage={previewImage}
-      />
+      <ContextMenu menuId={menuId}>
+        <ContextMenuItem
+          text="Reset to default"
+          icon="bi/BiReset"
+          onClick={() =>
+            loadDefaultBackImage(defaultBackImage, setDefaultBackImage)
+          }
+          dangerous
+        ></ContextMenuItem>
+      </ContextMenu>
+      <div ref={menuRef}>
+        <DropDisplay onDrop={onDrop} previewImage={previewImage} />
+      </div>
       <Settings
         textOnly={false}
         imageSettings={defaultBackImage.settings.imageSettings}
