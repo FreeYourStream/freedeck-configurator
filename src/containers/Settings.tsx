@@ -130,6 +130,12 @@ export const Settings: React.FC<{
     [setTextWithIconSettings, textWithIconSettings]
   );
   useEffect(() => {
+    setLocalText(textSettings.text);
+    setLocalBrightness(imageSettings.brightness);
+    setLocalContrast(imageSettings.contrast);
+    setLocalIconWidth(textWithIconSettings.iconWidthMultiplier);
+  }, [imageSettings, textSettings, textWithIconSettings]);
+  useEffect(() => {
     setText(debouncedText);
     // dont put setText there, we will have an endless loop if you do
     // @ts-ignore
@@ -143,6 +149,7 @@ export const Settings: React.FC<{
   useEffect(() => {
     setIconWidthMultiplier(debouncedIconWidth);
   }, [debouncedIconWidth]);
+
   return (
     <Wrapper>
       <Column>

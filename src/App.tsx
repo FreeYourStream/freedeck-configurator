@@ -17,10 +17,10 @@ import {
   useDisplaySettingsPages,
   useOriginalImagePages,
 } from "./hooks.ts/states";
-import { useDefaultBackImage } from "./hooks.ts/useDefaultBackImage";
+import { useDefaultBackDisplay } from "./hooks.ts/useDefaultBackImage";
 import { useSetOriginalImageCallback } from "./hooks.ts/useSetOriginalImageCallback";
 import { composeImage, composeText } from "./lib/convertFile";
-import { loadDefaultBackImage } from "./lib/defaultBackImage";
+import { loadDefaultBackDisplay } from "./lib/defaultBackImage";
 import { EAction } from "./lib/parse/parsePage";
 
 const Main = styled.div`
@@ -127,12 +127,12 @@ export type IOriginalImagePage = Array<IOriginalImage>;
 export type IConvertedImagePage = Array<IConvertedImage>;
 export type IButtonPage = IButton[];
 export type IDisplayPage = IDisplay[];
-export interface IDefaultBackImage {
+export interface IDefaultBackDisplay {
   image: Buffer;
   settings: IDisplay;
 }
 function App() {
-  const [defaultBackImage, setDefaultBackImage] = useDefaultBackImage();
+  const [defaultBackDisplay, setDefaultBackDisplay] = useDefaultBackDisplay();
   const [height] = useState<number>(2);
   const [width] = useState<number>(3);
 
@@ -156,8 +156,9 @@ function App() {
   const [showSettings, setShowSettings] = useState<boolean>(false);
   // only execute on page load
   useEffect(() => {
-    loadDefaultBackImage(defaultBackImage, setDefaultBackImage);
+    loadDefaultBackDisplay(setDefaultBackDisplay);
   }, []);
+
   const setOriginalImage = useSetOriginalImageCallback(
     convertedImagePages,
     originalImagePages,
@@ -180,15 +181,12 @@ function App() {
       if (
         newDisplay.textWithIconSettings.enabled ===
           oldDisplay.textWithIconSettings.enabled &&
-        newDisplay.textSettings.text !== "" &&
-        originalImagePages[pageIndex][displayIndex] !== null
+        newDisplay.textSettings.text !== ""
       ) {
         newDisplay.textWithIconSettings.enabled = true;
-      }
-      if (
+      } else if (
         newDisplay.textSettings.text === "" &&
-        oldDisplay.textSettings.text !== "" &&
-        originalImagePages[pageIndex][displayIndex] !== null
+        oldDisplay.textSettings.text !== ""
       ) {
         newDisplay.textWithIconSettings.enabled = false;
       }
@@ -216,8 +214,8 @@ function App() {
     ]
   );
   const updateAllDefaultBackImages = useCallback(
-    (newDefaultBackImage: IDefaultBackImage) => {
-      setDefaultBackImage(newDefaultBackImage);
+    (newDefaultBackImage: IDefaultBackDisplay) => {
+      setDefaultBackDisplay(newDefaultBackImage);
       [...displaySettingsPages].forEach((page, pageIndex) => {
         [...page].forEach((display, displayIndex) => {
           if (display.isGeneratedFromDefaultBackImage) {
@@ -237,7 +235,7 @@ function App() {
     },
     [
       displaySettingsPages,
-      setDefaultBackImage,
+      setDefaultBackDisplay,
       setDisplaySettings,
       setOriginalImage,
     ]
@@ -254,17 +252,17 @@ function App() {
       let newDisplayPage = getDefaultDisplayPage(width, height);
       for (let i = 0; i < width * height; i++) {
         if (previousPageIndex !== undefined && i === 0) {
-          newOriginalImagePage.push(Buffer.from(defaultBackImage.image));
+          newOriginalImagePage.push(Buffer.from(defaultBackDisplay.image));
           newDisplayPage[i] = {
-            ...defaultBackImage.settings,
+            ...defaultBackDisplay.settings,
             isGeneratedFromDefaultBackImage: true,
           };
           newConvertedImagePage.push(
             await composeImage(
-              defaultBackImage.image,
+              defaultBackDisplay.image,
               128,
               64,
-              defaultBackImage.settings
+              defaultBackDisplay.settings
             )
           );
         } else {
@@ -304,8 +302,8 @@ function App() {
       setButtonSettingsPages,
       setDisplaySettingsPages,
       displaySettingsPages,
-      defaultBackImage.image,
-      defaultBackImage.settings,
+      defaultBackDisplay.image,
+      defaultBackDisplay.settings,
     ]
   );
   const deleteImage = useCallback(
@@ -314,6 +312,22 @@ function App() {
       await setDisplaySettings(pageIndex, displayIndex, getDefaultDisplay());
     },
     [setDisplaySettings, setOriginalImage]
+  );
+  const makeDefaultBackImage = useCallback(
+    async (pageIndex: number, displayIndex: number) => {
+      await setDisplaySettings(
+        pageIndex,
+        displayIndex,
+        defaultBackDisplay.settings
+      );
+      await setOriginalImage(pageIndex, displayIndex, defaultBackDisplay.image);
+    },
+    [
+      defaultBackDisplay.image,
+      defaultBackDisplay.settings,
+      setDisplaySettings,
+      setOriginalImage,
+    ]
   );
   const deletePage = useCallback(
     (pageIndex: number) => {
@@ -515,6 +529,9 @@ function App() {
             deleteImage={(displayIndex: number) =>
               deleteImage(pageIndex, displayIndex)
             }
+            makeDefaultBackImage={(displayIndex: number) => {
+              makeDefaultBackImage(pageIndex, displayIndex);
+            }}
             pageIndex={pageIndex}
             hasOriginalImage={(displayIndex: number) =>
               hasOriginalImage(pageIndex, displayIndex)
@@ -544,9 +561,9 @@ function App() {
       {showSettings && (
         <SettingsModal
           setClose={() => setShowSettings(false)}
-          onClose={() => updateAllDefaultBackImages(defaultBackImage)}
-          defaultBackImage={defaultBackImage}
-          setDefaultBackImage={setDefaultBackImage}
+          onClose={() => updateAllDefaultBackImages(defaultBackDisplay)}
+          defaultBackDisplay={defaultBackDisplay}
+          setDefaultBackDisplay={setDefaultBackDisplay}
         />
       )}
     </Main>

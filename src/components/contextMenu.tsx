@@ -1,9 +1,5 @@
 import React, { ReactNode, ReactNodeArray } from "react";
-import {
-  ContextMenuWrapper,
-  useContextMenuTrigger,
-} from "react-context-menu-wrapper";
-import ReactDOM from "react-dom";
+import { ContextMenuWrapper } from "react-context-menu-wrapper";
 import styled from "styled-components";
 
 import { colors } from "../definitions/colors";
@@ -59,7 +55,6 @@ const Wrapper = styled.div`
   border: 1px solid ${colors.black};
 `;
 const Divider = styled.div`
-  height: 1px;
   border-bottom: 1px solid ${colors.black};
 `;
 
@@ -78,10 +73,8 @@ export const ContextMenu: React.FC<{
     []
   );
   return (
-    <>
-      <ContextMenuWrapper id={menuId}>
-        <Wrapper>{childrenWithDividers}</Wrapper>
-      </ContextMenuWrapper>
-    </>
+    <ContextMenuWrapper id={menuId}>
+      <Wrapper>{childrenWithDividers}</Wrapper>
+    </ContextMenuWrapper>
   );
 };

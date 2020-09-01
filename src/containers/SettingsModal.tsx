@@ -2,22 +2,24 @@ import Jimp from "jimp/";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useContextMenuTrigger } from "react-context-menu-wrapper";
 
-import { IDefaultBackImage } from "../App";
+import { IDefaultBackDisplay } from "../App";
 import { ContextMenu, ContextMenuItem } from "../components/contextMenu";
 import { DropDisplay } from "../components/dropDisplay";
 import { Modal } from "../components/modal";
 import { composeImage } from "../lib/convertFile";
-import { loadDefaultBackImage } from "../lib/defaultBackImage";
+import { loadDefaultBackDisplay } from "../lib/defaultBackImage";
 import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { Settings } from "./Settings";
 
 export const SettingsModal: React.FC<{
   setClose: () => void;
-  defaultBackImage: IDefaultBackImage;
+  defaultBackDisplay: IDefaultBackDisplay;
   onClose: () => void;
-  setDefaultBackImage: React.Dispatch<React.SetStateAction<IDefaultBackImage>>;
-}> = ({ setClose, defaultBackImage, setDefaultBackImage, onClose }) => {
+  setDefaultBackDisplay: React.Dispatch<
+    React.SetStateAction<IDefaultBackDisplay>
+  >;
+}> = ({ setClose, defaultBackDisplay, setDefaultBackDisplay, onClose }) => {
   // store converted image for backbutton locally
   const [convertedPreviewImage, setConvertedPreviewImage] = useState<Buffer>(
     new Buffer(1024)
@@ -27,26 +29,26 @@ export const SettingsModal: React.FC<{
   useEffect(() => {
     (async () => {
       const image = await composeImage(
-        defaultBackImage.image,
+        defaultBackDisplay.image,
         128,
         64,
-        defaultBackImage.settings
+        defaultBackDisplay.settings
       );
       setTimeout(() =>
         localStorage.setItem(
           "defaultBackImageSettings",
-          JSON.stringify(defaultBackImage.settings)
+          JSON.stringify(defaultBackDisplay.settings)
         )
       );
       setTimeout(() =>
         localStorage.setItem(
           "defaultBackImage",
-          JSON.stringify(defaultBackImage.image)
+          JSON.stringify(defaultBackDisplay.image)
         )
       );
       setConvertedPreviewImage(image);
     })();
-  }, [defaultBackImage.image, defaultBackImage.settings]);
+  }, [defaultBackDisplay.image, defaultBackDisplay.settings]);
 
   //generate base64 string for live preview
   const previewImage = useMemo(() => {
@@ -62,13 +64,12 @@ export const SettingsModal: React.FC<{
         .scaleToFit(256, 128, "")
         .getBufferAsync("image/png");
       localStorage.setItem("defaultBackImage", JSON.stringify(resizedBuffer));
-      setDefaultBackImage({ ...defaultBackImage, image: resizedBuffer });
+      setDefaultBackDisplay({ ...defaultBackDisplay, image: resizedBuffer });
     },
-    [defaultBackImage, setDefaultBackImage]
+    [defaultBackDisplay, setDefaultBackDisplay]
   );
   const menuId = `globalSettings`;
   const menuRef = useContextMenuTrigger<HTMLDivElement>({ menuId });
-
   return (
     <Modal
       setClose={() => {
@@ -81,9 +82,9 @@ export const SettingsModal: React.FC<{
         <ContextMenuItem
           text="Reset to default"
           icon="bi/BiReset"
-          onClick={() =>
-            loadDefaultBackImage(defaultBackImage, setDefaultBackImage)
-          }
+          onClick={() => {
+            loadDefaultBackDisplay(setDefaultBackDisplay, true);
+          }}
           dangerous
         ></ContextMenuItem>
       </ContextMenu>
@@ -92,25 +93,25 @@ export const SettingsModal: React.FC<{
       </div>
       <Settings
         textOnly={false}
-        imageSettings={defaultBackImage.settings.imageSettings}
-        textSettings={defaultBackImage.settings.textSettings}
-        textWithIconSettings={defaultBackImage.settings.textWithIconSettings}
+        imageSettings={defaultBackDisplay.settings.imageSettings}
+        textSettings={defaultBackDisplay.settings.textSettings}
+        textWithIconSettings={defaultBackDisplay.settings.textWithIconSettings}
         setImageSettings={(imageSettings) =>
-          setDefaultBackImage({
-            ...defaultBackImage,
-            settings: { ...defaultBackImage.settings, imageSettings },
+          setDefaultBackDisplay({
+            ...defaultBackDisplay,
+            settings: { ...defaultBackDisplay.settings, imageSettings },
           })
         }
         setTextSettings={(textSettings) =>
-          setDefaultBackImage({
-            ...defaultBackImage,
-            settings: { ...defaultBackImage.settings, textSettings },
+          setDefaultBackDisplay({
+            ...defaultBackDisplay,
+            settings: { ...defaultBackDisplay.settings, textSettings },
           })
         }
         setTextWithIconSettings={(textWithIconSettings) =>
-          setDefaultBackImage({
-            ...defaultBackImage,
-            settings: { ...defaultBackImage.settings, textWithIconSettings },
+          setDefaultBackDisplay({
+            ...defaultBackDisplay,
+            settings: { ...defaultBackDisplay.settings, textWithIconSettings },
           })
         }
       />

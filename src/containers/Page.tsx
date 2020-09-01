@@ -79,6 +79,7 @@ const Grid = styled.div<{ width: number; height: number }>`
 
 interface IProps {
   deleteImage: (displayIndex: number) => void;
+  makeDefaultBackImage: (displayIndex: number) => void;
   pageIndex: number;
   hasOriginalImage: (displayIndex: number) => boolean;
   width: number;
@@ -103,6 +104,7 @@ interface IProps {
 const PageComponent: React.FC<IProps> = ({
   pageIndex,
   deleteImage,
+  makeDefaultBackImage,
   hasOriginalImage,
   width,
   height,
@@ -137,6 +139,7 @@ const PageComponent: React.FC<IProps> = ({
           {displaySettingsPages.map((imageDisplay, displayIndex) => (
             <Display
               deleteImage={() => deleteImage(displayIndex)}
+              makeDefaultBackImage={() => makeDefaultBackImage(displayIndex)}
               image={convertedImages[displayIndex]}
               setButtonSettings={(displayAction) =>
                 setButtonSettings(displayIndex, displayAction)

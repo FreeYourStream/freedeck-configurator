@@ -1,21 +1,23 @@
 import Jimp from "jimp";
 
-import { IDefaultBackImage } from "../App";
+import { IDefaultBackDisplay } from "../App";
 import * as backImage from "../definitions/back.png";
+import { getStockBackDisplay } from "../hooks.ts/useDefaultBackImage";
 
-export const loadDefaultBackImage = function (
-  defaultBackImage: IDefaultBackImage,
-  setDefaultBackImage: React.Dispatch<React.SetStateAction<IDefaultBackImage>>
+export const loadDefaultBackDisplay = function (
+  setDefaultBackImage: React.Dispatch<
+    React.SetStateAction<IDefaultBackDisplay>
+  >,
+  forceStock?: boolean
 ) {
   const localDefaultBackImage = localStorage.getItem("defaultBackImage");
   const localDefaultBackImageSettings = localStorage.getItem(
     "defaultBackImageSettings"
   );
-  if (!localDefaultBackImage || !localDefaultBackImageSettings) {
-    console.log("using stock image");
+  if (!localDefaultBackImage || !localDefaultBackImageSettings || forceStock) {
     Jimp.read(backImage.default).then((image) =>
       image.getBuffer("image/bmp", (error, buffer) =>
-        setDefaultBackImage({ ...defaultBackImage, image: buffer })
+        setDefaultBackImage(getStockBackDisplay(buffer))
       )
     );
   } else {

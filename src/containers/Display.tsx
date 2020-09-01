@@ -30,6 +30,7 @@ const DisplayComponent: React.FC<{
   image: Buffer;
   addPage: (primary: boolean) => Promise<number>;
   deleteImage: () => void;
+  makeDefaultBackImage: () => void;
   setOriginalImage: (newImage: Buffer) => void;
   setButtonSettings: (display: IButton) => void;
   setDisplaySettings: (display: IDisplay) => void;
@@ -59,6 +60,7 @@ const DisplayComponent: React.FC<{
   pages,
   displayIndex,
   switchDisplays,
+  makeDefaultBackImage,
   // connectDragSource,
 }) => {
   const [showSettings, setShowSettings] = useState<boolean>(false);
@@ -101,8 +103,9 @@ const DisplayComponent: React.FC<{
   );
 
   const menuId = `${pageIndex}:${displayIndex}`;
-  const menuRef = useContextMenuTrigger<HTMLDivElement>({ menuId });
-
+  let menuRef = useContextMenuTrigger<HTMLDivElement>({
+    menuId,
+  });
   return (
     <Wrapper ref={dragRef} opacity={opacity}>
       <ImagePreview
@@ -120,10 +123,26 @@ const DisplayComponent: React.FC<{
         >
           <ContextMenu menuId={menuId}>
             <ContextMenuItem
-              text="Delete Image"
+              text="Delete image"
               icon="fa/FaTrash"
               onClick={() => deleteImage()}
               dangerous
+            ></ContextMenuItem>
+            <ContextMenuItem
+              text="Make default back Image"
+              icon="gi/GiBackForth"
+              onClick={() => makeDefaultBackImage()}
+              dangerous
+            ></ContextMenuItem>
+            <ContextMenuItem
+              text="Lorem Ipsum dolor"
+              icon="ri/RiFeedbackFill"
+              onClick={() => makeDefaultBackImage()}
+            ></ContextMenuItem>
+            <ContextMenuItem
+              text="Sit amet latein ist cool"
+              icon="md/MdBackup"
+              onClick={() => makeDefaultBackImage()}
             ></ContextMenuItem>
           </ContextMenu>
           <div ref={menuRef}>

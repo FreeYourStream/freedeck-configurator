@@ -21,7 +21,6 @@ export const composeImage = async (
   settings: IDisplay
 ): Promise<Buffer> => {
   const { imageSettings, textWithIconSettings, textSettings } = settings;
-
   let jimpImage = await Jimp.read(image);
   const ditherBackground = await Jimp.create(
     jimpImage.getWidth(),
