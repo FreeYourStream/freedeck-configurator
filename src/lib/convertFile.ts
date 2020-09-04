@@ -1,13 +1,12 @@
 import { Buffer } from "buffer";
-
+import { Threshold } from '@jimp/plugin-threshold'
 import fs from "floyd-steinberg";
 import Jimp from "jimp";
 
 import { IDisplay } from "../App";
-import { imageToBinaryBuffer } from "./bwConversion";
+import { imageToBlackAndWhiteBuffer } from "./bwByteBuffer";
 import { dec2bin } from "./dec2binString";
 import { rotateCCW } from "./matrix";
-import { pixelBufferToBitmapBuffer } from "./pixelToBitmap";
 
 export interface IConverted {
   bytes: Buffer;
@@ -25,15 +24,21 @@ export const composeImage = async (
   const ditherBackground = await Jimp.create(
     jimpImage.getWidth(),
     jimpImage.getHeight(),
-    imageSettings.invert ? "#ffffff" : "#000000"
+    "black"
   );
+  if (imageSettings.invert) ditherBackground.invert()
   jimpImage = await ditherBackground.composite(jimpImage, 0, 0);
-  const brightnessMultiplier = imageSettings.invert ? -0.25 : 0.25;
-  await jimpImage.contrast(imageSettings.contrast * brightnessMultiplier * -1);
-  await jimpImage.brightness(imageSettings.brightness * brightnessMultiplier);
-  await jimpImage.autocrop();
-  if (imageSettings.dither) jimpImage.bitmap = fs(jimpImage.bitmap); //await ditherImage(await jimpImage.getBufferAsync("image/png"));
+  if (imageSettings.dither) {
+    const brightnessMultiplier = imageSettings.invert ? -0.4 : 0.4;
+    await jimpImage.contrast(imageSettings.contrast * brightnessMultiplier * -1);
+    await jimpImage.brightness(imageSettings.brightness * brightnessMultiplier);
+    jimpImage.bitmap = fs(jimpImage.bitmap);
+  } else {
+    // @ts-ignore
+    await jimpImage.threshold({ max: imageSettings.whiteThreshold, replace: imageSettings.blackThreshold, autoGreyscale: false })
+  }
   if (imageSettings.invert) jimpImage.invert();
+  await jimpImage.autocrop()
 
   const background = new Jimp(width, height, "black");
 
@@ -67,9 +72,7 @@ export const composeImage = async (
       height / 2 - jimpImage.getHeight() / 2
     );
   }
-  const { binary } = imageToBinaryBuffer(background, width, height);
-  const bytes = pixelBufferToBitmapBuffer(binary);
-  return bytes;
+  return imageToBlackAndWhiteBuffer(background, width, height);
 };
 
 export const composeText = async (
@@ -101,9 +104,8 @@ export const composeText = async (
     (128 - image.getWidth()) / 2,
     (64 - image.getHeight()) / 2
   );
-  const { binary } = imageToBinaryBuffer(background, width, height);
-  const bytes = pixelBufferToBitmapBuffer(binary);
-  return bytes;
+  const binary = imageToBlackAndWhiteBuffer(background, width, height);
+  return binary;
 };
 
 export const optimizeForSSD1306 = (buffer: Buffer) => {

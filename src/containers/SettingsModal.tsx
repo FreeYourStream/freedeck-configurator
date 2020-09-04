@@ -3,9 +3,9 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useContextMenuTrigger } from "react-context-menu-wrapper";
 
 import { IDefaultBackDisplay } from "../App";
-import { ContextMenu, ContextMenuItem } from "../components/contextMenu";
-import { DropDisplay } from "../components/dropDisplay";
-import { Modal } from "../components/modal";
+import { ContextMenu, ContextMenuItem } from "../lib/components/contextMenu";
+import { DropDisplay } from "../lib/components/dropDisplay";
+import { Modal } from "../lib/components/modal";
 import { composeImage } from "../lib/convertFile";
 import { loadDefaultBackDisplay } from "../lib/defaultBackImage";
 import { handleFileSelect } from "../lib/fileSelect";

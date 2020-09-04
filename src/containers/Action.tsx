@@ -2,16 +2,16 @@ import React, { useCallback } from "react";
 import styled from "styled-components";
 
 import { IButtonSettings } from "../App";
-import { FDButton } from "../components/button";
+import { FDButton } from "../lib/components/button";
 import {
   MicroButton,
   SelectWrapper,
   StyledSelect,
   Title,
   WrapRow,
-} from "../components/misc";
+} from "../lib/components/misc";
 import { EKeys, EMediaKeys, Keys, MediaKeys } from "../definitions/keys";
-import { EAction } from "../lib/parse/parsePage";
+import { EAction } from "../lib/configFile/parsePage";
 import { scrollToPage } from "../lib/scrollToPage";
 
 const Wrapper = styled.div`

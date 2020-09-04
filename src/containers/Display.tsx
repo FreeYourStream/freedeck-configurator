@@ -8,11 +8,11 @@ import { useDrag, useDrop } from "react-dnd";
 import styled from "styled-components";
 
 import { IButton, IDisplay } from "../App";
-import { ImagePreview } from "../components/bwImagePreview";
-import { ContextMenu, ContextMenuItem } from "../components/contextMenu";
-import { DropDisplay } from "../components/dropDisplay";
-import { Column, Row, Title } from "../components/misc";
-import { Modal } from "../components/modal";
+import { ImagePreview } from "../lib/components/bwImagePreview";
+import { ContextMenu, ContextMenuItem } from "../lib/components/contextMenu";
+import { DropDisplay } from "../lib/components/dropDisplay";
+import { Column, Row, Title } from "../lib/components/misc";
+import { Modal } from "../lib/components/modal";
 import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { Action } from "./Action";

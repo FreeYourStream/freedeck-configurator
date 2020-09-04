@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { colors } from "../definitions/colors";
+import { colors } from "../../definitions/colors";
 import { FDButton } from "./button";
 
 export const TextInput = styled.textarea.attrs({ rows: 4 })`
@@ -47,6 +47,7 @@ export const Value = styled.p`
   font-family: "Barlow", sans-serif;
   font-size: 20px;
   font-weight: bold;
+  width: 40px;
 `;
 export const Column = styled.div`
   position: relative;
@@ -65,7 +66,7 @@ export const Disabler = styled.div<{ disable: boolean }>`
   right: 0;
   bottom: 0;
 `;
-export const CheckButton = styled(FDButton).attrs({ size: 1 })<{
+export const CheckButton = styled(FDButton).attrs({ size: 1 }) <{
   activated: boolean;
 }>`
   background-color: ${(p) => (p.activated ? "darkgreen" : "red")};

@@ -6,7 +6,7 @@ import { BsThreeDots } from "react-icons/bs";
 import { FaTrashAlt } from "react-icons/fa";
 import styled, { StyledComponent } from "styled-components";
 
-import { colors } from "../definitions/colors";
+import { colors } from "../../definitions/colors";
 import { ImagePreview } from "./bwImagePreview";
 import { ContextMenu, ContextMenuItem } from "./contextMenu";
 

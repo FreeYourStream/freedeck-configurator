@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { HiDocumentAdd } from "react-icons/hi";
 import styled from "styled-components";
 
-import { FDIconButton } from "./components/button";
+import { FDIconButton } from "./lib/components/button";
 import { Page } from "./containers/Page";
 import { SettingsModal } from "./containers/SettingsModal";
 import { colors } from "./definitions/colors";
@@ -21,7 +21,7 @@ import { useDefaultBackDisplay } from "./hooks.ts/useDefaultBackImage";
 import { useSetOriginalImageCallback } from "./hooks.ts/useSetOriginalImageCallback";
 import { composeImage, composeText } from "./lib/convertFile";
 import { loadDefaultBackDisplay } from "./lib/defaultBackImage";
-import { EAction } from "./lib/parse/parsePage";
+import { EAction } from "./lib/configFile/parsePage";
 
 const Main = styled.div`
   * {
@@ -98,8 +98,10 @@ export interface ITextWithIconSettings {
 
 export interface IImageSettings {
   dither: boolean;
-  brightness: number;
+  blackThreshold: number;
   contrast: number;
+  brightness: number;
+  whiteThreshold: number;
   invert: boolean;
 }
 
@@ -180,7 +182,7 @@ function App() {
       const oldDisplay = displaySettingsPages[pageIndex][displayIndex];
       if (
         newDisplay.textWithIconSettings.enabled ===
-          oldDisplay.textWithIconSettings.enabled &&
+        oldDisplay.textWithIconSettings.enabled &&
         newDisplay.textSettings.text !== ""
       ) {
         newDisplay.textWithIconSettings.enabled = true;

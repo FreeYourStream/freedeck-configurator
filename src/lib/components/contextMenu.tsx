@@ -2,7 +2,7 @@ import React, { ReactNode, ReactNodeArray } from "react";
 import { ContextMenuWrapper } from "react-context-menu-wrapper";
 import styled from "styled-components";
 
-import { colors } from "../definitions/colors";
+import { colors } from "../../definitions/colors";
 import { Spacer } from "./button";
 import { Icons } from "./icons";
 import { Label } from "./misc";

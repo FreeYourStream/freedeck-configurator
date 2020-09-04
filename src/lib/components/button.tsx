@@ -1,20 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
-import { colors } from "../definitions/colors";
+import { colors } from "../../definitions/colors";
 import { Icons } from "./icons";
-
-export const Button = styled.button<{ bgcolor?: string }>`
-  border-radius: 2px;
-  letter-spacing: 1px;
-  font-size: 16px;
-  padding: 8px;
-  border-style: none;
-  color: black;
-  background-color: ${(p) => p.bgcolor ?? "fuchsia"};
-  font-weight: bold;
-  cursor: pointer;
-`;
 
 export const FDButtonInner = styled.div<{
   size: number;

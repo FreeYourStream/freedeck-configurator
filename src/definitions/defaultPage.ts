@@ -1,7 +1,7 @@
 import { merge } from "lodash";
 
 import { IButton, IButtonPage, IDisplay } from "../App";
-import { EAction } from "../lib/parse/parsePage";
+import { EAction } from "../lib/configFile/parsePage";
 import { fontMedium } from "./fonts";
 
 export type RecursivePartial<T> = {
@@ -23,29 +23,31 @@ export const getDefaultButton: () => IButton = () => ({
 export const getDefaultDisplay: (
   options?: IDefaultImageDisplayOptions
 ) => IDisplay = (options) =>
-  merge<IDisplay, IDefaultImageDisplayOptions | undefined>(
-    {
-      imageIsConverted: true,
-      imageSettings: {
-        contrast: 0.3,
-        brightness: 0.3,
-        dither: false,
-        invert: false,
+    merge<IDisplay, IDefaultImageDisplayOptions | undefined>(
+      {
+        imageIsConverted: true,
+        imageSettings: {
+          brightness: 0,
+          contrast: 0,
+          whiteThreshold: 64,
+          blackThreshold: 192,
+          dither: false,
+          invert: false,
+        },
+        textSettings: {
+          font: fontMedium,
+          text: "",
+        },
+        textWithIconSettings: {
+          enabled: false,
+          iconWidthMultiplier: 0.35,
+        },
+        isGeneratedFromDefaultBackImage: false,
+        previousDisplay: undefined,
+        previousPage: undefined,
       },
-      textSettings: {
-        font: fontMedium,
-        text: "",
-      },
-      textWithIconSettings: {
-        enabled: false,
-        iconWidthMultiplier: 0.35,
-      },
-      isGeneratedFromDefaultBackImage: false,
-      previousDisplay: undefined,
-      previousPage: undefined,
-    },
-    options
-  );
+      options
+    );
 export const getDefaultButtonPage = (
   width: number,
   height: number,
