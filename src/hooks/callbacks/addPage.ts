@@ -30,56 +30,56 @@ export const useAddPageCallback = (
   displaySettingsPages: IDisplayPage[],
   defaultBackDisplay: IDefaultBackDisplay
 ) =>
-  //useCallback(
-  async (
-    previousPageIndex?: number,
-    previousDisplayIndex?: number,
-    primary?: boolean
-  ) => {
-    const newOriginalImagePage = [];
-    const newConvertedImagePage = [];
-    let newDisplayPage = getDefaultDisplayPage(width, height);
-    for (let i = 0; i < width * height; i++) {
-      if (previousPageIndex !== undefined && i === 0) {
-        newOriginalImagePage.push(Buffer.from(defaultBackDisplay.image));
-        newDisplayPage[i] = {
-          ...defaultBackDisplay.settings,
-          isGeneratedFromDefaultBackImage: true,
-        };
-        newConvertedImagePage.push(
-          await composeImage(
-            defaultBackDisplay.image,
-            128,
-            64,
-            defaultBackDisplay.settings
-          )
-        );
-      } else {
-        newOriginalImagePage.push(null);
-        newConvertedImagePage.push(new Buffer(1024));
+  useCallback(
+    async (
+      previousPageIndex?: number,
+      previousDisplayIndex?: number,
+      primary?: boolean
+    ) => {
+      const newOriginalImagePage = [];
+      const newConvertedImagePage = [];
+      let newDisplayPage = getDefaultDisplayPage(width, height);
+      for (let i = 0; i < width * height; i++) {
+        if (previousPageIndex !== undefined && i === 0) {
+          newOriginalImagePage.push(Buffer.from(defaultBackDisplay.image));
+          newDisplayPage[i] = {
+            ...defaultBackDisplay.settings,
+            isGeneratedFromDefaultBackImage: true,
+          };
+          newConvertedImagePage.push(
+            await composeImage(
+              defaultBackDisplay.image,
+              128,
+              64,
+              defaultBackDisplay.settings
+            )
+          );
+        } else {
+          newOriginalImagePage.push(null);
+          newConvertedImagePage.push(new Buffer(1024));
+        }
       }
-    }
 
-    setOriginalImagePages([...originalImagePages, newOriginalImagePage]);
-    setConvertedImagePages([...convertedImagePages, newConvertedImagePage]);
+      setOriginalImagePages([...originalImagePages, newOriginalImagePage]);
+      setConvertedImagePages([...convertedImagePages, newConvertedImagePage]);
 
-    const newActionSettingPages = [
-      ...buttonSettingsPages,
-      getDefaultButtonPage(width, height, previousPageIndex),
-    ];
-    if (
-      previousDisplayIndex !== undefined &&
-      previousPageIndex !== undefined &&
-      primary !== undefined
-    ) {
-      newActionSettingPages[previousPageIndex][previousDisplayIndex][
-        primary ? "primary" : "secondary"
-      ].values = [buttonSettingsPages.length];
-    }
-    setButtonSettingsPages(newActionSettingPages);
-    setDisplaySettingsPages([...displaySettingsPages, newDisplayPage]);
-    return buttonSettingsPages.length;
-  }; /*,
+      const newActionSettingPages = [
+        ...buttonSettingsPages,
+        getDefaultButtonPage(width, height, previousPageIndex),
+      ];
+      if (
+        previousDisplayIndex !== undefined &&
+        previousPageIndex !== undefined &&
+        primary !== undefined
+      ) {
+        newActionSettingPages[previousPageIndex][previousDisplayIndex][
+          primary ? "primary" : "secondary"
+        ].values = [buttonSettingsPages.length];
+      }
+      setButtonSettingsPages(newActionSettingPages);
+      setDisplaySettingsPages([...displaySettingsPages, newDisplayPage]);
+      return buttonSettingsPages.length;
+    },
     [
       width,
       height,
@@ -94,4 +94,4 @@ export const useAddPageCallback = (
       defaultBackDisplay.image,
       defaultBackDisplay.settings,
     ]
-  );*/
+  );

@@ -15,10 +15,10 @@ export const useDeleteImageCallback = (
     image: Buffer | null
   ) => Promise<void>
 ) =>
-  //useCallback(
-  async (pageIndex: number, displayIndex: number) => {
-    await setOriginalImage(pageIndex, displayIndex, null);
-    await setDisplaySettings(pageIndex, displayIndex, getDefaultDisplay());
-  }; /*,
+  useCallback(
+    async (pageIndex: number, displayIndex: number) => {
+      await setOriginalImage(pageIndex, displayIndex, null);
+      await setDisplaySettings(pageIndex, displayIndex, getDefaultDisplay());
+    },
     [setDisplaySettings, setOriginalImage]
-  );*/
+  );

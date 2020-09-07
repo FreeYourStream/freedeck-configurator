@@ -23,41 +23,41 @@ export const useDeletePageCallback = (
     React.SetStateAction<IOriginalImagePage[]>
   >
 ) =>
-  //useCallback(
-  (pageIndex: number) => {
-    const newOriginalImages = [...originalImagePages];
-    const newConvertedImages = [...convertedImagePages];
-    newOriginalImages.splice(pageIndex, 1);
-    newConvertedImages.splice(pageIndex, 1);
-    setOriginalImagePages(newOriginalImages);
-    setConvertedImagePages(newConvertedImages);
+  useCallback(
+    (pageIndex: number) => {
+      const newOriginalImages = [...originalImagePages];
+      const newConvertedImages = [...convertedImagePages];
+      newOriginalImages.splice(pageIndex, 1);
+      newConvertedImages.splice(pageIndex, 1);
+      setOriginalImagePages(newOriginalImages);
+      setConvertedImagePages(newConvertedImages);
 
-    let newActionPages = [...buttonSettingsPages];
-    let newImagePages = [...displaySettingsPages];
-    newActionPages.splice(pageIndex, 1);
-    newImagePages.splice(pageIndex, 1);
-    newActionPages = newActionPages.map<IButtonPage>((newPage) => {
-      const displays = newPage.map<IButton>((display) => {
-        if (display.primary.mode === EAction.changeLayout) {
-          if (display.primary.values[0] >= pageIndex) {
-            display.primary.values[0] -= 1;
+      let newActionPages = [...buttonSettingsPages];
+      let newImagePages = [...displaySettingsPages];
+      newActionPages.splice(pageIndex, 1);
+      newImagePages.splice(pageIndex, 1);
+      newActionPages = newActionPages.map<IButtonPage>((newPage) => {
+        const displays = newPage.map<IButton>((display) => {
+          if (display.primary.mode === EAction.changeLayout) {
+            if (display.primary.values[0] >= pageIndex) {
+              display.primary.values[0] -= 1;
+            }
           }
-        }
-        if (
-          display.secondary.enabled &&
-          display.secondary.mode === EAction.changeLayout
-        ) {
-          if (display.secondary.values[0] >= pageIndex) {
-            display.secondary.values[0] -= 1;
+          if (
+            display.secondary.enabled &&
+            display.secondary.mode === EAction.changeLayout
+          ) {
+            if (display.secondary.values[0] >= pageIndex) {
+              display.secondary.values[0] -= 1;
+            }
           }
-        }
-        return { ...display };
+          return { ...display };
+        });
+        return displays;
       });
-      return displays;
-    });
-    setButtonSettingsPages(newActionPages);
-    setDisplaySettingsPages(newImagePages);
-  }; /*,
+      setButtonSettingsPages(newActionPages);
+      setDisplaySettingsPages(newImagePages);
+    },
     [
       buttonSettingsPages,
       convertedImagePages,
@@ -69,4 +69,3 @@ export const useDeletePageCallback = (
       setOriginalImagePages,
     ]
   );
-*/

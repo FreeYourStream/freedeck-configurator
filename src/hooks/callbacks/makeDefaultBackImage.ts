@@ -15,15 +15,15 @@ export const useMakeDefaultBackImageCallback = (
     image: IOriginalImage
   ) => Promise<void>
 ) =>
-  //useCallback(
-  async (pageIndex: number, displayIndex: number) => {
-    await setDisplaySettings(
-      pageIndex,
-      displayIndex,
-      defaultBackDisplay.settings
-    );
-    await setOriginalImage(pageIndex, displayIndex, defaultBackDisplay.image);
-  }; /*,
+  useCallback(
+    async (pageIndex: number, displayIndex: number) => {
+      await setDisplaySettings(
+        pageIndex,
+        displayIndex,
+        defaultBackDisplay.settings
+      );
+      await setOriginalImage(pageIndex, displayIndex, defaultBackDisplay.image);
+    },
     [
       defaultBackDisplay.image,
       defaultBackDisplay.settings,
@@ -31,4 +31,3 @@ export const useMakeDefaultBackImageCallback = (
       setOriginalImage,
     ]
   );
-*/

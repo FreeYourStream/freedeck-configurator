@@ -21,49 +21,49 @@ export const useSwitchDisplaysCallback = (
     React.SetStateAction<IOriginalImagePage[]>
   >
 ) =>
-  //useCallback(
-  (
-    aPageIndex: number,
-    bPageIndex: number,
-    aDisplayIndex: number,
-    bDisplayIndex: number
-  ) => {
-    const aDisplayAction = {
-      ...buttonSettingsPages[aPageIndex][aDisplayIndex],
-    };
-    const bDisplayAction = {
-      ...buttonSettingsPages[bPageIndex][bDisplayIndex],
-    };
-    const newActionPages = [...buttonSettingsPages];
-    newActionPages[aPageIndex][aDisplayIndex] = bDisplayAction;
-    newActionPages[bPageIndex][bDisplayIndex] = aDisplayAction;
-    setButtonSettingsPages(newActionPages);
+  useCallback(
+    (
+      aPageIndex: number,
+      bPageIndex: number,
+      aDisplayIndex: number,
+      bDisplayIndex: number
+    ) => {
+      const aDisplayAction = {
+        ...buttonSettingsPages[aPageIndex][aDisplayIndex],
+      };
+      const bDisplayAction = {
+        ...buttonSettingsPages[bPageIndex][bDisplayIndex],
+      };
+      const newActionPages = [...buttonSettingsPages];
+      newActionPages[aPageIndex][aDisplayIndex] = bDisplayAction;
+      newActionPages[bPageIndex][bDisplayIndex] = aDisplayAction;
+      setButtonSettingsPages(newActionPages);
 
-    const aDisplayImage = {
-      ...displaySettingsPages[aPageIndex][aDisplayIndex],
-    };
-    const bDisplayImage = {
-      ...displaySettingsPages[bPageIndex][bDisplayIndex],
-    };
-    const newImagePages = [...displaySettingsPages];
-    newImagePages[aPageIndex][aDisplayIndex] = bDisplayImage;
-    newImagePages[bPageIndex][bDisplayIndex] = aDisplayImage;
-    setDisplaySettingsPages(newImagePages);
+      const aDisplayImage = {
+        ...displaySettingsPages[aPageIndex][aDisplayIndex],
+      };
+      const bDisplayImage = {
+        ...displaySettingsPages[bPageIndex][bDisplayIndex],
+      };
+      const newImagePages = [...displaySettingsPages];
+      newImagePages[aPageIndex][aDisplayIndex] = bDisplayImage;
+      newImagePages[bPageIndex][bDisplayIndex] = aDisplayImage;
+      setDisplaySettingsPages(newImagePages);
 
-    const aOriginalImage = originalImagePages[aPageIndex][aDisplayIndex];
-    const bOriginalImage = originalImagePages[bPageIndex][bDisplayIndex];
-    const newOriginalImages = [...originalImagePages];
-    newOriginalImages[aPageIndex][aDisplayIndex] = bOriginalImage;
-    newOriginalImages[bPageIndex][bDisplayIndex] = aOriginalImage;
-    setOriginalImagePages(newOriginalImages);
+      const aOriginalImage = originalImagePages[aPageIndex][aDisplayIndex];
+      const bOriginalImage = originalImagePages[bPageIndex][bDisplayIndex];
+      const newOriginalImages = [...originalImagePages];
+      newOriginalImages[aPageIndex][aDisplayIndex] = bOriginalImage;
+      newOriginalImages[bPageIndex][bDisplayIndex] = aOriginalImage;
+      setOriginalImagePages(newOriginalImages);
 
-    const aConvertedImage = convertedImagePages[aPageIndex][aDisplayIndex];
-    const bConvertedImage = convertedImagePages[bPageIndex][bDisplayIndex];
-    const newConvertedImages = [...convertedImagePages];
-    newConvertedImages[aPageIndex][aDisplayIndex] = bConvertedImage;
-    newConvertedImages[bPageIndex][bDisplayIndex] = aConvertedImage;
-    setConvertedImagePages(newConvertedImages);
-  }; /*,
+      const aConvertedImage = convertedImagePages[aPageIndex][aDisplayIndex];
+      const bConvertedImage = convertedImagePages[bPageIndex][bDisplayIndex];
+      const newConvertedImages = [...convertedImagePages];
+      newConvertedImages[aPageIndex][aDisplayIndex] = bConvertedImage;
+      newConvertedImages[bPageIndex][bDisplayIndex] = aConvertedImage;
+      setConvertedImagePages(newConvertedImages);
+    },
     [
       buttonSettingsPages,
       convertedImagePages,
@@ -75,4 +75,3 @@ export const useSwitchDisplaysCallback = (
       setOriginalImagePages,
     ]
   );
-*/

@@ -1,14 +1,9 @@
-import React, { useState } from "react";
-import { useContextMenuTrigger } from "react-context-menu-wrapper";
+import React from "react";
 import { useDropzone } from "react-dropzone";
-import { BiReset } from "react-icons/bi";
-import { BsThreeDots } from "react-icons/bs";
-import { FaTrashAlt } from "react-icons/fa";
 import styled, { StyledComponent } from "styled-components";
 
 import { colors } from "../../definitions/colors";
 import { ImagePreview } from "./bwImagePreview";
-import { ContextMenu, ContextMenuItem } from "./contextMenu";
 
 export const DropWrapper = styled.div`
   position: relative;

@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import { HiDocumentAdd } from "react-icons/hi";
 import styled from "styled-components";
 
-import { Page } from "./containers/Page";
-import { SettingsModal } from "./containers/SettingsModal";
+import { Page } from "./components/Page";
+import { SettingsModal } from "./components/SettingsModal";
 import { colors } from "./definitions/colors";
 import { useAddPageCallback } from "./hooks/callbacks/addPage";
 import { useDeleteImageCallback } from "./hooks/callbacks/deleteImage";
@@ -141,6 +141,11 @@ export interface IDefaultBackDisplay {
 }
 function App() {
   const [defaultBackDisplay, setDefaultBackDisplay] = useDefaultBackDisplay();
+
+  useEffect(() => {
+    loadDefaultBackDisplay(setDefaultBackDisplay);
+  }, []); // only execute on page load
+
   const [height] = useHeight();
   const [width] = useWidth();
 
@@ -162,9 +167,6 @@ function App() {
   ] = useConvertedImagePages();
 
   const [showSettings, setShowSettings] = useShowSettings();
-  useEffect(() => {
-    loadDefaultBackDisplay(setDefaultBackDisplay);
-  }, []); // only execute on page load
 
   const setOriginalImage = useSetOriginalImageCallback(
     convertedImagePages,

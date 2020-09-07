@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import styled from "styled-components";
 
 import { IButtonSettings } from "../App";
+import { EKeys, EMediaKeys, Keys, MediaKeys } from "../definitions/keys";
 import { FDButton } from "../lib/components/button";
 import {
   MicroButton,
@@ -10,7 +11,6 @@ import {
   Title,
   WrapRow,
 } from "../lib/components/misc";
-import { EKeys, EMediaKeys, Keys, MediaKeys } from "../definitions/keys";
 import { EAction } from "../lib/configFile/parsePage";
 import { scrollToPage } from "../lib/scrollToPage";
 

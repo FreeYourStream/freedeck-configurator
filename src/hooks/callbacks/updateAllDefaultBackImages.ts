@@ -18,22 +18,26 @@ export const useUpdateAllDefaultBackImagesCallback = (
     image: Buffer | null
   ) => Promise<void>
 ) =>
-  //useCallback(
-  (newDefaultBackImage: IDefaultBackDisplay) => {
-    setDefaultBackDisplay(newDefaultBackImage);
-    [...displaySettingsPages].forEach((page, pageIndex) => {
-      [...page].forEach((display, displayIndex) => {
-        if (display.isGeneratedFromDefaultBackImage) {
-          setDisplaySettings(
-            pageIndex,
-            displayIndex,
-            newDefaultBackImage.settings
-          );
-          setOriginalImage(pageIndex, displayIndex, newDefaultBackImage.image);
-        }
+  useCallback(
+    (newDefaultBackImage: IDefaultBackDisplay) => {
+      setDefaultBackDisplay(newDefaultBackImage);
+      [...displaySettingsPages].forEach((page, pageIndex) => {
+        [...page].forEach((display, displayIndex) => {
+          if (display.isGeneratedFromDefaultBackImage) {
+            setDisplaySettings(
+              pageIndex,
+              displayIndex,
+              newDefaultBackImage.settings
+            );
+            setOriginalImage(
+              pageIndex,
+              displayIndex,
+              newDefaultBackImage.image
+            );
+          }
+        });
       });
-    });
-  }; /*,
+    },
     [
       displaySettingsPages,
       setDefaultBackDisplay,
@@ -41,4 +45,3 @@ export const useUpdateAllDefaultBackImagesCallback = (
       setOriginalImage,
     ]
   );
-*/
