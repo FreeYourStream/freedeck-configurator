@@ -2,7 +2,7 @@ import Jimp from "jimp";
 
 import { IDefaultBackDisplay } from "../App";
 import * as backImage from "../definitions/back.png";
-import { getStockBackDisplay } from "../hooks.ts/useDefaultBackImage";
+import { getDefaultDisplay } from "../definitions/defaultPage";
 
 export const loadDefaultBackDisplay = function (
   setDefaultBackImage: React.Dispatch<
@@ -26,3 +26,11 @@ export const loadDefaultBackDisplay = function (
     setDefaultBackImage({ settings, image: buffer });
   }
 };
+
+export const getStockBackDisplay = (image?: Buffer) => ({
+  image: image ?? new Buffer(1024),
+  settings: getDefaultDisplay({
+    imageSettings: { invert: true },
+    isGeneratedFromDefaultBackImage: true,
+  }),
+});

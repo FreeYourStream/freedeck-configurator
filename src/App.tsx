@@ -1,27 +1,33 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { HiDocumentAdd } from "react-icons/hi";
 import styled from "styled-components";
 
-import { FDIconButton } from "./lib/components/button";
 import { Page } from "./containers/Page";
 import { SettingsModal } from "./containers/SettingsModal";
 import { colors } from "./definitions/colors";
-import {
-  getDefaultButtonPage,
-  getDefaultDisplay,
-  getDefaultDisplayPage,
-} from "./definitions/defaultPage";
+import { useAddPageCallback } from "./hooks/callbacks/addPage";
+import { useDeleteImageCallback } from "./hooks/callbacks/deleteImage";
+import { useDeletePageCallback } from "./hooks/callbacks/deletePage";
+import { useHasOriginalImageCallback } from "./hooks/callbacks/hasOriginalImage";
+import { useMakeDefaultBackImageCallback } from "./hooks/callbacks/makeDefaultBackImage";
+import { useSetButtonSettingsCallback } from "./hooks/callbacks/setButtonSettings";
+import { useSetDisplaySettingsCallback } from "./hooks/callbacks/setDisplaySettings";
+import { useSetOriginalImageCallback } from "./hooks/callbacks/setOriginalImage";
+import { useSwitchDisplaysCallback } from "./hooks/callbacks/switchDisplay";
+import { useUpdateAllDefaultBackImagesCallback } from "./hooks/callbacks/updateAllDefaultBackImages";
 import {
   useButtonSettingsPages,
   useConvertedImagePages,
+  useDefaultBackDisplay,
   useDisplaySettingsPages,
+  useHeight,
   useOriginalImagePages,
-} from "./hooks.ts/states";
-import { useDefaultBackDisplay } from "./hooks.ts/useDefaultBackImage";
-import { useSetOriginalImageCallback } from "./hooks.ts/useSetOriginalImageCallback";
-import { composeImage, composeText } from "./lib/convertFile";
-import { loadDefaultBackDisplay } from "./lib/defaultBackImage";
+  useShowSettings,
+  useWidth,
+} from "./hooks/states";
+import { FDIconButton } from "./lib/components/button";
 import { EAction } from "./lib/configFile/parsePage";
+import { loadDefaultBackDisplay } from "./lib/defaultBackImage";
 
 const Main = styled.div`
   * {
@@ -135,8 +141,8 @@ export interface IDefaultBackDisplay {
 }
 function App() {
   const [defaultBackDisplay, setDefaultBackDisplay] = useDefaultBackDisplay();
-  const [height] = useState<number>(2);
-  const [width] = useState<number>(3);
+  const [height] = useHeight();
+  const [width] = useWidth();
 
   const [
     buttonSettingsPages,
@@ -155,11 +161,10 @@ function App() {
     setConvertedImagePages,
   ] = useConvertedImagePages();
 
-  const [showSettings, setShowSettings] = useState<boolean>(false);
-  // only execute on page load
+  const [showSettings, setShowSettings] = useShowSettings();
   useEffect(() => {
     loadDefaultBackDisplay(setDefaultBackDisplay);
-  }, []);
+  }, []); // only execute on page load
 
   const setOriginalImage = useSetOriginalImageCallback(
     convertedImagePages,
@@ -168,276 +173,71 @@ function App() {
     setOriginalImagePages,
     setConvertedImagePages
   );
-  const setButtonSettings = useCallback(
-    (pageIndex: number, displayIndex: number, newDisplay: IButton) => {
-      const newPages = [...buttonSettingsPages];
-      newPages[pageIndex][displayIndex] = newDisplay;
-      setButtonSettingsPages([...newPages]);
-    },
-    [buttonSettingsPages, setButtonSettingsPages]
+  const setButtonSettings = useSetButtonSettingsCallback(
+    buttonSettingsPages,
+    setButtonSettingsPages
   );
-  const setDisplaySettings = useCallback(
-    async (pageIndex: number, displayIndex: number, newDisplay: IDisplay) => {
-      const newPages = [...displaySettingsPages];
-      const oldDisplay = displaySettingsPages[pageIndex][displayIndex];
-      if (
-        newDisplay.textWithIconSettings.enabled ===
-        oldDisplay.textWithIconSettings.enabled &&
-        newDisplay.textSettings.text !== ""
-      ) {
-        newDisplay.textWithIconSettings.enabled = true;
-      } else if (
-        newDisplay.textSettings.text === "" &&
-        oldDisplay.textSettings.text !== ""
-      ) {
-        newDisplay.textWithIconSettings.enabled = false;
-      }
-      newPages[pageIndex][displayIndex] = newDisplay;
-      setDisplaySettingsPages([...newPages]);
-      const originalImage = originalImagePages[pageIndex][displayIndex];
-      let convertedImage;
-      if (originalImage !== null) {
-        convertedImage = await composeImage(originalImage, 128, 64, newDisplay);
-      } else if (newDisplay.textSettings.text.length > 0) {
-        convertedImage = await composeText(128, 64, newDisplay);
-      } else {
-        convertedImage = new Buffer(1024);
-      }
-      const newConvertedImages = [...convertedImagePages];
-      newConvertedImages[pageIndex][displayIndex] = convertedImage;
-      setConvertedImagePages(newConvertedImages);
-    },
-    [
-      convertedImagePages,
-      displaySettingsPages,
-      originalImagePages,
-      setConvertedImagePages,
-      setDisplaySettingsPages,
-    ]
-  );
-  const updateAllDefaultBackImages = useCallback(
-    (newDefaultBackImage: IDefaultBackDisplay) => {
-      setDefaultBackDisplay(newDefaultBackImage);
-      [...displaySettingsPages].forEach((page, pageIndex) => {
-        [...page].forEach((display, displayIndex) => {
-          if (display.isGeneratedFromDefaultBackImage) {
-            setDisplaySettings(
-              pageIndex,
-              displayIndex,
-              newDefaultBackImage.settings
-            );
-            setOriginalImage(
-              pageIndex,
-              displayIndex,
-              newDefaultBackImage.image
-            );
-          }
-        });
-      });
-    },
-    [
-      displaySettingsPages,
-      setDefaultBackDisplay,
-      setDisplaySettings,
-      setOriginalImage,
-    ]
+  const setDisplaySettings = useSetDisplaySettingsCallback(
+    displaySettingsPages,
+    originalImagePages,
+    convertedImagePages,
+    setDisplaySettingsPages,
+    setConvertedImagePages
   );
 
-  const addPage = useCallback(
-    async (
-      previousPageIndex?: number,
-      previousDisplayIndex?: number,
-      primary?: boolean
-    ) => {
-      const newOriginalImagePage = [];
-      const newConvertedImagePage = [];
-      let newDisplayPage = getDefaultDisplayPage(width, height);
-      for (let i = 0; i < width * height; i++) {
-        if (previousPageIndex !== undefined && i === 0) {
-          newOriginalImagePage.push(Buffer.from(defaultBackDisplay.image));
-          newDisplayPage[i] = {
-            ...defaultBackDisplay.settings,
-            isGeneratedFromDefaultBackImage: true,
-          };
-          newConvertedImagePage.push(
-            await composeImage(
-              defaultBackDisplay.image,
-              128,
-              64,
-              defaultBackDisplay.settings
-            )
-          );
-        } else {
-          newOriginalImagePage.push(null);
-          newConvertedImagePage.push(new Buffer(1024));
-        }
-      }
-
-      setOriginalImagePages([...originalImagePages, newOriginalImagePage]);
-      setConvertedImagePages([...convertedImagePages, newConvertedImagePage]);
-
-      const newActionSettingPages = [
-        ...buttonSettingsPages,
-        getDefaultButtonPage(width, height, previousPageIndex),
-      ];
-      if (
-        previousDisplayIndex !== undefined &&
-        previousPageIndex !== undefined &&
-        primary !== undefined
-      ) {
-        newActionSettingPages[previousPageIndex][previousDisplayIndex][
-          primary ? "primary" : "secondary"
-        ].values = [buttonSettingsPages.length];
-      }
-      setButtonSettingsPages(newActionSettingPages);
-      setDisplaySettingsPages([...displaySettingsPages, newDisplayPage]);
-      return buttonSettingsPages.length;
-    },
-    [
-      width,
-      height,
-      setOriginalImagePages,
-      originalImagePages,
-      setConvertedImagePages,
-      convertedImagePages,
-      buttonSettingsPages,
-      setButtonSettingsPages,
-      setDisplaySettingsPages,
-      displaySettingsPages,
-      defaultBackDisplay.image,
-      defaultBackDisplay.settings,
-    ]
-  );
-  const deleteImage = useCallback(
-    async (pageIndex: number, displayIndex: number) => {
-      await setOriginalImage(pageIndex, displayIndex, null);
-      await setDisplaySettings(pageIndex, displayIndex, getDefaultDisplay());
-    },
-    [setDisplaySettings, setOriginalImage]
-  );
-  const makeDefaultBackImage = useCallback(
-    async (pageIndex: number, displayIndex: number) => {
-      await setDisplaySettings(
-        pageIndex,
-        displayIndex,
-        defaultBackDisplay.settings
-      );
-      await setOriginalImage(pageIndex, displayIndex, defaultBackDisplay.image);
-    },
-    [
-      defaultBackDisplay.image,
-      defaultBackDisplay.settings,
-      setDisplaySettings,
-      setOriginalImage,
-    ]
-  );
-  const deletePage = useCallback(
-    (pageIndex: number) => {
-      const newOriginalImages = [...originalImagePages];
-      const newConvertedImages = [...convertedImagePages];
-      newOriginalImages.splice(pageIndex, 1);
-      newConvertedImages.splice(pageIndex, 1);
-      setOriginalImagePages(newOriginalImages);
-      setConvertedImagePages(newConvertedImages);
-
-      let newActionPages = [...buttonSettingsPages];
-      let newImagePages = [...displaySettingsPages];
-      newActionPages.splice(pageIndex, 1);
-      newImagePages.splice(pageIndex, 1);
-      newActionPages = newActionPages.map<IButtonPage>((newPage) => {
-        const displays = newPage.map<IButton>((display) => {
-          if (display.primary.mode === EAction.changeLayout) {
-            if (display.primary.values[0] >= pageIndex) {
-              display.primary.values[0] -= 1;
-            }
-          }
-          if (
-            display.secondary.enabled &&
-            display.secondary.mode === EAction.changeLayout
-          ) {
-            if (display.secondary.values[0] >= pageIndex) {
-              display.secondary.values[0] -= 1;
-            }
-          }
-          return { ...display };
-        });
-        return displays;
-      });
-      setButtonSettingsPages(newActionPages);
-      setDisplaySettingsPages(newImagePages);
-    },
-    [
-      buttonSettingsPages,
-      convertedImagePages,
-      displaySettingsPages,
-      originalImagePages,
-      setButtonSettingsPages,
-      setConvertedImagePages,
-      setDisplaySettingsPages,
-      setOriginalImagePages,
-    ]
+  const updateAllDefaultBackImages = useUpdateAllDefaultBackImagesCallback(
+    displaySettingsPages,
+    setDefaultBackDisplay,
+    setDisplaySettings,
+    setOriginalImage
   );
 
-  const switchDisplays = useCallback(
-    (
-      aPageIndex: number,
-      bPageIndex: number,
-      aDisplayIndex: number,
-      bDisplayIndex: number
-    ) => {
-      const aDisplayAction = {
-        ...buttonSettingsPages[aPageIndex][aDisplayIndex],
-      };
-      const bDisplayAction = {
-        ...buttonSettingsPages[bPageIndex][bDisplayIndex],
-      };
-      const newActionPages = [...buttonSettingsPages];
-      newActionPages[aPageIndex][aDisplayIndex] = bDisplayAction;
-      newActionPages[bPageIndex][bDisplayIndex] = aDisplayAction;
-      setButtonSettingsPages(newActionPages);
-
-      const aDisplayImage = {
-        ...displaySettingsPages[aPageIndex][aDisplayIndex],
-      };
-      const bDisplayImage = {
-        ...displaySettingsPages[bPageIndex][bDisplayIndex],
-      };
-      const newImagePages = [...displaySettingsPages];
-      newImagePages[aPageIndex][aDisplayIndex] = bDisplayImage;
-      newImagePages[bPageIndex][bDisplayIndex] = aDisplayImage;
-      setDisplaySettingsPages(newImagePages);
-
-      const aOriginalImage = originalImagePages[aPageIndex][aDisplayIndex];
-      const bOriginalImage = originalImagePages[bPageIndex][bDisplayIndex];
-      const newOriginalImages = [...originalImagePages];
-      newOriginalImages[aPageIndex][aDisplayIndex] = bOriginalImage;
-      newOriginalImages[bPageIndex][bDisplayIndex] = aOriginalImage;
-      setOriginalImagePages(newOriginalImages);
-
-      const aConvertedImage = convertedImagePages[aPageIndex][aDisplayIndex];
-      const bConvertedImage = convertedImagePages[bPageIndex][bDisplayIndex];
-      const newConvertedImages = [...convertedImagePages];
-      newConvertedImages[aPageIndex][aDisplayIndex] = bConvertedImage;
-      newConvertedImages[bPageIndex][bDisplayIndex] = aConvertedImage;
-      setConvertedImagePages(newConvertedImages);
-    },
-    [
-      buttonSettingsPages,
-      convertedImagePages,
-      displaySettingsPages,
-      originalImagePages,
-      setButtonSettingsPages,
-      setConvertedImagePages,
-      setDisplaySettingsPages,
-      setOriginalImagePages,
-    ]
+  const addPage = useAddPageCallback(
+    width,
+    height,
+    setOriginalImagePages,
+    originalImagePages,
+    setConvertedImagePages,
+    convertedImagePages,
+    buttonSettingsPages,
+    setButtonSettingsPages,
+    setDisplaySettingsPages,
+    displaySettingsPages,
+    defaultBackDisplay
   );
 
-  const hasOriginalImage = useCallback(
-    (pageIndex: number, displayIndex: number) =>
-      !!originalImagePages[pageIndex][displayIndex],
-    [originalImagePages]
+  const deleteImage = useDeleteImageCallback(
+    setDisplaySettings,
+    setOriginalImage
   );
+  const makeDefaultBackImage = useMakeDefaultBackImageCallback(
+    defaultBackDisplay,
+    setDisplaySettings,
+    setOriginalImage
+  );
+  const deletePage = useDeletePageCallback(
+    buttonSettingsPages,
+    convertedImagePages,
+    displaySettingsPages,
+    originalImagePages,
+    setButtonSettingsPages,
+    setConvertedImagePages,
+    setDisplaySettingsPages,
+    setOriginalImagePages
+  );
+
+  const switchDisplays = useSwitchDisplaysCallback(
+    buttonSettingsPages,
+    convertedImagePages,
+    displaySettingsPages,
+    originalImagePages,
+    setButtonSettingsPages,
+    setConvertedImagePages,
+    setDisplaySettingsPages,
+    setOriginalImagePages
+  );
+
+  const hasOriginalImage = useHasOriginalImageCallback(originalImagePages);
 
   // const loadConfigFile = (configFile: File) =>
   //   handleFileSelect(configFile).then((arrayBuffer) => {
