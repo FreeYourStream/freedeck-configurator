@@ -1,28 +1,14 @@
-import Jimp from "jimp";
+import { monochrome128by64BitmapHeader } from "../definitions/headers";
 
-// export const imageToBlackAndWhiteBuffer = (
-//   image: Jimp,
-//   width: number,
-//   height: number
-// ) => {
-//   const binary: number[] = [];
-//   for (var i = 0; i < height; i++) {
-//     for (var j = 0; j < width; j++) {
-//       const values = Jimp.intToRGBA(image.getPixelColor(j, i));
-//       const bw = (values.r + values.g + values.b) / 3 > 128 ? 255 : 0;
-//       binary.push(bw);
-//     }
-//   }
-//   return new Buffer(binary);
-// };
-export const imageToBlackAndWhiteBuffer = async (
-  image: Jimp,
+export const colorBitmapToMonochromeBitmap = async (
+  bitmapBuffer: Buffer,
   width: number,
   height: number
 ) => {
-  const bitmap = await image.getBufferAsync("image/bmp");
-  const bitmapBody = bitmap.slice(bitmap.readUInt32LE(10));
+  // strip the 24bit color header out
+  const bitmapBody = bitmapBuffer.slice(bitmapBuffer.readUInt32LE(10));
   const blackAndWhite = [];
+
   // black and white through threshold
   for (let pixel = 0; pixel < width * height; pixel++) {
     const r = bitmapBody.readUInt8(pixel * 3);
@@ -40,5 +26,9 @@ export const imageToBlackAndWhiteBuffer = async (
     const number = parseInt(part, 2);
     monochromeBody.push(number); // thats faster
   }
-  return new Buffer(monochromeBody);
+  //put a monochrome bitmap header above the body again
+  return Buffer.concat([
+    new Buffer(monochrome128by64BitmapHeader()),
+    new Buffer(monochromeBody),
+  ]);
 };

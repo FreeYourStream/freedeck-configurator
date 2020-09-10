@@ -1,4 +1,4 @@
-export const bmpHeader = (width?: number, height?: number) => [
+export const monochrome128by64BitmapHeader = () => [
   0x42,
   0x4d,
   0x82,
@@ -128,7 +128,7 @@ export const bmpHeader = (width?: number, height?: number) => [
   0xff,
   0xff,
   0xff,
-  0x00
+  0x00,
 ];
 /*66,
   77,

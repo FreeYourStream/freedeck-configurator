@@ -11,6 +11,7 @@ import {
   getDefaultButtonPage,
   getDefaultDisplayPage,
 } from "../../definitions/defaultPage";
+import { getEmptyConvertedImage } from "../../definitions/emptyConvertedImage";
 import { composeImage } from "../../lib/convertFile";
 
 export const useAddPageCallback = (
@@ -56,7 +57,7 @@ export const useAddPageCallback = (
           );
         } else {
           newOriginalImagePage.push(null);
-          newConvertedImagePage.push(new Buffer(1024));
+          newConvertedImagePage.push(getEmptyConvertedImage());
         }
       }
 

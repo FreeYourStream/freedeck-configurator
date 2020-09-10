@@ -19,10 +19,6 @@ const Wrapper = styled.div`
 `;
 
 const TitleBar = styled.div`
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  right: 0px;
   height: 32px;
   display: flex;
   align-items: center;
@@ -33,14 +29,13 @@ const TitleBar = styled.div`
   background-color: ${colors.black};
 `;
 
-const Content = styled.div`
+const Content = styled.div<{ minWidth: number; minHeight: number }>`
   position: relative;
   border: 1px solid ${colors.black};
   background: ${colors.gray};
   border-radius: 8px 0px 8px 8px;
-  min-width: 200px;
-  min-height: 200px;
-  padding: 64px;
+  min-width: ${(p) => p.minWidth}px;
+  min-height: ${(p) => p.minHeight}px;
 `;
 
 const Close = styled.div`
@@ -59,15 +54,30 @@ const CloseBackground = styled.div`
   height: 20px;
   background-color: white;
 `;
-
+export const ModalBody = styled.div`
+  display: flex;
+  padding: 40px 64px 64px 64px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`;
 export const Modal: React.FC<{
   visible?: boolean;
   setClose: () => void;
   title?: string;
-}> = ({ visible, setClose, children, title }) => {
+  minWidth?: number;
+  minHeight?: number;
+}> = ({
+  visible,
+  setClose,
+  children,
+  title,
+  minWidth = 200,
+  minHeight = 200,
+}) => {
   const content = (
     <Wrapper>
-      <Content>
+      <Content minWidth={minWidth} minHeight={minHeight}>
         {title && <TitleBar>{title}</TitleBar>}
         <CloseBackground />
         <Close onClick={() => setClose()}>

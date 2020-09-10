@@ -39,7 +39,7 @@ export const Label = styled.div<{ color?: string }>`
   margin-right: 8px;
   font-family: "Barlow", sans-serif;
 `;
-export const Value = styled.p`
+export const Value = styled.p<{ minWidth?: number }>`
   display: flex;
   align-items: center;
   margin: 0;
@@ -47,7 +47,7 @@ export const Value = styled.p`
   font-family: "Barlow", sans-serif;
   font-size: 20px;
   font-weight: bold;
-  width: 40px;
+  min-width: ${(p) => (p.minWidth !== undefined ? p.minWidth : 40)}px;
 `;
 export const Column = styled.div`
   position: relative;

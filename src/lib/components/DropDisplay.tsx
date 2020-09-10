@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import styled, { StyledComponent } from "styled-components";
 
@@ -8,8 +8,8 @@ import { ImagePreview } from "./ImagePreview";
 export const DropWrapper = styled.div`
   position: relative;
   display: flex;
+  width: 100%;
   justify-content: center;
-  height: 128px;
   background-color: #000000a1;
   border-radius: 16px;
   margin-bottom: 8px;
@@ -44,24 +44,27 @@ const DropHere = styled.div`
   color: white;
 `;
 
-export const DropDisplay: React.FC<{
-  onDrop: (acceptedFiles: File[]) => Promise<void> | void;
-  previewImage: string;
-}> = ({ onDrop, previewImage }) => {
+export const DropDisplay = React.forwardRef<
+  any,
+  {
+    onDrop: (acceptedFiles: File[]) => Promise<void> | void;
+    previewImage: string;
+  }
+>(({ onDrop, previewImage }, ref) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: [".jpg", ".jpeg", ".png"],
   });
   return (
-    <DropWrapper>
+    <DropWrapper ref={ref}>
       <Drop {...getRootProps()}>
         <input {...getInputProps()} />
         {isDragActive ? (
           <DropHere>Drop Here</DropHere>
         ) : (
-          <ImagePreview multiplier={2} src={previewImage} />
+          <ImagePreview multiplier={3} src={previewImage} />
         )}
       </Drop>
     </DropWrapper>
   );
-};
+});

@@ -64,9 +64,9 @@ export const ContextMenu: React.FC<{
 }> = ({ children, menuId }) => {
   const childrenArray = isReactNodeArray(children) ? children : [children];
   const childrenWithDividers = childrenArray.reduce(
-    (acc: ReactNodeArray, child) => {
+    (acc: ReactNodeArray, child, index) => {
       if (!acc.length) return [child];
-      acc.push(<Divider />);
+      acc.push(<Divider key={index} />);
       acc.push(child);
       return acc;
     },

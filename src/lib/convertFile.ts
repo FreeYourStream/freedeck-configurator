@@ -1,12 +1,10 @@
 import { Buffer } from "buffer";
 
-import { Threshold } from "@jimp/plugin-threshold";
-import bmp from "bmp-ts";
 import fs from "floyd-steinberg";
 import Jimp from "jimp";
 
 import { IDisplay } from "../App";
-import { imageToBlackAndWhiteBuffer } from "./bwByteBuffer";
+import { colorBitmapToMonochromeBitmap } from "./colorToMonoBitmap";
 import { dec2bin } from "./dec2binString";
 import { rotateCCW } from "./matrix";
 
@@ -80,7 +78,8 @@ export const composeImage = async (
       height / 2 - jimpImage.getHeight() / 2
     );
   }
-  return await imageToBlackAndWhiteBuffer(background, width, height);
+  const bitmapBuffer = await background.getBufferAsync("image/bmp");
+  return await colorBitmapToMonochromeBitmap(bitmapBuffer, width, height);
 };
 
 export const composeText = async (
@@ -112,8 +111,8 @@ export const composeText = async (
     (128 - image.getWidth()) / 2,
     (64 - image.getHeight()) / 2
   );
-  const binary = imageToBlackAndWhiteBuffer(background, width, height);
-  return binary;
+  const bitmapBuffer = await background.getBufferAsync("image/bmp");
+  return await colorBitmapToMonochromeBitmap(bitmapBuffer, width, height);
 };
 
 export const optimizeForSSD1306 = (buffer: Buffer) => {

@@ -1,4 +1,4 @@
-import { bmpHeader } from "../definitions/headers";
+import { monochrome128by64BitmapHeader } from "../definitions/headers";
 
 export const base64Encode = (input: Buffer) => {
   var keyStr =
@@ -33,6 +33,6 @@ export const base64Encode = (input: Buffer) => {
 
 export const getBase64Image = (image: Buffer) => {
   const prefix = "data:image/bmp;base64,";
-  const headerBuffer = Buffer.from(bmpHeader());
-  return prefix + base64Encode(Buffer.concat([headerBuffer, image]));
+  const headerBuffer = Buffer.from(monochrome128by64BitmapHeader());
+  return prefix + base64Encode(image);
 };

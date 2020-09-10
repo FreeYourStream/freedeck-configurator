@@ -140,7 +140,7 @@ const PageComponent: React.FC<IProps> = ({
             <Display
               deleteImage={() => deleteImage(displayIndex)}
               makeDefaultBackImage={() => makeDefaultBackImage(displayIndex)}
-              image={convertedImages[displayIndex]}
+              convertedImage={convertedImages[displayIndex]}
               setButtonSettings={(displayAction) =>
                 setButtonSettings(displayIndex, displayAction)
               }

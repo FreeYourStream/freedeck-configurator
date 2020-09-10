@@ -24,7 +24,7 @@ import {
 
 const Wrapper = styled.div`
   display: flex;
-  min-width: 460px;
+  min-width: 500px;
 `;
 
 export interface ISettings {

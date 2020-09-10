@@ -6,6 +6,7 @@ import {
   IDisplayPage,
   IOriginalImagePage,
 } from "../../App";
+import { getEmptyConvertedImage } from "../../definitions/emptyConvertedImage";
 import { composeImage, composeText } from "../../lib/convertFile";
 
 export const useSetDisplaySettingsCallback = (
@@ -34,7 +35,6 @@ export const useSetDisplaySettingsCallback = (
         newDisplay.textWithIconSettings.enabled = false;
       }
       newPages[pageIndex][displayIndex] = newDisplay;
-      setDisplaySettingsPages([...newPages]);
       const originalImage = originalImagePages[pageIndex][displayIndex];
       let convertedImage;
       if (originalImage !== null) {
@@ -42,10 +42,11 @@ export const useSetDisplaySettingsCallback = (
       } else if (newDisplay.textSettings.text.length > 0) {
         convertedImage = await composeText(128, 64, newDisplay);
       } else {
-        convertedImage = new Buffer(1024);
+        return;
       }
       const newConvertedImages = [...convertedImagePages];
       newConvertedImages[pageIndex][displayIndex] = convertedImage;
+      setDisplaySettingsPages([...newPages]);
       setConvertedImagePages(newConvertedImages);
     },
     [

@@ -6,6 +6,8 @@ import {
   IDisplayPage,
   IOriginalImagePage,
 } from "../../App";
+import { getEmptyConvertedImage } from "../../definitions/emptyConvertedImage";
+import { monochrome128by64BitmapHeader } from "../../definitions/headers";
 import { composeImage } from "../../lib/convertFile";
 
 export const useSetOriginalImageCallback = (
@@ -26,7 +28,7 @@ export const useSetOriginalImageCallback = (
       if (image !== null) {
         convertedImage = await composeImage(image, 128, 64, display);
       } else {
-        convertedImage = new Buffer(1024);
+        convertedImage = getEmptyConvertedImage();
       }
       const newOriginalImages = [...originalImagePages];
       newOriginalImages[pageIndex][displayIndex] = image;

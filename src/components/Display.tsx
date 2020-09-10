@@ -1,9 +1,6 @@
 import Jimp from "jimp";
 import React, { useCallback, useMemo, useState } from "react";
-import {
-  ContextMenuWrapper,
-  useContextMenuTrigger,
-} from "react-context-menu-wrapper";
+import { useContextMenuTrigger } from "react-context-menu-wrapper";
 import { useDrag, useDrop } from "react-dnd";
 import styled from "styled-components";
 
@@ -13,7 +10,7 @@ import { DisplaySettings } from "../lib/components/DisplaySettings";
 import { DropDisplay } from "../lib/components/DropDisplay";
 import { ImagePreview } from "../lib/components/ImagePreview";
 import { Column, Row, Title } from "../lib/components/Misc";
-import { Modal } from "../lib/components/Modal";
+import { Modal, ModalBody } from "../lib/components/Modal";
 import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { Action } from "./Action";
@@ -27,7 +24,7 @@ const Wrapper = styled.div<{ opacity: number }>`
 `;
 
 const DisplayComponent: React.FC<{
-  image: Buffer;
+  convertedImage: Buffer;
   addPage: (primary: boolean) => Promise<number>;
   deleteImage: () => void;
   makeDefaultBackImage: () => void;
@@ -48,7 +45,7 @@ const DisplayComponent: React.FC<{
   ) => void;
 }> = ({
   hasOriginalImage,
-  image,
+  convertedImage,
   addPage,
   deleteImage,
   setOriginalImage,
@@ -64,10 +61,9 @@ const DisplayComponent: React.FC<{
   // connectDragSource,
 }) => {
   const [showSettings, setShowSettings] = useState<boolean>(false);
-  const previewImage = useMemo(() => {
-    const b64img = getBase64Image(image);
-    return b64img;
-  }, [image]);
+  const previewImage = useMemo(() => getBase64Image(convertedImage), [
+    convertedImage,
+  ]);
 
   const [{ opacity }, dragRef] = useDrag({
     item: { type: "display", pageIndex, displayIndex },
@@ -96,7 +92,7 @@ const DisplayComponent: React.FC<{
       const jimage = await Jimp.read(Buffer.from(buffer));
       const resizedBuffer = await jimage
         .scaleToFit(256, 128, "")
-        .getBufferAsync("image/bmp");
+        .getBufferAsync("image/png");
       setOriginalImage(resizedBuffer);
     },
     [setOriginalImage]
@@ -106,6 +102,7 @@ const DisplayComponent: React.FC<{
   let menuRef = useContextMenuTrigger<HTMLDivElement>({
     menuId,
   });
+
   return (
     <Wrapper ref={dragRef} opacity={opacity}>
       <ImagePreview
@@ -121,83 +118,87 @@ const DisplayComponent: React.FC<{
           visible={showSettings}
           setClose={() => setShowSettings(false)}
         >
-          <ContextMenu menuId={menuId}>
-            <ContextMenuItem
-              text="Delete image"
-              icon="fa/FaTrash"
-              onClick={() => deleteImage()}
-              dangerous
-            ></ContextMenuItem>
-            <ContextMenuItem
-              text="Make default back Image"
-              icon="gi/GiBackForth"
-              onClick={() => makeDefaultBackImage()}
-              dangerous
-            ></ContextMenuItem>
-            <ContextMenuItem
-              text="Lorem Ipsum dolor"
-              icon="ri/RiFeedbackFill"
-              onClick={() => makeDefaultBackImage()}
-            ></ContextMenuItem>
-            <ContextMenuItem
-              text="Sit amet latein ist cool"
-              icon="md/MdBackup"
-              onClick={() => makeDefaultBackImage()}
-            ></ContextMenuItem>
-          </ContextMenu>
-          <div ref={menuRef}>
-            <DropDisplay onDrop={onDrop} previewImage={previewImage} />
-          </div>
-          <Title divider big>
-            Display Settings
-          </Title>
-          <DisplaySettings
-            textOnly={!hasOriginalImage}
-            setImageSettings={(imageSettings) =>
-              setDisplaySettings({ ...imageDisplay, imageSettings })
-            }
-            imageSettings={imageDisplay.imageSettings}
-            textSettings={imageDisplay.textSettings}
-            textWithIconSettings={imageDisplay.textWithIconSettings}
-            setTextSettings={(textSettings) =>
-              setDisplaySettings({
-                ...imageDisplay,
-                textSettings,
-              })
-            }
-            setTextWithIconSettings={(textWithIconSettings) =>
-              setDisplaySettings({ ...imageDisplay, textWithIconSettings })
-            }
-          />
-          <Title divider big>
-            Button Settings
-          </Title>
-          <Row>
-            <Column>
-              <Action
-                setActionSetting={(primary) =>
-                  setButtonSettings({ ...actionDisplay, primary })
-                }
-                title="Short press"
-                pages={pages}
-                action={actionDisplay.primary}
-                addPage={() => addPage(true)}
-                loadUserInteraction={false}
-              />
-            </Column>
-            <Column>
-              <Action
-                setActionSetting={(secondary) =>
-                  setButtonSettings({ ...actionDisplay, secondary })
-                }
-                title="Long press"
-                pages={pages}
-                action={actionDisplay.secondary}
-                addPage={() => addPage(false)}
-                loadUserInteraction={false}
-              />
-            </Column>
-          </Row>
+          <ModalBody>
+            <ContextMenu menuId={menuId}>
+              <ContextMenuItem
+                text="Delete image"
+                icon="fa/FaTrash"
+                onClick={() => deleteImage()}
+                dangerous
+              ></ContextMenuItem>
+              <ContextMenuItem
+                text="Make default back Image"
+                icon="gi/GiBackForth"
+                onClick={() => makeDefaultBackImage()}
+                dangerous
+              ></ContextMenuItem>
+              <ContextMenuItem
+                text="Lorem Ipsum dolor"
+                icon="ri/RiFeedbackFill"
+                onClick={() => makeDefaultBackImage()}
+              ></ContextMenuItem>
+              <ContextMenuItem
+                text="Sit amet latein ist cool"
+                icon="md/MdBackup"
+                onClick={() => makeDefaultBackImage()}
+              ></ContextMenuItem>
+            </ContextMenu>
+            <DropDisplay
+              ref={menuRef}
+              onDrop={onDrop}
+              previewImage={previewImage}
+            />
+            <Title divider big>
+              Display Settings
+            </Title>
+            <DisplaySettings
+              textOnly={!hasOriginalImage}
+              setImageSettings={(imageSettings) =>
+                setDisplaySettings({ ...imageDisplay, imageSettings })
+              }
+              imageSettings={imageDisplay.imageSettings}
+              textSettings={imageDisplay.textSettings}
+              textWithIconSettings={imageDisplay.textWithIconSettings}
+              setTextSettings={(textSettings) =>
+                setDisplaySettings({
+                  ...imageDisplay,
+                  textSettings,
+                })
+              }
+              setTextWithIconSettings={(textWithIconSettings) =>
+                setDisplaySettings({ ...imageDisplay, textWithIconSettings })
+              }
+            />
+            <Title divider big>
+              Button Settings
+            </Title>
+            <Row>
+              <Column>
+                <Action
+                  setActionSetting={(primary) =>
+                    setButtonSettings({ ...actionDisplay, primary })
+                  }
+                  title="Short press"
+                  pages={pages}
+                  action={actionDisplay.primary}
+                  addPage={() => addPage(true)}
+                  loadUserInteraction={false}
+                />
+              </Column>
+              <Column>
+                <Action
+                  setActionSetting={(secondary) =>
+                    setButtonSettings({ ...actionDisplay, secondary })
+                  }
+                  title="Long press"
+                  pages={pages}
+                  action={actionDisplay.secondary}
+                  addPage={() => addPage(false)}
+                  loadUserInteraction={false}
+                />
+              </Column>
+            </Row>
+          </ModalBody>
         </Modal>
       )}
     </Wrapper>
