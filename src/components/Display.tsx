@@ -133,16 +133,6 @@ const DisplayComponent: React.FC<{
                 onClick={() => makeDefaultBackImage()}
                 dangerous
               ></ContextMenuItem>
-              <ContextMenuItem
-                text="Lorem Ipsum dolor"
-                icon="ri/RiFeedbackFill"
-                onClick={() => makeDefaultBackImage()}
-              ></ContextMenuItem>
-              <ContextMenuItem
-                text="Sit amet latein ist cool"
-                icon="md/MdBackup"
-                onClick={() => makeDefaultBackImage()}
-              ></ContextMenuItem>
             </ContextMenu>
             <DropDisplay
               ref={menuRef}
