@@ -1,5 +1,7 @@
 import { Buffer } from "buffer";
-import { Threshold } from '@jimp/plugin-threshold'
+
+import { Threshold } from "@jimp/plugin-threshold";
+import bmp from "bmp-ts";
 import fs from "floyd-steinberg";
 import Jimp from "jimp";
 
@@ -26,19 +28,25 @@ export const composeImage = async (
     jimpImage.getHeight(),
     "black"
   );
-  if (imageSettings.invert) ditherBackground.invert()
+  if (imageSettings.invert) ditherBackground.invert();
   jimpImage = await ditherBackground.composite(jimpImage, 0, 0);
   if (imageSettings.dither) {
     const brightnessMultiplier = imageSettings.invert ? -0.4 : 0.4;
-    await jimpImage.contrast(imageSettings.contrast * brightnessMultiplier * -1);
+    await jimpImage.contrast(
+      imageSettings.contrast * brightnessMultiplier * -1
+    );
     await jimpImage.brightness(imageSettings.brightness * brightnessMultiplier);
     jimpImage.bitmap = fs(jimpImage.bitmap);
   } else {
     // @ts-ignore
-    await jimpImage.threshold({ max: imageSettings.whiteThreshold, replace: imageSettings.blackThreshold, autoGreyscale: false })
+    await jimpImage.threshold({
+      max: imageSettings.whiteThreshold,
+      replace: imageSettings.blackThreshold,
+      autoGreyscale: false,
+    });
   }
   if (imageSettings.invert) jimpImage.invert();
-  await jimpImage.autocrop()
+  await jimpImage.autocrop();
 
   const background = new Jimp(width, height, "black");
 
@@ -72,7 +80,7 @@ export const composeImage = async (
       height / 2 - jimpImage.getHeight() / 2
     );
   }
-  return imageToBlackAndWhiteBuffer(background, width, height);
+  return await imageToBlackAndWhiteBuffer(background, width, height);
 };
 
 export const composeText = async (

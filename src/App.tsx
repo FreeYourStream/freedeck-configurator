@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import { HiDocumentAdd } from "react-icons/hi";
 import styled from "styled-components";
 
+import { GlobalSettings } from "./components/GlobalSettings";
 import { Page } from "./components/Page";
-import { SettingsModal } from "./components/SettingsModal";
 import { colors } from "./definitions/colors";
 import { useAddPageCallback } from "./hooks/callbacks/addPage";
 import { useDeleteImageCallback } from "./hooks/callbacks/deleteImage";
@@ -25,7 +25,7 @@ import {
   useShowSettings,
   useWidth,
 } from "./hooks/states";
-import { FDIconButton } from "./lib/components/button";
+import { FDIconButton } from "./lib/components/Button";
 import { EAction } from "./lib/configFile/parsePage";
 import { loadDefaultBackDisplay } from "./lib/defaultBackImage";
 
@@ -248,9 +248,7 @@ function App() {
   //     setAffectedPages(affectedPages);
   //     setHeight(config.height);
   //     setWidth(config.width);
-  //     setPageBuffers(config.pages);
-  //     setImageBuffers(config.images);
-  //   });
+  //     setPageBuffInvisibleFile
   return (
     <Main>
       <Header id="header">
@@ -363,7 +361,7 @@ function App() {
         ))}
       </Content>
       {showSettings && (
-        <SettingsModal
+        <GlobalSettings
           setClose={() => setShowSettings(false)}
           onClose={() => updateAllDefaultBackImages(defaultBackDisplay)}
           defaultBackDisplay={defaultBackDisplay}

@@ -1,18 +1,20 @@
+import bmp from "bmp-ts";
 import Jimp from "jimp/";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useContextMenuTrigger } from "react-context-menu-wrapper";
+import styled from "styled-components";
 
 import { IDefaultBackDisplay } from "../App";
-import { ContextMenu, ContextMenuItem } from "../lib/components/contextMenu";
-import { DropDisplay } from "../lib/components/dropDisplay";
-import { Modal } from "../lib/components/modal";
+import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
+import { DisplaySettings } from "../lib/components/DisplaySettings";
+import { DropDisplay } from "../lib/components/DropDisplay";
+import { Modal } from "../lib/components/Modal";
 import { composeImage } from "../lib/convertFile";
 import { loadDefaultBackDisplay } from "../lib/defaultBackImage";
 import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
-import { Settings } from "./Settings";
 
-export const SettingsModal: React.FC<{
+export const GlobalSettings: React.FC<{
   setClose: () => void;
   defaultBackDisplay: IDefaultBackDisplay;
   onClose: () => void;
@@ -21,9 +23,11 @@ export const SettingsModal: React.FC<{
   >;
 }> = ({ setClose, defaultBackDisplay, setDefaultBackDisplay, onClose }) => {
   // store converted image for backbutton locally
-  const [convertedPreviewImage, setConvertedPreviewImage] = useState<Buffer>(
-    new Buffer(1024)
-  );
+  const [
+    convertedPreviewImage,
+    setConvertedPreviewImage,
+  ] = useState<Buffer | null>(null);
+  const [previewImage, setPreviewImage] = useState<string>("");
 
   // the localStorage stuff should NOT happen here
   useEffect(() => {
@@ -51,9 +55,24 @@ export const SettingsModal: React.FC<{
   }, [defaultBackDisplay.image, defaultBackDisplay.settings]);
 
   //generate base64 string for live preview
-  const previewImage = useMemo(() => {
-    const b64img = getBase64Image(convertedPreviewImage);
-    return b64img;
+  // const previewImage = useMemo(() => {
+  //   const b64img = getBase64Image(convertedPreviewImage);
+  //   new Jimp(convertedPreviewImage).getBase64()
+  //   return b64img;
+  // }, [convertedPreviewImage]);
+
+  useEffect(() => {
+    (async () => {
+      if (!convertedPreviewImage) return;
+      const bmpData = {
+        data: convertedPreviewImage, // Buffer
+        bitPP: 1,
+        width: 128, // Number
+        height: 64, // Number
+      };
+      const rawData = bmp.encode(bmpData);
+      setPreviewImage(getBase64Image(convertedPreviewImage));
+    })();
   }, [convertedPreviewImage]);
   //image loading
   const onDrop = useCallback(
@@ -91,7 +110,7 @@ export const SettingsModal: React.FC<{
       <div ref={menuRef}>
         <DropDisplay onDrop={onDrop} previewImage={previewImage} />
       </div>
-      <Settings
+      <DisplaySettings
         textOnly={false}
         imageSettings={defaultBackDisplay.settings.imageSettings}
         textSettings={defaultBackDisplay.settings.textSettings}
@@ -111,7 +130,10 @@ export const SettingsModal: React.FC<{
         setTextWithIconSettings={(textWithIconSettings) =>
           setDefaultBackDisplay({
             ...defaultBackDisplay,
-            settings: { ...defaultBackDisplay.settings, textWithIconSettings },
+            settings: {
+              ...defaultBackDisplay.settings,
+              textWithIconSettings,
+            },
           })
         }
       />

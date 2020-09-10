@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { colors } from "../../definitions/colors";
-import { Icons } from "./icons";
+import { Icons } from "./Icons";
 
 export const FDButtonInner = styled.div<{
   size: number;

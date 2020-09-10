@@ -8,15 +8,15 @@ import { useDrag, useDrop } from "react-dnd";
 import styled from "styled-components";
 
 import { IButton, IDisplay } from "../App";
-import { ImagePreview } from "../lib/components/bwImagePreview";
-import { ContextMenu, ContextMenuItem } from "../lib/components/contextMenu";
-import { DropDisplay } from "../lib/components/dropDisplay";
-import { Column, Row, Title } from "../lib/components/misc";
-import { Modal } from "../lib/components/modal";
+import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
+import { DisplaySettings } from "../lib/components/DisplaySettings";
+import { DropDisplay } from "../lib/components/DropDisplay";
+import { ImagePreview } from "../lib/components/ImagePreview";
+import { Column, Row, Title } from "../lib/components/Misc";
+import { Modal } from "../lib/components/Modal";
 import { handleFileSelect } from "../lib/fileSelect";
 import { getBase64Image } from "../lib/uint8ToBase64";
 import { Action } from "./Action";
-import { Settings } from "./Settings";
 
 const Wrapper = styled.div<{ opacity: number }>`
   opacity: ${(p) => p.opacity};
@@ -151,7 +151,7 @@ const DisplayComponent: React.FC<{
           <Title divider big>
             Display Settings
           </Title>
-          <Settings
+          <DisplaySettings
             textOnly={!hasOriginalImage}
             setImageSettings={(imageSettings) =>
               setDisplaySettings({ ...imageDisplay, imageSettings })

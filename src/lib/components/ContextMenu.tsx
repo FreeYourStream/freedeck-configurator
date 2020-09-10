@@ -3,9 +3,9 @@ import { ContextMenuWrapper } from "react-context-menu-wrapper";
 import styled from "styled-components";
 
 import { colors } from "../../definitions/colors";
-import { Spacer } from "./button";
-import { Icons } from "./icons";
-import { Label } from "./misc";
+import { Spacer } from "./Button";
+import { Icons } from "./Icons";
+import { Label } from "./Misc";
 
 const isReactNodeArray = (
   children: ReactNode | ReactNodeArray

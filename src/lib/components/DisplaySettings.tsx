@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDebounce } from "use-debounce";
 
-import { IDisplay } from "../App";
+import { IDisplay } from "../../App";
 import {
   fontLarge,
   fontMedium,
   fontSmall,
   fontSmaller,
-} from "../definitions/fonts";
+} from "../../definitions/fonts";
 import {
   Column,
   Disabler,
@@ -20,10 +20,11 @@ import {
   TextInput,
   Title,
   Value,
-} from "../lib/components/misc";
+} from "./Misc";
 
 const Wrapper = styled.div`
   display: flex;
+  min-width: 460px;
 `;
 
 export interface ISettings {
@@ -35,7 +36,7 @@ export interface ISettings {
   fontName: string;
 }
 
-export const Settings: React.FC<{
+export const DisplaySettings: React.FC<{
   setImageSettings: (settings: IDisplay["imageSettings"]) => void;
   setTextSettings: (settings: IDisplay["textSettings"]) => void;
   setTextWithIconSettings: (settings: IDisplay["textWithIconSettings"]) => void;
@@ -189,6 +190,7 @@ export const Settings: React.FC<{
           disable={textOnly}
           title="These options are disabled. Load an image by clicking on the black box or just enter some text"
         />
+        <Title>Image Settings</Title>
         {!imageSettings.dither ? (
           <>
             <Row>
@@ -256,7 +258,6 @@ export const Settings: React.FC<{
             </Row>
           </>
         )}
-        <Title>Image Settings</Title>
 
         <Row>
           <MicroToggle

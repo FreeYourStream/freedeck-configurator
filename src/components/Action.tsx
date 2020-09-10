@@ -3,14 +3,14 @@ import styled from "styled-components";
 
 import { IButtonSettings } from "../App";
 import { EKeys, EMediaKeys, Keys, MediaKeys } from "../definitions/keys";
-import { FDButton } from "../lib/components/button";
+import { FDButton } from "../lib/components/Button";
 import {
   MicroButton,
   SelectWrapper,
   StyledSelect,
   Title,
   WrapRow,
-} from "../lib/components/misc";
+} from "../lib/components/Misc";
 import { EAction } from "../lib/configFile/parsePage";
 import { scrollToPage } from "../lib/scrollToPage";
 
