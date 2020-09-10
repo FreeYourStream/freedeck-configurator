@@ -35,6 +35,7 @@ export const useSetDisplaySettingsCallback = (
         newDisplay.textWithIconSettings.enabled = false;
       }
       newPages[pageIndex][displayIndex] = newDisplay;
+      setDisplaySettingsPages([...newPages]);
       const originalImage = originalImagePages[pageIndex][displayIndex];
       let convertedImage;
       if (originalImage !== null) {
@@ -46,7 +47,6 @@ export const useSetDisplaySettingsCallback = (
       }
       const newConvertedImages = [...convertedImagePages];
       newConvertedImages[pageIndex][displayIndex] = convertedImage;
-      setDisplaySettingsPages([...newPages]);
       setConvertedImagePages(newConvertedImages);
     },
     [
