@@ -33,6 +33,5 @@ export const base64Encode = (input: Buffer) => {
 
 export const getBase64Image = (image: Buffer) => {
   const prefix = "data:image/bmp;base64,";
-  const headerBuffer = Buffer.from(monochrome128by64BitmapHeader());
   return prefix + base64Encode(image);
 };
