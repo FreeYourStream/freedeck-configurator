@@ -61,11 +61,12 @@ export const parseConfig = (configBuffer: Buffer) => {
   const imageOffset = 16 * (displayButtonCount + 1);
   const jsonOffset = imageOffset + 1024 * displayButtonCount;
 
-  if (configBuffer.length === jsonOffset)
+  if (configBuffer.length === jsonOffset) {
+    alert("config too old. not compatible yet. please create a new one");
     throw new Error(
-      "config too old. not compatible yet. please create a new one"
+      "config too old. not compatible (yet). please create a new one"
     );
-
+  }
   const jsonConfigSlice = configBuffer.slice(jsonOffset);
   const rawConfig = JSON.parse(jsonConfigSlice.toString());
   const convertedImagePages: IConvertedImagePage[] = [];
