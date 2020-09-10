@@ -40,7 +40,7 @@ export const useSetDisplaySettingsCallback = (
       let convertedImage;
       if (originalImage !== null) {
         convertedImage = await composeImage(originalImage, 128, 64, newDisplay);
-      } else if (newDisplay.textSettings.text.length > 0) {
+      } else if (newDisplay.textSettings.text !== null) {
         convertedImage = await composeText(128, 64, newDisplay);
       } else {
         return;
