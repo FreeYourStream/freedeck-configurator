@@ -5,14 +5,14 @@ import { useDrag, useDrop } from "react-dnd";
 import styled from "styled-components";
 
 import { IButton, IDisplay } from "../App";
+import { getBase64Image } from "../lib/base64Encode";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
 import { DisplaySettings } from "../lib/components/DisplaySettings";
 import { DropDisplay } from "../lib/components/DropDisplay";
 import { ImagePreview } from "../lib/components/ImagePreview";
 import { Column, Row, Title } from "../lib/components/Misc";
 import { Modal, ModalBody } from "../lib/components/Modal";
-import { handleFileSelect } from "../lib/fileSelect";
-import { getBase64Image } from "../lib/uint8ToBase64";
+import { handleFileSelect } from "../lib/handleFileSelect";
 import { Action } from "./Action";
 
 const Wrapper = styled.div<{ opacity: number }>`
@@ -117,6 +117,7 @@ const DisplayComponent: React.FC<{
           title={`Page ${pageIndex} | Display and Button ${displayIndex}`}
           visible={showSettings}
           setClose={() => setShowSettings(false)}
+          minHeight={900}
         >
           <ModalBody>
             <ContextMenu menuId={menuId}>

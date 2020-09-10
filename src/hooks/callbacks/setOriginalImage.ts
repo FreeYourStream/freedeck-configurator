@@ -8,7 +8,7 @@ import {
 } from "../../App";
 import { getEmptyConvertedImage } from "../../definitions/emptyConvertedImage";
 import { monochrome128by64BitmapHeader } from "../../definitions/headers";
-import { composeImage } from "../../lib/convertFile";
+import { composeImage } from "../../lib/composeImage";
 
 export const useSetOriginalImageCallback = (
   convertedImagePages: IConvertedImagePage[],

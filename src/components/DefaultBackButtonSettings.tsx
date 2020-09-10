@@ -4,14 +4,14 @@ import { useContextMenuTrigger } from "react-context-menu-wrapper";
 
 import { IDefaultBackDisplay } from "../App";
 import { getEmptyConvertedImage } from "../definitions/emptyConvertedImage";
+import { getBase64Image } from "../lib/base64Encode";
 import { FDButton } from "../lib/components/Button";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
 import { DisplaySettings } from "../lib/components/DisplaySettings";
 import { DropDisplay } from "../lib/components/DropDisplay";
-import { composeImage } from "../lib/convertFile";
+import { composeImage } from "../lib/composeImage";
 import { loadDefaultBackDisplay } from "../lib/defaultBackImage";
-import { handleFileSelect } from "../lib/fileSelect";
-import { getBase64Image } from "../lib/uint8ToBase64";
+import { handleFileSelect } from "../lib/handleFileSelect";
 
 export const DefaultBackButtonSettings: React.FC<{
   setDefaultBackDisplay: React.Dispatch<

@@ -23,31 +23,31 @@ export const getDefaultButton: () => IButton = () => ({
 export const getDefaultDisplay: (
   options?: IDefaultImageDisplayOptions
 ) => IDisplay = (options) =>
-    merge<IDisplay, IDefaultImageDisplayOptions | undefined>(
-      {
-        imageIsConverted: true,
-        imageSettings: {
-          brightness: 0,
-          contrast: 0,
-          whiteThreshold: 64,
-          blackThreshold: 192,
-          dither: false,
-          invert: false,
-        },
-        textSettings: {
-          font: fontMedium,
-          text: "",
-        },
-        textWithIconSettings: {
-          enabled: false,
-          iconWidthMultiplier: 0.35,
-        },
-        isGeneratedFromDefaultBackImage: false,
-        previousDisplay: undefined,
-        previousPage: undefined,
+  merge<IDisplay, IDefaultImageDisplayOptions | undefined>(
+    {
+      hasOriginalImage: true,
+      imageSettings: {
+        brightness: 0,
+        contrast: 0,
+        whiteThreshold: 64,
+        blackThreshold: 192,
+        dither: false,
+        invert: false,
       },
-      options
-    );
+      textSettings: {
+        font: fontMedium,
+        text: "",
+      },
+      textWithIconSettings: {
+        enabled: false,
+        iconWidthMultiplier: 0.35,
+      },
+      isGeneratedFromDefaultBackImage: false,
+      previousDisplay: undefined,
+      previousPage: undefined,
+    },
+    options
+  );
 export const getDefaultButtonPage = (
   width: number,
   height: number,

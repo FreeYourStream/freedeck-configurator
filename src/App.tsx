@@ -26,8 +26,13 @@ import {
   useWidth,
 } from "./hooks/states";
 import { FDIconButton } from "./lib/components/Button";
+import { createButtonBody, createImageBody } from "./lib/configFile/createBody";
+import { createFooter } from "./lib/configFile/createFooter";
+import { createHeader } from "./lib/configFile/createHeader";
+import { loadConfigFile } from "./lib/configFile/loadConfigFile";
 import { EAction } from "./lib/configFile/parsePage";
 import { loadDefaultBackDisplay } from "./lib/defaultBackImage";
+import { download } from "./lib/download";
 
 const Main = styled.div`
   * {
@@ -122,7 +127,7 @@ export interface ITextSettings {
 
 export interface IDisplay {
   imageSettings: IImageSettings;
-  imageIsConverted: boolean;
+  hasOriginalImage: boolean;
   textSettings: ITextSettings;
   textWithIconSettings: ITextWithIconSettings;
   isGeneratedFromDefaultBackImage: boolean;
@@ -146,8 +151,8 @@ function App() {
     loadDefaultBackDisplay(setDefaultBackDisplay);
   }, []); // only execute on page load
 
-  const [height] = useHeight();
-  const [width] = useWidth();
+  const [height, setHeight] = useHeight();
+  const [width, setWidth] = useWidth();
 
   const [
     buttonSettingsPages,
@@ -241,14 +246,6 @@ function App() {
 
   const hasOriginalImage = useHasOriginalImageCallback(originalImagePages);
 
-  // const loadConfigFile = (configFile: File) =>
-  //   handleFileSelect(configFile).then((arrayBuffer) => {
-  //     const config = parseConfig(Buffer.from(arrayBuffer));
-  //     const affectedPages = [...new Array(config.pageCount).keys()];
-  //     setAffectedPages(affectedPages);
-  //     setHeight(config.height);
-  //     setWidth(config.width);
-  //     setPageBuffInvisibleFile
   return (
     <Main>
       <Header id="header">
@@ -273,9 +270,18 @@ function App() {
               <InvisibleFile
                 id="loadConfig"
                 onChange={async (event) => {
-                  // if (event.target.files?.length) {
-                  //   loadConfigFile(event.target.files[0]);
-                  // }
+                  if (event.target.files?.length) {
+                    loadConfigFile(
+                      event.target.files,
+                      setWidth,
+                      setHeight,
+                      setButtonSettingsPages,
+                      setDisplaySettingsPages,
+                      setOriginalImagePages,
+                      setConvertedImagePages,
+                      setDefaultBackDisplay
+                    );
+                  }
                 }}
               ></InvisibleFile>
               <FDIconButton
@@ -283,25 +289,20 @@ function App() {
                 ml={4}
                 size={3}
                 onClick={() => {
-                  const config = {
-                    imageSettingPages: displaySettingsPages,
-                    actionSettingPages: buttonSettingsPages,
-                  };
-                  //save this at the end of the config
-                  const buffer = Buffer.from(JSON.stringify(config), "binary");
-                  // const header = new Buffer(HEADER_SIZE);
-                  // header.writeUInt8(3, 0);
-                  // header.writeUInt8(2, 1);
-                  // const offset = pageBuffers.length * width * height + 1;
-                  // header.writeUInt16LE(offset, 2);
-                  // const newConfig = Buffer.concat([
-                  //   header,
-                  //   ...pageBuffers,
-                  //   ...imageBuffers.map((imageBuffer) =>
-                  //     optimizeForSSD1306(imageBuffer)
-                  //   ),
-                  // ]);
-                  // download(newConfig);
+                  if (displaySettingsPages.length === 0) return;
+                  const completeBuffer = Buffer.concat([
+                    createHeader(width, height, displaySettingsPages.length),
+                    createButtonBody(buttonSettingsPages),
+                    createImageBody(convertedImagePages),
+                    createFooter({
+                      buttonSettingsPages,
+                      defaultBackDisplay,
+                      displaySettingsPages,
+                      originalImagePages,
+                    }),
+                  ]);
+
+                  download(completeBuffer);
                 }}
               >
                 Save Config

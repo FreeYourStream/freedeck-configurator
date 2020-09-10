@@ -12,7 +12,7 @@ import {
   getDefaultDisplayPage,
 } from "../../definitions/defaultPage";
 import { getEmptyConvertedImage } from "../../definitions/emptyConvertedImage";
-import { composeImage } from "../../lib/convertFile";
+import { composeImage } from "../../lib/composeImage";
 
 export const useAddPageCallback = (
   width: number,

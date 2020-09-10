@@ -7,6 +7,6 @@ export const useHasOriginalImageCallback = (
 ) =>
   useCallback(
     (pageIndex: number, displayIndex: number) =>
-      !!originalImagePages[pageIndex][displayIndex],
+      !!originalImagePages?.[pageIndex]?.[displayIndex],
     [originalImagePages]
   );

@@ -6,6 +6,7 @@ import styled from "styled-components";
 
 import { IButton, IButtonPage, IDisplay, IDisplayPage } from "../App";
 import { colors } from "../definitions/colors";
+import { getEmptyConvertedImage } from "../definitions/emptyConvertedImage";
 import { Display } from "./Display";
 
 const Wrapper = styled.div`
@@ -140,7 +141,9 @@ const PageComponent: React.FC<IProps> = ({
             <Display
               deleteImage={() => deleteImage(displayIndex)}
               makeDefaultBackImage={() => makeDefaultBackImage(displayIndex)}
-              convertedImage={convertedImages[displayIndex]}
+              convertedImage={
+                convertedImages?.[displayIndex] ?? getEmptyConvertedImage()
+              }
               setButtonSettings={(displayAction) =>
                 setButtonSettings(displayIndex, displayAction)
               }

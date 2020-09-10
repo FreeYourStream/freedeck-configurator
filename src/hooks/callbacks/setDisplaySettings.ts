@@ -7,7 +7,7 @@ import {
   IOriginalImagePage,
 } from "../../App";
 import { getEmptyConvertedImage } from "../../definitions/emptyConvertedImage";
-import { composeImage, composeText } from "../../lib/convertFile";
+import { composeImage, composeText } from "../../lib/composeImage";
 
 export const useSetDisplaySettingsCallback = (
   displaySettingsPages: IDisplayPage[],
