@@ -7,9 +7,11 @@ import {
 } from "../../App";
 import { handleFileSelect } from "../handleFileSelect";
 import { parseConfig } from "./parseConfig";
-
+const isBuffer = (data: Buffer | FileList): data is Buffer => {
+  return !!(data as Buffer).byteLength;
+};
 export const loadConfigFile = async (
-  fileList: FileList,
+  fileList: FileList | Buffer,
   setWidth: React.Dispatch<React.SetStateAction<number>>,
   setHeight: React.Dispatch<React.SetStateAction<number>>,
   setButtonSettingsPages: React.Dispatch<React.SetStateAction<IButtonPage[]>>,
@@ -24,7 +26,9 @@ export const loadConfigFile = async (
     React.SetStateAction<IDefaultBackDisplay>
   >
 ) => {
-  const file = Buffer.from(await handleFileSelect(fileList[0]));
+  const file = isBuffer(fileList)
+    ? fileList
+    : Buffer.from(await handleFileSelect(fileList[0]));
   const config = parseConfig(file);
   console.log(config);
   setHeight(config.height);

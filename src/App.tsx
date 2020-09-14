@@ -16,6 +16,7 @@ import { useSetOriginalImageCallback } from "./hooks/callbacks/setOriginalImage"
 import { useSwitchDisplaysCallback } from "./hooks/callbacks/switchDisplay";
 import { useUpdateAllDefaultBackImagesCallback } from "./hooks/callbacks/updateAllDefaultBackImages";
 import {
+  useBrightness,
   useButtonSettingsPages,
   useConvertedImagePages,
   useDefaultBackDisplay,
@@ -153,6 +154,7 @@ function App() {
 
   const [height, setHeight] = useHeight();
   const [width, setWidth] = useWidth();
+  const [brightness, setBrightness] = useBrightness();
 
   const [
     buttonSettingsPages,
@@ -291,7 +293,12 @@ function App() {
                 onClick={() => {
                   if (displaySettingsPages.length === 0) return;
                   const completeBuffer = Buffer.concat([
-                    createHeader(width, height, displaySettingsPages.length),
+                    createHeader(
+                      width,
+                      height,
+                      brightness,
+                      displaySettingsPages.length
+                    ),
                     createButtonBody(buttonSettingsPages),
                     createImageBody(convertedImagePages),
                     createFooter({
@@ -363,10 +370,24 @@ function App() {
       </Content>
       {showSettings && (
         <GlobalSettings
+          brightness={brightness}
           setClose={() => setShowSettings(false)}
           onClose={() => updateAllDefaultBackImages(defaultBackDisplay)}
           defaultBackDisplay={defaultBackDisplay}
           setDefaultBackDisplay={setDefaultBackDisplay}
+          setBrightness={setBrightness}
+          loadConfigFile={(buffer: Buffer) =>
+            loadConfigFile(
+              buffer,
+              setWidth,
+              setHeight,
+              setButtonSettingsPages,
+              setDisplaySettingsPages,
+              setOriginalImagePages,
+              setConvertedImagePages,
+              setDefaultBackDisplay
+            )
+          }
         />
       )}
     </Main>

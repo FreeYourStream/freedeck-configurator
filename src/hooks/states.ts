@@ -9,14 +9,17 @@ import {
 } from "../App";
 import { getStockBackDisplay } from "../lib/defaultBackImage";
 
+export const useBrightness = function () {
+  return useState<number>(128);
+};
 export const useHeight = function () {
   return useState<number>(2);
 };
-export const useShowSettings = function () {
-  return useState<boolean>(false);
-};
 export const useWidth = function () {
   return useState<number>(3);
+};
+export const useShowSettings = function () {
+  return useState<boolean>(false);
 };
 export const useButtonSettingsPages = function () {
   return useState<IButtonPage[]>([]);

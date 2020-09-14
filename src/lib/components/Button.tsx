@@ -70,6 +70,7 @@ const Wrapper = styled.div<{ ml: number; mt: number; width: string }>`
 const Label = styled.label``;
 
 export interface IFDButtonProps {
+  disabled?: boolean;
   children: any;
   htmlFor?: any;
   onClick?: (e: any) => void;
@@ -84,7 +85,12 @@ export interface IFDButtonProps {
 
 export const FDButton = (props: IFDButtonProps) => (
   <Wrapper ml={props.ml ?? 0} mt={props.mt ?? 0} width={props.width ?? "auto"}>
-    <FDButtonInner size={props.size ?? 2} px={props.px} {...props}>
+    <FDButtonInner
+      size={props.size ?? 2}
+      px={props.px}
+      {...props}
+      onClick={props.disabled ? () => undefined : props.onClick}
+    >
       <Font size={props.size ?? 2}>{props.children}</Font>
     </FDButtonInner>
   </Wrapper>
