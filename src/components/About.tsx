@@ -12,7 +12,7 @@ export const About: React.FC = () => {
       <Title>FreeDeck Configurator</Title>
       <Row>
         <Label>Version:</Label>
-        <Value>Beta {packageJson.version}</Value>
+        <Value>{packageJson.version}</Value>
       </Row>
       <Row>
         <Label>Build:</Label>
