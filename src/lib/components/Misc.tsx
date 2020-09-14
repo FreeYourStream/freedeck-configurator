@@ -1,9 +1,11 @@
 import styled from "styled-components";
+
 import { colors } from "../../definitions/colors";
-import { FDButton } from "./button";
+import { FDButton } from "./Button";
 
 export const TextInput = styled.textarea.attrs({ rows: 4 })`
   appearance: none;
+  margin-bottom: 8px;
   resize: none;
   color: ${colors.black};
   padding: 2px 8px;
@@ -13,21 +15,39 @@ export const TextInput = styled.textarea.attrs({ rows: 4 })`
   font-size: 16px;
   font-family: sans-serif;
   width: 100%;
-  height: 100%;
 `;
-export const Title = styled.div`
+export const Title = styled.div<{ divider?: boolean; big?: boolean }>`
   color: ${colors.white};
-  font-size: 24px;
+  ${(p) => (p.divider ? `border-bottom: 1px solid ${colors.white};` : "")}
+
+  ${(p) =>
+    p.big
+      ? `font-size: 28px;`
+      : "font-size: 24px;"}
   font-family: "Barlow", sans-serif;
   text-align: center;
   line-height: 32px;
   vertical-align: middle;
   margin-bottom: 8px;
 `;
-export const Label = styled.div`
-  color: ${colors.white};
-  font-size: 16px;
+export const Label = styled.div<{ color?: string }>`
+  display: flex;
+  align-items: center;
+  color: ${(p) => (p.color ? p.color : colors.white)};
+  white-space: nowrap;
+  font-size: 20px;
+  margin-right: 8px;
   font-family: "Barlow", sans-serif;
+`;
+export const Value = styled.p<{ minWidth?: number }>`
+  display: flex;
+  align-items: center;
+  margin: 0;
+  color: ${colors.white};
+  font-family: "Barlow", sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  min-width: ${(p) => (p.minWidth !== undefined ? p.minWidth : 40)}px;
 `;
 export const Column = styled.div`
   position: relative;
@@ -47,9 +67,9 @@ export const Disabler = styled.div<{ disable: boolean }>`
   bottom: 0;
 `;
 export const CheckButton = styled(FDButton).attrs({ size: 1 })<{
-  uff: boolean;
+  activated: boolean;
 }>`
-  background-color: ${(p) => (p.uff ? "darkgreen" : "red")};
+  background-color: ${(p) => (p.activated ? "darkgreen" : "red")};
   padding: 0px 3px;
 `;
 export const MicroButton = styled(FDButton).attrs({ size: 1 })`
@@ -79,11 +99,23 @@ export const SelectWrapper = styled.div`
   }
 `;
 export const Row = styled.div`
+  position: relative;
   display: flex;
+  width: 100%;
   justify-content: space-between;
+  align-content: center;
   margin-top: 8px;
+  min-height: 20px;
 `;
 export const WrapRow = styled.div`
   display: flex;
   flex-wrap: wrap;
+`;
+
+export const MicroToggle = styled(CheckButton)`
+  margin-right: 4px;
+`;
+
+export const StyledSlider = styled.input.attrs({ type: "range" })`
+  width: 100%;
 `;

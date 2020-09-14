@@ -2,18 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { colors } from "../../definitions/colors";
-
-export const Button = styled.button<{ bgcolor?: string }>`
-  border-radius: 2px;
-  letter-spacing: 1px;
-  font-size: 16px;
-  padding: 8px;
-  border-style: none;
-  color: black;
-  background-color: ${(p) => p.bgcolor ?? "fuchsia"};
-  font-weight: bold;
-  cursor: pointer;
-`;
+import { Icons } from "./Icons";
 
 export const FDButtonInner = styled.div<{
   size: number;
@@ -21,10 +10,7 @@ export const FDButtonInner = styled.div<{
   py?: number;
 }>`
   padding: ${(p) => (p.size === 1 ? "0px" : p.size === 2 ? "4px" : "8px")};
-  ${(p) =>
-    p.px
-      ? "padding-left: " + p.px + "px;" + "padding-right: " + p.px + "px;"
-      : ""}
+  ${(p) => (p.px ? `padding-left: ${p.px}px;padding-right: ${p.px}px;` : "")}
   font-family: "Barlow", sans-serif;
   position: relative;
   font-weight: 500;
@@ -47,9 +33,17 @@ export const FDButtonInner = styled.div<{
 `;
 
 const Font = styled.div<{ size: number }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: ${(p) => (p.size === 1 ? "16px" : p.size === 2 ? "20px" : "24px")};
 `;
-
+export const Spacer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 4px;
+`;
 const Wrapper = styled.div<{ ml: number; mt: number; width: string }>`
   transition: all 0.1s;
   width: ${(p) => p.width};
@@ -73,10 +67,12 @@ const Wrapper = styled.div<{ ml: number; mt: number; width: string }>`
     box-shadow: none;
   }
 `;
+const Label = styled.label``;
 
 export interface IFDButtonProps {
   children: any;
-  onClick: (e: any) => void;
+  htmlFor?: any;
+  onClick?: (e: any) => void;
   background?: string;
   size?: 1 | 2 | 3;
   ml?: number;
@@ -93,3 +89,28 @@ export const FDButton = (props: IFDButtonProps) => (
     </FDButtonInner>
   </Wrapper>
 );
+export const FDIconButton = (props: IFDButtonProps & { icon?: string }) => {
+  const Icon =
+    //@ts-ignore
+    props.icon && Icons[props.icon.split("/")[0]][props.icon.split("/")[1]];
+  return (
+    <Label htmlFor={props.htmlFor}>
+      <Wrapper
+        ml={props.ml ?? 0}
+        mt={props.mt ?? 0}
+        width={props.width ?? "auto"}
+      >
+        <FDButtonInner size={props.size ?? 2} px={props.px} {...props}>
+          {props.icon && Icon ? (
+            <Spacer>
+              <Icon size={22} />
+            </Spacer>
+          ) : (
+            ""
+          )}
+          <Font size={props.size ?? 2}>{props.children}</Font>
+        </FDButtonInner>
+      </Wrapper>
+    </Label>
+  );
+};

@@ -1,17 +1,19 @@
 import Jimp from "jimp";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import { useContextMenuTrigger } from "react-context-menu-wrapper";
 import { useDrag, useDrop } from "react-dnd";
-import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
 
-import { composeImage, composeText } from "../lib/convertFile";
-import { handleFileSelect } from "../lib/fileSelect";
-import { EAction, IRow, parseRow } from "../lib/parse/parsePage";
-import { getBase64Image } from "../lib/uint8ToBase64";
+import { IButton, IDisplay } from "../App";
+import { getBase64Image } from "../lib/base64Encode";
+import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
+import { DisplaySettings } from "../lib/components/DisplaySettings";
+import { DropDisplay } from "../lib/components/DropDisplay";
+import { ImagePreview } from "../lib/components/ImagePreview";
+import { Column, Row, Title } from "../lib/components/Misc";
+import { Modal, ModalBody } from "../lib/components/Modal";
+import { handleFileSelect } from "../lib/handleFileSelect";
 import { Action } from "./Action";
-import { Column, Row } from "./lib/misc";
-import { Modal } from "./modal";
-import { ISettings, Settings, fontLarge } from "./Settings";
 
 const Wrapper = styled.div<{ opacity: number }>`
   opacity: ${(p) => p.opacity};
@@ -19,196 +21,87 @@ const Wrapper = styled.div<{ opacity: number }>`
   align-items: center;
   flex-direction: column;
   position: relative;
-  z-index: 10;
-`;
-const ImagePreview = styled.img<{ multiplier: number }>`
-  width: ${(p) => p.multiplier * 128}px;
-  height: ${(p) => p.multiplier * 64}px;
-  image-rendering: pixelated;
-  cursor: pointer;
-`;
-const DropWrapper = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  height: 128px;
-  background-color: #000000a1;
-  border-radius: 16px;
-`;
-const DeleteImage = styled.img`
-  cursor: pointer;
-  background-color: white;
-  border-radius: 50%;
-  height: 22px;
-  width: 22px;
-  top: -8px;
-  right: -8px;
-  position: absolute;
-  border-style: none;
-  visibility: hidden;
-  z-index: 10;
-  ${DropWrapper}:hover & {
-    visibility: visible;
-  }
 `;
 
-const Drop = styled.div`
-  border-radius: 8px;
-  border-top: none;
-  border-bottom: none;
-`;
-
-const DropHere = styled.div`
-  font-size: 24px;
-  color: white;
-`;
-
-export const Display: React.FC<{
-  rowBuffer: Buffer;
-  images: Buffer[];
-  addPage: () => number;
-  setImage: (newImage: Buffer) => void;
-  setRow: (newRow: Buffer, offset: number) => void;
-  imageIndex: number;
+const DisplayComponent: React.FC<{
+  convertedImage: Buffer;
+  addPage: (primary: boolean) => Promise<number>;
+  deleteImage: () => void;
+  makeDefaultBackImage: () => void;
+  setOriginalImage: (newImage: Buffer) => void;
+  setButtonSettings: (display: IButton) => void;
+  setDisplaySettings: (display: IDisplay) => void;
+  hasOriginalImage: boolean;
+  actionDisplay: IButton;
+  imageDisplay: IDisplay;
+  pageIndex: number;
   pages: number[];
-  switchDisplays: (aIndex: number, bIndex: number) => undefined;
+  displayIndex: number;
+  switchDisplays: (
+    aPageIndex: number,
+    bPageIndex: number,
+    aDisplayIndex: number,
+    bDisplayIndex: number
+  ) => void;
 }> = ({
-  rowBuffer,
-  images,
+  hasOriginalImage,
+  convertedImage,
   addPage,
-  setImage,
-  setRow: setNewRow,
-  imageIndex,
+  deleteImage,
+  setOriginalImage,
+  setButtonSettings,
+  setDisplaySettings,
+  actionDisplay,
+  imageDisplay,
+  pageIndex,
   pages,
+  displayIndex,
   switchDisplays,
+  makeDefaultBackImage,
   // connectDragSource,
 }) => {
-  const [row, setRow] = useState<IRow>();
-  const [secondary, setSecondary] = useState<IRow>();
-  const [previewImage, setPreviewImage] = useState<string>("");
-  const [newImageFile, setNewImageFile] = useState<File>();
-  const [convertedImageBuffer, setConvertedImageBuffer] = useState<Buffer>();
-  const [croppedImage, setCroppedImage] = useState<Jimp>();
-  const [settings, setSettings] = useState<ISettings>({
-    contrast: -0.12,
-    dither: false,
-    fontName: fontLarge,
-    invert: false,
-    text: "",
-    textEnabled: false,
-  });
   const [showSettings, setShowSettings] = useState<boolean>(false);
+  const previewImage = useMemo(() => getBase64Image(convertedImage), [
+    convertedImage,
+  ]);
 
   const [{ opacity }, dragRef] = useDrag({
-    item: { type: "display", imageIndex },
+    item: { type: "display", pageIndex, displayIndex },
     collect: (monitor) => ({
       opacity: monitor.isDragging() ? 0.5 : 1,
     }),
   });
-  const [{ targetDisplayIndex }, drop] = useDrop({
+  const [{ targetDisplayIndex, targetPageIndex }, drop] = useDrop({
     accept: "display",
-    drop: (item, monitor): undefined => (
-      switchDisplays(targetDisplayIndex, monitor.getItem().imageIndex), undefined
-    ),
-    collect: () => ({ targetDisplayIndex: imageIndex }),
+    drop: (item, monitor): void =>
+      switchDisplays(
+        targetPageIndex,
+        monitor.getItem().pageIndex,
+        targetDisplayIndex,
+        monitor.getItem().displayIndex
+      ),
+    collect: () => ({
+      targetDisplayIndex: displayIndex,
+      targetPageIndex: pageIndex,
+    }),
   });
 
-  const onDrop = useCallback((acceptedFiles) => {
-    setNewImageFile(acceptedFiles[0]);
-  }, []);
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: [".jpg", ".jpeg", ".png"],
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      const buffer = await handleFileSelect(acceptedFiles[0]);
+      const jimage = await Jimp.read(Buffer.from(buffer));
+      const resizedBuffer = await jimage
+        .scaleToFit(256, 128, "")
+        .getBufferAsync("image/png");
+      setOriginalImage(resizedBuffer);
+    },
+    [setOriginalImage]
+  );
+
+  const menuId = `${pageIndex}:${displayIndex}`;
+  let menuRef = useContextMenuTrigger<HTMLDivElement>({
+    menuId,
   });
-
-  useEffect(() => {
-    const parsedRow = parseRow(rowBuffer);
-    const parsedSecondary = parseRow(rowBuffer, 8);
-    setRow(parsedRow);
-    setSecondary(parsedSecondary);
-  }, [rowBuffer]);
-
-  useEffect(() => {
-    if (row) {
-      setPreviewImage(getBase64Image(images, imageIndex));
-    }
-  }, [row, images, imageIndex]);
-
-  useEffect(() => {
-    if (row && convertedImageBuffer) {
-      setPreviewImage(getBase64Image([convertedImageBuffer], 0));
-      setImage(convertedImageBuffer);
-    }
-  }, [convertedImageBuffer, row]);
-
-  useEffect(() => {
-    (async () => {
-      if (newImageFile) {
-        const arrayBuffer = await handleFileSelect(newImageFile);
-        const image = await Jimp.read(Buffer.from(arrayBuffer));
-        image.scaleToFit(256, 128);
-        setCroppedImage(image);
-        setSettings({ ...settings, dither: true, contrast: -0.12 });
-      } else {
-        setSettings({
-          ...settings,
-          dither: false,
-          invert: false,
-          contrast: 0.12,
-        });
-      }
-    })();
-  }, [newImageFile]);
-
-  useEffect(() => {
-    (async () => {
-      if (croppedImage) {
-        (async () => {
-          const buffer = await composeImage(
-            croppedImage,
-            128,
-            64,
-            settings.contrast,
-            settings.invert,
-            settings.dither,
-            settings.textEnabled,
-            settings.text,
-            settings.fontName
-          );
-          setConvertedImageBuffer(buffer);
-        })();
-      } else if (settings.text.length) {
-        const buffer = await composeText(
-          128,
-          64,
-          settings.dither,
-          settings.text,
-          settings.fontName,
-          settings.contrast
-        );
-        setConvertedImageBuffer(buffer);
-      }
-    })();
-  }, [croppedImage, settings]);
-
-  const hasSecondaryAction = useMemo(() => {
-    return secondary?.action !== EAction.noop
-  }, [secondary])
-
-  const deleteImage = () => {
-    setConvertedImageBuffer(new Buffer(1024));
-    setNewImageFile(undefined);
-    setCroppedImage(undefined);
-    setPreviewImage(getBase64Image(images, imageIndex));
-  };
-
-  // const isBlack = useMemo(() => !images[imageIndex]?.find((val) => val !== 0), [
-  //   images,
-  // ]);
-  // const allowSettings = useMemo(
-  //   () => isBlack || !!newImageFile || !!settings?.text.length,
-  //   [isBlack, newImageFile, settings]
-  // );
 
   return (
     <Wrapper ref={dragRef} opacity={opacity}>
@@ -218,57 +111,100 @@ export const Display: React.FC<{
         onClick={() => setShowSettings(true)}
         src={previewImage}
       />
-      <Modal visible={showSettings} setClose={() => setShowSettings(false)}>
-        <DropWrapper>
-          <DeleteImage src="close.png" onClick={deleteImage} />
-          <Drop {...getRootProps()}>
-            <input {...getInputProps()} />
-            {isDragActive ? (
-              <DropHere>Drop Here</DropHere>
-            ) : (
-              <ImagePreview multiplier={2} src={previewImage} />
-            )}
-          </Drop>
-        </DropWrapper>
-        <Settings
-          textOnly={!newImageFile}
-          show={showSettings}
-          setSettings={setSettings}
-          settings={settings}
-        />
-        <Row>
-          <Column>
-            {row && (
-              <Action
-                setNewRow={(newRow) => setNewRow(newRow, 0)}
-                pages={pages}
-                hasSecondaryAction={hasSecondaryAction}
-                title="Short Press"
-                loadMode={row.action}
-                loadKeys={row.keys}
-                loadPage={row.page}
-                addPage={addPage}
-                loadUserInteraction={false}
-              />
-            )}
-          </Column>
-          <Column>
-            {secondary && (
-              <Action
-                setNewRow={(newRow) => setNewRow(newRow, 8)}
-                pages={pages}
-                hasSecondaryAction={false}
-                title="Long Press"
-                loadMode={secondary.action}
-                loadKeys={secondary.keys}
-                loadPage={secondary.page}
-                addPage={addPage}
-                loadUserInteraction={false}
-              />
-            )}
-          </Column>
-        </Row>
-      </Modal>
+
+      {showSettings && (
+        <Modal
+          title={`Page ${pageIndex} | Display and Button ${displayIndex}`}
+          visible={showSettings}
+          setClose={() => setShowSettings(false)}
+          minHeight={900}
+        >
+          <ModalBody>
+            <ContextMenu menuId={menuId}>
+              <ContextMenuItem
+                text="Delete image"
+                icon="fa/FaTrash"
+                onClick={() => deleteImage()}
+                dangerous
+              ></ContextMenuItem>
+              <ContextMenuItem
+                text="Make default back Image"
+                icon="gi/GiBackForth"
+                onClick={() => makeDefaultBackImage()}
+                dangerous
+              ></ContextMenuItem>
+            </ContextMenu>
+            <DropDisplay
+              ref={menuRef}
+              onDrop={onDrop}
+              previewImage={previewImage}
+            />
+            <Title divider big>
+              Display Settings
+            </Title>
+            <DisplaySettings
+              textOnly={!hasOriginalImage}
+              setImageSettings={(imageSettings) =>
+                setDisplaySettings({ ...imageDisplay, imageSettings })
+              }
+              imageSettings={imageDisplay.imageSettings}
+              textSettings={imageDisplay.textSettings}
+              textWithIconSettings={imageDisplay.textWithIconSettings}
+              setTextSettings={(textSettings) =>
+                setDisplaySettings({
+                  ...imageDisplay,
+                  textSettings,
+                })
+              }
+              setTextWithIconSettings={(textWithIconSettings) =>
+                setDisplaySettings({ ...imageDisplay, textWithIconSettings })
+              }
+            />
+            <Title divider big>
+              Button Settings
+            </Title>
+            <Row>
+              <Column>
+                <Action
+                  setActionSetting={(primary) =>
+                    setButtonSettings({ ...actionDisplay, primary })
+                  }
+                  title="Short press"
+                  pages={pages}
+                  action={actionDisplay.primary}
+                  addPage={() => addPage(true)}
+                  loadUserInteraction={false}
+                />
+              </Column>
+              <Column>
+                <Action
+                  setActionSetting={(secondary) =>
+                    setButtonSettings({ ...actionDisplay, secondary })
+                  }
+                  title="Long press"
+                  pages={pages}
+                  action={actionDisplay.secondary}
+                  addPage={() => addPage(false)}
+                  loadUserInteraction={false}
+                />
+              </Column>
+            </Row>
+          </ModalBody>
+        </Modal>
+      )}
     </Wrapper>
   );
 };
+
+export const Display = React.memo(DisplayComponent, (prev, next) => {
+  return false;
+  // if (prev.setDisplayAction !== next.setDisplayAction) return false;
+  // if (prev.setDisplayImage !== next.setDisplayImage) return false;
+  // if (prev.setOriginalImage !== next.setOriginalImage) return false;
+  // if (prev.actionDisplay._revision !== next.actionDisplay._revision)
+  //   return false;
+  // if (prev.imageDisplay._revision === next.imageDisplay._revision) return false;
+  // if (prev.image._revision !== next.image._revision) return false;
+
+  // return true;
+});

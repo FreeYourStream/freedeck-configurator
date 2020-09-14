@@ -1,21 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
+import { FaTrashAlt } from "react-icons/fa";
 import styled from "styled-components";
 
+import { IButton, IButtonPage, IDisplay, IDisplayPage } from "../App";
 import { colors } from "../definitions/colors";
-import { parsePage } from "../lib/parse/parsePage";
+import { getEmptyConvertedImage } from "../definitions/emptyConvertedImage";
 import { Display } from "./Display";
 
 const Wrapper = styled.div`
-  position: relative;  
+  position: relative;
   margin: 24px;
   padding: 18px;
   /* border: 1px solid ${colors.white}; */
   border-radius: 21px;
   background: ${colors.gray};
-  box-shadow:  13px 13px 21px #11161d, 
-             -13px -13px 21px #2d3a49;
+  box-shadow: 13px 13px 21px #11161d, -13px -13px 21px #2d3a49;
 `;
 
 const Header = styled.div`
@@ -41,14 +42,17 @@ const PageIndicator = styled.div`
   background-color: ${colors.black};
 `;
 
-const DeletePage = styled.img`
+const DeletePage = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
-  background-color: white;
+  background-color: red;
   border-radius: 50%;
-  height: 22px;
-  width: 22px;
-  top: -8px;
-  right: -8px;
+  height: 30px;
+  width: 30px;
+  top: -15px;
+  right: -15px;
   position: absolute;
   border-style: none;
 `;
@@ -75,75 +79,90 @@ const Grid = styled.div<{ width: number; height: number }>`
 `;
 
 interface IProps {
+  deleteImage: (displayIndex: number) => void;
+  makeDefaultBackImage: (displayIndex: number) => void;
   pageIndex: number;
-  affected: boolean;
+  hasOriginalImage: (displayIndex: number) => boolean;
   width: number;
   height: number;
-  page: Buffer;
-  images: Buffer[];
+  buttonSettingsPages: IButtonPage;
+  displaySettingsPages: IDisplayPage;
+  convertedImages: Buffer[];
+  setOriginalImage: (displayIndex: number, image: Buffer) => void;
   deletePage: (pageIndex: number) => void;
-  addPage: () => number;
-  setImage: (newImage: Buffer, pageIndex: number, displayIndex: number) => void;
-  setRow: (
-    newRow: Buffer,
-    pageIndex: number,
-    displayIndex: number,
-    offset: number
-  ) => void;
+  addPage: (displayIndex: number, primary: boolean) => Promise<number>;
   pageCount: number;
-  switchDisplays: (aIndex: number, bIndex: number) => undefined;
+  setButtonSettings: (displayIndex: number, newDisplay: IButton) => void;
+  setDisplaySettings: (displayIndex: number, newDisplay: IDisplay) => void;
+  switchDisplays: (
+    aPageIndex: number,
+    bPageIndex: number,
+    aDisplayIndex: number,
+    bDisplayIndex: number
+  ) => void;
 }
 
 const PageComponent: React.FC<IProps> = ({
   pageIndex,
-  affected,
+  deleteImage,
+  makeDefaultBackImage,
+  hasOriginalImage,
   width,
   height,
-  images,
-  page,
-  setImage,
-  setRow,
+  convertedImages,
+  setOriginalImage,
+  buttonSettingsPages,
+  displaySettingsPages,
   deletePage,
   addPage,
+  setButtonSettings,
+  setDisplaySettings,
   pageCount,
   switchDisplays,
 }) => {
-  const [rowBuffers, setRowBuffers] = useState<Buffer[]>([]);
-  const imageCount = width * height;
-  useEffect(() => {
-    const rows = parsePage(page);
-    setRowBuffers(rows);
-  }, [page, imageCount, width, height]);
   return (
     <Wrapper id={`page_${pageIndex}`}>
       <Header>
         <PageIndicator>{pageIndex}</PageIndicator>
         <DeletePage
-          src="close.png"
           onClick={() => {
             const deleteConfirmed = window.confirm(
               "Do you really want to delete this page forever?"
             );
             if (deleteConfirmed) deletePage(pageIndex);
           }}
-        />
+        >
+          <FaTrashAlt size={18} color="white" />
+        </DeletePage>
       </Header>
       <Grid height={height} width={width}>
         <DndProvider backend={Backend}>
-          {rowBuffers.map((rowBuffer, imageIndex) => (
+          {displaySettingsPages.map((imageDisplay, displayIndex) => (
             <Display
-              images={images}
-              rowBuffer={rowBuffer}
-              key={imageIndex}
-              imageIndex={pageIndex * width * height + imageIndex}
-              setRow={(newRow, offset) =>
-                setRow(newRow, pageIndex, imageIndex, offset)
+              deleteImage={() => deleteImage(displayIndex)}
+              makeDefaultBackImage={() => makeDefaultBackImage(displayIndex)}
+              convertedImage={
+                convertedImages?.[displayIndex] ?? getEmptyConvertedImage()
               }
-              setImage={(newImage) => setImage(newImage, pageIndex, imageIndex)}
+              setButtonSettings={(displayAction) =>
+                setButtonSettings(displayIndex, displayAction)
+              }
+              setDisplaySettings={(displayImage) =>
+                setDisplaySettings(displayIndex, displayImage)
+              }
+              actionDisplay={buttonSettingsPages[displayIndex]}
+              imageDisplay={displaySettingsPages[displayIndex]}
+              key={displayIndex}
+              displayIndex={displayIndex}
+              pageIndex={pageIndex}
+              setOriginalImage={(image) =>
+                setOriginalImage(displayIndex, image)
+              }
               pages={[...Array(pageCount).keys()].filter(
                 (pageNumber) => pageNumber !== pageIndex
               )}
-              addPage={addPage}
+              addPage={(primary: boolean) => addPage(displayIndex, primary)}
+              hasOriginalImage={hasOriginalImage(displayIndex)}
               switchDisplays={switchDisplays}
             />
           ))}
@@ -154,11 +173,39 @@ const PageComponent: React.FC<IProps> = ({
 };
 
 export const Page = React.memo(PageComponent, (prev, next) => {
-  // if (next.affected) return false;
-  // if (prev.height !== next.height) return false;
-  // if (prev.pageCount !== next.pageCount) return false;
-  // if (prev.pageIndex !== next.pageIndex) return false;
-  // if (prev.images)
+  return false;
+  // if (prev.setActionPage !== next.setActionPage) return false;
+  // if (prev.setImagePage !== next.setImagePage) return false;
+  // if (prev.setOriginalImage !== next.setOriginalImage) return false;
+  // const prevRevisionImage = prev.convertedImages.reduce(
+  //   (acc, image) => acc + image._revision,
+  //   0
+  // );
+  // const nextRevisionImage = next.convertedImages.reduce(
+  //   (acc, image) => acc + image._revision,
+  //   0
+  // );
+  // if (prevRevisionImage !== nextRevisionImage) return false;
+
+  // const prevRevisionImagePage = prev.imagePage.displays.reduce(
+  //   (acc, display) => acc + display._revision,
+  //   0
+  // );
+  // const nextRevisionImagePage = next.imagePage.displays.reduce(
+  //   (acc, display) => acc + display._revision,
+  //   0
+  // );
+  // if (prevRevisionImagePage !== nextRevisionImagePage) return false;
+
+  // const prevRevisionActionPage = prev.actionPage.displays.reduce(
+  //   (acc, display) => acc + display._revision,
+  //   0
+  // );
+  // const nextRevisionActionPage = next.actionPage.displays.reduce(
+  //   (acc, display) => acc + display._revision,
+  //   0
+  // );
+  // if (prevRevisionActionPage !== nextRevisionActionPage) return false;
+
   // return true;
-  return false
 });
