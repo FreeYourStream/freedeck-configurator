@@ -34,10 +34,15 @@ export const Serial: React.FC<{
   );
   return (
     <Wrapper>
-      <Title>Serial</Title>
+      <Title divider>Serial</Title>
       <Title size={1}>Chrome based browsers only!</Title>
       <Title size={1}>Go To: chrome://flags/</Title>
       <Title size={1}>Activate 'Experimental Web Platform features'</Title>
+      <Title size={1}>As long as you see this message, you have to</Title>
+      <Title size={1}>
+        use the freedeck-ino develop branch or it wont work
+      </Title>
+      <Divider />
       <Row>
         <Label>Connect:</Label>
         <FDButton px={5} py={5} size={1} onClick={() => connectSerial()}>
