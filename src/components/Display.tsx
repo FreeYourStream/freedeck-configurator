@@ -135,7 +135,7 @@ const DisplayComponent: React.FC<{
               onDrop={onDrop}
               previewImage={previewImage}
             />
-            <Title divider big>
+            <Title divider size={3}>
               Display Settings
             </Title>
             <DisplaySettings
@@ -156,7 +156,7 @@ const DisplayComponent: React.FC<{
                 setDisplaySettings({ ...imageDisplay, textWithIconSettings })
               }
             />
-            <Title divider big>
+            <Title divider size={3}>
               Button Settings
             </Title>
             <Row>

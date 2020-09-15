@@ -34,7 +34,10 @@ export const Serial: React.FC<{
   );
   return (
     <Wrapper>
-      <Title>Options</Title>
+      <Title>Serial</Title>
+      <Title size={1}>Chrome based browsers only!</Title>
+      <Title size={1}>Go To: chrome://flags/</Title>
+      <Title size={1}>Activate 'Experimental Web Platform features'</Title>
       <Row>
         <Label>Connect:</Label>
         <FDButton px={5} py={5} size={1} onClick={() => connectSerial()}>

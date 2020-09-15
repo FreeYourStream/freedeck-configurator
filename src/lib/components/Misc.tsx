@@ -16,19 +16,46 @@ export const TextInput = styled.textarea.attrs({ rows: 4 })`
   font-family: sans-serif;
   width: 100%;
 `;
-export const Title = styled.div<{ divider?: boolean; big?: boolean }>`
+export const Title = styled.div<{ divider?: boolean; size?: number }>`
   color: ${colors.white};
   ${(p) => (p.divider ? `border-bottom: 1px solid ${colors.white};` : "")}
 
-  ${(p) =>
-    p.big
-      ? `font-size: 28px;`
-      : "font-size: 24px;"}
+  font-size: ${(p) => {
+    switch (p.size ?? 2) {
+      case 1:
+        return 20;
+      default:
+      case 2:
+        return 26;
+      case 3:
+        return 32;
+    }
+  }}px;
   font-family: "Barlow", sans-serif;
   text-align: center;
-  line-height: 32px;
+  line-height: ${(p) => {
+    switch (p.size ?? 2) {
+      case 1:
+        return 20;
+      default:
+      case 2:
+        return 26;
+      case 3:
+        return 32;
+    }
+  }}px;
   vertical-align: middle;
-  margin-bottom: 8px;
+  margin-bottom: ${(p) => {
+    switch (p.size ?? 2) {
+      case 1:
+        return 4;
+      default:
+      case 2:
+        return 8;
+      case 3:
+        return 12;
+    }
+  }}px;
 `;
 export const Label = styled.div<{ color?: string }>`
   display: flex;
