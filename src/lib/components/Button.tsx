@@ -8,6 +8,7 @@ export const FDButtonInner = styled.div<{
   size: number;
   px?: number;
   py?: number;
+  disabled?: boolean;
 }>`
   padding: ${(p) => (p.size === 1 ? "0px" : p.size === 2 ? "4px" : "8px")};
   ${(p) => (p.px ? `padding-left: ${p.px}px;padding-right: ${p.px}px;` : "")}
@@ -22,14 +23,15 @@ export const FDButtonInner = styled.div<{
   color: #ecf0f1;
   text-decoration: none;
   border-radius: 5px;
-  border: solid 1px ${colors.accent};
-  background: ${colors.accentDark};
+  border: solid 1px ${(p) => (!p.disabled ? colors.accent : colors.white)};
+  background: ${(p) => (!p.disabled ? colors.accentDark : colors.lightGray)};
   white-space: nowrap;
-  /* padding: 16px 18px 14px; */
   transition: all 0.1s;
-  box-shadow: 0px 0px 0px, 0px 0px 0px, 0px 6px 0px ${colors.accentDark},
+  box-shadow: 0px 0px 0px, 0px 0px 0px,
+    0px 6px 0px ${(p) => (!p.disabled ? colors.accentDark : colors.lightGray)},
     0px 0px 0px;
   cursor: pointer;
+  user-select: none;
 `;
 
 const Font = styled.div<{ size: number }>`
@@ -44,13 +46,20 @@ export const Spacer = styled.div`
   justify-content: center;
   margin-right: 4px;
 `;
-const Wrapper = styled.div<{ ml: number; mt: number; width: string }>`
+const Wrapper = styled.div<{
+  ml: number;
+  mt: number;
+  width: string;
+  disabled: boolean;
+}>`
   transition: all 0.1s;
   width: ${(p) => p.width};
   padding-bottom: 8px;
   margin-left: ${(p) => p.ml}px;
   margin-top: ${(p) => p.mt}px;
-  :hover {
+  ${(p) =>
+    !p.disabled &&
+    `:hover {
     padding-top: 6px;
     padding-bottom: 2px;
   }
@@ -65,7 +74,7 @@ const Wrapper = styled.div<{ ml: number; mt: number; width: string }>`
   }
   &:active > ${FDButtonInner} {
     box-shadow: none;
-  }
+  }`}
 `;
 const Label = styled.label``;
 
@@ -84,7 +93,12 @@ export interface IFDButtonProps {
 }
 
 export const FDButton = (props: IFDButtonProps) => (
-  <Wrapper ml={props.ml ?? 0} mt={props.mt ?? 0} width={props.width ?? "auto"}>
+  <Wrapper
+    ml={props.ml ?? 0}
+    mt={props.mt ?? 0}
+    width={props.width ?? "auto"}
+    disabled={props.disabled ?? false}
+  >
     <FDButtonInner
       size={props.size ?? 2}
       px={props.px}
@@ -105,6 +119,7 @@ export const FDIconButton = (props: IFDButtonProps & { icon?: string }) => {
         ml={props.ml ?? 0}
         mt={props.mt ?? 0}
         width={props.width ?? "auto"}
+        disabled={props.disabled ?? false}
       >
         <FDButtonInner size={props.size ?? 2} px={props.px} {...props}>
           {props.icon && Icon ? (

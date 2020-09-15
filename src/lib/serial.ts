@@ -1,19 +1,25 @@
-export class Serial {
+export class SerialConnector {
   reader?: ReadableStreamDefaultReader<Uint8Array>;
   writer?: WritableStreamDefaultWriter;
   encoder = new TextEncoder();
   decoder = new TextDecoder();
 
-  async init() {
+  async init(onDisconnect?: () => any) {
     if ("serial" in navigator) {
       try {
         const port = await (navigator as any).serial.requestPort();
+        try {
+          if (onDisconnect)
+            (navigator as any).serial.addEventListener(
+              "disconnect",
+              onDisconnect
+            );
+        } catch (e) {
+          console.log(e);
+        }
         await port.open({ baudrate: 4000000 });
         this.reader = port.readable.getReader();
         this.writer = port.writable.getWriter();
-
-        let signals = await port.getSignals();
-        console.log(signals);
       } catch (err) {
         throw new Error("There was an error opening the serial port:" + err);
       }

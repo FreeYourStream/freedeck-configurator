@@ -13,6 +13,7 @@ import { ImagePreview } from "../lib/components/ImagePreview";
 import { Column, Row, Title } from "../lib/components/Misc";
 import { Modal, ModalBody } from "../lib/components/Modal";
 import { handleFileSelect } from "../lib/handleFileSelect";
+import { fileToImage } from "../lib/originalImage";
 import { Action } from "./Action";
 
 const Wrapper = styled.div<{ opacity: number }>`
@@ -88,12 +89,7 @@ const DisplayComponent: React.FC<{
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
-      const buffer = await handleFileSelect(acceptedFiles[0]);
-      const jimage = await Jimp.read(Buffer.from(buffer));
-      const resizedBuffer = await jimage
-        .scaleToFit(256, 128, "")
-        .getBufferAsync("image/png");
-      setOriginalImage(resizedBuffer);
+      setOriginalImage(await fileToImage(acceptedFiles[0]));
     },
     [setOriginalImage]
   );

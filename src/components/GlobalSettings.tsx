@@ -7,7 +7,7 @@ import { TabView } from "../lib/components/TabView";
 import { About } from "./About";
 import { Brightness } from "./Brightness";
 import { DefaultBackButtonSettings } from "./DefaultBackButtonSettings";
-import { Options } from "./Options";
+import { Serial } from "./Serial";
 
 export const Activator = styled.div<{ visible: boolean }>`
   display: ${(p) => (p.visible ? "flex" : "none")};
@@ -39,11 +39,11 @@ export const GlobalSettings: React.FC<{
         setClose();
       }}
       minWidth={650}
-      minHeight={670}
+      minHeight={720}
       title="Global settings"
     >
       <TabView
-        tabs={["Default back button", "Options", "Brightness", "About"]}
+        tabs={["Default back button", "Brightness", "Serial (Beta)", "About"]}
         renderTab={(tab) => {
           return (
             <ModalBody>
@@ -59,8 +59,8 @@ export const GlobalSettings: React.FC<{
                   setBrightness={setBrightness}
                 />
               </Activator>
-              <Activator visible={tab === "Options"}>
-                <Options loadConfigFile={loadConfigFile} />
+              <Activator visible={tab === "Serial (Beta)"}>
+                <Serial loadConfigFile={loadConfigFile} />
               </Activator>
               <Activator visible={tab === "About"}>
                 <About />

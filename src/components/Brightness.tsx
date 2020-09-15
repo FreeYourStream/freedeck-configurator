@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Label, Row, StyledSlider, Title } from "../lib/components/Misc";
+import { Label, Row, StyledSlider, Title, Value } from "../lib/components/Misc";
 
 export const Brightness: React.FC<{
   setBrightness: (brightness: number) => void;
@@ -17,6 +17,7 @@ export const Brightness: React.FC<{
           value={brightness}
           onChange={(e) => setBrightness(e.currentTarget.valueAsNumber)}
         />
+        <Value>{brightness}</Value>
       </Row>
     </>
   );

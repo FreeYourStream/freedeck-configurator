@@ -12,6 +12,7 @@ import { DropDisplay } from "../lib/components/DropDisplay";
 import { composeImage } from "../lib/composeImage";
 import { loadDefaultBackDisplay } from "../lib/defaultBackImage";
 import { handleFileSelect } from "../lib/handleFileSelect";
+import { fileToImage } from "../lib/originalImage";
 
 export const DefaultBackButtonSettings: React.FC<{
   setDefaultBackDisplay: React.Dispatch<
@@ -58,14 +59,10 @@ export const DefaultBackButtonSettings: React.FC<{
       setPreviewImage(getBase64Image(convertedPreviewImage));
     })();
   }, [convertedPreviewImage]);
+
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
-      const buffer = await handleFileSelect(acceptedFiles[0]);
-      const jimage = await Jimp.read(Buffer.from(buffer));
-      const resizedBuffer = await jimage
-        .scaleToFit(256, 128, "")
-        .getBufferAsync("image/png");
-      localStorage.setItem("defaultBackImage", JSON.stringify(resizedBuffer));
+      const resizedBuffer = await fileToImage(acceptedFiles[0]);
       setDefaultBackDisplay({ ...defaultBackDisplay, image: resizedBuffer });
     },
     [defaultBackDisplay, setDefaultBackDisplay]

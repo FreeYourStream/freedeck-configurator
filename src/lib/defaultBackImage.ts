@@ -16,11 +16,17 @@ export const loadDefaultBackDisplay = function (
     "defaultBackImageSettings"
   );
   if (!localDefaultBackImage || !localDefaultBackImageSettings || forceStock) {
-    Jimp.read(backImage.default).then((image) =>
-      image.getBuffer("image/bmp", (error, buffer) =>
-        setDefaultBackImage(getStockBackDisplay(buffer))
-      )
-    );
+    Jimp.read(backImage.default).then((image) => {
+      const mime = image.getMIME();
+      const newMime = mime === "image/jpeg" ? mime : "image/gif";
+      console.log(mime, newMime);
+      image
+        .quality(70)
+        .scaleToFit(256, 128, "")
+        .getBuffer("image/gif", async (error, buffer) =>
+          setDefaultBackImage(getStockBackDisplay(await buffer))
+        );
+    });
   } else {
     const buffer = Buffer.from(JSON.parse(localDefaultBackImage).data);
     const settings = JSON.parse(localDefaultBackImageSettings);

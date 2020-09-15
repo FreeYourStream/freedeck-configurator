@@ -105,7 +105,7 @@ export const Row = styled.div`
   justify-content: space-between;
   align-content: center;
   margin-top: 8px;
-  min-height: 20px;
+  min-height: 30px;
 `;
 export const WrapRow = styled.div`
   display: flex;
