@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { useReadConfigFromSerialCallback } from "../hooks/callbacks/readConfigFromSerial";
 import { FDButton } from "../lib/components/Button";
-import { Label, Row, Title, Value } from "../lib/components/Misc";
+import { Divider, Label, Row, Title, Value } from "../lib/components/Misc";
 import { SerialConnector } from "../lib/serial";
 
 const Wrapper = styled.div`
@@ -56,6 +56,7 @@ export const Serial: React.FC<{
           Go!
         </FDButton>
       </Row>
+      <Divider />
       <Row>
         <Label>Progress:</Label>
         {progress && <Value>{Math.floor(progress * 100)}%</Value>}

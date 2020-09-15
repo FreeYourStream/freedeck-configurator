@@ -57,6 +57,12 @@ export const Title = styled.div<{ divider?: boolean; size?: number }>`
     }
   }}px;
 `;
+export const Divider = styled.div<{ mt?: number; mb?: number; color?: string }>`
+  margin-top: ${(p) => p.mt ?? 12}px;
+  margin-bottom: ${(p) => p.mb ?? 0}px;
+  border: 1px solid ${(p) => p.color ?? colors.white};
+  border-bottom: 1px;
+`;
 export const Label = styled.div<{ color?: string }>`
   display: flex;
   align-items: center;
