@@ -21,12 +21,12 @@ export const Serial: React.FC<{
 
   const connectSerial = useCallback(async () => {
     try {
-      await serial?.init(() => setReady(false));
+      await serial?.connect(() => setReady(false));
       setReady(true);
     } catch {}
   }, [serial]);
 
-  const readHeader = useReadConfigFromSerialCallback(
+  const readConfigFromSerial = useReadConfigFromSerialCallback(
     serial,
     setProgress,
     setDuration,
@@ -54,7 +54,7 @@ export const Serial: React.FC<{
           py={5}
           size={1}
           disabled={!ready}
-          onClick={async () => setFileSize(await readHeader())}
+          onClick={async () => setFileSize(await readConfigFromSerial())}
         >
           Go!
         </FDButton>

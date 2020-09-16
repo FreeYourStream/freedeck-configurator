@@ -1,59 +1,47 @@
 export class SerialConnector {
   reader?: ReadableStreamDefaultReader<Uint8Array>;
-  writer?: WritableStreamDefaultWriter;
-  encoder = new TextEncoder();
-  decoder = new TextDecoder();
+  writer?: WritableStreamDefaultWriter<ArrayBuffer>;
+  baudrate: number;
 
-  async init(onDisconnect?: () => any) {
-    if ("serial" in navigator) {
-      try {
-        const port = await (navigator as any).serial.requestPort();
-        try {
-          if (onDisconnect)
-            (navigator as any).serial.addEventListener(
-              "disconnect",
-              onDisconnect
-            );
-        } catch (e) {
-          console.log(e);
-        }
-        await port.open({ baudrate: 4000000 });
-        this.reader = port.readable.getReader();
-        this.writer = port.writable.getWriter();
-      } catch (err) {
-        throw new Error("There was an error opening the serial port:" + err);
-      }
-    } else {
-      console.error(
-        "Web serial doesn't seem to be enabled in your browser. Try enabling it by visiting:"
-      );
-      console.error(
-        "chrome://flags/#enable-experimental-web-platform-features"
-      );
-      console.error("opera://flags/#enable-experimental-web-platform-features");
-      console.error("edge://flags/#enable-experimental-web-platform-features");
-      throw new Error();
+  constructor(baudrate?: number) {
+    this.baudrate = baudrate ?? 1000000;
+  }
+
+  async connect(onDisconnect?: () => any) {
+    if (!(navigator as any).serial) {
+      const message =
+        "Your browser is not supported. Use chrome or chromium for now";
+      alert(message);
+      throw new Error(message);
+    }
+    try {
+      const port = await (navigator as any).serial.requestPort();
+      if (onDisconnect)
+        (navigator as any).serial.addEventListener("disconnect", onDisconnect);
+      await port.open({ baudrate: this.baudrate });
+      this.reader = port.readable.getReader();
+      this.writer = port.writable.getWriter();
+    } catch (err) {
+      const message = "There was an error while connecting to serial device";
+      alert(message);
+      throw new Error(message + " " + err);
     }
   }
 
-  async write(data: number[]) {
-    if (!this.writer) return;
-    // const dataArrayBuffer = this.encoder.encode(data);
-    // console.log(dataArrayBuffer);
+  write(data: number[]) {
+    if (!this.writer) throw new Error("no writer exists for this connection");
     const arrBuff = new Buffer(data);
-    return await this.writer.write(arrBuff.buffer);
+    return this.writer.write(arrBuff.buffer);
   }
 
-  async read() {
-    if (!this.reader) throw new Error();
+  read() {
+    if (!this.reader) throw new Error("no reader exists for this connection");
     try {
-      return await this.reader.read();
-      // const readerData = await this.reader.read();
-      // return this.decoder.decode(readerData.value);
+      return this.reader.read();
     } catch (err) {
-      const errorMessage = `error reading data: ${err}`;
-      console.error(errorMessage);
-      throw new Error(err);
+      const message = "There was an error while reading from serial device";
+      alert(message);
+      throw new Error(message + " " + err);
     }
   }
 }
