@@ -25,6 +25,7 @@ export const useSetDisplaySettingsCallback = (
       if (
         newDisplay.textWithIconSettings.enabled ===
           oldDisplay.textWithIconSettings.enabled &&
+        newDisplay.textSettings.text !== oldDisplay.textSettings.text &&
         newDisplay.textSettings.text !== ""
       ) {
         newDisplay.textWithIconSettings.enabled = true;
