@@ -247,7 +247,18 @@ function App() {
   );
 
   const hasOriginalImage = useHasOriginalImageCallback(originalImagePages);
-
+  const createConfigBuffer = () =>
+    Buffer.concat([
+      createHeader(width, height, brightness, displaySettingsPages.length),
+      createButtonBody(buttonSettingsPages),
+      createImageBody(convertedImagePages),
+      createFooter({
+        buttonSettingsPages,
+        defaultBackDisplay,
+        displaySettingsPages,
+        originalImagePages,
+      }),
+    ]);
   return (
     <Main>
       <Header id="header">
@@ -292,22 +303,7 @@ function App() {
                 size={3}
                 onClick={() => {
                   if (displaySettingsPages.length === 0) return;
-                  const completeBuffer = Buffer.concat([
-                    createHeader(
-                      width,
-                      height,
-                      brightness,
-                      displaySettingsPages.length
-                    ),
-                    createButtonBody(buttonSettingsPages),
-                    createImageBody(convertedImagePages),
-                    createFooter({
-                      buttonSettingsPages,
-                      defaultBackDisplay,
-                      displaySettingsPages,
-                      originalImagePages,
-                    }),
-                  ]);
+                  const completeBuffer = createConfigBuffer();
 
                   download(completeBuffer);
                 }}
@@ -368,8 +364,9 @@ function App() {
           />
         ))}
       </Content>
-      {showSettings && (
+      {
         <GlobalSettings
+          visible={showSettings}
           brightness={brightness}
           setClose={() => setShowSettings(false)}
           onClose={() => updateAllDefaultBackImages(defaultBackDisplay)}
@@ -388,8 +385,9 @@ function App() {
               setDefaultBackDisplay
             )
           }
+          getConfigBuffer={() => createConfigBuffer()}
         />
-      )}
+      }
     </Main>
   );
 }

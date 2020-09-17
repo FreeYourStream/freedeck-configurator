@@ -5,7 +5,7 @@ import styled from "styled-components";
 
 import { colors } from "../../definitions/colors";
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ visible: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -13,7 +13,7 @@ const Wrapper = styled.div`
   bottom: 0;
   background: #555555db;
   z-index: 1000;
-  display: flex;
+  display: ${(p) => (p.visible ? "flex" : "none")};
   justify-content: center;
   align-items: center;
 `;
@@ -76,7 +76,7 @@ export const Modal: React.FC<{
   minHeight = 200,
 }) => {
   const content = (
-    <Wrapper>
+    <Wrapper visible={visible ?? true}>
       <Content minWidth={minWidth} minHeight={minHeight}>
         {title && <TitleBar>{title}</TitleBar>}
         <CloseBackground />

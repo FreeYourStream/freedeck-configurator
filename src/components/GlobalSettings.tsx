@@ -22,7 +22,9 @@ export const GlobalSettings: React.FC<{
   >;
   setBrightness: React.Dispatch<React.SetStateAction<number>>;
   loadConfigFile: (buffer: Buffer) => void;
+  getConfigBuffer: () => Buffer;
   brightness: number;
+  visible?: boolean;
 }> = ({
   setClose,
   defaultBackDisplay,
@@ -30,10 +32,13 @@ export const GlobalSettings: React.FC<{
   setBrightness,
   onClose,
   loadConfigFile,
+  getConfigBuffer,
   brightness,
+  visible,
 }) => {
   return (
     <Modal
+      visible={visible}
       setClose={() => {
         onClose();
         setClose();
@@ -60,7 +65,10 @@ export const GlobalSettings: React.FC<{
                 />
               </Activator>
               <Activator visible={tab === "Serial (Beta)"}>
-                <Serial loadConfigFile={loadConfigFile} />
+                <Serial
+                  getConfigBuffer={getConfigBuffer}
+                  loadConfigFile={loadConfigFile}
+                />
               </Activator>
               <Activator visible={tab === "About"}>
                 <About />

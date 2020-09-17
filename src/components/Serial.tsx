@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { useReadConfigFromSerialCallback } from "../hooks/callbacks/readConfigFromSerial";
+import { useWriteConfigOverSerialCallback } from "../hooks/callbacks/writeConfigFromSerial";
 import { FDButton } from "../lib/components/Button";
 import { Divider, Label, Row, Title, Value } from "../lib/components/Misc";
 import { SerialConnector } from "../lib/serial";
@@ -11,9 +12,10 @@ const Wrapper = styled.div`
 `;
 export const Serial: React.FC<{
   loadConfigFile: (buffer: Buffer) => void;
-}> = ({ loadConfigFile }) => {
+  getConfigBuffer: () => Buffer;
+}> = ({ loadConfigFile, getConfigBuffer }) => {
   const [serial, setSerial] = useState<SerialConnector>();
-  const [ready, setReady] = useState<boolean>();
+  const [ready, setReady] = useState<boolean>(false);
   const [progress, setProgress] = useState<number | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
   const [fileSize, setFileSize] = useState<number | null>(null);
@@ -25,6 +27,14 @@ export const Serial: React.FC<{
       setReady(true);
     } catch {}
   }, [serial]);
+
+  const writeConfigOverSerial = useWriteConfigOverSerialCallback(
+    ready,
+    serial,
+    setProgress,
+    setDuration,
+    getConfigBuffer
+  );
 
   const readConfigFromSerial = useReadConfigFromSerialCallback(
     serial,
@@ -48,7 +58,7 @@ export const Serial: React.FC<{
         </FDButton>
       </Row>
       <Row>
-        <Label>Read Config from FreeDeck:</Label>
+        <Label>Read config from FreeDeck:</Label>
         <FDButton
           px={5}
           py={5}
@@ -56,9 +66,22 @@ export const Serial: React.FC<{
           disabled={!ready}
           onClick={async () => setFileSize(await readConfigFromSerial())}
         >
-          Go!
+          Read
         </FDButton>
       </Row>
+      <Row>
+        <Label>Write config to FreeDeck:</Label>
+        <FDButton
+          disabled={!ready}
+          px={5}
+          py={5}
+          size={1}
+          onClick={() => writeConfigOverSerial()}
+        >
+          Write
+        </FDButton>
+      </Row>
+
       <Divider />
       <Row>
         <Label>Progress:</Label>

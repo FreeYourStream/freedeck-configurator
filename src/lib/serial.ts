@@ -2,6 +2,7 @@ export class SerialConnector {
   reader?: ReadableStreamDefaultReader<Uint8Array>;
   writer?: WritableStreamDefaultWriter<ArrayBuffer>;
   baudrate: number;
+  watch = false;
 
   constructor(baudrate?: number) {
     this.baudrate = baudrate ?? 1000000;
@@ -28,10 +29,25 @@ export class SerialConnector {
     }
   }
 
-  write(data: number[]) {
+  write(data: number[] | Uint8Array) {
     if (!this.writer) throw new Error("no writer exists for this connection");
-    const arrBuff = new Buffer(data);
+    const arrBuff = new Buffer([...data]);
     return this.writer.write(arrBuff.buffer);
+  }
+
+  async startWatch() {
+    if (!this.reader) throw new Error("no reader exists for this connection");
+    this.watch = true;
+    let result: ReadableStreamReadResult<Uint8Array>;
+    do {
+      result = await this.reader.read();
+      try {
+        console.log("from serial: " + new TextDecoder().decode(result.value));
+      } catch {}
+    } while (this.watch === true);
+  }
+  stopWatch() {
+    this.watch = false;
   }
 
   read() {
