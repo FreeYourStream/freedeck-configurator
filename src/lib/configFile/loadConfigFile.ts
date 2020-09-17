@@ -14,6 +14,7 @@ export const loadConfigFile = async (
   fileList: FileList | Buffer,
   setWidth: React.Dispatch<React.SetStateAction<number>>,
   setHeight: React.Dispatch<React.SetStateAction<number>>,
+  setBrightness: React.Dispatch<React.SetStateAction<number>>,
   setButtonSettingsPages: React.Dispatch<React.SetStateAction<IButtonPage[]>>,
   setDisplaySettingsPages: React.Dispatch<React.SetStateAction<IDisplayPage[]>>,
   setOriginalImagePages: React.Dispatch<
@@ -30,9 +31,9 @@ export const loadConfigFile = async (
     ? fileList
     : Buffer.from(await handleFileSelect(fileList[0]));
   const config = parseConfig(file);
-  console.log(config);
   setHeight(config.height);
   setWidth(config.width);
+  setBrightness(config.brightness);
   setDefaultBackDisplay(config.defaultBackDisplay);
   setOriginalImagePages(config.originalImagePages);
   setButtonSettingsPages(config.buttonSettingsPages);

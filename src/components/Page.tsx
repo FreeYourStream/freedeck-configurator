@@ -79,6 +79,7 @@ const Grid = styled.div<{ width: number; height: number }>`
 `;
 
 interface IProps {
+  brightness: number;
   deleteImage: (displayIndex: number) => void;
   makeDefaultBackImage: (displayIndex: number) => void;
   pageIndex: number;
@@ -103,6 +104,7 @@ interface IProps {
 }
 
 const PageComponent: React.FC<IProps> = ({
+  brightness,
   pageIndex,
   deleteImage,
   makeDefaultBackImage,
@@ -139,6 +141,7 @@ const PageComponent: React.FC<IProps> = ({
         <DndProvider backend={Backend}>
           {displaySettingsPages.map((imageDisplay, displayIndex) => (
             <Display
+              brightness={brightness}
               deleteImage={() => deleteImage(displayIndex)}
               makeDefaultBackImage={() => makeDefaultBackImage(displayIndex)}
               convertedImage={

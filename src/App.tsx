@@ -288,6 +288,7 @@ function App() {
                       event.target.files,
                       setWidth,
                       setHeight,
+                      setBrightness,
                       setButtonSettingsPages,
                       setDisplaySettingsPages,
                       setOriginalImagePages,
@@ -330,6 +331,7 @@ function App() {
       <Content id="pages">
         {displaySettingsPages.map((imagePage, pageIndex) => (
           <Page
+            brightness={brightness}
             height={height}
             width={width}
             deleteImage={(displayIndex: number) =>
@@ -378,6 +380,7 @@ function App() {
               buffer,
               setWidth,
               setHeight,
+              setBrightness,
               setButtonSettingsPages,
               setDisplaySettingsPages,
               setOriginalImagePages,

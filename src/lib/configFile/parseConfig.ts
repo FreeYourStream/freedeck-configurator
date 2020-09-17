@@ -13,6 +13,7 @@ import { unoptimizeFromSSD1306 } from "./ssd1306";
 export const parseConfig = (configBuffer: Buffer) => {
   const width = configBuffer.readUInt8(0);
   const height = configBuffer.readUInt8(1);
+  const brightness = configBuffer.readUInt8(4);
   const displaysPerPage = width * height;
 
   const displayButtonCount = configBuffer.readUInt16LE(2) - 1; // subtract 1 for the header row
@@ -109,6 +110,7 @@ export const parseConfig = (configBuffer: Buffer) => {
   return {
     width,
     height,
+    brightness,
     ...config,
   };
 };

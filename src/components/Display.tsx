@@ -38,6 +38,7 @@ const DisplayComponent: React.FC<{
   pageIndex: number;
   pages: number[];
   displayIndex: number;
+  brightness: number;
   switchDisplays: (
     aPageIndex: number,
     bPageIndex: number,
@@ -45,6 +46,7 @@ const DisplayComponent: React.FC<{
     bDisplayIndex: number
   ) => void;
 }> = ({
+  brightness,
   hasOriginalImage,
   convertedImage,
   addPage,
@@ -66,13 +68,14 @@ const DisplayComponent: React.FC<{
     convertedImage,
   ]);
 
-  const [{ opacity }, dragRef] = useDrag({
-    item: { type: "display", pageIndex, displayIndex },
+  const [{ isDragging }, dragRef] = useDrag({
+    item: { type: "display", pageIndex, displayIndex, brightness },
     collect: (monitor) => ({
-      opacity: monitor.isDragging() ? 0.5 : 1,
+      isDragging: monitor.isDragging(),
     }),
   });
   const [{ targetDisplayIndex, targetPageIndex }, drop] = useDrop({
+    options: {},
     accept: "display",
     drop: (item, monitor): void =>
       switchDisplays(
@@ -93,6 +96,11 @@ const DisplayComponent: React.FC<{
     },
     [setOriginalImage]
   );
+
+  const opacity = useMemo(() => {
+    const value = (0.5 + brightness / 512) / (isDragging ? 2 : 1);
+    return value;
+  }, [isDragging, brightness]);
 
   const menuId = `${pageIndex}:${displayIndex}`;
   let menuRef = useContextMenuTrigger<HTMLDivElement>({
