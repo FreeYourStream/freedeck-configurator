@@ -1,8 +1,9 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
 import { IButtonSettings } from "../App";
-import { EKeys, EMediaKeys, Keys, MediaKeys } from "../definitions/keys";
+import { colors } from "../definitions/colors";
+import { EKeys, EMediaKeys, Keys, MediaKeys, keys } from "../definitions/keys";
 import { FDButton } from "../lib/components/Button";
 import {
   MicroButton,
@@ -22,6 +23,17 @@ const Wrapper = styled.div`
 
 const SmallButton = styled(FDButton).attrs({ mt: 4 })`
   font-weight: bold;
+`;
+
+const KeyScanner = styled.div`
+  font-family: Barlow, sans-serif;
+  margin-top: 8px;
+  height: 24px;
+  background-color: ${colors.white};
+  color: ${colors.black};
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
 `;
 export const Action: React.FC<{
   setActionSetting: (newActionSetting: IButtonSettings) => void;
@@ -62,10 +74,10 @@ export const Action: React.FC<{
           value={action.mode}
           onChange={(e) => setMode(parseInt(e.target.value))}
         >
+          <option value="2">Do nothing</option>
+          <option value="1">Change Page</option>
           <option value="0">Send Keys</option>
           <option value="3">Special Keys</option>
-          <option value="1">Change Page</option>
-          <option value="2">Do nothing</option>
         </StyledSelect>
       </SelectWrapper>
       {action.mode === 0 && (
@@ -73,7 +85,8 @@ export const Action: React.FC<{
           <WrapRow>
             {action.values.map((key, index) => (
               <MicroButton
-                key={key}
+                mt={8}
+                key={`${key}-${index}`}
                 onClick={() => {
                   const newKeys = [...action.values];
                   newKeys.splice(index, 1);
@@ -95,14 +108,32 @@ export const Action: React.FC<{
               <option key={0} value={0}>
                 Nothing
               </option>
-              {Keys.map((enumKey) => (
-                //@ts-ignore
-                <option key={enumKey} value={EKeys[enumKey]}>
-                  {enumKey}
+              {Object.keys(keys).map((keyName) => (
+                <option key={keyName} value={keys[keyName]?.hid}>
+                  {keyName}
                 </option>
               ))}
             </StyledSelect>
           </SelectWrapper>
+          <KeyScanner
+            tabIndex={0}
+            onKeyPress={(e) => {
+              const key = Object.keys(keys).find(
+                (key) => keys[key]?.uni === e.which
+              );
+              if (key && action.values.length < 7)
+                setKeys([...action.values, keys[key]!.hid]);
+            }}
+            onKeyDown={(e) => {
+              const key = Object.keys(keys).find(
+                (key) => keys[key]?.js === e.which
+              );
+              if (key && action.values.length < 7)
+                setKeys([...action.values, keys[key]!.hid]);
+            }}
+          >
+            Click to recognize
+          </KeyScanner>
         </>
       )}
       {action.mode === 1 && (
@@ -122,17 +153,18 @@ export const Action: React.FC<{
               </StyledSelect>
             </SelectWrapper>
           ) : null}
-          {!action.values?.length ? (
-            <SmallButton size={1} onClick={async () => await addPage()}>
+          {!action.values?.length || action.values[0] === -1 ? (
+            <FDButton mt={8} size={1} onClick={async () => await addPage()}>
               Add Page +
-            </SmallButton>
+            </FDButton>
           ) : (
-            <SmallButton
+            <FDButton
+              mt={8}
               size={1}
               onClick={() => scrollToPage(action.values[0])}
             >
               Scroll To {action.values[0].toString()}
-            </SmallButton>
+            </FDButton>
           )}
         </>
       )}

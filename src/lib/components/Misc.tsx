@@ -143,6 +143,7 @@ export const Row = styled.div`
 export const WrapRow = styled.div`
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 `;
 
 export const MicroToggle = styled(CheckButton)`

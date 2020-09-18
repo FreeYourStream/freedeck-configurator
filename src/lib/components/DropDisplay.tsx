@@ -57,7 +57,7 @@ export const DropDisplay = React.forwardRef<
   });
   return (
     <DropWrapper ref={ref}>
-      <Drop {...getRootProps()}>
+      <Drop {...getRootProps({ style: { outline: "none" } })}>
         <input {...getInputProps()} />
         {isDragActive ? (
           <DropHere>Drop Here</DropHere>
