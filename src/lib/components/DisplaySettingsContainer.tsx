@@ -9,7 +9,7 @@ import {
 } from "../../App";
 import { getEmptyConvertedImage } from "../../definitions/emptyConvertedImage";
 import { getBase64Image } from "../base64Encode";
-import { composeImage } from "../composeImage";
+import { composeImage, composeText } from "../composeImage";
 import { fileToImage } from "../originalImage";
 import { DisplaySettings } from "./DisplaySettings";
 import { DropDisplay } from "./DropDisplay";
@@ -41,10 +41,18 @@ export const DisplaySettingsContainer = React.forwardRef<
     );
     useEffect(() => {
       (async () => {
-        if (!originalImage)
-          return setPreviewImage(getBase64Image(getEmptyConvertedImage()));
-        const image = await composeImage(originalImage, 128, 64, display);
-        setPreviewImage(getBase64Image(image));
+        if (!originalImage) {
+          if (!display.textWithIconSettings.enabled)
+            setPreviewImage(getBase64Image(getEmptyConvertedImage()));
+          else
+            setPreviewImage(
+              getBase64Image(await composeText(128, 64, display))
+            );
+        } else {
+          setPreviewImage(
+            getBase64Image(await composeImage(originalImage, 128, 64, display))
+          );
+        }
       })();
     }, [originalImage, display]);
 
@@ -55,6 +63,7 @@ export const DisplaySettingsContainer = React.forwardRef<
       },
       [setOriginalImage]
     );
+
     return (
       <>
         <DropDisplay
