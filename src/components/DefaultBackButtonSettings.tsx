@@ -8,6 +8,7 @@ import { getBase64Image } from "../lib/base64Encode";
 import { FDButton } from "../lib/components/Button";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
 import { DisplaySettings } from "../lib/components/DisplaySettings";
+import { DisplaySettingsContainer } from "../lib/components/DisplaySettingsContainer";
 import { DropDisplay } from "../lib/components/DropDisplay";
 import { composeImage } from "../lib/composeImage";
 import { loadDefaultBackDisplay } from "../lib/defaultBackImage";
@@ -23,50 +24,21 @@ export const DefaultBackButtonSettings: React.FC<{
   const menuId = `defaultBackButtonSettings`;
   const menuRef = useContextMenuTrigger<HTMLDivElement>({ menuId }); //image loading
 
-  // store converted image for backbutton locally
-  const [convertedPreviewImage, setConvertedPreviewImage] = useState<Buffer>(
-    getEmptyConvertedImage()
-  );
-  const [previewImage, setPreviewImage] = useState<string>("");
   // the localStorage stuff should NOT happen here?
   useEffect(() => {
-    (async () => {
-      const image = await composeImage(
-        defaultBackDisplay.image,
-        128,
-        64,
-        defaultBackDisplay.settings
-      );
-      setTimeout(() =>
-        localStorage.setItem(
-          "defaultBackImageSettings",
-          JSON.stringify(defaultBackDisplay.settings)
-        )
-      );
-      setTimeout(() =>
-        localStorage.setItem(
-          "defaultBackImage",
-          JSON.stringify(defaultBackDisplay.image)
-        )
-      );
-      setConvertedPreviewImage(image);
-    })();
+    setTimeout(() =>
+      localStorage.setItem(
+        "defaultBackImageSettings",
+        JSON.stringify(defaultBackDisplay.settings)
+      )
+    );
+    setTimeout(() =>
+      localStorage.setItem(
+        "defaultBackImage",
+        JSON.stringify(defaultBackDisplay.image)
+      )
+    );
   }, [defaultBackDisplay.image, defaultBackDisplay.settings]);
-
-  useEffect(() => {
-    (async () => {
-      if (!convertedPreviewImage) return;
-      setPreviewImage(getBase64Image(convertedPreviewImage));
-    })();
-  }, [convertedPreviewImage]);
-
-  const onDrop = useCallback(
-    async (acceptedFiles: File[]) => {
-      const resizedBuffer = await fileToImage(acceptedFiles[0]);
-      setDefaultBackDisplay({ ...defaultBackDisplay, image: resizedBuffer });
-    },
-    [defaultBackDisplay, setDefaultBackDisplay]
-  );
 
   return (
     <>
@@ -80,12 +52,12 @@ export const DefaultBackButtonSettings: React.FC<{
           dangerous
         ></ContextMenuItem>
       </ContextMenu>
-      <DropDisplay ref={menuRef} onDrop={onDrop} previewImage={previewImage} />
-      <DisplaySettings
-        textOnly={false}
-        imageSettings={defaultBackDisplay.settings.imageSettings}
-        textSettings={defaultBackDisplay.settings.textSettings}
-        textWithIconSettings={defaultBackDisplay.settings.textWithIconSettings}
+      <DisplaySettingsContainer
+        display={defaultBackDisplay.settings}
+        setOriginalImage={(image) =>
+          setDefaultBackDisplay({ ...defaultBackDisplay, image })
+        }
+        originalImage={defaultBackDisplay.image}
         setImageSettings={(imageSettings) =>
           setDefaultBackDisplay({
             ...defaultBackDisplay,
@@ -113,6 +85,7 @@ export const DefaultBackButtonSettings: React.FC<{
             },
           })
         }
+        ref={menuRef}
       />
     </>
   );

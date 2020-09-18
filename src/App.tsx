@@ -341,9 +341,7 @@ function App() {
               makeDefaultBackImage(pageIndex, displayIndex);
             }}
             pageIndex={pageIndex}
-            hasOriginalImage={(displayIndex: number) =>
-              hasOriginalImage(pageIndex, displayIndex)
-            }
+            originalImages={originalImagePages[pageIndex]}
             convertedImages={convertedImagePages[pageIndex]}
             buttonSettingsPages={buttonSettingsPages[pageIndex]}
             displaySettingsPages={displaySettingsPages[pageIndex]}

@@ -62,7 +62,7 @@ export const DropDisplay = React.forwardRef<
         {isDragActive ? (
           <DropHere>Drop Here</DropHere>
         ) : (
-          <ImagePreview multiplier={3} src={previewImage} />
+          <ImagePreview multiplier={2.5} src={previewImage} />
         )}
       </Drop>
     </DropWrapper>

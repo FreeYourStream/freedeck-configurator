@@ -8,10 +8,12 @@ import { IButton, IDisplay } from "../App";
 import { getBase64Image } from "../lib/base64Encode";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
 import { DisplaySettings } from "../lib/components/DisplaySettings";
+import { DisplaySettingsContainer } from "../lib/components/DisplaySettingsContainer";
 import { DropDisplay } from "../lib/components/DropDisplay";
 import { ImagePreview } from "../lib/components/ImagePreview";
 import { Column, Row, Title } from "../lib/components/Misc";
 import { Modal, ModalBody } from "../lib/components/Modal";
+import { TabView } from "../lib/components/TabView";
 import { handleFileSelect } from "../lib/handleFileSelect";
 import { fileToImage } from "../lib/originalImage";
 import { Action } from "./Action";
@@ -32,7 +34,7 @@ const DisplayComponent: React.FC<{
   setOriginalImage: (newImage: Buffer) => void;
   setButtonSettings: (display: IButton) => void;
   setDisplaySettings: (display: IDisplay) => void;
-  hasOriginalImage: boolean;
+  originalImage: Buffer | null;
   actionDisplay: IButton;
   imageDisplay: IDisplay;
   pageIndex: number;
@@ -47,7 +49,7 @@ const DisplayComponent: React.FC<{
   ) => void;
 }> = ({
   brightness,
-  hasOriginalImage,
+  originalImage,
   convertedImage,
   addPage,
   deleteImage,
@@ -90,13 +92,6 @@ const DisplayComponent: React.FC<{
     }),
   });
 
-  const onDrop = useCallback(
-    async (acceptedFiles: File[]) => {
-      setOriginalImage(await fileToImage(acceptedFiles[0]));
-    },
-    [setOriginalImage]
-  );
-
   const opacity = useMemo(() => {
     const value = (0.5 + brightness / 512) / (isDragging ? 2 : 1);
     return value;
@@ -121,79 +116,87 @@ const DisplayComponent: React.FC<{
           title={`Page ${pageIndex} | Display and Button ${displayIndex}`}
           visible={showSettings}
           setClose={() => setShowSettings(false)}
-          minHeight={900}
+          minHeight={720}
+          minWidth={628}
         >
-          <ModalBody>
-            <ContextMenu menuId={menuId}>
-              <ContextMenuItem
-                text="Delete image"
-                icon="fa/FaTrash"
-                onClick={() => deleteImage()}
-                dangerous
-              ></ContextMenuItem>
-              <ContextMenuItem
-                text="Make default back Image"
-                icon="gi/GiBackForth"
-                onClick={() => makeDefaultBackImage()}
-                dangerous
-              ></ContextMenuItem>
-            </ContextMenu>
-            <DropDisplay
-              ref={menuRef}
-              onDrop={onDrop}
-              previewImage={previewImage}
-            />
-            <Title divider size={3}>
-              Display Settings
-            </Title>
-            <DisplaySettings
-              textOnly={!hasOriginalImage}
-              setImageSettings={(imageSettings) =>
-                setDisplaySettings({ ...imageDisplay, imageSettings })
-              }
-              imageSettings={imageDisplay.imageSettings}
-              textSettings={imageDisplay.textSettings}
-              textWithIconSettings={imageDisplay.textWithIconSettings}
-              setTextSettings={(textSettings) =>
-                setDisplaySettings({
-                  ...imageDisplay,
-                  textSettings,
-                })
-              }
-              setTextWithIconSettings={(textWithIconSettings) =>
-                setDisplaySettings({ ...imageDisplay, textWithIconSettings })
-              }
-            />
-            <Title divider size={3}>
-              Button Settings
-            </Title>
-            <Row>
-              <Column>
-                <Action
-                  setActionSetting={(primary) =>
-                    setButtonSettings({ ...actionDisplay, primary })
-                  }
-                  title="Short press"
-                  pages={pages}
-                  action={actionDisplay.primary}
-                  addPage={() => addPage(true)}
-                  loadUserInteraction={false}
-                />
-              </Column>
-              <Column>
-                <Action
-                  setActionSetting={(secondary) =>
-                    setButtonSettings({ ...actionDisplay, secondary })
-                  }
-                  title="Long press"
-                  pages={pages}
-                  action={actionDisplay.secondary}
-                  addPage={() => addPage(false)}
-                  loadUserInteraction={false}
-                />
-              </Column>
-            </Row>
-          </ModalBody>
+          <ContextMenu menuId={menuId}>
+            <ContextMenuItem
+              text="Delete image"
+              icon="fa/FaTrash"
+              onClick={() => deleteImage()}
+              dangerous
+            ></ContextMenuItem>
+            <ContextMenuItem
+              text="Make default back Image"
+              icon="gi/GiBackForth"
+              onClick={() => makeDefaultBackImage()}
+              dangerous
+            ></ContextMenuItem>
+          </ContextMenu>
+          <TabView
+            tabs={["Display Settings", "Button Settings"]}
+            renderTab={(tabName) => (
+              <>
+                <ModalBody visible={tabName === "Display Settings"}>
+                  <Title divider size={3}>
+                    Display Settings
+                  </Title>
+                  <DisplaySettingsContainer
+                    ref={menuRef}
+                    display={imageDisplay}
+                    originalImage={originalImage}
+                    setOriginalImage={setOriginalImage}
+                    setImageSettings={(imageSettings) =>
+                      setDisplaySettings({ ...imageDisplay, imageSettings })
+                    }
+                    setTextSettings={(textSettings) =>
+                      setDisplaySettings({
+                        ...imageDisplay,
+                        textSettings,
+                      })
+                    }
+                    setTextWithIconSettings={(textWithIconSettings) =>
+                      setDisplaySettings({
+                        ...imageDisplay,
+                        textWithIconSettings,
+                      })
+                    }
+                  />
+                </ModalBody>
+                <ModalBody visible={tabName === "Button Settings"}>
+                  <Title divider size={3}>
+                    Button Settings
+                  </Title>
+                  <Row>
+                    <Column>
+                      <Action
+                        setActionSetting={(primary) =>
+                          setButtonSettings({ ...actionDisplay, primary })
+                        }
+                        title="Short press"
+                        pages={pages}
+                        action={actionDisplay.primary}
+                        addPage={() => addPage(true)}
+                        loadUserInteraction={false}
+                      />
+                    </Column>
+                    <Column>
+                      <Action
+                        setActionSetting={(secondary) =>
+                          setButtonSettings({ ...actionDisplay, secondary })
+                        }
+                        title="Long press"
+                        pages={pages}
+                        action={actionDisplay.secondary}
+                        addPage={() => addPage(false)}
+                        loadUserInteraction={false}
+                      />
+                    </Column>
+                  </Row>
+                </ModalBody>
+              </>
+            )}
+          />
         </Modal>
       )}
     </Wrapper>

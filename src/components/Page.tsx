@@ -4,10 +4,16 @@ import Backend from "react-dnd-html5-backend";
 import { FaTrashAlt } from "react-icons/fa";
 import styled from "styled-components";
 
-import { IButton, IButtonPage, IDisplay, IDisplayPage } from "../App";
+import {
+  IButton,
+  IButtonPage,
+  IDisplay,
+  IDisplayPage,
+  IOriginalImagePage,
+} from "../App";
 import { colors } from "../definitions/colors";
 import { getEmptyConvertedImage } from "../definitions/emptyConvertedImage";
-import { Display } from "./Display";
+import { Display } from "./DisplayButton";
 
 const Wrapper = styled.div`
   position: relative;
@@ -82,8 +88,8 @@ interface IProps {
   brightness: number;
   deleteImage: (displayIndex: number) => void;
   makeDefaultBackImage: (displayIndex: number) => void;
+  originalImages: IOriginalImagePage;
   pageIndex: number;
-  hasOriginalImage: (displayIndex: number) => boolean;
   width: number;
   height: number;
   buttonSettingsPages: IButtonPage;
@@ -108,7 +114,7 @@ const PageComponent: React.FC<IProps> = ({
   pageIndex,
   deleteImage,
   makeDefaultBackImage,
-  hasOriginalImage,
+  originalImages,
   width,
   height,
   convertedImages,
@@ -165,7 +171,7 @@ const PageComponent: React.FC<IProps> = ({
                 (pageNumber) => pageNumber !== pageIndex
               )}
               addPage={(primary: boolean) => addPage(displayIndex, primary)}
-              hasOriginalImage={hasOriginalImage(displayIndex)}
+              originalImage={originalImages[displayIndex]}
               switchDisplays={switchDisplays}
             />
           ))}

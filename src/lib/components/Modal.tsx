@@ -54,8 +54,8 @@ const CloseBackground = styled.div`
   height: 20px;
   background-color: white;
 `;
-export const ModalBody = styled.div`
-  display: flex;
+export const ModalBody = styled.div<{ visible?: boolean }>`
+  display: ${(p) => (p.visible || p.visible === undefined ? "flex" : "none")};
   padding: 40px 64px 64px 64px;
   justify-content: center;
   align-items: center;

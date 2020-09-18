@@ -90,7 +90,7 @@ export const Column = styled.div`
   width: 50%;
 `;
 export const Disabler = styled.div<{ disable: boolean }>`
-  z-index: 1001;
+  z-index: 10;
   display: ${(p) => (p.disable ? "block" : "none")};
   background: ${(p) => (p.disable ? colors.gray + "aa" : "transparent")};
   position: absolute;

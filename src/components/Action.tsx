@@ -66,6 +66,19 @@ export const Action: React.FC<{
     },
     [action, setActionSetting]
   );
+  const onKey = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>, type: "js" | "uni") => {
+      const key = Object.keys(keys).find(
+        (key) => keys[key]?.[type] === e.which
+      );
+      if (!key) return;
+      if (keys[key]!.hid === 42 && action.values.length > 0) {
+        setKeys([...action.values.slice(0, action.values.length - 1)]);
+      } else if (action.values.length < 7)
+        setKeys([...action.values, keys[key]!.hid]);
+    },
+    [action]
+  );
   return (
     <Wrapper>
       <Title>{title}</Title>
@@ -82,21 +95,6 @@ export const Action: React.FC<{
       </SelectWrapper>
       {action.mode === 0 && (
         <>
-          <WrapRow>
-            {action.values.map((key, index) => (
-              <MicroButton
-                mt={8}
-                key={`${key}-${index}`}
-                onClick={() => {
-                  const newKeys = [...action.values];
-                  newKeys.splice(index, 1);
-                  setKeys(newKeys.slice(0, 7));
-                }}
-              >
-                {EKeys[key].toString()}
-              </MicroButton>
-            ))}
-          </WrapRow>
           <SelectWrapper>
             <StyledSelect
               value={0}
@@ -117,23 +115,26 @@ export const Action: React.FC<{
           </SelectWrapper>
           <KeyScanner
             tabIndex={0}
-            onKeyPress={(e) => {
-              const key = Object.keys(keys).find(
-                (key) => keys[key]?.uni === e.which
-              );
-              if (key && action.values.length < 7)
-                setKeys([...action.values, keys[key]!.hid]);
-            }}
-            onKeyDown={(e) => {
-              const key = Object.keys(keys).find(
-                (key) => keys[key]?.js === e.which
-              );
-              if (key && action.values.length < 7)
-                setKeys([...action.values, keys[key]!.hid]);
-            }}
+            onKeyPress={(e) => onKey(e, "uni")}
+            onKeyDown={(e) => onKey(e, "js")}
           >
             Click to recognize
           </KeyScanner>
+          <WrapRow>
+            {action.values.map((key, index) => (
+              <MicroButton
+                mt={8}
+                key={`${key}-${index}`}
+                onClick={() => {
+                  const newKeys = [...action.values];
+                  newKeys.splice(index, 1);
+                  setKeys(newKeys.slice(0, 7));
+                }}
+              >
+                {EKeys[key].toString()}
+              </MicroButton>
+            ))}
+          </WrapRow>
         </>
       )}
       {action.mode === 1 && (
