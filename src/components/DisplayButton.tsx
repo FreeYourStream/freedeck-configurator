@@ -1,22 +1,18 @@
-import Jimp from "jimp";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useContextMenuTrigger } from "react-context-menu-wrapper";
 import { useDrag, useDrop } from "react-dnd";
 import styled from "styled-components";
 
 import { IButton, IDisplay } from "../App";
+import { colors } from "../definitions/colors";
 import { getBase64Image } from "../lib/base64Encode";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
-import { DisplaySettings } from "../lib/components/DisplaySettings";
 import { DisplaySettingsContainer } from "../lib/components/DisplaySettingsContainer";
-import { DropDisplay } from "../lib/components/DropDisplay";
 import { ImagePreview } from "../lib/components/ImagePreview";
 import { Column, Row, Title } from "../lib/components/Misc";
 import { Modal, ModalBody } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
-import { handleFileSelect } from "../lib/handleFileSelect";
-import { fileToImage } from "../lib/originalImage";
-import { Action } from "./Action";
+import { Action } from "./ButtonSettings";
 
 const Wrapper = styled.div<{ opacity: number }>`
   opacity: ${(p) => p.opacity};
@@ -24,6 +20,15 @@ const Wrapper = styled.div<{ opacity: number }>`
   align-items: center;
   flex-direction: column;
   position: relative;
+`;
+
+const Text = styled.p`
+  color: ${colors.white};
+  font-family: "Barlow";
+`;
+
+const DisclaimerTitle = styled(Title)`
+  margin-top: auto;
 `;
 
 const DisplayComponent: React.FC<{
@@ -116,8 +121,8 @@ const DisplayComponent: React.FC<{
           title={`Page ${pageIndex} | Display and Button ${displayIndex}`}
           visible={showSettings}
           setClose={() => setShowSettings(false)}
-          minHeight={720}
-          minWidth={628}
+          height={720}
+          width={628}
         >
           <ContextMenu menuId={menuId}>
             <ContextMenuItem
@@ -192,7 +197,15 @@ const DisplayComponent: React.FC<{
                         loadUserInteraction={false}
                       />
                     </Column>
-                  </Row>
+                  </Row>{" "}
+                  <DisclaimerTitle>Disclaimer:</DisclaimerTitle>
+                  <Text>
+                    If you have a non-US keyboard, the buttons recognized will
+                    not show the buttons on your keyboard. But it will still
+                    work like expected :) I would love to show the buttons as
+                    they are on your keyboard, but that is not so easy as i
+                    hoped. If you can help, please do it!
+                  </Text>
                 </ModalBody>
               </>
             )}

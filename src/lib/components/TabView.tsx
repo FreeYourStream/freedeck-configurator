@@ -6,6 +6,7 @@ import { colors } from "../../definitions/colors";
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  height: 100%;
 `;
 const Tabs = styled.div`
   display: flex;

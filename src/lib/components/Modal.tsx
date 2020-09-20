@@ -29,13 +29,20 @@ const TitleBar = styled.div`
   background-color: ${colors.black};
 `;
 
-const Content = styled.div<{ minWidth: number; minHeight: number }>`
+const Content = styled.div<{
+  minWidth: number;
+  minHeight: number;
+  width?: number;
+  height?: number;
+}>`
   position: relative;
   border: 1px solid ${colors.black};
   background: ${colors.gray};
   border-radius: 8px 0px 8px 8px;
   min-width: ${(p) => p.minWidth}px;
   min-height: ${(p) => p.minHeight}px;
+  ${(p) => (p.width ? `width: ${p.width}px;` : "")}
+  ${(p) => (p.height ? `height: ${p.height}px;` : "")}
 `;
 
 const Close = styled.div`
@@ -56,6 +63,7 @@ const CloseBackground = styled.div`
 `;
 export const ModalBody = styled.div<{ visible?: boolean }>`
   display: ${(p) => (p.visible || p.visible === undefined ? "flex" : "none")};
+  height: 100%;
   padding: 40px 64px 64px 64px;
   justify-content: center;
   align-items: center;
@@ -65,6 +73,8 @@ export const Modal: React.FC<{
   visible?: boolean;
   setClose: () => void;
   title?: string;
+  width?: number;
+  height?: number;
   minWidth?: number;
   minHeight?: number;
 }> = ({
@@ -72,12 +82,19 @@ export const Modal: React.FC<{
   setClose,
   children,
   title,
+  width,
+  height,
   minWidth = 200,
   minHeight = 200,
 }) => {
   const content = (
     <Wrapper visible={visible ?? true}>
-      <Content minWidth={minWidth} minHeight={minHeight}>
+      <Content
+        minWidth={minWidth}
+        width={width}
+        minHeight={minHeight}
+        height={height}
+      >
         {title && <TitleBar>{title}</TitleBar>}
         <CloseBackground />
         <Close onClick={() => setClose()}>

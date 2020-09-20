@@ -1,9 +1,9 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import styled from "styled-components";
 
 import { IButtonSettings } from "../App";
 import { colors } from "../definitions/colors";
-import { EKeys, EMediaKeys, Keys, MediaKeys, keys } from "../definitions/keys";
+import { EMediaKeys, MediaKeys, keys } from "../definitions/keys";
 import { FDButton } from "../lib/components/Button";
 import {
   MicroButton,
@@ -35,6 +35,7 @@ const KeyScanner = styled.div`
   display: flex;
   justify-content: center;
 `;
+console.log(KeyScanner.onkeydown);
 export const Action: React.FC<{
   setActionSetting: (newActionSetting: IButtonSettings) => void;
   addPage: () => Promise<number>;
@@ -67,10 +68,12 @@ export const Action: React.FC<{
     [action, setActionSetting]
   );
   const onKey = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>, type: "js" | "uni") => {
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.repeat) return;
       const key = Object.keys(keys).find(
-        (key) => keys[key]?.[type] === e.which
+        (key) => keys[key]?.js === e.nativeEvent.code
       );
+      console.log(key, e.nativeEvent.code);
       if (!key) return;
       if (keys[key]!.hid === 42 && action.values.length > 0) {
         setKeys([...action.values.slice(0, action.values.length - 1)]);
@@ -113,17 +116,16 @@ export const Action: React.FC<{
               ))}
             </StyledSelect>
           </SelectWrapper>
-          <KeyScanner
-            tabIndex={0}
-            onKeyPress={(e) => onKey(e, "uni")}
-            onKeyDown={(e) => onKey(e, "js")}
-          >
+          <KeyScanner tabIndex={0} onKeyDown={(e) => onKey(e)}>
             Click to recognize
           </KeyScanner>
           <WrapRow>
             {action.values.map((key, index) => (
-              <MicroButton
+              <FDButton
                 mt={8}
+                ml={8}
+                px={8}
+                size={1}
                 key={`${key}-${index}`}
                 onClick={() => {
                   const newKeys = [...action.values];
@@ -131,8 +133,10 @@ export const Action: React.FC<{
                   setKeys(newKeys.slice(0, 7));
                 }}
               >
-                {EKeys[key].toString()}
-              </MicroButton>
+                {Object.keys(keys).find(
+                  (displayName) => keys[displayName]?.hid === key
+                )}
+              </FDButton>
             ))}
           </WrapRow>
         </>
