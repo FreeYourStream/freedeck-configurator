@@ -25,6 +25,7 @@ export const GlobalSettings: React.FC<{
   getConfigBuffer: () => Buffer;
   brightness: number;
   visible?: boolean;
+  readyToSave: boolean;
 }> = ({
   setClose,
   defaultBackDisplay,
@@ -35,6 +36,7 @@ export const GlobalSettings: React.FC<{
   getConfigBuffer,
   brightness,
   visible,
+  readyToSave,
 }) => {
   return (
     <Modal
@@ -73,6 +75,7 @@ export const GlobalSettings: React.FC<{
                 <Serial
                   getConfigBuffer={getConfigBuffer}
                   loadConfigFile={loadConfigFile}
+                  readyToSave={readyToSave}
                 />
               </Activator>
               <Activator visible={tab === "About"}>

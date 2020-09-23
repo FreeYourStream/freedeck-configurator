@@ -7,15 +7,16 @@ export const useWriteConfigOverSerialCallback = (
   serial: SerialConnector | undefined,
   setProgress: React.Dispatch<React.SetStateAction<number | null>>,
   setDuration: React.Dispatch<React.SetStateAction<number | null>>,
-  getConfigBuffer: () => Buffer
+  getConfigBuffer: () => Buffer | null
 ) =>
   useCallback(async () => {
     try {
       if (!ready || !serial) {
         return;
       }
-      await serial.write([2]);
       const configBuffer = getConfigBuffer();
+      if (configBuffer === null) return;
+      await serial.write([2]);
       const encoder = new TextEncoder();
       const fileSize = configBuffer.length.toString();
       const fileSizeArray = [...encoder.encode(fileSize)];

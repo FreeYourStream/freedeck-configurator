@@ -13,7 +13,8 @@ const Wrapper = styled.div`
 export const Serial: React.FC<{
   loadConfigFile: (buffer: Buffer) => void;
   getConfigBuffer: () => Buffer;
-}> = ({ loadConfigFile, getConfigBuffer }) => {
+  readyToSave: boolean;
+}> = ({ loadConfigFile, getConfigBuffer, readyToSave }) => {
   const [serial, setSerial] = useState<SerialConnector>();
   const [ready, setReady] = useState<boolean>(false);
   const [progress, setProgress] = useState<number | null>(null);
@@ -32,7 +33,7 @@ export const Serial: React.FC<{
   }, [serial]);
 
   const writeConfigOverSerial = useWriteConfigOverSerialCallback(
-    ready,
+    ready && readyToSave,
     serial,
     setProgress,
     setDuration,
@@ -75,7 +76,7 @@ export const Serial: React.FC<{
       <Row>
         <Label>Write config to FreeDeck:</Label>
         <FDButton
-          disabled={!ready}
+          disabled={!ready || !readyToSave}
           px={5}
           py={5}
           size={1}

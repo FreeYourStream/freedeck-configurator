@@ -246,8 +246,7 @@ function App() {
     setOriginalImagePages
   );
 
-  const hasOriginalImage = useHasOriginalImageCallback(originalImagePages);
-  const createConfigBuffer = () =>
+  const createConfigBuffer = (): Buffer =>
     Buffer.concat([
       createHeader(width, height, brightness, displaySettingsPages.length),
       createButtonBody(buttonSettingsPages),
@@ -306,7 +305,7 @@ function App() {
                   if (displaySettingsPages.length === 0) return;
                   const completeBuffer = createConfigBuffer();
 
-                  download(completeBuffer);
+                  completeBuffer && download(completeBuffer);
                 }}
               >
                 Save Config
@@ -373,6 +372,7 @@ function App() {
           defaultBackDisplay={defaultBackDisplay}
           setDefaultBackDisplay={setDefaultBackDisplay}
           setBrightness={setBrightness}
+          readyToSave={!!buttonSettingsPages.length}
           loadConfigFile={(buffer: Buffer) =>
             loadConfigFile(
               buffer,
