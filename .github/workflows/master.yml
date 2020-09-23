@@ -46,9 +46,13 @@ jobs:
           # The local folder to copy, defaults to root project folder
           SOURCE: "build/"
 
+      - name: "Get Previous tag"
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@master"
+
       - name: Actions for Discord
         uses: Ilshidur/action-discord@0.0.2
         env:
           DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
         with:
-          args: "🎉🎉🎉 A new stable Configurator version has been released and published! 🎉🎉🎉"
+          args: "🎉🎉🎉 A new stable Configurator version has been released and published! ${{ steps.previoustag.outputs.tag }} 🎉🎉🎉 https://freedeck.gosewis.ch"

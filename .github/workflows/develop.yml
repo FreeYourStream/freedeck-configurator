@@ -50,4 +50,4 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
         with:
-          args: "A new develop version has been deployed!"
+          args: "A new develop version has been deployed! ${{ github.event.head_commit.message }} https://fddev.gosewis.ch"
