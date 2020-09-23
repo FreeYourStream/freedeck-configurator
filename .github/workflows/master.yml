@@ -45,3 +45,10 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           # The local folder to copy, defaults to root project folder
           SOURCE: "build/"
+
+      - name: Actions for Discord
+        uses: Ilshidur/action-discord@0.0.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
+        with:
+          args: "🎉🎉🎉 A new stable Configurator version has been released and published! 🎉🎉🎉"
