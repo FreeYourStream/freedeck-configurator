@@ -6,7 +6,6 @@ import { colors } from "../definitions/colors";
 import { EMediaKeys, MediaKeys, keys } from "../definitions/keys";
 import { FDButton } from "../lib/components/Button";
 import {
-  MicroButton,
   SelectWrapper,
   StyledSelect,
   Title,
@@ -21,8 +20,19 @@ const Wrapper = styled.div`
   min-height: 100px;
 `;
 
-const SmallButton = styled(FDButton).attrs({ mt: 4 })`
-  font-weight: bold;
+const TextBox = styled.textarea`
+  font-family: "Barlow";
+  font-size: 16px;
+  color: ${colors.white};
+  background-color: ${colors.black};
+  width: 100%;
+  user-select: none;
+  margin-top: 16px;
+  border: none;
+  resize: none;
+  :focus {
+    outline: none;
+  }
 `;
 
 const KeyScanner = styled.div`
@@ -70,7 +80,7 @@ export const Action: React.FC<{
     [action, setActionSetting]
   );
   const onKey = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>, lengthLimit = 7) => {
+    (e: React.KeyboardEvent<any>, lengthLimit = 7) => {
       if (e.repeat) return;
       const key = Object.keys(keys).find(
         (key) => keys[key]?.js === e.nativeEvent.code
@@ -216,28 +226,23 @@ export const Action: React.FC<{
               ))}
             </StyledSelect>
           </SelectWrapper>
-          <KeyScanner tabIndex={0} onKeyDown={(e) => onKey(e, 15)}>
-            Click to recognize
-          </KeyScanner>
           <WrapRow>
-            {action.values.map((key, index) => (
-              <FDButton
-                mt={8}
-                ml={8}
-                px={8}
-                size={1}
-                key={`${key}-${index}`}
-                onClick={() => {
-                  const newKeys = [...action.values];
-                  newKeys.splice(index, 1);
-                  setKeys(newKeys.slice(0, 15));
-                }}
-              >
-                {Object.keys(keys).find(
-                  (displayName) => keys[displayName]?.hid === key
-                )}
-              </FDButton>
-            ))}
+            <TextBox
+              rows={12}
+              onKeyDown={(e) => {
+                if (e.nativeEvent.code !== "Backspace") return onKey(e, 15);
+                const newKeys = [...action.values];
+                newKeys.splice(newKeys.length - 1, 1);
+                setKeys(newKeys);
+              }}
+              value={action.values.reduce(
+                (acc, value) =>
+                  `${acc}[${Object.keys(keys).find(
+                    (displayName) => keys[displayName]?.hid === value
+                  )}]`,
+                ""
+              )}
+            />
           </WrapRow>
         </>
       )}
