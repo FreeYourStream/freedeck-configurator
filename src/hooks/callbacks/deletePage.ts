@@ -38,14 +38,14 @@ export const useDeletePageCallback = (
       newImagePages.splice(pageIndex, 1);
       newActionPages = newActionPages.map<IButtonPage>((newPage) => {
         const displays = newPage.map<IButton>((display) => {
-          if (display.primary.mode === EAction.changeLayout) {
+          if (display.primary.mode === EAction.changePage) {
             if (display.primary.values[0] >= pageIndex) {
               display.primary.values[0] -= 1;
             }
           }
           if (
             display.secondary.enabled &&
-            display.secondary.mode === EAction.changeLayout
+            display.secondary.mode === EAction.changePage
           ) {
             if (display.secondary.values[0] >= pageIndex) {
               display.secondary.values[0] -= 1;

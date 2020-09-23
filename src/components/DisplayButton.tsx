@@ -12,6 +12,7 @@ import { ImagePreview } from "../lib/components/ImagePreview";
 import { Column, Row, Title } from "../lib/components/Misc";
 import { Modal, ModalBody } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
+import { EAction } from "../lib/configFile/parsePage";
 import { Action } from "./ButtonSettings";
 
 const Wrapper = styled.div<{ opacity: number }>`
@@ -186,16 +187,18 @@ const DisplayComponent: React.FC<{
                       />
                     </Column>
                     <Column>
-                      <Action
-                        setActionSetting={(secondary) =>
-                          setButtonSettings({ ...actionDisplay, secondary })
-                        }
-                        title="Long press"
-                        pages={pages}
-                        action={actionDisplay.secondary}
-                        addPage={() => addPage(false)}
-                        loadUserInteraction={false}
-                      />
+                      {actionDisplay.primary.mode !== EAction.text && (
+                        <Action
+                          setActionSetting={(secondary) =>
+                            setButtonSettings({ ...actionDisplay, secondary })
+                          }
+                          title="Long press"
+                          pages={pages}
+                          action={actionDisplay.secondary}
+                          addPage={() => addPage(false)}
+                          loadUserInteraction={false}
+                        />
+                      )}
                     </Column>
                   </Row>{" "}
                   <DisclaimerTitle>Disclaimer:</DisclaimerTitle>

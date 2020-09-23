@@ -35,7 +35,6 @@ const KeyScanner = styled.div`
   display: flex;
   justify-content: center;
 `;
-console.log(KeyScanner.onkeydown);
 export const Action: React.FC<{
   setActionSetting: (newActionSetting: IButtonSettings) => void;
   addPage: () => Promise<number>;
@@ -46,11 +45,14 @@ export const Action: React.FC<{
 }> = ({ setActionSetting, pages, addPage, action, title }) => {
   const setMode = useCallback(
     (mode: EAction) => {
+      const keepValues =
+        [EAction.hotkeys, EAction.text].includes(action.mode) &&
+        [EAction.hotkeys, EAction.text].includes(mode);
       setActionSetting({
         ...action,
         mode,
         enabled: mode !== EAction.noop,
-        values: [],
+        values: keepValues ? action.values : [],
       });
     },
     [action, setActionSetting]
@@ -68,7 +70,7 @@ export const Action: React.FC<{
     [action, setActionSetting]
   );
   const onKey = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
+    (e: React.KeyboardEvent<HTMLDivElement>, lengthLimit = 7) => {
       if (e.repeat) return;
       const key = Object.keys(keys).find(
         (key) => keys[key]?.js === e.nativeEvent.code
@@ -77,7 +79,7 @@ export const Action: React.FC<{
       if (!key) return;
       if (keys[key]!.hid === 42 && action.values.length > 0) {
         setKeys([...action.values.slice(0, action.values.length - 1)]);
-      } else if (action.values.length < 7)
+      } else if (action.values.length < lengthLimit)
         setKeys([...action.values, keys[key]!.hid]);
     },
     [action]
@@ -92,11 +94,12 @@ export const Action: React.FC<{
         >
           <option value="2">Do nothing</option>
           <option value="1">Change Page</option>
-          <option value="0">Send Keys</option>
+          <option value="0">Hot Key</option>
           <option value="3">Special Keys</option>
+          <option value="4">Text (Beta)</option>
         </StyledSelect>
       </SelectWrapper>
-      {action.mode === 0 && (
+      {action.mode === EAction.hotkeys && (
         <>
           <SelectWrapper>
             <StyledSelect
@@ -107,7 +110,7 @@ export const Action: React.FC<{
               }}
             >
               <option key={0} value={0}>
-                Nothing
+                Choose Key
               </option>
               {Object.keys(keys).map((keyName) => (
                 <option key={keyName} value={keys[keyName]?.hid}>
@@ -141,7 +144,7 @@ export const Action: React.FC<{
           </WrapRow>
         </>
       )}
-      {action.mode === 1 && (
+      {action.mode === EAction.changePage && (
         <>
           {pages.length ? (
             <SelectWrapper>
@@ -173,7 +176,7 @@ export const Action: React.FC<{
           )}
         </>
       )}
-      {action.mode === 3 && (
+      {action.mode === EAction.special_keys && (
         <>
           <SelectWrapper>
             <StyledSelect
@@ -181,7 +184,7 @@ export const Action: React.FC<{
               onChange={(e) => setKeys([parseInt(e.target.value)])}
             >
               <option key={0} value={0}>
-                Nothing
+                Choose Key
               </option>
               {MediaKeys.map((enumKey) => (
                 //@ts-ignore
@@ -191,6 +194,51 @@ export const Action: React.FC<{
               ))}
             </StyledSelect>
           </SelectWrapper>
+        </>
+      )}
+      {action.mode === EAction.text && (
+        <>
+          <SelectWrapper>
+            <StyledSelect
+              value={0}
+              onChange={(e) => {
+                if (action.values.length < 15)
+                  setKeys([...action.values, parseInt(e.target.value)]);
+              }}
+            >
+              <option key={0} value={0}>
+                Choose Key
+              </option>
+              {Object.keys(keys).map((keyName) => (
+                <option key={keyName} value={keys[keyName]?.hid}>
+                  {keyName}
+                </option>
+              ))}
+            </StyledSelect>
+          </SelectWrapper>
+          <KeyScanner tabIndex={0} onKeyDown={(e) => onKey(e, 15)}>
+            Click to recognize
+          </KeyScanner>
+          <WrapRow>
+            {action.values.map((key, index) => (
+              <FDButton
+                mt={8}
+                ml={8}
+                px={8}
+                size={1}
+                key={`${key}-${index}`}
+                onClick={() => {
+                  const newKeys = [...action.values];
+                  newKeys.splice(index, 1);
+                  setKeys(newKeys.slice(0, 15));
+                }}
+              >
+                {Object.keys(keys).find(
+                  (displayName) => keys[displayName]?.hid === key
+                )}
+              </FDButton>
+            ))}
+          </WrapRow>
         </>
       )}
     </Wrapper>

@@ -8,7 +8,9 @@ export class SerialConnector {
     this.baudrate = baudrate ?? 1000000;
   }
 
-  async connect(onDisconnect?: () => any) {
+  async connect(
+    onDisconnect?: (serial: SerialConnector) => Promise<void> | void
+  ) {
     if (!(navigator as any).serial) {
       const message =
         "Your browser is not supported. Use chrome or chromium for now";
@@ -18,7 +20,9 @@ export class SerialConnector {
     try {
       const port = await (navigator as any).serial.requestPort();
       if (onDisconnect)
-        (navigator as any).serial.addEventListener("disconnect", onDisconnect);
+        (navigator as any).serial.addEventListener("disconnect", () =>
+          onDisconnect(this)
+        );
       await port.open({ baudrate: this.baudrate });
       this.reader = port.readable.getReader();
       this.writer = port.writable.getWriter();
@@ -35,6 +39,17 @@ export class SerialConnector {
     return this.writer.write(arrBuff.buffer);
   }
 
+  read() {
+    if (!this.reader) throw new Error("no reader exists for this connection");
+    try {
+      return this.reader.read();
+    } catch (err) {
+      const message = "There was an error while reading from serial device";
+      alert(message);
+      throw new Error(message + " " + err);
+    }
+  }
+
   async startWatch() {
     if (!this.reader) throw new Error("no reader exists for this connection");
     this.watch = true;
@@ -46,18 +61,16 @@ export class SerialConnector {
       } catch {}
     } while (this.watch === true);
   }
+
   stopWatch() {
     this.watch = false;
   }
 
-  read() {
-    if (!this.reader) throw new Error("no reader exists for this connection");
+  async flush() {
     try {
-      return this.reader.read();
-    } catch (err) {
-      const message = "There was an error while reading from serial device";
-      alert(message);
-      throw new Error(message + " " + err);
+      while (await this.read());
+    } catch (e) {
+      return;
     }
   }
 }

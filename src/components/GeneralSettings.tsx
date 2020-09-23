@@ -45,10 +45,15 @@ export const GlobalSettings: React.FC<{
       }}
       minWidth={650}
       minHeight={720}
-      title="Global settings"
+      title="General settings"
     >
       <TabView
-        tabs={["Default back button", "Brightness", "Serial (Beta)", "About"]}
+        tabs={[
+          "Default back button",
+          "Brightness (Beta)",
+          "Serial (Beta)",
+          "About",
+        ]}
         renderTab={(tab) => {
           return (
             <ModalBody>
@@ -58,7 +63,7 @@ export const GlobalSettings: React.FC<{
                   setDefaultBackDisplay={setDefaultBackDisplay}
                 />
               </Activator>
-              <Activator visible={tab === "Brightness"}>
+              <Activator visible={tab === "Brightness (Beta)"}>
                 <Brightness
                   brightness={brightness}
                   setBrightness={setBrightness}

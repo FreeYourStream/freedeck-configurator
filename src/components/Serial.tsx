@@ -23,7 +23,10 @@ export const Serial: React.FC<{
 
   const connectSerial = useCallback(async () => {
     try {
-      await serial?.connect(() => setReady(false));
+      await serial?.connect(async function (serial) {
+        serial.flush().then(() => undefined);
+        setReady(false);
+      });
       setReady(true);
     } catch {}
   }, [serial]);

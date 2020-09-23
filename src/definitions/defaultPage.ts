@@ -58,7 +58,7 @@ export const getDefaultButtonPage = (
     getDefaultButton()
   );
   if (previousPageIndex !== undefined) {
-    backButton.primary.mode = EAction.changeLayout;
+    backButton.primary.mode = EAction.changePage;
     backButton.primary.values = [previousPageIndex];
   }
   displays.unshift(backButton);

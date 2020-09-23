@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { HiDocumentAdd } from "react-icons/hi";
 import styled from "styled-components";
 
-import { GlobalSettings } from "./components/GlobalSettings";
+import { GlobalSettings } from "./components/GeneralSettings";
 import { Page } from "./components/Page";
 import { colors } from "./definitions/colors";
 import { useAddPageCallback } from "./hooks/callbacks/addPage";

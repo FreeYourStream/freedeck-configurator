@@ -1,6 +1,7 @@
 import { Buffer } from "buffer";
 
 import { IButtonPage, IConvertedImagePage } from "../../App";
+import { EAction } from "./parsePage";
 import { optimizeForSSD1306 } from "./ssd1306";
 
 export const createButtonBody = (buttonPages: IButtonPage[]) => {
@@ -18,8 +19,8 @@ export const createButtonBody = (buttonPages: IButtonPage[]) => {
       button.primary.values.forEach((value, index) =>
         buttonRows.writeUInt8(value, rowOffset + index + 1)
       );
-
       // 8 secondary bytes
+      if (button.primary.mode === EAction.text) return;
       const secondaryMode = button.secondary.mode;
       buttonRows.writeUInt8(secondaryMode, rowOffset + 8);
       button.secondary.values.forEach((value, index) =>
