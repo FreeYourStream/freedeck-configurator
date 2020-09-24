@@ -45,12 +45,13 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           # The local folder to copy, defaults to root project folder
           SOURCE: "build/"
+
       - name: Actions for Discord
         uses: Ilshidur/action-discord@0.0.2
         env:
           DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
         with:
-          args: 'A new develop version has been deployed! What's new? "${{ github.event.head_commit.message }}" https://fddev.gosewis.ch'
+          args: "A new develop version has been deployed! What's new? **${{ github.event.head_commit.message }}** https://fddev.gosewis.ch"
 
       - name: Cloudflare Purge Cache
         uses: jakejarvis/cloudflare-purge-action@v0.3.0
