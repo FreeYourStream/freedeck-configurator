@@ -1,11 +1,15 @@
-export class SerialConnector {
-  reader?: ReadableStreamDefaultReader<Uint8Array>;
-  writer?: WritableStreamDefaultWriter<ArrayBuffer>;
-  baudrate: number;
-  watch = false;
+export type SerialFilter = { usbVendorId: number }[];
 
-  constructor(baudrate?: number) {
-    this.baudrate = baudrate ?? 1000000;
+export class SerialConnector {
+  buffer: Uint8Array[];
+  writer?: WritableStreamDefaultWriter<ArrayBuffer>;
+  filters: SerialFilter;
+  baudrate: number;
+
+  constructor(options?: { baudrate?: number; filters?: SerialFilter }) {
+    this.baudrate = options?.baudrate ?? 1000000;
+    this.filters = options?.filters ? options.filters : [];
+    this.buffer = [];
   }
 
   async connect(
@@ -14,21 +18,31 @@ export class SerialConnector {
     if (!(navigator as any).serial) {
       const message =
         "Your browser is not supported. Use chrome or chromium for now";
-      alert(message);
       throw new Error(message);
     }
     try {
-      const port = await (navigator as any).serial.requestPort();
-      if (onDisconnect)
+      const port = await (navigator as any).serial.requestPort({
+        filters: this.filters,
+      });
+      if (onDisconnect) {
         (navigator as any).serial.addEventListener("disconnect", () =>
           onDisconnect(this)
         );
+      }
       await port.open({ baudrate: this.baudrate });
-      this.reader = port.readable.getReader();
+      const reader: ReadableStreamDefaultReader<Uint8Array> = port.readable.getReader();
       this.writer = port.writable.getWriter();
+      this.buffer = [];
+
+      setTimeout(async () => {
+        let chunkBuffer;
+        do {
+          chunkBuffer = await reader.read();
+          if (chunkBuffer.value) this.buffer.push(chunkBuffer.value);
+        } while (true);
+      });
     } catch (err) {
       const message = "There was an error while connecting to serial device";
-      alert(message);
       throw new Error(message + " " + err);
     }
   }
@@ -39,38 +53,25 @@ export class SerialConnector {
     return this.writer.write(arrBuff.buffer);
   }
 
-  read() {
-    if (!this.reader) throw new Error("no reader exists for this connection");
-    try {
-      return this.reader.read();
-    } catch (err) {
-      const message = "There was an error while reading from serial device";
-      alert(message);
-      throw new Error(message + " " + err);
+  flush() {
+    this.buffer = [];
+    return;
+  }
+  async read(): Promise<Uint8Array[]> {
+    while (!this.buffer.length) {
+      await this.sleep(10);
     }
+    return this.buffer.splice(0, this.buffer.length);
   }
-
-  async startWatch() {
-    if (!this.reader) throw new Error("no reader exists for this connection");
-    this.watch = true;
-    let result: ReadableStreamReadResult<Uint8Array>;
-    do {
-      result = await this.reader.read();
-      try {
-        console.log("from serial: " + new TextDecoder().decode(result.value));
-      } catch {}
-    } while (this.watch === true);
-  }
-
-  stopWatch() {
-    this.watch = false;
-  }
-
-  async flush() {
-    try {
-      while (await this.read());
-    } catch (e) {
-      return;
+  async readOne(): Promise<Uint8Array> {
+    while (!this.buffer.length) {
+      await this.sleep(10);
     }
+    return this.buffer.splice(0, 1)[0];
+  }
+  private async sleep(ms: number) {
+    return new Promise((res, rej) => {
+      setTimeout(() => res(), ms);
+    });
   }
 }

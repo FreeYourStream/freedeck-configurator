@@ -10,29 +10,31 @@ export const useReadConfigFromSerialCallback = (
 ) =>
   useCallback(async () => {
     if (!serial?.writer) return null;
+    await serial.flush();
     await serial.write([1]);
 
-    const first = await serial.read();
-    if (!first?.value) return null;
+    const first = await serial.readOne();
+    if (!first.length) return null;
 
     const fileSize = parseInt(
       String.fromCharCode(
-        ...first.value.slice(
+        ...first.slice(
           0,
-          first.value.findIndex((value) => value === 13)
+          first.findIndex((value) => value === 13)
         )
       )
     );
 
     let read: Buffer = new Buffer(
-      first.value.slice(first.value.findIndex((value) => value === 13) + 2) // +2 because we need to strip CR and LF
+      first.slice(first.findIndex((value) => value === 13) + 2) // +2 because we need to strip CR and LF
     );
-    let temp: ReadableStreamReadResult<any>;
+
+    let temp: Uint8Array;
     let counter = 0;
     const start = new Date().getTime();
     do {
-      temp = await serial.read();
-      read = Buffer.concat([read, Buffer.from(temp.value)]);
+      temp = await serial.readOne();
+      read = Buffer.concat([read, Buffer.from(temp)]);
       if (counter++ > 100) {
         counter = 0;
         setProgress(read.byteLength / fileSize);
@@ -41,6 +43,11 @@ export const useReadConfigFromSerialCallback = (
     const stop = new Date().getTime();
     setProgress(read.byteLength / fileSize);
     setDuration(stop - start);
-    loadConfigFile(read.slice(0, fileSize));
-    return fileSize;
+    try {
+      loadConfigFile(read.slice(0, fileSize));
+      return fileSize;
+    } catch {
+      console.log("BONK");
+    }
+    return -1;
   }, [serial]);

@@ -20,16 +20,31 @@ export const Serial: React.FC<{
   const [progress, setProgress] = useState<number | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
   const [fileSize, setFileSize] = useState<number | null>(null);
-  useEffect(() => setSerial(new SerialConnector()), []);
+
+  useEffect(
+    () =>
+      setSerial(
+        new SerialConnector({
+          filters: [
+            {
+              usbVendorId: 0x2341,
+            },
+          ],
+        })
+      ),
+    []
+  );
 
   const connectSerial = useCallback(async () => {
     try {
       await serial?.connect(async function (serial) {
-        serial.flush().then(() => undefined);
         setReady(false);
       });
       setReady(true);
-    } catch {}
+    } catch (e) {
+      console.log(e);
+      if (e.message === "No port selected by the user") return;
+    }
   }, [serial]);
 
   const writeConfigOverSerial = useWriteConfigOverSerialCallback(
