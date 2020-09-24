@@ -56,3 +56,9 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
         with:
           args: "🎉🎉🎉 A new stable Configurator version has been released and published! ${{ steps.previoustag.outputs.tag }} 🎉🎉🎉 https://freedeck.gosewis.ch"
+
+      - name: Cloudflare Purge Cache
+        uses: jakejarvis/cloudflare-purge-action@v0.3.0
+        env:
+          CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
