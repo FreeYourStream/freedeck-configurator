@@ -5,6 +5,8 @@ import styled from "styled-components";
 import { GlobalSettings } from "./components/GeneralSettings";
 import { Page } from "./components/Page";
 import { colors } from "./definitions/colors";
+import { loadDefaultBackDisplay } from "./definitions/defaultBackImage";
+import { EAction } from "./definitions/modes";
 import { useAddPageCallback } from "./hooks/callbacks/addPage";
 import { useDeleteImageCallback } from "./hooks/callbacks/deleteImage";
 import { useDeletePageCallback } from "./hooks/callbacks/deletePage";
@@ -31,8 +33,6 @@ import { createButtonBody, createImageBody } from "./lib/configFile/createBody";
 import { createFooter } from "./lib/configFile/createFooter";
 import { createHeader } from "./lib/configFile/createHeader";
 import { loadConfigFile } from "./lib/configFile/loadConfigFile";
-import { EAction } from "./lib/configFile/parsePage";
-import { loadDefaultBackDisplay } from "./lib/defaultBackImage";
 import { download } from "./lib/download";
 
 const Main = styled.div`

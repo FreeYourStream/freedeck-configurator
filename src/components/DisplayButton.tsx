@@ -5,14 +5,14 @@ import styled from "styled-components";
 
 import { IButton, IDisplay } from "../App";
 import { colors } from "../definitions/colors";
-import { getBase64Image } from "../lib/base64Encode";
+import { EAction } from "../definitions/modes";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
 import { DisplaySettingsContainer } from "../lib/components/DisplaySettingsContainer";
 import { ImagePreview } from "../lib/components/ImagePreview";
 import { Column, Row, Title } from "../lib/components/Misc";
 import { Modal, ModalBody } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
-import { EAction } from "../lib/configFile/parsePage";
+import { getBase64Image } from "../lib/image/base64Encode";
 import { Action } from "./ButtonSettings";
 
 const Wrapper = styled.div<{ opacity: number }>`

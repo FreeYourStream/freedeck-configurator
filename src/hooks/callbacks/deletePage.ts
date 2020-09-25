@@ -7,7 +7,7 @@ import {
   IDisplayPage,
   IOriginalImagePage,
 } from "../../App";
-import { EAction } from "../../lib/configFile/parsePage";
+import { EAction } from "../../definitions/modes";
 
 export const useDeletePageCallback = (
   buttonSettingsPages: IButtonPage[],

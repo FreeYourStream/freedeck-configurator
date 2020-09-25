@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
 
 import { IButtonPage, IConvertedImagePage } from "../../App";
-import { EAction } from "./parsePage";
+import { EAction } from "../../definitions/modes";
 import { optimizeForSSD1306 } from "./ssd1306";
 
 export const createButtonBody = (buttonPages: IButtonPage[]) => {

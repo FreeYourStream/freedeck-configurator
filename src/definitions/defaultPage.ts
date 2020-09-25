@@ -1,8 +1,8 @@
 import { merge } from "lodash";
 
 import { IButton, IButtonPage, IDisplay } from "../App";
-import { EAction } from "../lib/configFile/parsePage";
 import { fontMedium } from "./fonts";
+import { EAction } from "./modes";
 
 export type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;

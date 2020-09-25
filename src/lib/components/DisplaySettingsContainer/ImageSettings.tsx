@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDebounce } from "use-debounce";
 
-import { IDisplay } from "../../App";
+import { IDisplay } from "../../../App";
 import {
   fontLarge,
   fontMedium,
   fontSmall,
   fontSmaller,
-} from "../../definitions/fonts";
+} from "../../../definitions/fonts";
 import {
   Column,
   Disabler,
@@ -20,7 +20,7 @@ import {
   TextInput,
   Title,
   Value,
-} from "./Misc";
+} from "../Misc";
 
 const Wrapper = styled.div`
   display: flex;
@@ -36,7 +36,7 @@ export interface ISettings {
   fontName: string;
 }
 
-export const DisplaySettings: React.FC<{
+export const ImageSettings: React.FC<{
   setImageSettings: (settings: IDisplay["imageSettings"]) => void;
   setTextSettings: (settings: IDisplay["textSettings"]) => void;
   setTextWithIconSettings: (settings: IDisplay["textWithIconSettings"]) => void;

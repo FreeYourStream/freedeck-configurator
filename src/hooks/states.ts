@@ -7,7 +7,7 @@ import {
   IDisplayPage,
   IOriginalImagePage,
 } from "../App";
-import { getStockBackDisplay } from "../lib/defaultBackImage";
+import { getStockBackDisplay } from "../definitions/defaultBackImage";
 
 export const useBrightness = function () {
   return useState<number>(128);

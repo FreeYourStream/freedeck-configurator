@@ -1,5 +1,3 @@
-import { monochrome128by64BitmapHeader } from "../definitions/headers";
-
 export const base64Encode = (input: Buffer) => {
   var keyStr =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
