@@ -10,7 +10,7 @@ This is the software to create the config file and converting the images for the
 
 The hardware related info can be found [here](https://github.com/koriwi/freedeck-hardware)
 
-## Setup
+## Setup (for developers only)
 
 ```bash
 npm i; npm start
@@ -22,28 +22,64 @@ thats it
 
 ### Creating a Config from scratch
 
-1. You start by clicken **Add Page+** in the top right corner. This will give you a new page with the specified (for now 6) display button count
-2. To get something onto the displays, do one of the following
-   1. Start by clicking on a display (the black box). A window will appear. It has a tab for changing what to display on the screen which you can click to upload an image and a button tab for choosing what to do when the display is clicked. You can also just drag and drop an image onto the display/black box in the display settings tab to upload an image.
-   2. You can also just enter some text in the textbox under the black preview box on the right hand side. The text is newline aware. It will be automatically centered. Feel free to change the font size to your liking.
-   3. You can also combine both steps above to have an icon with text on the right hand side of it. You can tune the size/space of the icon with the _icon width_ slider on the bottom left hand side.
-   4. You can also tweak the image: 3. **White threshold(Dither off)**: The higher you put this value, the brighter pixels need to be to be interpreted as white on the bright end. 4. **Black threshold(Dither off)**: The higher you put this value, the darker pixels need to be to be interpreted as black. (Normally you can just leave this value as it is)
-      1. **Dither**: This button enables dithering. Dithering should be used for photo like images. It can _emulate_ colors between white and black. Disable dithering for icons.
-      2. **Invert**: Should speak for itself. Inverts the images colors
-3. If you uploaded an image the settings popup will now appear. The display indicates that you can tune it's settings by permanently showing the settings icon. Click on it to hide the popup and vice versa. In this popup you can change a few things
-   1. **Dither**: This button enables dithering. Dithering should be used for photo like images. It can _emulate_ colors between white and black. Disable dithering for icons.
-   2. **Invert**: Should speak for itself. Inverts the images colors
-   3. **+ -**: this will change the contrast of the image. Tune these values if you dont like the current look of the image.
-   4. **Text**: If this button is red, text composition is disabled. Click on it to enable it. It should turn green and you uploaded image will shift to the left. Now enter some text in the textbox below. Have a look **2.ii** for more information. The selectbox next to this button will change the font size
-   5. **Red X**: This will forever delete your current image
-4. Below our display you will find a select box with three options:
-   1. **Do nothing**: When you click on the display on your (physical) FreeDeck it will do nothing (doh)
-   2. **Hot Key**: When you select this option, additional settings will appear. Below you will find a selectbox with all physical keys on a keyboard. It will not correctly mirror your key presses if you have a non-US keyboard. But no worries, it will still press the right keys! When you press the display on your (physical) FreeDeck it will press all the selected keys together/send them to your pc (mac, win, gnu/linux, bsd, ... everything with usb keyboard support should work) and then releases them.
-   3. **Change Page**: This mode will change the page which is displayed when you press the display on your (physical) FreeDeck. You can select an already existing page or click the **Add Page** button which will create a new page and will automatically link both pages with each other.
-   4. **Send Text (WIP)**: This mode is similar to 2. But it differs slighty. It will send a key and will release it after 8ms then it will press the next key. This is usefull if you need to enter many things by text repetetively.
+1. Click **Add Page+** in the top right corner. This will give you one new page with (for now 6) displays.
+   ![1](https://i.imgur.com/eDk0tL1.jpg)
+2. This is what a page looks like.
+   1. This is the page number. It starts with 0 (for now :P)
+   2. This is the delete button. Speaks for itself, doesn't it?
+   3. This is a display. It shows what your FreeDeck would show. (Drag and drop onto another display to reorder) **Click it to continue**
+      ![2](https://i.imgur.com/Q9JMcSc.jpg)
+3. Now you will see this modal/window pop up.
+   1. These are tabs that group our settings. Click them to switch
+   2. This preview box will show you what it would look like on your FreeDeck. It updates in realtime while you adjust the image settings. You can also click it to upload an image. Or drag and drop. Whatever you like more :)
+   3. These are our image settings. Here you can tweak the appearance of your image. More on those settings later in detail!
+   4. Here you can add text to your image. Also more details later.
+   5. This button closes this window :o but don't worry, **you don't need to save**. Every change you make is automatically saved. But don't close it yet. We need this window for the next step. **Click on Button Settings[1]** to continue.
+      ![3](https://i.imgur.com/7uYtHsX.jpg)
+4. After changing the tab to **Button Settings** you should see this.
+   1. This setting changes what the FreeDeck does when you short click it. Also more details later
+   2. This setting changes what the FreeDeck does when you long click it. Also more details later
+   3. The keyboard layout disclaimer. **Pleas read it**
+      ![4](https://i.imgur.com/BVnFyte.jpg)
+5. Now we can save our config!
+   1. Click the **Save Config** button.
+   2. Put it in the root of your SDCard and make sure it's name **config.bin** (not config(1).bin or similar)
+   3. Put the SDCard into your FreeDeck.
+   4. Please make sure your SDCard is formatted as FAT32 and MBR (not GPT). How to do this? [Put better Link here](https://www.reddit.com/r/3dshacks/comments/4ugheu/psa_sd_cards_with_a_gpt_partition_table_instead/)
+      ![5](https://i.imgur.com/QdkE8h6.jpg)
+
+### Settings explained in Detail
+
+#### Display Settings
+
+These settings all change the appearance of your display.
+
+- **Image Preview** When you click the preview image which in the beginning is just a black box, you can upload an image to then tweak to your liking.
+  - **Right click menu** When you right click the preview, the context menu shows up where you can delete the image you uploaded or make it a default back button. More on this later!
+- **Text** If you only want text, just enter your text into the text box and choose your font size below it.
+- **Icon width** You can also combine both steps to have text next to an image/icon. If you had an image before and **now only want text** you can right click the image preview and delete the image.
+- **Invert** This button toggles color inversion. As your background should be transparent or black. If it isn't (too bright or even white for example) you can invert the colors of this image so the background becomes dark
+- **Dither** This button enables dithering. Dithering should be used for photo like images. It can _emulate_ colors between white and black. Disable dithering for icons in most cases.
+- **White threshold(Dither off)** (Will become brightness when dither is on) The higher you put this value, the brighter pixels need to be to be interpreted as white on the bright end.
+- **Black threshold(Dither off)** (Will become contrast when dither is on) The higher you put this value, the darker pixels need to be to be interpreted as black. (Normally you can just leave this value as it is)
+- **Brightness(Dither on)** Changes the brightness of the image
+- **Contrast(Dither on)** Changes the contrast of the image
+
+#### Button Settings
+
+These settings change the behaviour of your FreeDeck when you press a button or display. However you wanna call it. For all modes (except one beta mode for now) you can have a short and a long press function. So something different will happen when you press longer than a specific amount of time (300ms is the default value) on one display.
+This can be usefull if you have a mute button for Discord or Teamspeak. Then you can put the deafen functionality on the same button just with a long press. **Please read the _Disclaimer_ at the bottom of the settings modal.**
+
+##### Modes
+
+- **Change Page** This mode changes the page which is displayed on your FreeDeck. You can choose between another page or the **Add Page+** button which adds a completely new page and automatically changes the top left display to point back to the current page.
+- **Hot Key** This mode is for triggering hot keys on your computer. It presses up to 7 keys simultaneously and then releases them. You can just choose the keys you want from the dropdown menu or click the _Click to recognize_ box which than scans which keys you press. You should use the _Click to recognize_ box because of different keyboard layouts are not really supported yet. If you want to delete a key you entered just click it. Drag and drop reordering is not possible yet!
+- **Special Keys** This mode is for some special keys like volume up and down, play and pause
+- **Text (Beta)** This mode differs from the hotkey mode in two ways. Firstly it allows up to 15 key presses in stead of 7 but it has no longpress support. Secondly it releases every key after being pressed (except for ctrl, alt, shift and win). It's usefull for entering text into spreadsheets or similar. To enter keys which should be pressed click the black box below and start typing.
 
 ## Beta
 
-1. Serial upload and download. You can now upload and download your config from your FreeDeck via USB in a Chrome Browser (Chrome or Chromium for now).
+1. **Serial upload and download** You can now upload and download your config from your FreeDeck via USB in a Chrome Browser (Chrome or Chromium for now).
    Go to the general settings menu in the top right corner of your screen to find these new settings.
-2. You can change the brightness in the general settings menu in the top right corner of your screen.
+2. **Brightness** You can change the brightness in the general settings menu in the top right corner of your screen.
+3. **Text mode** A text mode which differs from the hotkey mode
