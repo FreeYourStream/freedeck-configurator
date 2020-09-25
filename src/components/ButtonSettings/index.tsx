@@ -6,6 +6,7 @@ import { keys } from "../../definitions/keys";
 import { EAction } from "../../definitions/modes";
 import { SelectWrapper, StyledSelect, Title } from "../../lib/components/Misc";
 import { ChangePage } from "./ChangePage";
+import { FreeDeckSettings } from "./FreeDeckSettings";
 import { Hotkeys } from "./Hotkeys";
 import { SpecialKeys } from "./SpecialKeys";
 import { Text } from "./Text";
@@ -38,15 +39,15 @@ export const Action: React.FC<{
     },
     [action, setActionSetting]
   );
-  const setKeys = useCallback(
+  const setMultipleValues = useCallback(
     (keys: number[]) => {
-      setActionSetting({ ...action, values: keys });
+      setActionSetting({ ...action, values: keys[0] === -1 ? [] : keys });
     },
     [action, setActionSetting]
   );
-  const setGoTo = useCallback(
+  const setSingleValue = useCallback(
     (goTo: number) => {
-      setActionSetting({ ...action, values: [goTo] });
+      setActionSetting({ ...action, values: goTo === -1 ? [] : [goTo] });
     },
     [action, setActionSetting]
   );
@@ -59,9 +60,11 @@ export const Action: React.FC<{
       if (!key) return;
       //ignore backspace
       if (keys[key]!.hid === 42 && action.values.length > 0) {
-        setKeys([...action.values.slice(0, action.values.length - 1)]);
+        setMultipleValues([
+          ...action.values.slice(0, action.values.length - 1),
+        ]);
       } else if (action.values.length < lengthLimit)
-        setKeys([...action.values, keys[key]!.hid]);
+        setMultipleValues([...action.values, keys[key]!.hid]);
     },
     [action]
   );
@@ -78,24 +81,28 @@ export const Action: React.FC<{
           <option value="0">Hot Key</option>
           <option value="3">Special Keys</option>
           <option value="4">Text (Beta)</option>
+          <option value="5">Settings (Beta)</option>
         </StyledSelect>
       </SelectWrapper>
       {action.mode === EAction.hotkeys && (
-        <Hotkeys action={action} onKey={onKey} setKeys={setKeys} />
+        <Hotkeys action={action} onKey={onKey} setKeys={setMultipleValues} />
       )}
       {action.mode === EAction.changePage && (
         <ChangePage
           action={action}
           addPage={addPage}
           pages={pages}
-          setGoTo={setGoTo}
+          setGoTo={setSingleValue}
         />
       )}
       {action.mode === EAction.special_keys && (
-        <SpecialKeys action={action} setKeys={setKeys} />
+        <SpecialKeys action={action} setKeys={setMultipleValues} />
       )}
       {action.mode === EAction.text && (
-        <Text action={action} onKey={onKey} setKeys={setKeys} />
+        <Text action={action} onKey={onKey} setKeys={setMultipleValues} />
+      )}
+      {action.mode === EAction.settings && (
+        <FreeDeckSettings action={action} setSetting={setSingleValue} />
       )}
     </Wrapper>
   );
