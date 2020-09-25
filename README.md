@@ -65,6 +65,8 @@ thats it
 
 ### Settings explained in Detail
 
+****Things marked with (Beta) will only work if you have the develop branch of the arduino software flashed to your FreeDeck!****
+
 #### Display Settings
 
 These settings all change the appearance of your display.
@@ -91,10 +93,21 @@ This can be usefull if you have a mute button for Discord or Teamspeak. Then you
 - **Hot Key** This mode is for triggering hot keys on your computer. It presses up to 7 keys simultaneously and then releases them. You can just choose the keys you want from the dropdown menu or click the _Click to recognize_ box which than scans which keys you press. You should use the _Click to recognize_ box because of different keyboard layouts are not really supported yet. If you want to delete a key you entered just click it. Drag and drop reordering is not possible yet!
 - **Special Keys** This mode is for some special keys like volume up and down, play and pause
 - **Text (Beta)** This mode differs from the hotkey mode in two ways. Firstly it allows up to 15 key presses in stead of 7 but it has no longpress support. Secondly it releases every key after being pressed (except for ctrl, alt, shift and win). It's usefull for entering text into spreadsheets or similar. To enter keys which should be pressed click the black box below and start typing.
+- **FreeDeck Settings (Beta)** This mode lets you change FreeDeck settings on the fly. For now it's only the brightness.
 
-## Beta
+### General Settings
+
+![6](https://i.imgur.com/3vQjX22.jpg)</br>
+The general settings can be found here. Here you can set different things including the **default back button**
+
+- **Default back button** Everytime you create a new page (except for the first one ;)) a back button is automatically created in the top left display. Here you can change it's appearance. After updating it and closing the window all back buttons will be update to the new one. Right clicking the image preview opens the context menu, which will let you reset the back button to it's stock image.
+- **Brightness (Beta)** Let's you set the default brightness settings when the FreeDeck is turned on.
+- **Serial (Beta)** This only works in Chrome/Chromium for now (no, not even most Chrome based browsers, if you want to know why, google _Chrome Origin Trials_). Here you can connect, download and upload the config file from your FreeDeck without fiddling with your SDCard. Just press **_Connect_** -> **_Read_** to load the config into the configurator. Then press **_Write_** to upload it. Your FreeDeck should restart now :). If this did not work and your FreeDeck only shows blank illuminated screens, don't panik. A backup was made of the old config file onto your SDCard. It was renamed to **_config.bak_**. Just name it back to config.bin and you are good to go.
+
+### Beta Functionality
 
 1. **Serial upload and download** You can now upload and download your config from your FreeDeck via USB in a Chrome Browser (Chrome or Chromium for now).
    Go to the general settings menu in the top right corner of your screen to find these new settings.
 2. **Brightness** You can change the brightness in the general settings menu in the top right corner of your screen.
 3. **Text mode** A text mode which differs from the hotkey mode
+4. **FreeDeck Settings** You can change the brightness on the fly with the new Settings option for the Button Settings.
