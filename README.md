@@ -22,35 +22,46 @@ thats it
 
 ### Creating a Config from scratch
 
-1. Click **Add Page+** in the top right corner. This will give you one new page with (for now 6) displays.
-   </br>![1](https://i.imgur.com/eDk0tL1.jpg)</br></br>
-   
-2. This is what a page looks like.
-   1. This is the page number. It starts with 0 (for now :P)
-   2. This is the delete button. Speaks for itself, doesn't it?
-   3. This is a display. It shows what your FreeDeck would show. (Drag and drop onto another display to reorder) **Click it to continue**
-      </br>![2](https://i.imgur.com/Q9JMcSc.jpg)</br></br>
+#### Add Page
 
-3. Now you will see this modal/window pop up.
-   1. These are tabs that group our settings. Click them to switch
-   2. This preview box will show you what it would look like on your FreeDeck. It updates in realtime while you adjust the image settings. You can also click it to upload an image. Or drag and drop. Whatever you like more :)
-   3. These are our image settings. Here you can tweak the appearance of your image. More on those settings later in detail!
-   4. Here you can add text to your image. Also more details later.
-   5. This button closes this window :o but don't worry, **you don't need to save**. Every change you make is automatically saved. But don't close it yet. We need this window for the next step. **Click on Button Settings[1]** to continue.
-      </br>![3](https://i.imgur.com/7uYtHsX.jpg)</br></br>
-      
-4. After changing the tab to **Button Settings** you should see this.
-   1. This setting changes what the FreeDeck does when you short click it. Also more details later
-   2. This setting changes what the FreeDeck does when you long click it. Also more details later
-   3. The keyboard layout disclaimer. **Please read it**
-      </br>![4](https://i.imgur.com/BVnFyte.jpg)</br></br>
-      
-5. Now we can save our config!
-   1. Click the **Save Config** button.
-   2. Put it in the root of your SDCard and make sure it's name **config.bin** (not config(1).bin or similar)
-   3. Put the SDCard into your FreeDeck.
-   4. Please make sure your SDCard is formatted as FAT32 and MBR (not GPT). How to do this? [Put better Link here](https://www.reddit.com/r/3dshacks/comments/4ugheu/psa_sd_cards_with_a_gpt_partition_table_instead/)
-      </br>![5](https://i.imgur.com/QdkE8h6.jpg)</br></br>
+![1](https://i.imgur.com/eDk0tL1.jpg)</br>
+
+1. Click **Add Page+** in the top right corner. This will give you one new page with (for now 6) displays.
+
+#### This is what a page looks like.
+
+![2](https://i.imgur.com/Q9JMcSc.jpg)</br>
+
+1. This is the page number. It starts with 0 (for now :P)
+2. This is the delete button. Speaks for itself, doesn't it?
+3. This is a display. It shows what your FreeDeck would show. (Drag and drop onto another display to reorder) **Click it to continue**
+
+#### Now you will see this modal/window pop up.
+
+![3](https://i.imgur.com/7uYtHsX.jpg)</br>
+
+1.  These are tabs that group our settings. Click them to switch
+2.  This preview box will show you what it would look like on your FreeDeck. It updates in realtime while you adjust the image settings. You can also click it to upload an image. Or drag and drop. Whatever you like more :)
+3.  These are our image settings. Here you can tweak the appearance of your image. More on those settings later in detail!
+4.  Here you can add text to your image. Also more details later.
+5.  This button closes this window :o but don't worry, **you don't need to save**. Every change you make is automatically saved. But don't close it yet. We need this window for the next step. **Click on Button Settings[1]** to continue.
+
+#### After changing the tab to _Button Settings_ you should see this.
+
+![4](https://i.imgur.com/BVnFyte.jpg)</br>
+
+1.  This setting changes what the FreeDeck does when you short click it. Also more details later
+2.  This setting changes what the FreeDeck does when you long click it. Also more details later
+3.  The keyboard layout disclaimer. **Pleas read it**
+
+#### Now we can save our config!
+
+![5](https://i.imgur.com/QdkE8h6.jpg)</br>
+
+1. Click the **Save Config** button.
+2. Put it in the root of your SDCard and make sure it's name **config.bin** (not config(1).bin or similar)
+3. Put the SDCard into your FreeDeck.
+4. Please make sure your SDCard is formatted as FAT32 and MBR (not GPT). How to do this? [Put better Link here](https://www.reddit.com/r/3dshacks/comments/4ugheu/psa_sd_cards_with_a_gpt_partition_table_instead/)
 
 ### Settings explained in Detail
 
