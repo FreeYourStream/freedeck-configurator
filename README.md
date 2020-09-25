@@ -52,20 +52,20 @@ thats it
 
 1.  This setting changes what the FreeDeck does when you short click it. Also more details later
 2.  This setting changes what the FreeDeck does when you long click it. Also more details later
-3.  The keyboard layout disclaimer. **Pleas read it**
+3.  The keyboard layout disclaimer. **Please read it**
 
 #### Now we can save our config!
 
 ![5](https://i.imgur.com/QdkE8h6.jpg)</br>
 
 1. Click the **Save Config** button.
-2. Put it in the root of your SDCard and make sure it's name **config.bin** (not config(1).bin or similar)
+2. Put it in the root of your SDCard and make sure it's name is **config.bin** (not config(1).bin or similar)
 3. Put the SDCard into your FreeDeck.
 4. Please make sure your SDCard is formatted as FAT32 and MBR (not GPT). How to do this? [Put better Link here](https://www.reddit.com/r/3dshacks/comments/4ugheu/psa_sd_cards_with_a_gpt_partition_table_instead/)
 
 ### Settings explained in Detail
 
-****Things marked with (Beta) will only work if you have the develop branch of the arduino software flashed to your FreeDeck!****
+**_Things marked with (Beta) will only work if you have the develop branch of the arduino software flashed to your FreeDeck!_**
 
 #### Display Settings
 
@@ -73,7 +73,7 @@ These settings all change the appearance of your display.
 
 - **Image Preview** When you click the preview image which in the beginning is just a black box, you can upload an image to then tweak to your liking.
   - **Right click menu** When you right click the preview, the context menu shows up where you can delete the image you uploaded or make it a default back button. More on this later!
-- **Text** If you only want text, just enter your text into the text box and choose your font size below it.
+- **Text** If you only want text, just enter your text into the text box and choose your font size below.
 - **Icon width** You can also combine both steps to have text next to an image/icon. If you had an image before and **now only want text** you can right click the image preview and delete the image.
 - **Invert** This button toggles color inversion. As your background should be transparent or black. If it isn't (too bright or even white for example) you can invert the colors of this image so the background becomes dark
 - **Dither** This button enables dithering. Dithering should be used for photo like images. It can _emulate_ colors between white and black. Disable dithering for icons in most cases.
@@ -93,7 +93,7 @@ This can be usefull if you have a mute button for Discord or Teamspeak. Then you
 - **Hot Key** This mode is for triggering hot keys on your computer. It presses up to 7 keys simultaneously and then releases them. You can just choose the keys you want from the dropdown menu or click the _Click to recognize_ box which than scans which keys you press. You should use the _Click to recognize_ box because of different keyboard layouts are not really supported yet. If you want to delete a key you entered just click it. Drag and drop reordering is not possible yet!
 - **Special Keys** This mode is for some special keys like volume up and down, play and pause
 - **Text (Beta)** This mode differs from the hotkey mode in two ways. Firstly it allows up to 15 key presses in stead of 7 but it has no longpress support. Secondly it releases every key after being pressed (except for ctrl, alt, shift and win). It's usefull for entering text into spreadsheets or similar. To enter keys which should be pressed click the black box below and start typing.
-- **FreeDeck Settings (Beta)** This mode lets you change FreeDeck settings on the fly. For now it's only the brightness.
+- **Settings (Beta)** This mode lets you change FreeDeck settings on the fly. For now it's only the brightness.
 
 ### General Settings
 
