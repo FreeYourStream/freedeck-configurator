@@ -104,7 +104,6 @@ export interface IButtonSettings {
 }
 
 export interface ITextWithIconSettings {
-  enabled: boolean;
   iconWidthMultiplier: number;
 }
 

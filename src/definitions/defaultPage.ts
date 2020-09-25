@@ -39,7 +39,6 @@ export const getDefaultDisplay: (
         text: "",
       },
       textWithIconSettings: {
-        enabled: false,
         iconWidthMultiplier: 0.35,
       },
       isGeneratedFromDefaultBackImage: false,

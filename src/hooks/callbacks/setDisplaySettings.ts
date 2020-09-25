@@ -22,19 +22,19 @@ export const useSetDisplaySettingsCallback = (
     async (pageIndex: number, displayIndex: number, newDisplay: IDisplay) => {
       const newPages = [...displaySettingsPages];
       const oldDisplay = displaySettingsPages[pageIndex][displayIndex];
-      if (
-        newDisplay.textWithIconSettings.enabled ===
-          oldDisplay.textWithIconSettings.enabled &&
-        newDisplay.textSettings.text !== oldDisplay.textSettings.text &&
-        newDisplay.textSettings.text !== ""
-      ) {
-        newDisplay.textWithIconSettings.enabled = true;
-      } else if (
-        newDisplay.textSettings.text === "" &&
-        oldDisplay.textSettings.text !== ""
-      ) {
-        newDisplay.textWithIconSettings.enabled = false;
-      }
+      // if (
+      //   newDisplay.textWithIconSettings.enabled ===
+      //     oldDisplay.textWithIconSettings.enabled &&
+      //   newDisplay.textSettings.text !== oldDisplay.textSettings.text &&
+      //   newDisplay.textSettings.text !== ""
+      // ) {
+      //   newDisplay.textWithIconSettings.enabled = true;
+      // } else if (
+      //   newDisplay.textSettings.text === "" &&
+      //   oldDisplay.textSettings.text !== ""
+      // ) {
+      //   newDisplay.textWithIconSettings.enabled = false;
+      // }
       newPages[pageIndex][displayIndex] = newDisplay;
       setDisplaySettingsPages([...newPages]);
       const originalImage = originalImagePages[pageIndex][displayIndex];

@@ -42,7 +42,7 @@ export const DisplaySettingsContainer = React.forwardRef<
     useEffect(() => {
       (async () => {
         if (!originalImage) {
-          if (!display.textWithIconSettings.enabled)
+          if (!display.textSettings.text.length)
             setPreviewImage(getBase64Image(getEmptyConvertedImage()));
           else
             setPreviewImage(

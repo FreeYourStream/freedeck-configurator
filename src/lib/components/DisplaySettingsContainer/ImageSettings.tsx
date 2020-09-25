@@ -129,12 +129,6 @@ export const ImageSettings: React.FC<{
     },
     [imageSettings, setImageSettings]
   );
-  const setTextEnable = useCallback(
-    (enabled: boolean) => {
-      setTextWithIconSettings({ ...textWithIconSettings, enabled });
-    },
-    [setTextWithIconSettings, textWithIconSettings]
-  );
   const setfontName = useCallback(
     (font: string) => {
       setTextSettings({ ...textSettings, font });
@@ -262,7 +256,7 @@ export const ImageSettings: React.FC<{
         <Row>
           <MicroToggle
             activated={imageSettings.invert}
-            width="30%"
+            width="48%"
             onClick={() => setInvert(!imageSettings.invert)}
           >
             Invert
@@ -270,17 +264,10 @@ export const ImageSettings: React.FC<{
 
           <MicroToggle
             activated={imageSettings.dither}
-            width="30%"
+            width="48%"
             onClick={() => setDither(!imageSettings.dither)}
           >
             Dither
-          </MicroToggle>
-          <MicroToggle
-            activated={textWithIconSettings.enabled}
-            width="30%"
-            onClick={(e) => setTextEnable(!textWithIconSettings.enabled)}
-          >
-            Text
           </MicroToggle>
         </Row>
         <Row>
@@ -289,7 +276,7 @@ export const ImageSettings: React.FC<{
         </Row>
         <Row>
           <StyledSlider
-            disabled={!textWithIconSettings.enabled}
+            disabled={!textSettings.text.length}
             min={0.1}
             max={0.9}
             step={0.01}

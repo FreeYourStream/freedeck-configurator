@@ -44,7 +44,7 @@ export const composeImage = async (
 
   const background = new Jimp(width, height, "black");
 
-  if (textWithIconSettings.enabled) {
+  if (textSettings.text.length) {
     jimpImage.scaleToFit(
       width * textWithIconSettings.iconWidthMultiplier,
       height
