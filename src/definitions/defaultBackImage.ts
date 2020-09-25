@@ -23,7 +23,7 @@ export const loadDefaultBackDisplay = function (
       image
         .quality(70)
         .scaleToFit(256, 128, "")
-        .getBuffer("image/gif", async (error, buffer) =>
+        .getBuffer(newMime, async (error, buffer) =>
           setDefaultBackImage(getStockBackDisplay(await buffer))
         );
     });
