@@ -1,7 +1,7 @@
 import React from "react";
 
 import { IButtonSettings } from "../../App";
-import { MediaKeys } from "../../definitions/keys";
+import { EMediaKeys, MediaKeys } from "../../definitions/keys";
 import { SelectWrapper, StyledSelect } from "../../lib/components/Misc";
 
 export const SpecialKeys: React.FC<{
