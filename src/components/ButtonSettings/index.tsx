@@ -102,7 +102,7 @@ export const Action: React.FC<{
         <Text action={action} onKey={onKey} setKeys={setMultipleValues} />
       )}
       {action.mode === EAction.settings && (
-        <FreeDeckSettings action={action} setSetting={setSingleValue} />
+        <FreeDeckSettings action={action} setSetting={setMultipleValues} />
       )}
     </Wrapper>
   );
