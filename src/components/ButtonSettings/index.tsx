@@ -65,7 +65,7 @@ export const Action: React.FC<{
         ]);
       } else if (action.values.length < lengthLimit)
         setMultipleValues([...action.values, keys[key]!.hid]);
-    },
+    }, // eslint-disable-next-line
     [action]
   );
   return (
