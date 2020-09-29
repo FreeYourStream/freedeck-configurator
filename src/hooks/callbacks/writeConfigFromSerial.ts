@@ -25,22 +25,27 @@ export const useWriteConfigOverSerialCallback = (
       }
       const before = new Date().getTime();
       await serial.write(fileSizeArray);
+      await serial.flush();
       const decoder = new TextDecoder();
       let cancelled = false;
-      const timeout = setTimeout(() => (cancelled = true), 300);
       for (let i = 0; i < Math.ceil(configBuffer.length / 512); i++) {
         await serial.write(configBuffer.slice(i * 512, (i + 1) * 512));
-
-        const sendSize = Buffer.concat(
-          (await serial.read(() => cancelled)).map((arr) => Buffer.from(arr))
-        );
-        const cutToOneValue = sendSize.slice(
-          0,
-          sendSize.findIndex((val) => val === 13)
-        );
-        setProgress(
-          parseInt(decoder.decode(cutToOneValue)) / configBuffer.length
-        );
+        if (!cancelled) {
+          const timeout = setTimeout(() => (cancelled = true), 300);
+          const sendSize = Buffer.concat(
+            (await serial.read(() => cancelled)).map((arr) => Buffer.from(arr))
+          );
+          if (sendSize.length) {
+            clearTimeout(timeout);
+            const cutToOneValue = sendSize.slice(
+              0,
+              sendSize.findIndex((val) => val === 13)
+            );
+            setProgress(
+              parseInt(decoder.decode(cutToOneValue)) / configBuffer.length
+            );
+          }
+        }
       }
       setDuration(new Date().getTime() - before);
       setProgress(1);
