@@ -57,10 +57,11 @@ export class SerialConnector {
     this.buffer = [];
     return;
   }
-  async read(): Promise<Uint8Array[]> {
-    while (!this.buffer.length) {
+  async read(isCancelled: () => boolean): Promise<Uint8Array[]> {
+    while (!this.buffer.length && !isCancelled()) {
       await this.sleep(10);
     }
+    if (isCancelled()) return [];
     return this.buffer.splice(0, this.buffer.length);
   }
   async readOne(): Promise<Uint8Array> {
