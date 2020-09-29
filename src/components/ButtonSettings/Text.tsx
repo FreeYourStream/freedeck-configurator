@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { IButtonSettings } from "../../App";
 import { colors } from "../../definitions/colors";
 import { keys } from "../../definitions/keys";
-import { FDButton } from "../../lib/components/Button";
 import {
   SelectWrapper,
   StyledSelect,

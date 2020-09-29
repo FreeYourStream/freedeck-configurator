@@ -186,6 +186,7 @@ function App() {
         );
     });
     loadDefaultBackDisplay(setDefaultBackDisplay);
+    // eslint-disable-next-line
   }, []); // only execute on page load
 
   const [height, setHeight] = useHeight();

@@ -31,8 +31,10 @@ export const useWriteConfigOverSerialCallback = (
       for (let i = 0; i < Math.ceil(configBuffer.length / 512); i++) {
         await serial.write(configBuffer.slice(i * 512, (i + 1) * 512));
         if (!cancelled) {
+          // eslint-disable-next-line
           const timeout = setTimeout(() => (cancelled = true), 300);
           const sendSize = Buffer.concat(
+            // eslint-disable-next-line
             (await serial.read(() => cancelled)).map((arr) => Buffer.from(arr))
           );
           if (sendSize.length) {
@@ -50,4 +52,5 @@ export const useWriteConfigOverSerialCallback = (
       setDuration(new Date().getTime() - before);
       setProgress(1);
     } catch {}
+    // eslint-disable-next-line
   }, [serial, ready, getConfigBuffer]);

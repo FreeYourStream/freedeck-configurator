@@ -50,4 +50,5 @@ export const useReadConfigFromSerialCallback = (
       console.log("BONK");
     }
     return -1;
+    // eslint-disable-next-line
   }, [serial]);

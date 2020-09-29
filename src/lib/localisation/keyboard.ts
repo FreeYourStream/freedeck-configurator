@@ -29,7 +29,7 @@ export const useTranslateKeyboardLayout = (values: number[]) => {
         });
         setTranslatedKeys(translatedKeys);
       });
-    }
+    } // eslint-disable-next-line
   }, [values]);
   return translatedKeys;
 };

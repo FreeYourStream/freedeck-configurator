@@ -160,21 +160,27 @@ export const ImageSettings: React.FC<{
   }, [imageSettings, textSettings, textWithIconSettings]);
   useEffect(() => {
     setText(debouncedText);
+    // eslint-disable-next-line
   }, [debouncedText]); // dont put setText there, we will have an endless loop if you do
   useEffect(() => {
     setWhite(debouncedWhite);
+    // eslint-disable-next-line
   }, [debouncedWhite]);
   useEffect(() => {
     setBlack(debouncedBlack);
+    // eslint-disable-next-line
   }, [debouncedBlack]);
   useEffect(() => {
     setBrightness(debouncedBrightness);
+    // eslint-disable-next-line
   }, [debouncedBrightness]);
   useEffect(() => {
     setContrast(debouncedContrast);
+    // eslint-disable-next-line
   }, [debouncedContrast]);
   useEffect(() => {
     setIconWidthMultiplier(debouncedIconWidth);
+    // eslint-disable-next-line
   }, [debouncedIconWidth]);
 
   return (
