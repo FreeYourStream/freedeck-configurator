@@ -1,5 +1,8 @@
+import "react-toastify/dist/ReactToastify.css";
+
 import React, { useEffect } from "react";
 import { HiDocumentAdd } from "react-icons/hi";
+import { ToastContainer, toast } from "react-toastify";
 import styled from "styled-components";
 
 import { GlobalSettings } from "./components/GeneralSettings";
@@ -10,7 +13,6 @@ import { EAction } from "./definitions/modes";
 import { useAddPageCallback } from "./hooks/callbacks/addPage";
 import { useDeleteImageCallback } from "./hooks/callbacks/deleteImage";
 import { useDeletePageCallback } from "./hooks/callbacks/deletePage";
-import { useHasOriginalImageCallback } from "./hooks/callbacks/hasOriginalImage";
 import { useMakeDefaultBackImageCallback } from "./hooks/callbacks/makeDefaultBackImage";
 import { useSetButtonSettingsCallback } from "./hooks/callbacks/setButtonSettings";
 import { useSetDisplaySettingsCallback } from "./hooks/callbacks/setDisplaySettings";
@@ -35,6 +37,28 @@ import { createHeader } from "./lib/configFile/createHeader";
 import { loadConfigFile } from "./lib/configFile/loadConfigFile";
 import { download } from "./lib/download";
 
+const StyledToastContainer = styled(ToastContainer).attrs({
+  // custom props
+})`
+  .Toastify__toast-container {
+  }
+  .Toastify__toast {
+    background-color: ${colors.accentDark};
+    border: 1px solid ${colors.accent};
+  }
+  .Toastify__toast--error {
+  }
+  .Toastify__toast--warning {
+  }
+  .Toastify__toast--success {
+  }
+  .Toastify__toast-body {
+    color: ${colors.brightWhite};
+  }
+  .Toastify__progress-bar {
+    background-color: ${colors.gray};
+  }
+`;
 const Main = styled.div`
   * {
     box-sizing: border-box;
@@ -148,6 +172,19 @@ function App() {
   const [defaultBackDisplay, setDefaultBackDisplay] = useDefaultBackDisplay();
 
   useEffect(() => {
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      if (!localStorage.getItem("closedPWACTA"))
+        toast(
+          "You can install the configurator to have it offline! Click here to install",
+          {
+            autoClose: false,
+            position: "bottom-right",
+            onClose: () => localStorage.setItem("closedPWACTA", "true"),
+            onClick: () => (e as any).prompt(),
+          }
+        );
+    });
     loadDefaultBackDisplay(setDefaultBackDisplay);
   }, []); // only execute on page load
 
@@ -388,6 +425,7 @@ function App() {
           getConfigBuffer={() => createConfigBuffer()}
         />
       }
+      <StyledToastContainer />
     </Main>
   );
 }

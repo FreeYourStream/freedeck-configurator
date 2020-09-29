@@ -1,6 +1,6 @@
 {
   "short_name": "FreeDeck Configurator",
-  "name": "Configurator for creating config files for the FreeDeck",
+  "name": "FreeDeck Configurator",
   "icons": [
     {
       "src": "favicon.ico",
