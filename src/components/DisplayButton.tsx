@@ -201,7 +201,9 @@ const DisplayComponent: React.FC<{
                       )}
                     </Column>
                   </Row>{" "}
-                  <DisclaimerTitle>Disclaimer:</DisclaimerTitle>
+                  <DisclaimerTitle>
+                    Disclaimer for Firefox and Safari:
+                  </DisclaimerTitle>
                   <Text>
                     If you have a non-US keyboard, the buttons recognized will
                     not show the buttons on your keyboard. But it will still

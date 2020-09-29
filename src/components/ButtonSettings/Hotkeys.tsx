@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { IButtonSettings } from "../../App";
@@ -10,6 +10,7 @@ import {
   StyledSelect,
   WrapRow,
 } from "../../lib/components/Misc";
+import { useTranslateKeyboardLayout } from "../../lib/localisation/keyboard";
 
 const KeyScanner = styled.div`
   font-family: Barlow, sans-serif;
@@ -21,6 +22,34 @@ const KeyScanner = styled.div`
   display: flex;
   justify-content: center;
 `;
+
+const HotkeyKeys: React.FC<{
+  values: number[];
+  setKeys: (keys: number[]) => void;
+}> = ({ values, setKeys }) => {
+  const translatedKeys = useTranslateKeyboardLayout(values);
+  return (
+    <>
+      {translatedKeys.map((key, index) => (
+        <FDButton
+          mt={8}
+          ml={8}
+          px={8}
+          size={1}
+          key={`${key}-${index}`}
+          onClick={() => {
+            const newKeys = [...values];
+            newKeys.splice(index, 1);
+            setKeys(newKeys.slice(0, 7));
+          }}
+        >
+          {key}
+        </FDButton>
+      ))}
+    </>
+  );
+};
+
 export const Hotkeys: React.FC<{
   action: IButtonSettings;
   setKeys: (keys: number[]) => void;
@@ -50,24 +79,7 @@ export const Hotkeys: React.FC<{
         Click to recognize
       </KeyScanner>
       <WrapRow>
-        {action.values.map((key, index) => (
-          <FDButton
-            mt={8}
-            ml={8}
-            px={8}
-            size={1}
-            key={`${key}-${index}`}
-            onClick={() => {
-              const newKeys = [...action.values];
-              newKeys.splice(index, 1);
-              setKeys(newKeys.slice(0, 7));
-            }}
-          >
-            {Object.keys(keys).find(
-              (displayName) => keys[displayName]?.hid === key
-            )}
-          </FDButton>
-        ))}
+        <HotkeyKeys setKeys={setKeys} values={action.values} />
       </WrapRow>
     </>
   );

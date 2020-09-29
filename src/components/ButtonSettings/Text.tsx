@@ -10,6 +10,7 @@ import {
   StyledSelect,
   WrapRow,
 } from "../../lib/components/Misc";
+import { useTranslateKeyboardLayout } from "../../lib/localisation/keyboard";
 
 const TextBox = styled.textarea`
   font-family: "Barlow";
@@ -30,6 +31,7 @@ export const Text: React.FC<{
   setKeys: (keys: number[]) => void;
   onKey: (e: React.KeyboardEvent<any>, lengthLimit?: any) => void;
 }> = ({ action, setKeys, onKey }) => {
+  const translatedKeys = useTranslateKeyboardLayout(action.values);
   return (
     <>
       <SelectWrapper>
@@ -59,13 +61,7 @@ export const Text: React.FC<{
             newKeys.splice(newKeys.length - 1, 1);
             setKeys(newKeys);
           }}
-          value={action.values.reduce(
-            (acc, value) =>
-              `${acc}[${Object.keys(keys).find(
-                (displayName) => keys[displayName]?.hid === value
-              )}]`,
-            ""
-          )}
+          value={translatedKeys.reduce((acc, value) => `${acc}[${value}]`, "")}
         />
       </WrapRow>
     </>
