@@ -6,8 +6,7 @@ import {
   IDisplayPage,
   IOriginalImagePage,
 } from "../../App";
-import { getEmptyConvertedImage } from "../../definitions/emptyConvertedImage";
-import { composeImage, composeText } from "../../lib/composeImage";
+import { composeImage, composeText } from "../../lib/image/composeImage";
 
 export const useSetDisplaySettingsCallback = (
   displaySettingsPages: IDisplayPage[],
@@ -21,20 +20,6 @@ export const useSetDisplaySettingsCallback = (
   useCallback(
     async (pageIndex: number, displayIndex: number, newDisplay: IDisplay) => {
       const newPages = [...displaySettingsPages];
-      const oldDisplay = displaySettingsPages[pageIndex][displayIndex];
-      if (
-        newDisplay.textWithIconSettings.enabled ===
-          oldDisplay.textWithIconSettings.enabled &&
-        newDisplay.textSettings.text !== oldDisplay.textSettings.text &&
-        newDisplay.textSettings.text !== ""
-      ) {
-        newDisplay.textWithIconSettings.enabled = true;
-      } else if (
-        newDisplay.textSettings.text === "" &&
-        oldDisplay.textSettings.text !== ""
-      ) {
-        newDisplay.textWithIconSettings.enabled = false;
-      }
       newPages[pageIndex][displayIndex] = newDisplay;
       setDisplaySettingsPages([...newPages]);
       const originalImage = originalImagePages[pageIndex][displayIndex];

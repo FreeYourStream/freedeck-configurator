@@ -1,4 +1,4 @@
-import { monochrome128by64BitmapHeader } from "../definitions/headers";
+import { monochrome128by64BitmapHeader } from "../../definitions/headers";
 
 export const colorBitmapToMonochromeBitmap = async (
   bitmapBuffer: Buffer,

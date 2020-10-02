@@ -1,8 +1,8 @@
 import { merge } from "lodash";
 
 import { IButton, IButtonPage, IDisplay } from "../App";
-import { EAction } from "../lib/configFile/parsePage";
 import { fontMedium } from "./fonts";
+import { EAction } from "./modes";
 
 export type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
@@ -39,7 +39,6 @@ export const getDefaultDisplay: (
         text: "",
       },
       textWithIconSettings: {
-        enabled: false,
         iconWidthMultiplier: 0.35,
       },
       isGeneratedFromDefaultBackImage: false,
@@ -58,7 +57,7 @@ export const getDefaultButtonPage = (
     getDefaultButton()
   );
   if (previousPageIndex !== undefined) {
-    backButton.primary.mode = EAction.changeLayout;
+    backButton.primary.mode = EAction.changePage;
     backButton.primary.values = [previousPageIndex];
   }
   displays.unshift(backButton);

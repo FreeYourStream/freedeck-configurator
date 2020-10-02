@@ -1,14 +1,18 @@
+import "react-toastify/dist/ReactToastify.css";
+
 import React, { useEffect } from "react";
 import { HiDocumentAdd } from "react-icons/hi";
+import { ToastContainer, toast } from "react-toastify";
 import styled from "styled-components";
 
-import { GlobalSettings } from "./components/GlobalSettings";
+import { GlobalSettings } from "./components/GeneralSettings";
 import { Page } from "./components/Page";
 import { colors } from "./definitions/colors";
+import { loadDefaultBackDisplay } from "./definitions/defaultBackImage";
+import { EAction } from "./definitions/modes";
 import { useAddPageCallback } from "./hooks/callbacks/addPage";
 import { useDeleteImageCallback } from "./hooks/callbacks/deleteImage";
 import { useDeletePageCallback } from "./hooks/callbacks/deletePage";
-import { useHasOriginalImageCallback } from "./hooks/callbacks/hasOriginalImage";
 import { useMakeDefaultBackImageCallback } from "./hooks/callbacks/makeDefaultBackImage";
 import { useSetButtonSettingsCallback } from "./hooks/callbacks/setButtonSettings";
 import { useSetDisplaySettingsCallback } from "./hooks/callbacks/setDisplaySettings";
@@ -31,10 +35,30 @@ import { createButtonBody, createImageBody } from "./lib/configFile/createBody";
 import { createFooter } from "./lib/configFile/createFooter";
 import { createHeader } from "./lib/configFile/createHeader";
 import { loadConfigFile } from "./lib/configFile/loadConfigFile";
-import { EAction } from "./lib/configFile/parsePage";
-import { loadDefaultBackDisplay } from "./lib/defaultBackImage";
 import { download } from "./lib/download";
 
+const StyledToastContainer = styled(ToastContainer).attrs({
+  // custom props
+})`
+  .Toastify__toast-container {
+  }
+  .Toastify__toast {
+    background-color: ${colors.accentDark};
+    border: 1px solid ${colors.accent};
+  }
+  .Toastify__toast--error {
+  }
+  .Toastify__toast--warning {
+  }
+  .Toastify__toast--success {
+  }
+  .Toastify__toast-body {
+    color: ${colors.brightWhite};
+  }
+  .Toastify__progress-bar {
+    background-color: ${colors.gray};
+  }
+`;
 const Main = styled.div`
   * {
     box-sizing: border-box;
@@ -104,7 +128,6 @@ export interface IButtonSettings {
 }
 
 export interface ITextWithIconSettings {
-  enabled: boolean;
   iconWidthMultiplier: number;
 }
 
@@ -149,7 +172,21 @@ function App() {
   const [defaultBackDisplay, setDefaultBackDisplay] = useDefaultBackDisplay();
 
   useEffect(() => {
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      if (!localStorage.getItem("closedPWACTA"))
+        toast(
+          "You can install the configurator to have it offline! Click here to install",
+          {
+            autoClose: false,
+            position: "bottom-right",
+            onClose: () => localStorage.setItem("closedPWACTA", "true"),
+            onClick: () => (e as any).prompt(),
+          }
+        );
+    });
     loadDefaultBackDisplay(setDefaultBackDisplay);
+    // eslint-disable-next-line
   }, []); // only execute on page load
 
   const [height, setHeight] = useHeight();
@@ -246,8 +283,7 @@ function App() {
     setOriginalImagePages
   );
 
-  const hasOriginalImage = useHasOriginalImageCallback(originalImagePages);
-  const createConfigBuffer = () =>
+  const createConfigBuffer = (): Buffer =>
     Buffer.concat([
       createHeader(width, height, brightness, displaySettingsPages.length),
       createButtonBody(buttonSettingsPages),
@@ -306,7 +342,7 @@ function App() {
                   if (displaySettingsPages.length === 0) return;
                   const completeBuffer = createConfigBuffer();
 
-                  download(completeBuffer);
+                  completeBuffer && download(completeBuffer);
                 }}
               >
                 Save Config
@@ -373,6 +409,7 @@ function App() {
           defaultBackDisplay={defaultBackDisplay}
           setDefaultBackDisplay={setDefaultBackDisplay}
           setBrightness={setBrightness}
+          readyToSave={!!buttonSettingsPages.length}
           loadConfigFile={(buffer: Buffer) =>
             loadConfigFile(
               buffer,
@@ -389,6 +426,7 @@ function App() {
           getConfigBuffer={() => createConfigBuffer()}
         />
       }
+      <StyledToastContainer />
     </Main>
   );
 }

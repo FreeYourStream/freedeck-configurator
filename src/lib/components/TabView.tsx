@@ -1,4 +1,4 @@
-import React, { Component, ReactNode, useState } from "react";
+import React, { ReactNode, useState } from "react";
 import styled from "styled-components";
 
 import { colors } from "../../definitions/colors";

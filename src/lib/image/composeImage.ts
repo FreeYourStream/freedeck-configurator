@@ -1,12 +1,8 @@
-import { Buffer } from "buffer";
-
 import fs from "floyd-steinberg";
 import Jimp from "jimp";
 
-import { IDisplay } from "../App";
+import { IDisplay } from "../../App";
 import { colorBitmapToMonochromeBitmap } from "./colorToMonoBitmap";
-import { dec2bin } from "./dec2binString";
-import { rotateCCW } from "./matrix";
 
 export interface IConverted {
   bytes: Buffer;
@@ -48,7 +44,7 @@ export const composeImage = async (
 
   const background = new Jimp(width, height, "black");
 
-  if (textWithIconSettings.enabled) {
+  if (textSettings.text.length) {
     jimpImage.scaleToFit(
       width * textWithIconSettings.iconWidthMultiplier,
       height

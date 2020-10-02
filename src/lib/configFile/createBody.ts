@@ -1,6 +1,7 @@
 import { Buffer } from "buffer";
 
 import { IButtonPage, IConvertedImagePage } from "../../App";
+import { EAction } from "../../definitions/modes";
 import { optimizeForSSD1306 } from "./ssd1306";
 
 export const createButtonBody = (buttonPages: IButtonPage[]) => {
@@ -13,18 +14,26 @@ export const createButtonBody = (buttonPages: IButtonPage[]) => {
       const secondaryAddition = (button.secondary.enabled ? 1 : 0) * 16;
 
       // first 8 primary bytes
-      const primaryMode = button.primary.mode + secondaryAddition;
-      buttonRows.writeUInt8(primaryMode, rowOffset);
-      button.primary.values.forEach((value, index) =>
-        buttonRows.writeUInt8(value, rowOffset + index + 1)
-      );
-
+      if (button.primary.values.length !== 0) {
+        const primaryMode = button.primary.mode + secondaryAddition;
+        buttonRows.writeUInt8(primaryMode, rowOffset);
+        button.primary.values.forEach((value, index) =>
+          buttonRows.writeUInt8(value, rowOffset + index + 1)
+        );
+      } else {
+        buttonRows.writeUInt8(EAction.noop + secondaryAddition, rowOffset);
+      }
       // 8 secondary bytes
-      const secondaryMode = button.secondary.mode;
-      buttonRows.writeUInt8(secondaryMode, rowOffset + 8);
-      button.secondary.values.forEach((value, index) =>
-        buttonRows.writeUInt8(value, rowOffset + index + 1 + 8)
-      );
+      if (button.primary.mode === EAction.text) return;
+      if (button.secondary.values.length !== 0) {
+        const secondaryMode = button.secondary.mode;
+        buttonRows.writeUInt8(secondaryMode, rowOffset + 8);
+        button.secondary.values.forEach((value, index) =>
+          buttonRows.writeUInt8(value, rowOffset + index + 1 + 8)
+        );
+      } else {
+        buttonRows.writeUInt8(EAction.noop + secondaryAddition, rowOffset + 8);
+      }
     });
   });
   console.timeEnd("buttons");

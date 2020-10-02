@@ -6,13 +6,13 @@ import {
   IOriginalImage,
   ITextSettings,
   ITextWithIconSettings,
-} from "../../App";
-import { getEmptyConvertedImage } from "../../definitions/emptyConvertedImage";
-import { getBase64Image } from "../base64Encode";
-import { composeImage, composeText } from "../composeImage";
-import { fileToImage } from "../originalImage";
-import { DisplaySettings } from "./DisplaySettings";
+} from "../../../App";
+import { getEmptyConvertedImage } from "../../../definitions/emptyConvertedImage";
+import { fileToImage } from "../../fileToImage";
+import { getBase64Image } from "../../image/base64Encode";
+import { composeImage, composeText } from "../../image/composeImage";
 import { DropDisplay } from "./DropDisplay";
+import { ImageSettings } from "./ImageSettings";
 
 export const DisplaySettingsContainer = React.forwardRef<
   any,
@@ -42,7 +42,7 @@ export const DisplaySettingsContainer = React.forwardRef<
     useEffect(() => {
       (async () => {
         if (!originalImage) {
-          if (!display.textWithIconSettings.enabled)
+          if (!display.textSettings.text.length)
             setPreviewImage(getBase64Image(getEmptyConvertedImage()));
           else
             setPreviewImage(
@@ -71,7 +71,7 @@ export const DisplaySettingsContainer = React.forwardRef<
           onDrop={onDrop}
           previewImage={previewImage}
         />
-        <DisplaySettings
+        <ImageSettings
           textOnly={!originalImage}
           imageSettings={display.imageSettings}
           textSettings={display.textSettings}

@@ -1,19 +1,10 @@
-import Jimp from "jimp";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import { useContextMenuTrigger } from "react-context-menu-wrapper";
 
 import { IDefaultBackDisplay } from "../App";
-import { getEmptyConvertedImage } from "../definitions/emptyConvertedImage";
-import { getBase64Image } from "../lib/base64Encode";
-import { FDButton } from "../lib/components/Button";
+import { loadDefaultBackDisplay } from "../definitions/defaultBackImage";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
-import { DisplaySettings } from "../lib/components/DisplaySettings";
 import { DisplaySettingsContainer } from "../lib/components/DisplaySettingsContainer";
-import { DropDisplay } from "../lib/components/DropDisplay";
-import { composeImage } from "../lib/composeImage";
-import { loadDefaultBackDisplay } from "../lib/defaultBackImage";
-import { handleFileSelect } from "../lib/handleFileSelect";
-import { fileToImage } from "../lib/originalImage";
 
 export const DefaultBackButtonSettings: React.FC<{
   setDefaultBackDisplay: React.Dispatch<

@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDebounce } from "use-debounce";
 
-import { IDisplay } from "../../App";
+import { IDisplay } from "../../../App";
 import {
   fontLarge,
   fontMedium,
   fontSmall,
   fontSmaller,
-} from "../../definitions/fonts";
+} from "../../../definitions/fonts";
 import {
   Column,
   Disabler,
@@ -20,7 +20,7 @@ import {
   TextInput,
   Title,
   Value,
-} from "./Misc";
+} from "../Misc";
 
 const Wrapper = styled.div`
   display: flex;
@@ -36,7 +36,7 @@ export interface ISettings {
   fontName: string;
 }
 
-export const DisplaySettings: React.FC<{
+export const ImageSettings: React.FC<{
   setImageSettings: (settings: IDisplay["imageSettings"]) => void;
   setTextSettings: (settings: IDisplay["textSettings"]) => void;
   setTextWithIconSettings: (settings: IDisplay["textWithIconSettings"]) => void;
@@ -129,12 +129,6 @@ export const DisplaySettings: React.FC<{
     },
     [imageSettings, setImageSettings]
   );
-  const setTextEnable = useCallback(
-    (enabled: boolean) => {
-      setTextWithIconSettings({ ...textWithIconSettings, enabled });
-    },
-    [setTextWithIconSettings, textWithIconSettings]
-  );
   const setfontName = useCallback(
     (font: string) => {
       setTextSettings({ ...textSettings, font });
@@ -166,21 +160,27 @@ export const DisplaySettings: React.FC<{
   }, [imageSettings, textSettings, textWithIconSettings]);
   useEffect(() => {
     setText(debouncedText);
+    // eslint-disable-next-line
   }, [debouncedText]); // dont put setText there, we will have an endless loop if you do
   useEffect(() => {
     setWhite(debouncedWhite);
+    // eslint-disable-next-line
   }, [debouncedWhite]);
   useEffect(() => {
     setBlack(debouncedBlack);
+    // eslint-disable-next-line
   }, [debouncedBlack]);
   useEffect(() => {
     setBrightness(debouncedBrightness);
+    // eslint-disable-next-line
   }, [debouncedBrightness]);
   useEffect(() => {
     setContrast(debouncedContrast);
+    // eslint-disable-next-line
   }, [debouncedContrast]);
   useEffect(() => {
     setIconWidthMultiplier(debouncedIconWidth);
+    // eslint-disable-next-line
   }, [debouncedIconWidth]);
 
   return (
@@ -262,7 +262,7 @@ export const DisplaySettings: React.FC<{
         <Row>
           <MicroToggle
             activated={imageSettings.invert}
-            width="30%"
+            width="48%"
             onClick={() => setInvert(!imageSettings.invert)}
           >
             Invert
@@ -270,17 +270,10 @@ export const DisplaySettings: React.FC<{
 
           <MicroToggle
             activated={imageSettings.dither}
-            width="30%"
+            width="48%"
             onClick={() => setDither(!imageSettings.dither)}
           >
             Dither
-          </MicroToggle>
-          <MicroToggle
-            activated={textWithIconSettings.enabled}
-            width="30%"
-            onClick={(e) => setTextEnable(!textWithIconSettings.enabled)}
-          >
-            Text
           </MicroToggle>
         </Row>
         <Row>
@@ -289,7 +282,7 @@ export const DisplaySettings: React.FC<{
         </Row>
         <Row>
           <StyledSlider
-            disabled={!textWithIconSettings.enabled}
+            disabled={!textSettings.text.length}
             min={0.1}
             max={0.9}
             step={0.01}

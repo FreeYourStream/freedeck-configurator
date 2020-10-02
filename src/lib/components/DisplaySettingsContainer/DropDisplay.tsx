@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import { useDropzone } from "react-dropzone";
 import styled, { StyledComponent } from "styled-components";
 
-import { colors } from "../../definitions/colors";
-import { ImagePreview } from "./ImagePreview";
+import { colors } from "../../../definitions/colors";
+import { ImagePreview } from "../ImagePreview";
 
 export const DropWrapper = styled.div`
   position: relative;

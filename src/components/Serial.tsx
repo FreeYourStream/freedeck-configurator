@@ -13,23 +13,42 @@ const Wrapper = styled.div`
 export const Serial: React.FC<{
   loadConfigFile: (buffer: Buffer) => void;
   getConfigBuffer: () => Buffer;
-}> = ({ loadConfigFile, getConfigBuffer }) => {
+  readyToSave: boolean;
+}> = ({ loadConfigFile, getConfigBuffer, readyToSave }) => {
   const [serial, setSerial] = useState<SerialConnector>();
   const [ready, setReady] = useState<boolean>(false);
   const [progress, setProgress] = useState<number | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
   const [fileSize, setFileSize] = useState<number | null>(null);
-  useEffect(() => setSerial(new SerialConnector()), []);
+
+  useEffect(
+    () =>
+      setSerial(
+        new SerialConnector({
+          filters: [
+            {
+              usbVendorId: 0x2341,
+            },
+          ],
+        })
+      ),
+    []
+  );
 
   const connectSerial = useCallback(async () => {
     try {
-      await serial?.connect(() => setReady(false));
+      await serial?.connect(async function (serial) {
+        setReady(false);
+      });
       setReady(true);
-    } catch {}
+    } catch (e) {
+      console.log(e);
+      if (e.message === "No port selected by the user") return;
+    }
   }, [serial]);
 
   const writeConfigOverSerial = useWriteConfigOverSerialCallback(
-    ready,
+    ready && readyToSave,
     serial,
     setProgress,
     setDuration,
@@ -72,7 +91,7 @@ export const Serial: React.FC<{
       <Row>
         <Label>Write config to FreeDeck:</Label>
         <FDButton
-          disabled={!ready}
+          disabled={!ready || !readyToSave}
           px={5}
           py={5}
           size={1}
