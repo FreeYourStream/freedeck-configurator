@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v1.4.3
+        uses: actions/setup-node@v1
         with:
           # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0
           node-version: 12 # optional, default is 10.x
@@ -37,7 +37,7 @@ jobs:
       - name: Deploy
         # You may pin to the exact commit or the version.
         # uses: SamKirkland/FTP-Deploy-Action@da0d77ff390a13097c60f9b9eb954e503a480d97
-        uses: easingthemes/ssh-deploy@v2.1.5
+        uses: easingthemes/ssh-deploy@v2
         with:
           REMOTE_HOST: "78.47.56.63"
           REMOTE_USER: githubactions
