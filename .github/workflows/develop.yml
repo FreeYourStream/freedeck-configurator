@@ -51,7 +51,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
         with:
-          args: "A new develop version has been deployed! What's new? **${{ github.event.head_commit.message }}** https://fddev.gosewis.ch"
+          args: "A new develop version has been deployed! https://fddev.gosewis.ch"
 
       - name: Cloudflare Purge Cache
         uses: jakejarvis/cloudflare-purge-action@v0.3.0
