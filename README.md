@@ -65,7 +65,7 @@ thats it
 
 ### Settings explained in Detail
 
-**_Things marked with  will only work if you have the develop branch of the arduino software flashed to your FreeDeck!_**
+**_Things marked with * will only work if you have the develop branch of the arduino software flashed to your FreeDeck!_**
 
 #### Display Settings
 
