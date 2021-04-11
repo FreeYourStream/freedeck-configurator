@@ -2,7 +2,7 @@
 
 ## An OpenSource device inspired by the Elgato Stream Deck
 
-### Live App hosted [HERE](http://freedeck.gosewis.ch/)
+### Live App hosted [HERE](https://fdconfig.freeyourstream.com/)
 
 ### Discord Community [HERE](https://discord.gg/sEt2Rrd)
 
