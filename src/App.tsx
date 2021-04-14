@@ -424,6 +424,11 @@ function App() {
             )
           }
           getConfigBuffer={() => createConfigBuffer()}
+          width={width}
+          height={height}
+          setDimensions={(width, height) => (
+            setWidth(width), setHeight(height)
+          )}
         />
       }
       <StyledToastContainer />

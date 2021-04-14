@@ -29,7 +29,7 @@ export class SerialConnector {
           onDisconnect(this)
         );
       }
-      await port.open({ baudrate: this.baudrate });
+      await port.open({ baudRate: this.baudrate });
       const reader: ReadableStreamDefaultReader<Uint8Array> = port.readable.getReader();
       this.writer = port.writable.getWriter();
       this.buffer = [];

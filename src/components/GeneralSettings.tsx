@@ -7,6 +7,7 @@ import { TabView } from "../lib/components/TabView";
 import { About } from "./About";
 import { Brightness } from "./Brightness";
 import { DefaultBackButtonSettings } from "./DefaultBackButtonSettings";
+import { Device } from "./Device";
 import { Serial } from "./Serial";
 
 export const Activator = styled.div<{ visible: boolean }>`
@@ -15,7 +16,6 @@ export const Activator = styled.div<{ visible: boolean }>`
 `;
 export const GlobalSettings: React.FC<{
   setClose: () => void;
-  defaultBackDisplay: IDefaultBackDisplay;
   onClose: () => void;
   setDefaultBackDisplay: React.Dispatch<
     React.SetStateAction<IDefaultBackDisplay>
@@ -23,20 +23,27 @@ export const GlobalSettings: React.FC<{
   setBrightness: React.Dispatch<React.SetStateAction<number>>;
   loadConfigFile: (buffer: Buffer) => void;
   getConfigBuffer: () => Buffer;
+  setDimensions: (width: number, height: number) => any;
+  width: number;
+  height: number;
+  defaultBackDisplay: IDefaultBackDisplay;
   brightness: number;
   visible?: boolean;
   readyToSave: boolean;
 }> = ({
   setClose,
-  defaultBackDisplay,
   setDefaultBackDisplay,
   setBrightness,
   onClose,
   loadConfigFile,
   getConfigBuffer,
+  defaultBackDisplay,
   brightness,
   visible,
   readyToSave,
+  width,
+  height,
+  setDimensions,
 }) => {
   return (
     <Modal
@@ -54,6 +61,7 @@ export const GlobalSettings: React.FC<{
           "Default back button",
           "Brightness (Beta)",
           "Serial (Beta)",
+          "Device",
           "About",
         ]}
         renderTab={(tab) => {
@@ -76,6 +84,13 @@ export const GlobalSettings: React.FC<{
                   getConfigBuffer={getConfigBuffer}
                   loadConfigFile={loadConfigFile}
                   readyToSave={readyToSave}
+                />
+              </Activator>
+              <Activator visible={tab === "Device"}>
+                <Device
+                  width={width}
+                  height={height}
+                  setDimensions={setDimensions}
                 />
               </Activator>
               <Activator visible={tab === "About"}>
