@@ -1,6 +1,6 @@
 import "react-toastify/dist/ReactToastify.css";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { HiDocumentAdd } from "react-icons/hi";
 import { ToastContainer, toast } from "react-toastify";
 import styled from "styled-components";
@@ -27,6 +27,7 @@ import {
   useDisplaySettingsPages,
   useHeight,
   useOriginalImagePages,
+  useSerialConnectedStatus,
   useShowSettings,
   useWidth,
 } from "./hooks/states";
@@ -36,6 +37,8 @@ import { createFooter } from "./lib/configFile/createFooter";
 import { createHeader } from "./lib/configFile/createHeader";
 import { loadConfigFile } from "./lib/configFile/loadConfigFile";
 import { download } from "./lib/download";
+import { FDSerialAPI } from "./lib/fdSerialApi";
+import { Header } from "./components/Header";
 
 const StyledToastContainer = styled(ToastContainer).attrs({
   // custom props
@@ -69,42 +72,46 @@ const Main = styled.div`
   width: 100%;
 `;
 
-const Header = styled.div`
-  background-color: ${colors.gray};
-  border-bottom: 1px solid ${colors.black};
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  align-items: center;
-  padding: 18px;
-`;
+// const Header = styled.div`
+//   background-color: ${colors.gray};
+//   border-bottom: 1px solid ${colors.black};
+//   display: grid;
+//   grid-template-columns: 200px 1fr;
+//   align-items: center;
+//   padding: 18px;
+// `;
 
-const HeadLine = styled.div`
-  display: flex;
-`;
+// const HeadLine = styled.div`
+//   display: flex;
+// `;
 
-const HeadLineThin = styled.div`
-  color: white;
-  font-family: "Barlow", sans-serif;
-  font-size: 36px;
-  font-weight: 100;
-`;
-const HeadLineThick = styled.div`
-  color: white;
-  font-family: "Barlow", sans-serif;
-  font-size: 36px;
-  font-weight: bold;
-`;
+// const HeadLineThin = styled.div`
+//   color: white;
+//   font-family: "Barlow", sans-serif;
+//   font-size: 36px;
+//   font-weight: 100;
+// `;
+// const HeadLineThick = styled.div`
+//   color: white;
+//   font-family: "Barlow", sans-serif;
+//   font-size: 36px;
+//   font-weight: bold;
+// `;
 
-const Buttons = styled.div`
-  display: flex;
-  height: 52px;
-  justify-content: space-between;
-`;
+// const Buttons = styled.div`
+//   display: flex;
+//   height: 52px;
+//   justify-content: space-between;
+// `;
 
-const Horiz = styled.div`
-  display: flex;
-  align-items: center;
-`;
+// const Horiz = styled.div`
+//   display: flex;
+//   align-items: center;
+// `;
+
+// const InvisibleFile = styled.input.attrs({ type: "file" })`
+//   display: none;
+// `;
 
 const Content = styled.div`
   background-color: ${colors.gray};
@@ -115,10 +122,6 @@ const Content = styled.div`
   overflow: auto;
   width: 100%;
   height: 100%;
-`;
-
-const InvisibleFile = styled.input.attrs({ type: "file" })`
-  display: none;
 `;
 
 export interface IButtonSettings {
@@ -192,7 +195,10 @@ function App() {
   const [height, setHeight] = useHeight();
   const [width, setWidth] = useWidth();
   const [brightness, setBrightness] = useBrightness();
-
+  const [serialApi, setSerialApi] = useState<FDSerialAPI>();
+  useEffect(() => {
+    setSerialApi(new FDSerialAPI());
+  }, []);
   const [
     buttonSettingsPages,
     setButtonSettingsPages,
@@ -297,73 +303,33 @@ function App() {
     ]);
   return (
     <Main>
-      <Header id="header">
-        <HeadLine>
-          <HeadLineThin>Free</HeadLineThin>
-          <HeadLineThick>Deck</HeadLineThick>
-        </HeadLine>
-        <Buttons>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-            }}
-          >
-            <Horiz>
-              <FDIconButton
-                size={3}
-                icon={"fa/FaFileUpload"}
-                htmlFor="loadConfig"
-              >
-                Load Config
-              </FDIconButton>
-              <InvisibleFile
-                id="loadConfig"
-                onChange={async (event) => {
-                  if (event.target.files?.length) {
-                    loadConfigFile(
-                      event.target.files,
-                      setWidth,
-                      setHeight,
-                      setBrightness,
-                      setButtonSettingsPages,
-                      setDisplaySettingsPages,
-                      setOriginalImagePages,
-                      setConvertedImagePages,
-                      setDefaultBackDisplay
-                    );
-                  }
-                }}
-              ></InvisibleFile>
-              <FDIconButton
-                icon="fa/FaSave"
-                ml={4}
-                size={3}
-                onClick={() => {
-                  if (displaySettingsPages.length === 0) return;
-                  const completeBuffer = createConfigBuffer();
+      {serialApi && (
+        <Header
+          loadConfigFile={(filesOrBuffer) =>
+            loadConfigFile(
+              filesOrBuffer,
+              setWidth,
+              setHeight,
+              setBrightness,
+              setButtonSettingsPages,
+              setDisplaySettingsPages,
+              setOriginalImagePages,
+              setConvertedImagePages,
+              setDefaultBackDisplay
+            )
+          }
+          saveConfigFile={() => {
+            if (displaySettingsPages.length === 0) return;
+            const completeBuffer = createConfigBuffer();
 
-                  completeBuffer && download(completeBuffer);
-                }}
-              >
-                Save Config
-              </FDIconButton>
-            </Horiz>
-          </form>
-          <Horiz>
-            <FDIconButton
-              ml={5}
-              icon="ai/AiFillSetting"
-              onClick={() => setShowSettings(true)}
-            >
-              Settings
-            </FDIconButton>
-            <FDIconButton ml={5} onClick={() => addPage()}>
-              <HiDocumentAdd size={22} />
-              Add Page
-            </FDIconButton>
-          </Horiz>
-        </Buttons>
-      </Header>
+            completeBuffer && download(completeBuffer);
+          }}
+          setShowSettings={setShowSettings}
+          createConfigBuffer={createConfigBuffer}
+          addPage={addPage}
+          serialApi={serialApi}
+        />
+      )}
       <Content id="pages">
         {displaySettingsPages.map((imagePage, pageIndex) => (
           <Page
@@ -400,7 +366,7 @@ function App() {
           />
         ))}
       </Content>
-      {
+      {serialApi && (
         <GlobalSettings
           visible={showSettings}
           brightness={brightness}
@@ -429,8 +395,9 @@ function App() {
           setDimensions={(width, height) => (
             setWidth(width), setHeight(height)
           )}
+          serialApi={serialApi}
         />
-      }
+      )}
       <StyledToastContainer />
     </Main>
   );

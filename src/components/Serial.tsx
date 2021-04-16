@@ -5,7 +5,8 @@ import { useReadConfigFromSerialCallback } from "../hooks/callbacks/readConfigFr
 import { useWriteConfigOverSerialCallback } from "../hooks/callbacks/writeConfigFromSerial";
 import { FDButton } from "../lib/components/Button";
 import { Divider, Label, Row, Title, Value } from "../lib/components/Misc";
-import { SerialConnector } from "../lib/serial";
+import { FDSerialAPI } from "../lib/fdSerialApi";
+import { connectionStatus } from "../lib/serial";
 
 const Wrapper = styled.div`
   min-width: 470px;
@@ -14,56 +15,41 @@ export const Serial: React.FC<{
   loadConfigFile: (buffer: Buffer) => void;
   getConfigBuffer: () => Buffer;
   readyToSave: boolean;
-}> = ({ loadConfigFile, getConfigBuffer, readyToSave }) => {
-  const [serial, setSerial] = useState<SerialConnector>();
-  const [ready, setReady] = useState<boolean>(false);
+  serialApi: FDSerialAPI;
+}> = ({ loadConfigFile, getConfigBuffer, readyToSave, serialApi }) => {
   const [progress, setProgress] = useState<number | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
   const [fileSize, setFileSize] = useState<number | null>(null);
+  const [connected, setConnected] = useState<boolean>(!!serialApi?.connected);
+  useEffect(() => {
+    const id = serialApi.registerOnConStatusChange((type) => {
+      setConnected(type === connectionStatus.connect);
+    });
 
-  useEffect(
-    () =>
-      setSerial(
-        new SerialConnector({
-          filters: [
-            {
-              usbVendorId: 0x2341,
-            },
-          ],
-        })
-      ),
-    []
-  );
+    return () => serialApi.clearOnConStatusChange(id);
+  }, [serialApi]);
 
   const connectSerial = useCallback(async () => {
     try {
-      await serial?.connect(async function (serial) {
-        setReady(false);
-      });
-      setReady(true);
+      await serialApi.connect();
+      setConnected(true);
     } catch (e) {
       console.log(e);
       if (e.message === "No port selected by the user") return;
     }
-  }, [serial]);
+  }, [serialApi]);
 
-  const writeConfigOverSerial = useWriteConfigOverSerialCallback(
-    ready && readyToSave,
-    serial,
-    setProgress,
-    setDuration,
-    getConfigBuffer
-  );
-
-  const readConfigFromSerial = useReadConfigFromSerialCallback(
-    serial,
-    setProgress,
-    setDuration,
-    loadConfigFile
+  const progressCallback = useCallback(
+    (received: number, fileSize: number, started: number) => {
+      setProgress(received / fileSize);
+      setDuration(new Date().getTime() - started);
+      setFileSize(fileSize);
+    },
+    [setProgress]
   );
   return (
     <Wrapper>
-      <Title divider>Serial</Title>
+      <Title divider>Serial {connected ? "connected" : "not connected"}</Title>
       <Title size={1}>Chrome based browsers only!</Title>
       <Title size={1}>As long as you see this message, you have to</Title>
       <Title size={1}>
@@ -82,8 +68,12 @@ export const Serial: React.FC<{
           px={5}
           py={5}
           size={1}
-          disabled={!ready}
-          onClick={async () => setFileSize(await readConfigFromSerial())}
+          disabled={!connected}
+          onClick={async () =>
+            loadConfigFile(
+              await serialApi.readConfigFromSerial(progressCallback)
+            )
+          }
         >
           Read
         </FDButton>
@@ -91,11 +81,13 @@ export const Serial: React.FC<{
       <Row>
         <Label>Write config to FreeDeck:</Label>
         <FDButton
-          disabled={!ready || !readyToSave}
+          disabled={!connected || !readyToSave}
           px={5}
           py={5}
           size={1}
-          onClick={() => writeConfigOverSerial()}
+          onClick={() =>
+            serialApi.writeConfigOverSerial(getConfigBuffer(), progressCallback)
+          }
         >
           Write
         </FDButton>
@@ -104,16 +96,22 @@ export const Serial: React.FC<{
       <Divider />
       <Row>
         <Label>Progress:</Label>
-        {progress && <Value>{Math.floor(progress * 100)}%</Value>}
+        {progress !== null && (
+          <Value>{Math.min(Math.ceil(progress * 100), 100)}%</Value>
+        )}
       </Row>
       <Row>
         <Label>Duration:</Label>
-        {duration && <Value>{duration / 1000}s</Value>}
+        {duration !== null && <Value>{(duration / 1000).toFixed(1)}s</Value>}
+      </Row>
+      <Row>
+        <Label>Config size:</Label>
+        {fileSize !== null && <Value>{(fileSize / 1024).toFixed(0)}kb</Value>}
       </Row>
       <Row>
         <Label>Speed:</Label>
-        {duration && fileSize && (
-          <Value>{(fileSize / duration).toFixed(0)}kb/s</Value>
+        {duration !== null && fileSize !== null && progress !== null && (
+          <Value>{((fileSize / duration) * progress).toFixed(0)}kb/s</Value>
         )}
       </Row>
     </Wrapper>

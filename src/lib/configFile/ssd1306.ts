@@ -9,7 +9,8 @@ export const dec2bin = (dec: number, length = 8) => {
 };
 
 export const optimizeForSSD1306 = (buffer: Buffer) => {
-  let optimizedImage = new Buffer(0);
+  // let optimizedImage = new Buffer(0);
+  let optimizedImage = Buffer.alloc(0);
   let b;
 
   let dst_mask;

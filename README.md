@@ -108,3 +108,9 @@ The general settings can be found here. Here you can set different things includ
 
 1. **Serial upload and download** You can now upload and download your config from your FreeDeck via USB in a Chrome Browser (Chrome or Chromium for now).
    Go to the general settings menu in the top right corner of your screen to find these new settings.
+2. **Quick Serial upload and download** If you've once connected successfully over serial to a FreeDeck, it will automatically reconnect the next you open the configurator and will replace the up and download buttons. If you wish to use the normal way again, just click the litte lock icon next to the url bar and delete the serial connection there. After reloading the page the old buttons appear. (ToDo make this configurable)
+
+## Known issues
+
+- When i change the display layout (width or height) the already created pages don't create additional displays.
+  - Solution: Just change this before pressing `Add Page`
