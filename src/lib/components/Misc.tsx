@@ -72,7 +72,7 @@ export const Label = styled.div<{ color?: string }>`
   margin-right: 8px;
   font-family: "Barlow", sans-serif;
 `;
-export const Value = styled.p<{ minWidth?: number }>`
+export const Value = styled.p<{ minWidth?: number; ml?: number }>`
   display: flex;
   align-items: center;
   margin: 0;
@@ -80,6 +80,7 @@ export const Value = styled.p<{ minWidth?: number }>`
   font-family: "Barlow", sans-serif;
   font-size: 20px;
   font-weight: bold;
+  margin-left: ${(p) => p.ml ?? 0}px;
   min-width: ${(p) => (p.minWidth !== undefined ? p.minWidth : 40)}px;
 `;
 export const Column = styled.div`

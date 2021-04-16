@@ -17,7 +17,6 @@ export const parseConfig = (configBuffer: Buffer) => {
   const displaysPerPage = width * height;
 
   const displayButtonCount = configBuffer.readUInt16LE(2) - 1; // subtract 1 for the header row
-  const pageCount = displayButtonCount / displaysPerPage;
 
   const imageOffset = 16 * (displayButtonCount + 1);
   const jsonOffset = imageOffset + 1024 * displayButtonCount;
@@ -32,6 +31,7 @@ export const parseConfig = (configBuffer: Buffer) => {
   const rawConfig = JSON.parse(jsonConfigSlice.toString());
   const convertedImagePages: IConvertedImagePage[] = [];
 
+  const pageCount = displayButtonCount / displaysPerPage;
   for (let pageIndex = 0; pageIndex < pageCount; pageIndex++) {
     const pageOffset = imageOffset + 1024 * displaysPerPage * pageIndex;
     const convertedImagePage: IConvertedImagePage = [];

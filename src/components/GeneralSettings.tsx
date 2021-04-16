@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { IDefaultBackDisplay } from "../App";
 import { Modal, ModalBody } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
+import { FDSerialAPI } from "../lib/fdSerialApi";
 import { About } from "./About";
 import { Brightness } from "./Brightness";
 import { DefaultBackButtonSettings } from "./DefaultBackButtonSettings";
@@ -30,6 +31,7 @@ export const GlobalSettings: React.FC<{
   brightness: number;
   visible?: boolean;
   readyToSave: boolean;
+  serialApi: FDSerialAPI;
 }> = ({
   setClose,
   setDefaultBackDisplay,
@@ -44,6 +46,7 @@ export const GlobalSettings: React.FC<{
   width,
   height,
   setDimensions,
+  serialApi,
 }) => {
   return (
     <Modal
@@ -84,6 +87,7 @@ export const GlobalSettings: React.FC<{
                   getConfigBuffer={getConfigBuffer}
                   loadConfigFile={loadConfigFile}
                   readyToSave={readyToSave}
+                  serialApi={serialApi}
                 />
               </Activator>
               <Activator visible={tab === "Device"}>
@@ -91,6 +95,7 @@ export const GlobalSettings: React.FC<{
                   width={width}
                   height={height}
                   setDimensions={setDimensions}
+                  serialApi={serialApi}
                 />
               </Activator>
               <Activator visible={tab === "About"}>

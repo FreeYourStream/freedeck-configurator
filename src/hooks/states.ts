@@ -8,6 +8,7 @@ import {
   IOriginalImagePage,
 } from "../App";
 import { getStockBackDisplay } from "../definitions/defaultBackImage";
+import { FDSerialAPI } from "../lib/fdSerialApi";
 
 export const useBrightness = function () {
   return useState<number>(128);
@@ -35,4 +36,7 @@ export const useConvertedImagePages = function () {
 };
 export const useDefaultBackDisplay = function () {
   return useState<IDefaultBackDisplay>(getStockBackDisplay());
+};
+export const useSerialConnectedStatus = function () {
+  return useState<boolean>(false);
 };

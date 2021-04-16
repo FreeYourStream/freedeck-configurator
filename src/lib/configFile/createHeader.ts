@@ -1,13 +1,29 @@
 import { Buffer } from "buffer";
 
+/**
+ * @param width number of displays horizontal.
+ * @param height number of displays vertical.
+ * @param brightness default brightness 0-255.
+ * @param numberOfPages 0-65535.
+ * @example ```txt
+ * The header is 16 bytes long:
+ * - 0: width
+ * - 1: height
+ * - 2-3: image data offset (numberOfPages * width * height + 1)
+ * - 4: brightness
+ * - 5-8: display timeout (0=always on)
+ * ```
+ */
 export const createHeader = (
   width: number,
   height: number,
   brightness: number,
   numberOfPages: number
-) => {
-  const header = new Buffer(16);
-  // write with and height
+): Buffer => {
+  // const header = new Buffer(16);
+  const header = Buffer.alloc(16);
+
+  // write width and height
   header.writeUInt8(width, 0);
   header.writeUInt8(height, 1);
 
