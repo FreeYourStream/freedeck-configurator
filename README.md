@@ -2,7 +2,7 @@
 
 ## An OpenSource device inspired by the Elgato Stream Deck
 
-### Live App hosted [HERE](http://freedeck.gosewis.ch/)
+### Live App hosted [HERE](https://fdconfig.freeyourstream.com/)
 
 ### Discord Community [HERE](https://discord.gg/sEt2Rrd)
 
@@ -65,7 +65,7 @@ thats it
 
 ### Settings explained in Detail
 
-**_Things marked with (Beta) will only work if you have the develop branch of the arduino software flashed to your FreeDeck!_**
+**_Things marked with * will only work if you have the develop branch of the arduino software flashed to your FreeDeck!_**
 
 #### Display Settings
 
