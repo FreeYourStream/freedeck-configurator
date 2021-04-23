@@ -32,9 +32,14 @@ export class SerialConnector {
     });
   }
 
-  connect = async () => {
+  connect = async (event?: any) => {
     let ports = await (navigator as any).serial.getPorts();
     const port = ports.find((p: any) => !!p);
+    // console.log(event);
+    // const port =
+    //   event?.port ??
+    //   event?.target ??
+    //   (await (navigator as any).serial.getPorts())?.find((p: any) => !!p);
     if (!port) return;
     await this.openPort(port);
     this.connectCallback(connectionStatus.connect);

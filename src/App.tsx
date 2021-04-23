@@ -197,6 +197,7 @@ function App() {
   const [brightness, setBrightness] = useBrightness();
   const [serialApi, setSerialApi] = useState<FDSerialAPI>();
   useEffect(() => {
+    if (!(navigator as any).serial) return;
     setSerialApi(new FDSerialAPI());
   }, []);
   const [
@@ -303,7 +304,7 @@ function App() {
     ]);
   return (
     <Main>
-      {serialApi && (
+      {
         <Header
           loadConfigFile={(filesOrBuffer) =>
             loadConfigFile(
@@ -329,7 +330,7 @@ function App() {
           addPage={addPage}
           serialApi={serialApi}
         />
-      )}
+      }
       <Content id="pages">
         {displaySettingsPages.map((imagePage, pageIndex) => (
           <Page
@@ -366,7 +367,7 @@ function App() {
           />
         ))}
       </Content>
-      {serialApi && (
+      {
         <GlobalSettings
           visible={showSettings}
           brightness={brightness}
@@ -397,7 +398,7 @@ function App() {
           )}
           serialApi={serialApi}
         />
-      )}
+      }
       <StyledToastContainer />
     </Main>
   );

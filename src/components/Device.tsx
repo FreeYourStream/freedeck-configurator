@@ -42,7 +42,7 @@ export const Device: React.FC<{
   width: number;
   height: number;
   setDimensions: (width: number, height: number) => any;
-  serialApi: FDSerialAPI;
+  serialApi?: FDSerialAPI;
 }> = ({ width, height, setDimensions, serialApi }) => {
   const [widthOptions, setWOptions] = useState<Array<number>>([]);
   const [heightOptions, setHOptions] = useState<Array<number>>([]);

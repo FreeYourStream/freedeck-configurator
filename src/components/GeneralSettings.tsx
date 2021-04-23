@@ -31,7 +31,7 @@ export const GlobalSettings: React.FC<{
   brightness: number;
   visible?: boolean;
   readyToSave: boolean;
-  serialApi: FDSerialAPI;
+  serialApi?: FDSerialAPI;
 }> = ({
   setClose,
   setDefaultBackDisplay,
@@ -82,6 +82,7 @@ export const GlobalSettings: React.FC<{
                   setBrightness={setBrightness}
                 />
               </Activator>
+
               <Activator visible={tab === "Serial (Beta)"}>
                 <Serial
                   getConfigBuffer={getConfigBuffer}

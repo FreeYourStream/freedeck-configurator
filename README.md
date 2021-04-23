@@ -8,7 +8,7 @@
 
 This is the software to create the config file and converting the images for the FreeDeck
 
-The hardware related info can be found [here](https://github.com/koriwi/freedeck-hardware)
+The hardware related info can be found [here](https://github.com/freeyourstream/freedeck-hardware)
 
 ## Setup (for developers only)
 
@@ -65,7 +65,7 @@ thats it
 
 ### Settings explained in Detail
 
-**_Things marked with * will only work if you have the develop branch of the arduino software flashed to your FreeDeck!_**
+**_Things marked with \* will only work if you have the develop branch of the arduino software flashed to your FreeDeck!_**
 
 #### Display Settings
 

@@ -58,7 +58,7 @@ export const Header: React.FC<{
     previousDisplayIndex?: number | undefined,
     primary?: boolean | undefined
   ) => Promise<number>;
-  serialApi: FDSerialAPI;
+  serialApi?: FDSerialAPI;
 }> = ({
   loadConfigFile,
   saveConfigFile,
@@ -70,6 +70,7 @@ export const Header: React.FC<{
   const [connected, setConnected] = useState<boolean>(!!serialApi?.connected);
   const [progress, setProgress] = useState<number>(0);
   useEffect(() => {
+    if (!serialApi) return;
     const id = serialApi.registerOnConStatusChange((type) => {
       setConnected(type === connectionStatus.connect);
     });
@@ -96,7 +97,7 @@ export const Header: React.FC<{
                 ml={4}
                 size={3}
                 onClick={() =>
-                  serialApi
+                  serialApi!
                     .readConfigFromSerial((rec, size) =>
                       setProgress(rec / size)
                     )
@@ -110,7 +111,7 @@ export const Header: React.FC<{
                 ml={4}
                 size={3}
                 onClick={() =>
-                  serialApi.writeConfigOverSerial(
+                  serialApi!.writeConfigOverSerial(
                     createConfigBuffer(),
                     (rec, size) => setProgress(rec / size)
                   )
