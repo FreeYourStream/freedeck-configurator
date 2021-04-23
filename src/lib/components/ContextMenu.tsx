@@ -39,7 +39,7 @@ export const ContextMenuItem: React.FC<{
   return (
     <ItemWrapper dangerous={dangerous ?? false} onClick={() => onClick()}>
       {icon && Icon ? (
-        <Spacer>
+        <Spacer mr={4}>
           <Icon color={dangerous ? "white" : colors.gray} size={18} />
         </Spacer>
       ) : (

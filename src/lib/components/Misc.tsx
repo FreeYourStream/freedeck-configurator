@@ -133,7 +133,7 @@ export const SelectWrapper = styled.div`
     pointer-events: none;
   }
 `;
-export const Row = styled.div`
+export const Row = styled.div<{ padding?: number }>`
   position: relative;
   display: flex;
   width: 100%;
@@ -141,6 +141,7 @@ export const Row = styled.div`
   align-content: center;
   margin-top: 8px;
   min-height: 30px;
+  padding: ${(p) => p.padding ?? 0}px ${(p) => p.padding ?? 0}px 0px 0px;
 `;
 export const WrapRow = styled.div`
   display: flex;

@@ -3,6 +3,7 @@
   "version": "1.5.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.3.15",
     "@jimp/core": "^0.16.0",
     "@jimp/plugin-threshold": "^0.16.1",
     "@testing-library/jest-dom": "^4.2.4",
@@ -17,6 +18,7 @@
     "@types/react-dom": "^16.9.5",
     "@types/styled-components": "^5.0.1",
     "floyd-steinberg": "^1.0.6",
+    "graphql": "^15.5.0",
     "jimp": "^0.16.0",
     "lodash": "^4.17.20",
     "pngjs": "^3.4.0",
@@ -38,7 +40,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "codegen": "graphql-codegen --config codegen.yml"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -54,5 +57,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "1.21.4",
+    "@graphql-codegen/typescript": "1.22.0",
+    "@graphql-codegen/typescript-operations": "1.17.16",
+    "@graphql-codegen/typescript-react-apollo": "2.2.4",
+    "@graphql-codegen/introspection": "1.18.2"
   }
 }

@@ -1,3 +1,4 @@
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import React from "react";
 import ReactDOM from "react-dom";
 import { toast } from "react-toastify";
@@ -10,7 +11,22 @@ if (process.env.NODE_ENV !== "development")
     return "Data will be lost if you leave the page, are you sure?";
   };
 
-ReactDOM.render(<App />, document.getElementById("root"));
+if (process.env.REACT_APP_ENABLE_API === "true") {
+  const client = new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: process.env.REACT_APP_API_URL + "/graphql",
+    credentials: "include",
+  });
+  console.log("API ENABLED :)");
+  ReactDOM.render(
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>,
+    document.getElementById("root")
+  );
+} else {
+  ReactDOM.render(<App />, document.getElementById("root"));
+}
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

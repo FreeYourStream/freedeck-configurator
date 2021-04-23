@@ -9,6 +9,7 @@ export const FDButtonInner = styled.div<{
   px?: number;
   py?: number;
   disabled?: boolean;
+  type: "danger" | "normal";
 }>`
   padding: ${(p) => (p.size === 1 ? "0px" : p.size === 2 ? "4px" : "8px")};
   ${(p) => (p.px ? `padding-left: ${p.px}px;padding-right: ${p.px}px;` : "")}
@@ -24,7 +25,9 @@ export const FDButtonInner = styled.div<{
   text-decoration: none;
   border-radius: 5px;
   border: solid 1px ${(p) => (!p.disabled ? colors.accent : colors.white)};
-  background: ${(p) => (!p.disabled ? colors.accentDark : colors.lightGray)};
+  background-color: ${(p) =>
+    p.type === "danger" ? " #c54800" : colors.accentDark};
+  ${(p) => p.disabled && `background-color: ${colors.lightGray};`}
   white-space: nowrap;
   transition: all 0.1s;
   box-shadow: 0px 0px 0px, 0px 0px 0px,
@@ -40,11 +43,11 @@ const Font = styled.div<{ size: number }>`
   justify-content: center;
   font-size: ${(p) => (p.size === 1 ? "16px" : p.size === 2 ? "20px" : "24px")};
 `;
-export const Spacer = styled.div`
+export const Spacer = styled.div<{ mr: number }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 4px;
+  margin-right: ${(p) => p.mr}px;
 `;
 const Wrapper = styled.div<{
   ml: number;
@@ -80,7 +83,8 @@ const Label = styled.label``;
 
 export interface IFDButtonProps {
   disabled?: boolean;
-  children: any;
+  type?: "danger" | "normal";
+  children?: any;
   htmlFor?: any;
   onClick?: (e: any) => void;
   background?: string;
@@ -100,6 +104,7 @@ export const FDButton = (props: IFDButtonProps) => (
     disabled={props.disabled ?? false}
   >
     <FDButtonInner
+      type={props.type ?? "normal"}
       size={props.size ?? 2}
       px={props.px}
       {...props}
@@ -121,17 +126,40 @@ export const FDIconButton = (props: IFDButtonProps & { icon?: string }) => {
         width={props.width ?? "auto"}
         disabled={props.disabled ?? false}
       >
-        <FDButtonInner size={props.size ?? 2} px={props.px} {...props}>
+        <FDButtonInner
+          type={props.type ?? "normal"}
+          size={props.size ?? 2}
+          px={props.px}
+          {...props}
+        >
           {props.icon && Icon ? (
-            <Spacer>
+            <Spacer mr={props.children?.length ? 4 : 0}>
               <Icon size={22} />
             </Spacer>
           ) : (
             ""
           )}
-          <Font size={props.size ?? 2}>{props.children}</Font>
+          {props.children?.length && (
+            <Font size={props.size ?? 2}>{props.children}</Font>
+          )}
         </FDButtonInner>
       </Wrapper>
     </Label>
+  );
+};
+
+const FixedWrapper = styled.div`
+  position: fixed;
+  bottom: 10px;
+  right: 25px;
+`;
+
+export const FDIconButtonFixed = (
+  props: IFDButtonProps & { icon?: string }
+) => {
+  return (
+    <FixedWrapper>
+      <FDIconButton {...props} />
+    </FixedWrapper>
   );
 };

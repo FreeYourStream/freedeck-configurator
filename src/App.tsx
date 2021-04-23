@@ -27,11 +27,11 @@ import {
   useDisplaySettingsPages,
   useHeight,
   useOriginalImagePages,
-  useSerialConnectedStatus,
+  useShowLogin,
   useShowSettings,
   useWidth,
 } from "./hooks/states";
-import { FDIconButton } from "./lib/components/Button";
+import { FDIconButton, FDIconButtonFixed } from "./lib/components/Button";
 import { createButtonBody, createImageBody } from "./lib/configFile/createBody";
 import { createFooter } from "./lib/configFile/createFooter";
 import { createHeader } from "./lib/configFile/createHeader";
@@ -39,6 +39,9 @@ import { loadConfigFile } from "./lib/configFile/loadConfigFile";
 import { download } from "./lib/download";
 import { FDSerialAPI } from "./lib/fdSerialApi";
 import { Header } from "./components/Header";
+import { Login } from "./components/Login";
+import { useUser } from "./graphql/hooks/useUser";
+import { ApolloProvider, useApolloClient } from "@apollo/client";
 
 const StyledToastContainer = styled(ToastContainer).attrs({
   // custom props
@@ -71,47 +74,6 @@ const Main = styled.div`
   height: 100%;
   width: 100%;
 `;
-
-// const Header = styled.div`
-//   background-color: ${colors.gray};
-//   border-bottom: 1px solid ${colors.black};
-//   display: grid;
-//   grid-template-columns: 200px 1fr;
-//   align-items: center;
-//   padding: 18px;
-// `;
-
-// const HeadLine = styled.div`
-//   display: flex;
-// `;
-
-// const HeadLineThin = styled.div`
-//   color: white;
-//   font-family: "Barlow", sans-serif;
-//   font-size: 36px;
-//   font-weight: 100;
-// `;
-// const HeadLineThick = styled.div`
-//   color: white;
-//   font-family: "Barlow", sans-serif;
-//   font-size: 36px;
-//   font-weight: bold;
-// `;
-
-// const Buttons = styled.div`
-//   display: flex;
-//   height: 52px;
-//   justify-content: space-between;
-// `;
-
-// const Horiz = styled.div`
-//   display: flex;
-//   align-items: center;
-// `;
-
-// const InvisibleFile = styled.input.attrs({ type: "file" })`
-//   display: none;
-// `;
 
 const Content = styled.div`
   background-color: ${colors.gray};
@@ -218,7 +180,7 @@ function App() {
   ] = useConvertedImagePages();
 
   const [showSettings, setShowSettings] = useShowSettings();
-
+  const [showLogin, setShowLogin] = useShowLogin();
   const setOriginalImage = useSetOriginalImageCallback(
     convertedImagePages,
     originalImagePages,
@@ -327,7 +289,7 @@ function App() {
           }}
           setShowSettings={setShowSettings}
           createConfigBuffer={createConfigBuffer}
-          addPage={addPage}
+          openLogin={() => setShowLogin(true)}
           serialApi={serialApi}
         />
       }
@@ -367,39 +329,40 @@ function App() {
           />
         ))}
       </Content>
-      {
-        <GlobalSettings
-          visible={showSettings}
-          brightness={brightness}
-          setClose={() => setShowSettings(false)}
-          onClose={() => updateAllDefaultBackImages(defaultBackDisplay)}
-          defaultBackDisplay={defaultBackDisplay}
-          setDefaultBackDisplay={setDefaultBackDisplay}
-          setBrightness={setBrightness}
-          readyToSave={!!buttonSettingsPages.length}
-          loadConfigFile={(buffer: Buffer) =>
-            loadConfigFile(
-              buffer,
-              setWidth,
-              setHeight,
-              setBrightness,
-              setButtonSettingsPages,
-              setDisplaySettingsPages,
-              setOriginalImagePages,
-              setConvertedImagePages,
-              setDefaultBackDisplay
-            )
-          }
-          getConfigBuffer={() => createConfigBuffer()}
-          width={width}
-          height={height}
-          setDimensions={(width, height) => (
-            setWidth(width), setHeight(height)
-          )}
-          serialApi={serialApi}
-        />
-      }
+      <GlobalSettings
+        visible={showSettings}
+        brightness={brightness}
+        setClose={() => setShowSettings(false)}
+        onClose={() => updateAllDefaultBackImages(defaultBackDisplay)}
+        defaultBackDisplay={defaultBackDisplay}
+        setDefaultBackDisplay={setDefaultBackDisplay}
+        setBrightness={setBrightness}
+        readyToSave={!!buttonSettingsPages.length}
+        loadConfigFile={(buffer: Buffer) =>
+          loadConfigFile(
+            buffer,
+            setWidth,
+            setHeight,
+            setBrightness,
+            setButtonSettingsPages,
+            setDisplaySettingsPages,
+            setOriginalImagePages,
+            setConvertedImagePages,
+            setDefaultBackDisplay
+          )
+        }
+        getConfigBuffer={() => createConfigBuffer()}
+        width={width}
+        height={height}
+        setDimensions={(width, height) => (setWidth(width), setHeight(height))}
+        serialApi={serialApi}
+      />
+      <Login visible={showLogin} setClose={() => setShowLogin(false)} />
       <StyledToastContainer />
+      <FDIconButtonFixed ml={5} onClick={() => addPage()}>
+        <HiDocumentAdd size={22} />
+        Add Page
+      </FDIconButtonFixed>
     </Main>
   );
 }
