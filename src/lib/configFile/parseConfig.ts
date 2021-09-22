@@ -6,7 +6,7 @@ import {
   IDefaultBackDisplay,
   IDisplayPage,
   IOriginalImagePage,
-} from "../../App";
+} from "../../interfaces";
 import { monochrome128by64BitmapHeader } from "../../definitions/headers";
 import { unoptimizeFromSSD1306 } from "./ssd1306";
 

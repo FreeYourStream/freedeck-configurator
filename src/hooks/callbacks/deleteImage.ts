@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { IDisplay } from "../../App";
+import { IDisplay } from "../../interfaces";
 import { getDefaultDisplay } from "../../definitions/defaultPage";
 
 export const useDeleteImageCallback = (

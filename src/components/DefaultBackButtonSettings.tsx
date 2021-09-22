@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useContextMenuTrigger } from "react-context-menu-wrapper";
 
-import { IDefaultBackDisplay } from "../App";
+import { IDefaultBackDisplay } from "../interfaces";
 import { loadDefaultBackDisplay } from "../definitions/defaultBackImage";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
 import { DisplaySettingsContainer } from "../lib/components/DisplaySettingsContainer";

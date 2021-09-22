@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDebounce } from "use-debounce";
 
-import { IDisplay } from "../../../App";
+import { IDisplay } from "../../../interfaces";
 import {
   fontLarge,
   fontMedium,

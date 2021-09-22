@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IButtonSettings } from "../../App";
+import { IButtonSettings } from "../../interfaces";
 import { FDButton } from "../../lib/components/Button";
 import { SelectWrapper, StyledSelect } from "../../lib/components/Misc";
 import { scrollToPage } from "../../lib/scrollToPage";

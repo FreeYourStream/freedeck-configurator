@@ -5,7 +5,7 @@ import {
   IConvertedImagePage,
   IDisplayPage,
   IOriginalImagePage,
-} from "../../App";
+} from "../../interfaces";
 import { getEmptyConvertedImage } from "../../definitions/emptyConvertedImage";
 import { composeImage } from "../../lib/image/composeImage";
 

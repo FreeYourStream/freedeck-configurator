@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 
-import { IButtonPage, IConvertedImagePage } from "../../App";
+import { IButtonPage, IConvertedImagePage } from "../../interfaces";
 import { EAction } from "../../definitions/modes";
 import { optimizeForSSD1306 } from "./ssd1306";
 

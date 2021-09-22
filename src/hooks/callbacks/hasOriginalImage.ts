@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { IOriginalImagePage } from "../../App";
+import { IOriginalImagePage } from "../../interfaces";
 
 export const useHasOriginalImageCallback = (
   originalImagePages: IOriginalImagePage[]

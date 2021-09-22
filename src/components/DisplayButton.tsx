@@ -3,7 +3,7 @@ import { useContextMenuTrigger } from "react-context-menu-wrapper";
 import { useDrag, useDrop } from "react-dnd";
 import styled from "styled-components";
 
-import { IButton, IDisplay } from "../App";
+import { IButton, IDisplay } from "../interfaces";
 import { colors } from "../definitions/colors";
 import { EAction } from "../definitions/modes";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
@@ -72,9 +72,10 @@ const DisplayComponent: React.FC<{
   // connectDragSource,
 }) => {
   const [showSettings, setShowSettings] = useState<boolean>(false);
-  const previewImage = useMemo(() => getBase64Image(convertedImage), [
-    convertedImage,
-  ]);
+  const previewImage = useMemo(
+    () => getBase64Image(convertedImage),
+    [convertedImage]
+  );
 
   const [{ isDragging }, dragRef] = useDrag({
     item: { type: "display", pageIndex, displayIndex, brightness },

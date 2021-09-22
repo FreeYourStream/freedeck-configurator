@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { IButtonSettings } from "../../App";
+import { IButtonSettings } from "../../interfaces";
 import { colors } from "../../definitions/colors";
 import { keys } from "../../definitions/keys";
 import {

@@ -1,6 +1,6 @@
 import Jimp from "jimp";
 
-import { IDefaultBackDisplay } from "../App";
+import { IDefaultBackDisplay } from "../interfaces";
 import * as backImage from "../definitions/back.png";
 import { getDefaultDisplay } from "../definitions/defaultPage";
 import { getEmptyConvertedImage } from "../definitions/emptyConvertedImage";

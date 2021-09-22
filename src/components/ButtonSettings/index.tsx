@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
 
-import { IButtonSettings } from "../../App";
+import { IButtonSettings } from "../../interfaces";
 import { keys } from "../../definitions/keys";
 import { EAction } from "../../definitions/modes";
 import { SelectWrapper, StyledSelect, Title } from "../../lib/components/Misc";

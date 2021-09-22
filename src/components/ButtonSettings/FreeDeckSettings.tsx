@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IButtonSettings } from "../../App";
+import { IButtonSettings } from "../../interfaces";
 import {
   Row,
   SelectWrapper,

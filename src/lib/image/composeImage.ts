@@ -1,7 +1,7 @@
 import fs from "floyd-steinberg";
 import Jimp from "jimp";
 
-import { IDisplay } from "../../App";
+import { IDisplay } from "../../interfaces";
 import { colorBitmapToMonochromeBitmap } from "./colorToMonoBitmap";
 
 export interface IConverted {

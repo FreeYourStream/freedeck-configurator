@@ -3,7 +3,7 @@ import {
   IDefaultBackDisplay,
   IDisplayPage,
   IOriginalImagePage,
-} from "../../App";
+} from "../../interfaces";
 
 export const createFooter = (config: {
   displaySettingsPages: IDisplayPage[];

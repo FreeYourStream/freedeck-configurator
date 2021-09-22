@@ -1,6 +1,10 @@
 import { useCallback } from "react";
 
-import { IDefaultBackDisplay, IDisplay, IOriginalImage } from "../../App";
+import {
+  IDefaultBackDisplay,
+  IDisplay,
+  IOriginalImage,
+} from "../../interfaces";
 
 export const useMakeDefaultBackImageCallback = (
   defaultBackDisplay: IDefaultBackDisplay,

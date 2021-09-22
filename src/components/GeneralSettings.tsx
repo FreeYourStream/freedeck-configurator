@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { IDefaultBackDisplay } from "../App";
+import { IDefaultBackDisplay } from "../interfaces";
 import { Modal, ModalBody } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
 import { FDSerialAPI } from "../lib/fdSerialApi";
@@ -78,8 +78,8 @@ export const GlobalSettings: React.FC<{
               </Activator>
               <Activator visible={tab === "Brightness (Beta)"}>
                 <Brightness
-                  brightness={brightness}
-                  setBrightness={setBrightness}
+                // brightness={brightness}
+                // setBrightness={setBrightness}
                 />
               </Activator>
 

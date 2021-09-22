@@ -1,6 +1,6 @@
 import { merge } from "lodash";
 
-import { IButton, IButtonPage, IDisplay } from "../App";
+import { IButton, IButtonPage, IDisplay } from "../interfaces";
 import { fontMedium } from "./fonts";
 import { EAction } from "./modes";
 

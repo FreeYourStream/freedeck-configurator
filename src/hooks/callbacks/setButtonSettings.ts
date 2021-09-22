@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { IButton, IButtonPage } from "../../App";
+import { IButton, IButtonPage } from "../../interfaces";
 
 export const useSetButtonSettingsCallback = (
   buttonSettingsPages: IButtonPage[],

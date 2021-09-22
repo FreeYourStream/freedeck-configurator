@@ -4,7 +4,7 @@ import {
   IDefaultBackDisplay,
   IDisplayPage,
   IOriginalImagePage,
-} from "../../App";
+} from "../../interfaces";
 import { handleFileSelect } from "../handleFileSelect";
 import { parseConfig } from "./parseConfig";
 const isBuffer = (data: Buffer | FileList): data is Buffer => {

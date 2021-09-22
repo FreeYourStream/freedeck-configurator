@@ -6,7 +6,7 @@ import {
   IConvertedImagePage,
   IDisplayPage,
   IOriginalImagePage,
-} from "../../App";
+} from "../../interfaces";
 import { EAction } from "../../definitions/modes";
 
 export const useDeletePageCallback = (

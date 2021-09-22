@@ -10,7 +10,7 @@ import {
   IDisplay,
   IDisplayPage,
   IOriginalImagePage,
-} from "../App";
+} from "../interfaces";
 import { colors } from "../definitions/colors";
 import { getEmptyConvertedImage } from "../definitions/emptyConvertedImage";
 import { Display } from "./DisplayButton";

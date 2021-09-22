@@ -6,7 +6,7 @@ import {
   IDefaultBackDisplay,
   IDisplayPage,
   IOriginalImagePage,
-} from "../App";
+} from "../interfaces";
 import { getStockBackDisplay } from "../definitions/defaultBackImage";
 import { FDSerialAPI } from "../lib/fdSerialApi";
 

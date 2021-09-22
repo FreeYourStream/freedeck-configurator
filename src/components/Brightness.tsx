@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
+import { DispatchContext, StateContext } from "../App";
 
 import { Label, Row, StyledSlider, Title, Value } from "../lib/components/Misc";
 
 export const Brightness: React.FC<{
-  setBrightness: (brightness: number) => void;
-  brightness: number;
-}> = ({ setBrightness, brightness }) => {
+  // setBrightness: (brightness: number) => void;
+  // brightness: number;
+}> = (/*{ setBrightness, brightness }*/) => {
+  const state = useContext(StateContext);
+  const dispatch = useContext(DispatchContext);
   return (
     <>
       <Title>Brightness</Title>
@@ -14,10 +17,15 @@ export const Brightness: React.FC<{
         <StyledSlider
           min={0}
           max={255}
-          value={brightness}
-          onChange={(e) => setBrightness(e.currentTarget.valueAsNumber)}
+          value={state.brightness}
+          onChange={(e) =>
+            dispatch({
+              type: "setBrightness",
+              value: e.currentTarget.valueAsNumber,
+            })
+          }
         />
-        <Value>{brightness}</Value>
+        <Value>{state.brightness}</Value>
       </Row>
     </>
   );

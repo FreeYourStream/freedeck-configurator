@@ -5,7 +5,7 @@ import {
   IDisplay,
   IDisplayPage,
   IOriginalImagePage,
-} from "../../App";
+} from "../../interfaces";
 import { composeImage, composeText } from "../../lib/image/composeImage";
 
 export const useSetDisplaySettingsCallback = (

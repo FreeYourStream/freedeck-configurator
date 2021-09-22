@@ -5,7 +5,7 @@ import {
   IConvertedImagePage,
   IDisplayPage,
   IOriginalImagePage,
-} from "../../App";
+} from "../../interfaces";
 
 export const useSwitchDisplaysCallback = (
   buttonSettingsPages: IButtonPage[],

@@ -6,7 +6,7 @@ import {
   IOriginalImage,
   ITextSettings,
   ITextWithIconSettings,
-} from "../../../App";
+} from "../../../interfaces";
 import { getEmptyConvertedImage } from "../../../definitions/emptyConvertedImage";
 import { fileToImage } from "../../fileToImage";
 import { getBase64Image } from "../../image/base64Encode";

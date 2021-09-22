@@ -1,15 +1,20 @@
-import "react-toastify/dist/ReactToastify.css";
-
-import React, { useEffect, useState } from "react";
+import React, {
+  createContext,
+  Reducer,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import { HiDocumentAdd } from "react-icons/hi";
-import { ToastContainer, toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
-
 import { GlobalSettings } from "./components/GeneralSettings";
+import { Header } from "./components/Header";
+import { Login } from "./components/Login";
 import { Page } from "./components/Page";
 import { colors } from "./definitions/colors";
 import { loadDefaultBackDisplay } from "./definitions/defaultBackImage";
-import { EAction } from "./definitions/modes";
 import { useAddPageCallback } from "./hooks/callbacks/addPage";
 import { useDeleteImageCallback } from "./hooks/callbacks/deleteImage";
 import { useDeletePageCallback } from "./hooks/callbacks/deletePage";
@@ -31,17 +36,34 @@ import {
   useShowSettings,
   useWidth,
 } from "./hooks/states";
-import { FDIconButton, FDIconButtonFixed } from "./lib/components/Button";
+import { IButton, IDisplay, IOriginalImage } from "./interfaces";
+import { FDIconButtonFixed } from "./lib/components/Button";
 import { createButtonBody, createImageBody } from "./lib/configFile/createBody";
 import { createFooter } from "./lib/configFile/createFooter";
 import { createHeader } from "./lib/configFile/createHeader";
 import { loadConfigFile } from "./lib/configFile/loadConfigFile";
 import { download } from "./lib/download";
 import { FDSerialAPI } from "./lib/fdSerialApi";
-import { Header } from "./components/Header";
-import { Login } from "./components/Login";
-import { useUser } from "./graphql/hooks/useUser";
-import { ApolloProvider, useApolloClient } from "@apollo/client";
+
+type Action = { type: "setBrightness"; value: number };
+interface State {
+  brightness: number;
+}
+const reducer: Reducer<State, Action> = (state, action) => {
+  let newState = { ...state };
+  switch (action.type) {
+    case "setBrightness":
+      console.log("BRIGHTNESS", action.value);
+      newState.brightness = action.value;
+      break;
+    default:
+      break;
+  }
+  return newState;
+};
+
+export const StateContext = createContext<State>({ brightness: 200 });
+export const DispatchContext = createContext<React.Dispatch<Action>>(() => {});
 
 const StyledToastContainer = styled(ToastContainer).attrs({
   // custom props
@@ -86,54 +108,8 @@ const Content = styled.div`
   height: 100%;
 `;
 
-export interface IButtonSettings {
-  mode: EAction;
-  values: number[];
-  enabled: boolean;
-}
-
-export interface ITextWithIconSettings {
-  iconWidthMultiplier: number;
-}
-
-export interface IImageSettings {
-  dither: boolean;
-  blackThreshold: number;
-  contrast: number;
-  brightness: number;
-  whiteThreshold: number;
-  invert: boolean;
-}
-
-export interface IButton {
-  primary: IButtonSettings;
-  secondary: IButtonSettings;
-}
-export interface ITextSettings {
-  text: string;
-  font: string;
-}
-
-export interface IDisplay {
-  imageSettings: IImageSettings;
-  hasOriginalImage: boolean;
-  textSettings: ITextSettings;
-  textWithIconSettings: ITextWithIconSettings;
-  isGeneratedFromDefaultBackImage: boolean;
-  previousPage?: number;
-  previousDisplay?: number;
-}
-export type IOriginalImage = Buffer | null;
-export type IConvertedImage = Buffer;
-export type IOriginalImagePage = Array<IOriginalImage>;
-export type IConvertedImagePage = Array<IConvertedImage>;
-export type IButtonPage = IButton[];
-export type IDisplayPage = IDisplay[];
-export interface IDefaultBackDisplay {
-  image: Buffer;
-  settings: IDisplay;
-}
 function App() {
+  const [state, dispatch] = useReducer(reducer, { brightness: 200 });
   const [defaultBackDisplay, setDefaultBackDisplay] = useDefaultBackDisplay();
 
   useEffect(() => {
@@ -162,22 +138,16 @@ function App() {
     if (!(navigator as any).serial) return;
     setSerialApi(new FDSerialAPI());
   }, []);
-  const [
-    buttonSettingsPages,
-    setButtonSettingsPages,
-  ] = useButtonSettingsPages();
+  const [buttonSettingsPages, setButtonSettingsPages] =
+    useButtonSettingsPages();
 
-  const [
-    displaySettingsPages,
-    setDisplaySettingsPages,
-  ] = useDisplaySettingsPages();
+  const [displaySettingsPages, setDisplaySettingsPages] =
+    useDisplaySettingsPages();
 
   const [originalImagePages, setOriginalImagePages] = useOriginalImagePages();
 
-  const [
-    convertedImagePages,
-    setConvertedImagePages,
-  ] = useConvertedImagePages();
+  const [convertedImagePages, setConvertedImagePages] =
+    useConvertedImagePages();
 
   const [showSettings, setShowSettings] = useShowSettings();
   const [showLogin, setShowLogin] = useShowLogin();
@@ -265,105 +235,114 @@ function App() {
       }),
     ]);
   return (
-    <Main>
-      {
-        <Header
-          loadConfigFile={(filesOrBuffer) =>
-            loadConfigFile(
-              filesOrBuffer,
-              setWidth,
-              setHeight,
-              setBrightness,
-              setButtonSettingsPages,
-              setDisplaySettingsPages,
-              setOriginalImagePages,
-              setConvertedImagePages,
-              setDefaultBackDisplay
-            )
-          }
-          saveConfigFile={() => {
-            if (displaySettingsPages.length === 0) return;
-            const completeBuffer = createConfigBuffer();
+    <StateContext.Provider value={state}>
+      <DispatchContext.Provider value={dispatch}>
+        <Main>
+          {
+            <Header
+              loadConfigFile={(filesOrBuffer) =>
+                loadConfigFile(
+                  filesOrBuffer,
+                  setWidth,
+                  setHeight,
+                  setBrightness,
+                  setButtonSettingsPages,
+                  setDisplaySettingsPages,
+                  setOriginalImagePages,
+                  setConvertedImagePages,
+                  setDefaultBackDisplay
+                )
+              }
+              saveConfigFile={() => {
+                if (displaySettingsPages.length === 0) return;
+                const completeBuffer = createConfigBuffer();
 
-            completeBuffer && download(completeBuffer);
-          }}
-          setShowSettings={setShowSettings}
-          createConfigBuffer={createConfigBuffer}
-          openLogin={() => setShowLogin(true)}
-          serialApi={serialApi}
-        />
-      }
-      <Content id="pages">
-        {displaySettingsPages.map((imagePage, pageIndex) => (
-          <Page
+                completeBuffer && download(completeBuffer);
+              }}
+              setShowSettings={setShowSettings}
+              createConfigBuffer={createConfigBuffer}
+              openLogin={() => setShowLogin(true)}
+              serialApi={serialApi}
+            />
+          }
+          <Content id="pages">
+            {displaySettingsPages.map((imagePage, pageIndex) => (
+              <Page
+                brightness={brightness}
+                height={height}
+                width={width}
+                deleteImage={(displayIndex: number) =>
+                  deleteImage(pageIndex, displayIndex)
+                }
+                makeDefaultBackImage={(displayIndex: number) => {
+                  makeDefaultBackImage(pageIndex, displayIndex);
+                }}
+                pageIndex={pageIndex}
+                originalImages={originalImagePages[pageIndex]}
+                convertedImages={convertedImagePages[pageIndex]}
+                buttonSettingsPages={buttonSettingsPages[pageIndex]}
+                displaySettingsPages={displaySettingsPages[pageIndex]}
+                key={pageIndex}
+                setOriginalImage={(
+                  displayIndex: number,
+                  image: IOriginalImage
+                ) => setOriginalImage(pageIndex, displayIndex, image)}
+                deletePage={deletePage}
+                pageCount={buttonSettingsPages.length}
+                addPage={(displayIndex, primary) =>
+                  addPage(pageIndex, displayIndex, primary)
+                }
+                setButtonSettings={(
+                  displayIndex: number,
+                  newDisplay: IButton
+                ) => setButtonSettings(pageIndex, displayIndex, newDisplay)}
+                setDisplaySettings={(
+                  displayIndex: number,
+                  newDisplay: IDisplay
+                ) => setDisplaySettings(pageIndex, displayIndex, newDisplay)}
+                switchDisplays={switchDisplays}
+              />
+            ))}
+          </Content>
+          <GlobalSettings
+            visible={showSettings}
             brightness={brightness}
-            height={height}
+            setClose={() => setShowSettings(false)}
+            onClose={() => updateAllDefaultBackImages(defaultBackDisplay)}
+            defaultBackDisplay={defaultBackDisplay}
+            setDefaultBackDisplay={setDefaultBackDisplay}
+            setBrightness={setBrightness}
+            readyToSave={!!buttonSettingsPages.length}
+            loadConfigFile={(buffer: Buffer) =>
+              loadConfigFile(
+                buffer,
+                setWidth,
+                setHeight,
+                setBrightness,
+                setButtonSettingsPages,
+                setDisplaySettingsPages,
+                setOriginalImagePages,
+                setConvertedImagePages,
+                setDefaultBackDisplay
+              )
+            }
+            getConfigBuffer={() => createConfigBuffer()}
             width={width}
-            deleteImage={(displayIndex: number) =>
-              deleteImage(pageIndex, displayIndex)
-            }
-            makeDefaultBackImage={(displayIndex: number) => {
-              makeDefaultBackImage(pageIndex, displayIndex);
-            }}
-            pageIndex={pageIndex}
-            originalImages={originalImagePages[pageIndex]}
-            convertedImages={convertedImagePages[pageIndex]}
-            buttonSettingsPages={buttonSettingsPages[pageIndex]}
-            displaySettingsPages={displaySettingsPages[pageIndex]}
-            key={pageIndex}
-            setOriginalImage={(displayIndex: number, image: IOriginalImage) =>
-              setOriginalImage(pageIndex, displayIndex, image)
-            }
-            deletePage={deletePage}
-            pageCount={buttonSettingsPages.length}
-            addPage={(displayIndex, primary) =>
-              addPage(pageIndex, displayIndex, primary)
-            }
-            setButtonSettings={(displayIndex: number, newDisplay: IButton) =>
-              setButtonSettings(pageIndex, displayIndex, newDisplay)
-            }
-            setDisplaySettings={(displayIndex: number, newDisplay: IDisplay) =>
-              setDisplaySettings(pageIndex, displayIndex, newDisplay)
-            }
-            switchDisplays={switchDisplays}
+            height={height}
+            setDimensions={(width, height) => (
+              setWidth(width), setHeight(height)
+            )}
+            serialApi={serialApi}
           />
-        ))}
-      </Content>
-      <GlobalSettings
-        visible={showSettings}
-        brightness={brightness}
-        setClose={() => setShowSettings(false)}
-        onClose={() => updateAllDefaultBackImages(defaultBackDisplay)}
-        defaultBackDisplay={defaultBackDisplay}
-        setDefaultBackDisplay={setDefaultBackDisplay}
-        setBrightness={setBrightness}
-        readyToSave={!!buttonSettingsPages.length}
-        loadConfigFile={(buffer: Buffer) =>
-          loadConfigFile(
-            buffer,
-            setWidth,
-            setHeight,
-            setBrightness,
-            setButtonSettingsPages,
-            setDisplaySettingsPages,
-            setOriginalImagePages,
-            setConvertedImagePages,
-            setDefaultBackDisplay
-          )
-        }
-        getConfigBuffer={() => createConfigBuffer()}
-        width={width}
-        height={height}
-        setDimensions={(width, height) => (setWidth(width), setHeight(height))}
-        serialApi={serialApi}
-      />
-      <Login visible={showLogin} setClose={() => setShowLogin(false)} />
-      <StyledToastContainer />
-      <FDIconButtonFixed ml={5} onClick={() => addPage()}>
-        <HiDocumentAdd size={22} />
-        Add Page
-      </FDIconButtonFixed>
-    </Main>
+          <Login visible={showLogin} setClose={() => setShowLogin(false)} />
+          <StyledToastContainer />
+          <FDIconButtonFixed ml={5} onClick={() => addPage()}>
+            <HiDocumentAdd size={22} />
+            Add Page
+          </FDIconButtonFixed>
+        </Main>
+      </DispatchContext.Provider>
+    </StateContext.Provider>
   );
 }
 
