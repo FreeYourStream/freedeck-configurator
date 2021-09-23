@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { useContextMenuTrigger } from "react-context-menu-wrapper";
 import { useDrag, useDrop } from "react-dnd";
 import styled from "styled-components";
@@ -14,6 +14,7 @@ import { Modal, ModalBody } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
 import { getBase64Image } from "../lib/image/base64Encode";
 import { Action } from "./ButtonSettings";
+import { DispatchContext, StateContext } from "../state";
 
 const Wrapper = styled.div<{ opacity: number }>`
   opacity: ${(p) => p.opacity};
@@ -46,7 +47,6 @@ const DisplayComponent: React.FC<{
   pageIndex: number;
   pages: number[];
   displayIndex: number;
-  brightness: number;
   switchDisplays: (
     aPageIndex: number,
     bPageIndex: number,
@@ -54,7 +54,6 @@ const DisplayComponent: React.FC<{
     bDisplayIndex: number
   ) => void;
 }> = ({
-  brightness,
   originalImage,
   convertedImage,
   addPage,
@@ -71,6 +70,8 @@ const DisplayComponent: React.FC<{
   makeDefaultBackImage,
   // connectDragSource,
 }) => {
+  const state = useContext(StateContext);
+
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const previewImage = useMemo(
     () => getBase64Image(convertedImage),
@@ -78,7 +79,12 @@ const DisplayComponent: React.FC<{
   );
 
   const [{ isDragging }, dragRef] = useDrag({
-    item: { type: "display", pageIndex, displayIndex, brightness },
+    item: {
+      type: "display",
+      pageIndex,
+      displayIndex,
+      brightness: state.brightness,
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -100,9 +106,10 @@ const DisplayComponent: React.FC<{
   });
 
   const opacity = useMemo(() => {
-    const value = (0.5 + brightness / 512) / (isDragging ? 2 : 1);
+    const value = (0.5 + state.brightness / 512) / (isDragging ? 2 : 1);
+    console.log("VALUE", value);
     return value;
-  }, [isDragging, brightness]);
+  }, [isDragging, state.brightness]);
 
   const menuId = `${pageIndex}:${displayIndex}`;
   let menuRef = useContextMenuTrigger<HTMLDivElement>({

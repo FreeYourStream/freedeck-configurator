@@ -21,31 +21,21 @@ export const GlobalSettings: React.FC<{
   setDefaultBackDisplay: React.Dispatch<
     React.SetStateAction<IDefaultBackDisplay>
   >;
-  setBrightness: React.Dispatch<React.SetStateAction<number>>;
   loadConfigFile: (buffer: Buffer) => void;
   getConfigBuffer: () => Buffer;
-  setDimensions: (width: number, height: number) => any;
-  width: number;
-  height: number;
   defaultBackDisplay: IDefaultBackDisplay;
-  brightness: number;
   visible?: boolean;
   readyToSave: boolean;
   serialApi?: FDSerialAPI;
 }> = ({
   setClose,
   setDefaultBackDisplay,
-  setBrightness,
   onClose,
   loadConfigFile,
   getConfigBuffer,
   defaultBackDisplay,
-  brightness,
   visible,
   readyToSave,
-  width,
-  height,
-  setDimensions,
   serialApi,
 }) => {
   return (
@@ -77,10 +67,7 @@ export const GlobalSettings: React.FC<{
                 />
               </Activator>
               <Activator visible={tab === "Brightness (Beta)"}>
-                <Brightness
-                // brightness={brightness}
-                // setBrightness={setBrightness}
-                />
+                <Brightness />
               </Activator>
 
               <Activator visible={tab === "Serial (Beta)"}>
@@ -92,12 +79,7 @@ export const GlobalSettings: React.FC<{
                 />
               </Activator>
               <Activator visible={tab === "Device"}>
-                <Device
-                  width={width}
-                  height={height}
-                  setDimensions={setDimensions}
-                  serialApi={serialApi}
-                />
+                <Device serialApi={serialApi} />
               </Activator>
               <Activator visible={tab === "About"}>
                 <About />

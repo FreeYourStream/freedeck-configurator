@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 
 import {
@@ -12,6 +12,7 @@ import {
 } from "../lib/components/Misc";
 import { FDSerialAPI } from "../lib/fdSerialApi";
 import { connectionStatus } from "../lib/serial";
+import { DispatchContext, StateContext } from "../state";
 
 const FW_UNKNOWN = "unknown, please connect serial";
 
@@ -39,11 +40,11 @@ const DisplayCountDropDown: React.FC<{
 );
 
 export const Device: React.FC<{
-  width: number;
-  height: number;
-  setDimensions: (width: number, height: number) => any;
   serialApi?: FDSerialAPI;
-}> = ({ width, height, setDimensions, serialApi }) => {
+}> = ({ serialApi }) => {
+  const state = useContext(StateContext);
+  const dispatch = useContext(DispatchContext);
+
   const [widthOptions, setWOptions] = useState<Array<number>>([]);
   const [heightOptions, setHOptions] = useState<Array<number>>([]);
   const [fwVersion, setFwVersion] = useState<string>(FW_UNKNOWN);
@@ -63,18 +64,18 @@ export const Device: React.FC<{
   useEffect(() => {
     const wArray = [];
     let possibleWidth = 1;
-    while (height * possibleWidth <= 16) {
+    while (state.height * possibleWidth <= 16) {
       wArray.push(possibleWidth++);
     }
 
     const hArray = [];
     let possibleHeight = 1;
-    while (width * possibleHeight <= 16) {
+    while (state.width * possibleHeight <= 16) {
       hArray.push(possibleHeight++);
     }
     setWOptions(wArray);
     setHOptions(hArray);
-  }, [width, height]);
+  }, [state.width, state.height]);
 
   return (
     <Wrapper>
@@ -82,16 +83,20 @@ export const Device: React.FC<{
       <Row>
         <Label>FreeDeck width:</Label>
         <DisplayCountDropDown
-          onChange={(newValue) => setDimensions(newValue, height)}
-          value={width}
+          onChange={(newValue) =>
+            dispatch({ type: "setWidth", value: newValue })
+          }
+          value={state.width}
           options={widthOptions}
         />
       </Row>
       <Row>
         <Label>FreeDeck height:</Label>
         <DisplayCountDropDown
-          onChange={(newValue) => setDimensions(width, newValue)}
-          value={height}
+          onChange={(newValue) =>
+            dispatch({ type: "setHeight", value: newValue })
+          }
+          value={state.height}
           options={heightOptions}
         />
       </Row>

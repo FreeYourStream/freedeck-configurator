@@ -10,15 +10,6 @@ import {
 import { getStockBackDisplay } from "../definitions/defaultBackImage";
 import { FDSerialAPI } from "../lib/fdSerialApi";
 
-export const useBrightness = function () {
-  return useState<number>(128);
-};
-export const useHeight = function () {
-  return useState<number>(2);
-};
-export const useWidth = function () {
-  return useState<number>(3);
-};
 export const useShowSettings = function () {
   return useState<boolean>(false);
 };

@@ -25,16 +25,13 @@ import { useSetOriginalImageCallback } from "./hooks/callbacks/setOriginalImage"
 import { useSwitchDisplaysCallback } from "./hooks/callbacks/switchDisplay";
 import { useUpdateAllDefaultBackImagesCallback } from "./hooks/callbacks/updateAllDefaultBackImages";
 import {
-  useBrightness,
   useButtonSettingsPages,
   useConvertedImagePages,
   useDefaultBackDisplay,
   useDisplaySettingsPages,
-  useHeight,
   useOriginalImagePages,
   useShowLogin,
   useShowSettings,
-  useWidth,
 } from "./hooks/states";
 import { IButton, IDisplay, IOriginalImage } from "./interfaces";
 import { FDIconButtonFixed } from "./lib/components/Button";
@@ -44,26 +41,7 @@ import { createHeader } from "./lib/configFile/createHeader";
 import { loadConfigFile } from "./lib/configFile/loadConfigFile";
 import { download } from "./lib/download";
 import { FDSerialAPI } from "./lib/fdSerialApi";
-
-type Action = { type: "setBrightness"; value: number };
-interface State {
-  brightness: number;
-}
-const reducer: Reducer<State, Action> = (state, action) => {
-  let newState = { ...state };
-  switch (action.type) {
-    case "setBrightness":
-      console.log("BRIGHTNESS", action.value);
-      newState.brightness = action.value;
-      break;
-    default:
-      break;
-  }
-  return newState;
-};
-
-export const StateContext = createContext<State>({ brightness: 200 });
-export const DispatchContext = createContext<React.Dispatch<Action>>(() => {});
+import { defaultState, DispatchContext, reducer, StateContext } from "./state";
 
 const StyledToastContainer = styled(ToastContainer).attrs({
   // custom props
@@ -109,7 +87,7 @@ const Content = styled.div`
 `;
 
 function App() {
-  const [state, dispatch] = useReducer(reducer, { brightness: 200 });
+  const [state, dispatch] = useReducer(reducer, defaultState);
   const [defaultBackDisplay, setDefaultBackDisplay] = useDefaultBackDisplay();
 
   useEffect(() => {
@@ -130,9 +108,6 @@ function App() {
     // eslint-disable-next-line
   }, []); // only execute on page load
 
-  const [height, setHeight] = useHeight();
-  const [width, setWidth] = useWidth();
-  const [brightness, setBrightness] = useBrightness();
   const [serialApi, setSerialApi] = useState<FDSerialAPI>();
   useEffect(() => {
     if (!(navigator as any).serial) return;
@@ -178,8 +153,8 @@ function App() {
   );
 
   const addPage = useAddPageCallback(
-    width,
-    height,
+    state.width,
+    state.height,
     setOriginalImagePages,
     originalImagePages,
     setConvertedImagePages,
@@ -224,7 +199,12 @@ function App() {
 
   const createConfigBuffer = (): Buffer =>
     Buffer.concat([
-      createHeader(width, height, brightness, displaySettingsPages.length),
+      createHeader(
+        state.width,
+        state.height,
+        state.brightness,
+        displaySettingsPages.length
+      ),
       createButtonBody(buttonSettingsPages),
       createImageBody(convertedImagePages),
       createFooter({
@@ -243,9 +223,21 @@ function App() {
               loadConfigFile={(filesOrBuffer) =>
                 loadConfigFile(
                   filesOrBuffer,
-                  setWidth,
-                  setHeight,
-                  setBrightness,
+                  (width) =>
+                    dispatch({
+                      type: "setWidth",
+                      value: parseInt(width.toString() ?? "0"),
+                    }),
+                  (height) =>
+                    dispatch({
+                      type: "setHeight",
+                      value: parseInt(height.toString() ?? "0"),
+                    }),
+                  (brightness) =>
+                    dispatch({
+                      type: "setBrightness",
+                      value: parseInt(brightness.toString() ?? "0"),
+                    }),
                   setButtonSettingsPages,
                   setDisplaySettingsPages,
                   setOriginalImagePages,
@@ -268,9 +260,6 @@ function App() {
           <Content id="pages">
             {displaySettingsPages.map((imagePage, pageIndex) => (
               <Page
-                brightness={brightness}
-                height={height}
-                width={width}
                 deleteImage={(displayIndex: number) =>
                   deleteImage(pageIndex, displayIndex)
                 }
@@ -306,19 +295,29 @@ function App() {
           </Content>
           <GlobalSettings
             visible={showSettings}
-            brightness={brightness}
             setClose={() => setShowSettings(false)}
             onClose={() => updateAllDefaultBackImages(defaultBackDisplay)}
             defaultBackDisplay={defaultBackDisplay}
             setDefaultBackDisplay={setDefaultBackDisplay}
-            setBrightness={setBrightness}
             readyToSave={!!buttonSettingsPages.length}
             loadConfigFile={(buffer: Buffer) =>
               loadConfigFile(
                 buffer,
-                setWidth,
-                setHeight,
-                setBrightness,
+                (width) =>
+                  dispatch({
+                    type: "setWidth",
+                    value: parseInt(width.toString() ?? "0"),
+                  }),
+                (height) =>
+                  dispatch({
+                    type: "setHeight",
+                    value: parseInt(height.toString() ?? "0"),
+                  }),
+                (brightness) =>
+                  dispatch({
+                    type: "setBrightness",
+                    value: parseInt(brightness.toString() ?? "0"),
+                  }),
                 setButtonSettingsPages,
                 setDisplaySettingsPages,
                 setOriginalImagePages,
@@ -327,11 +326,6 @@ function App() {
               )
             }
             getConfigBuffer={() => createConfigBuffer()}
-            width={width}
-            height={height}
-            setDimensions={(width, height) => (
-              setWidth(width), setHeight(height)
-            )}
             serialApi={serialApi}
           />
           <Login visible={showLogin} setClose={() => setShowLogin(false)} />

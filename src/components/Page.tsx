@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
 import { FaTrashAlt } from "react-icons/fa";
@@ -14,6 +14,7 @@ import {
 import { colors } from "../definitions/colors";
 import { getEmptyConvertedImage } from "../definitions/emptyConvertedImage";
 import { Display } from "./DisplayButton";
+import { StateContext } from "../state";
 
 const Wrapper = styled.div`
   position: relative;
@@ -85,13 +86,10 @@ const Grid = styled.div<{ width: number; height: number }>`
 `;
 
 interface IProps {
-  brightness: number;
   deleteImage: (displayIndex: number) => void;
   makeDefaultBackImage: (displayIndex: number) => void;
   originalImages: IOriginalImagePage;
   pageIndex: number;
-  width: number;
-  height: number;
   buttonSettingsPages: IButtonPage;
   displaySettingsPages: IDisplayPage;
   convertedImages: Buffer[];
@@ -110,13 +108,10 @@ interface IProps {
 }
 
 const PageComponent: React.FC<IProps> = ({
-  brightness,
   pageIndex,
   deleteImage,
   makeDefaultBackImage,
   originalImages,
-  width,
-  height,
   convertedImages,
   setOriginalImage,
   buttonSettingsPages,
@@ -128,6 +123,7 @@ const PageComponent: React.FC<IProps> = ({
   pageCount,
   switchDisplays,
 }) => {
+  const state = useContext(StateContext);
   return (
     <Wrapper id={`page_${pageIndex}`}>
       <Header>
@@ -143,11 +139,10 @@ const PageComponent: React.FC<IProps> = ({
           <FaTrashAlt size={18} color="white" />
         </DeletePage>
       </Header>
-      <Grid height={height} width={width}>
+      <Grid height={state.height} width={state.width}>
         <DndProvider backend={Backend}>
           {displaySettingsPages.map((imageDisplay, displayIndex) => (
             <Display
-              brightness={brightness}
               deleteImage={() => deleteImage(displayIndex)}
               makeDefaultBackImage={() => makeDefaultBackImage(displayIndex)}
               convertedImage={

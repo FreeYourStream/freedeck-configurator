@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { DispatchContext, StateContext } from "../App";
+import { DispatchContext, StateContext } from "../state";
 
 import { Label, Row, StyledSlider, Title, Value } from "../lib/components/Misc";
 
