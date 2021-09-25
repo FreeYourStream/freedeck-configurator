@@ -1,13 +1,15 @@
 import { useCallback } from "react";
 
-import { IButton, IButtonPage } from "../../interfaces";
+import { IButtonSettings, IButtonSettingsPage } from "../../interfaces";
 
 export const useSetButtonSettingsCallback = (
-  buttonSettingsPages: IButtonPage[],
-  setButtonSettingsPages: (value: React.SetStateAction<IButtonPage[]>) => void
+  buttonSettingsPages: IButtonSettingsPage[],
+  setButtonSettingsPages: (
+    value: React.SetStateAction<IButtonSettingsPage[]>
+  ) => void
 ) =>
   useCallback(
-    (pageIndex: number, displayIndex: number, newDisplay: IButton) => {
+    (pageIndex: number, displayIndex: number, newDisplay: IButtonSettings) => {
       const newPages = [...buttonSettingsPages];
       newPages[pageIndex][displayIndex] = newDisplay;
       setButtonSettingsPages([...newPages]);

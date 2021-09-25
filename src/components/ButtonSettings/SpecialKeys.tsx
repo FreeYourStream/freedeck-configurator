@@ -1,11 +1,11 @@
 import React from "react";
 
-import { IButtonSettings } from "../../interfaces";
+import { IButtonSetting } from "../../interfaces";
 import { EMediaKeys, MediaKeys } from "../../definitions/keys";
 import { SelectWrapper, StyledSelect } from "../../lib/components/Misc";
 
 export const SpecialKeys: React.FC<{
-  action: IButtonSettings;
+  action: IButtonSetting;
   setKeys: (keys: number[]) => void;
 }> = ({ action, setKeys }) => {
   return (

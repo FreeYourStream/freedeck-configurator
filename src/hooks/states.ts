@@ -1,24 +1,20 @@
 import { useState } from "react";
 
 import {
-  IButtonPage,
   IConvertedImagePage,
   IDefaultBackDisplay,
-  IDisplayPage,
+  IDisplaySettingsPage,
   IOriginalImagePage,
 } from "../interfaces";
 import { getStockBackDisplay } from "../definitions/defaultBackImage";
-import { FDSerialAPI } from "../lib/fdSerialApi";
 
 export const useShowSettings = function () {
   return useState<boolean>(false);
 };
 export const useShowLogin = () => useState<boolean>(false);
-export const useButtonSettingsPages = function () {
-  return useState<IButtonPage[]>([]);
-};
+
 export const useDisplaySettingsPages = function () {
-  return useState<IDisplayPage[]>([]);
+  return useState<IDisplaySettingsPage[]>([]);
 };
 export const useOriginalImagePages = function () {
   return useState<IOriginalImagePage[]>([]);

@@ -1,13 +1,13 @@
 import {
-  IButtonPage,
+  IButtonSettingsPage,
   IDefaultBackDisplay,
-  IDisplayPage,
+  IDisplaySettingsPage,
   IOriginalImagePage,
 } from "../../interfaces";
 
 export const createFooter = (config: {
-  displaySettingsPages: IDisplayPage[];
-  buttonSettingsPages: IButtonPage[];
+  displaySettingsPages: IDisplaySettingsPage[];
+  buttonSettingsPages: IButtonSettingsPage[];
   defaultBackDisplay: IDefaultBackDisplay;
   originalImagePages: IOriginalImagePage[];
 }) => {

@@ -2,15 +2,10 @@ import Jimp from "jimp";
 
 import { IDefaultBackDisplay } from "../interfaces";
 import * as backImage from "../definitions/back.png";
-import { getDefaultDisplay } from "../definitions/defaultPage";
+import { createDefaultDisplaySettings } from "../definitions/defaultPage";
 import { getEmptyConvertedImage } from "../definitions/emptyConvertedImage";
 
-export const loadDefaultBackDisplay = function (
-  setDefaultBackImage: React.Dispatch<
-    React.SetStateAction<IDefaultBackDisplay>
-  >,
-  forceStock?: boolean
-) {
+export const createDefaultBackDisplay = function (forceStock?: boolean) {
   const localDefaultBackImage = localStorage.getItem("defaultBackImage");
   const localDefaultBackImageSettings = localStorage.getItem(
     "defaultBackImageSettings"
@@ -23,7 +18,7 @@ export const loadDefaultBackDisplay = function (
       image
         .quality(70)
         .scaleToFit(256, 128, "")
-        .getBuffer(newMime, async (error, buffer) =>
+        .getBufferAsync(newMime, async (error, buffer) =>
           setDefaultBackImage(getStockBackDisplay(await buffer))
         );
     });
@@ -36,7 +31,7 @@ export const loadDefaultBackDisplay = function (
 
 export const getStockBackDisplay = (image?: Buffer) => ({
   image: image ?? getEmptyConvertedImage(),
-  settings: getDefaultDisplay({
+  settings: createDefaultDisplaySettings({
     imageSettings: { invert: true },
     isGeneratedFromDefaultBackImage: true,
   }),

@@ -1,8 +1,8 @@
 import {
-  IButtonPage,
+  IButtonSettingsPage,
   IConvertedImagePage,
   IDefaultBackDisplay,
-  IDisplayPage,
+  IDisplaySettingsPage,
   IOriginalImagePage,
 } from "../../interfaces";
 import { handleFileSelect } from "../handleFileSelect";
@@ -15,8 +15,12 @@ export const loadConfigFile = async (
   setWidth: React.Dispatch<React.SetStateAction<number>>,
   setHeight: React.Dispatch<React.SetStateAction<number>>,
   setBrightness: React.Dispatch<React.SetStateAction<number>>,
-  setButtonSettingsPages: React.Dispatch<React.SetStateAction<IButtonPage[]>>,
-  setDisplaySettingsPages: React.Dispatch<React.SetStateAction<IDisplayPage[]>>,
+  setButtonSettingsPages: React.Dispatch<
+    React.SetStateAction<IButtonSettingsPage[]>
+  >,
+  setDisplaySettingsPages: React.Dispatch<
+    React.SetStateAction<IDisplaySettingsPage[]>
+  >,
   setOriginalImagePages: React.Dispatch<
     React.SetStateAction<IOriginalImagePage[]>
   >,

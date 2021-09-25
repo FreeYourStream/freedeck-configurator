@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { IButtonSettings } from "../../interfaces";
+import { IButtonSetting } from "../../interfaces";
 import { colors } from "../../definitions/colors";
 import { keys } from "../../definitions/keys";
 import {
@@ -26,7 +26,7 @@ const TextBox = styled.textarea`
   }
 `;
 export const Text: React.FC<{
-  action: IButtonSettings;
+  action: IButtonSetting;
   setKeys: (keys: number[]) => void;
   onKey: (e: React.KeyboardEvent<any>, lengthLimit?: any) => void;
 }> = ({ action, setKeys, onKey }) => {

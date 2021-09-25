@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  Reducer,
-  useEffect,
-  useReducer,
-  useState,
-} from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { HiDocumentAdd } from "react-icons/hi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -25,7 +19,6 @@ import { useSetOriginalImageCallback } from "./hooks/callbacks/setOriginalImage"
 import { useSwitchDisplaysCallback } from "./hooks/callbacks/switchDisplay";
 import { useUpdateAllDefaultBackImagesCallback } from "./hooks/callbacks/updateAllDefaultBackImages";
 import {
-  useButtonSettingsPages,
   useConvertedImagePages,
   useDefaultBackDisplay,
   useDisplaySettingsPages,
@@ -33,7 +26,7 @@ import {
   useShowLogin,
   useShowSettings,
 } from "./hooks/states";
-import { IButton, IDisplay, IOriginalImage } from "./interfaces";
+import { IButtonSettings, IDisplay, IOriginalImage } from "./interfaces";
 import { FDIconButtonFixed } from "./lib/components/Button";
 import { createButtonBody, createImageBody } from "./lib/configFile/createBody";
 import { createFooter } from "./lib/configFile/createFooter";
@@ -113,9 +106,6 @@ function App() {
     if (!(navigator as any).serial) return;
     setSerialApi(new FDSerialAPI());
   }, []);
-  const [buttonSettingsPages, setButtonSettingsPages] =
-    useButtonSettingsPages();
-
   const [displaySettingsPages, setDisplaySettingsPages] =
     useDisplaySettingsPages();
 
@@ -133,10 +123,7 @@ function App() {
     setOriginalImagePages,
     setConvertedImagePages
   );
-  const setButtonSettings = useSetButtonSettingsCallback(
-    buttonSettingsPages,
-    setButtonSettingsPages
-  );
+
   const setDisplaySettings = useSetDisplaySettingsCallback(
     displaySettingsPages,
     originalImagePages,
@@ -159,7 +146,7 @@ function App() {
     originalImagePages,
     setConvertedImagePages,
     convertedImagePages,
-    buttonSettingsPages,
+    state.buttonSettingsPages,
     setButtonSettingsPages,
     setDisplaySettingsPages,
     displaySettingsPages,
@@ -226,17 +213,17 @@ function App() {
                   (width) =>
                     dispatch({
                       type: "setWidth",
-                      value: parseInt(width.toString() ?? "0"),
+                      width: parseInt(width.toString() ?? "0"),
                     }),
                   (height) =>
                     dispatch({
                       type: "setHeight",
-                      value: parseInt(height.toString() ?? "0"),
+                      height: parseInt(height.toString() ?? "0"),
                     }),
                   (brightness) =>
                     dispatch({
                       type: "setBrightness",
-                      value: parseInt(brightness.toString() ?? "0"),
+                      brightness: parseInt(brightness.toString() ?? "0"),
                     }),
                   setButtonSettingsPages,
                   setDisplaySettingsPages,
@@ -283,7 +270,7 @@ function App() {
                 }
                 setButtonSettings={(
                   displayIndex: number,
-                  newDisplay: IButton
+                  newDisplay: IButtonSettings
                 ) => setButtonSettings(pageIndex, displayIndex, newDisplay)}
                 setDisplaySettings={(
                   displayIndex: number,
@@ -306,17 +293,17 @@ function App() {
                 (width) =>
                   dispatch({
                     type: "setWidth",
-                    value: parseInt(width.toString() ?? "0"),
+                    width: parseInt(width.toString() ?? "0"),
                   }),
                 (height) =>
                   dispatch({
                     type: "setHeight",
-                    value: parseInt(height.toString() ?? "0"),
+                    height: parseInt(height.toString() ?? "0"),
                   }),
                 (brightness) =>
                   dispatch({
                     type: "setBrightness",
-                    value: parseInt(brightness.toString() ?? "0"),
+                    brightness: parseInt(brightness.toString() ?? "0"),
                   }),
                 setButtonSettingsPages,
                 setDisplaySettingsPages,

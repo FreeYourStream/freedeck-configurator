@@ -1,12 +1,12 @@
 import React from "react";
 
-import { IButtonSettings } from "../../interfaces";
+import { IButtonSetting } from "../../interfaces";
 import { FDButton } from "../../lib/components/Button";
 import { SelectWrapper, StyledSelect } from "../../lib/components/Misc";
 import { scrollToPage } from "../../lib/scrollToPage";
 
 export const ChangePage: React.FC<{
-  action: IButtonSettings;
+  action: IButtonSetting;
   setGoTo: (page: number) => void;
   addPage: () => Promise<number>;
   pages: number[];

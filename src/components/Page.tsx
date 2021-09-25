@@ -5,10 +5,10 @@ import { FaTrashAlt } from "react-icons/fa";
 import styled from "styled-components";
 
 import {
-  IButton,
-  IButtonPage,
+  IButtonSettings,
+  IButtonSettingsPage,
   IDisplay,
-  IDisplayPage,
+  IDisplaySettingsPage,
   IOriginalImagePage,
 } from "../interfaces";
 import { colors } from "../definitions/colors";
@@ -90,14 +90,17 @@ interface IProps {
   makeDefaultBackImage: (displayIndex: number) => void;
   originalImages: IOriginalImagePage;
   pageIndex: number;
-  buttonSettingsPages: IButtonPage;
-  displaySettingsPages: IDisplayPage;
+  buttonSettingsPages: IButtonSettingsPage;
+  displaySettingsPages: IDisplaySettingsPage;
   convertedImages: Buffer[];
   setOriginalImage: (displayIndex: number, image: Buffer) => void;
   deletePage: (pageIndex: number) => void;
   addPage: (displayIndex: number, primary: boolean) => Promise<number>;
   pageCount: number;
-  setButtonSettings: (displayIndex: number, newDisplay: IButton) => void;
+  setButtonSettings: (
+    displayIndex: number,
+    newDisplay: IButtonSettings
+  ) => void;
   setDisplaySettings: (displayIndex: number, newDisplay: IDisplay) => void;
   switchDisplays: (
     aPageIndex: number,

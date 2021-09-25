@@ -1,5 +1,4 @@
-import React from "react";
-import { useQuery, gql } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { User } from "../../generated/graphql";
 
 const GET_USER_ME = gql`

@@ -21,7 +21,7 @@ export const Brightness: React.FC<{
           onChange={(e) =>
             dispatch({
               type: "setBrightness",
-              value: e.currentTarget.valueAsNumber,
+              brightness: e.currentTarget.valueAsNumber,
             })
           }
         />

@@ -1,13 +1,12 @@
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { colors } from "../definitions/colors";
-import React, { useEffect, useState } from "react";
-import { FDButton, FDIconButton } from "../lib/components/Button";
-import { FDSerialAPI } from "../lib/fdSerialApi";
-import { HiDocumentAdd } from "react-icons/hi";
-import { connectionStatus } from "../lib/serial";
-import { Value } from "../lib/components/Misc";
 import { useUser } from "../graphql/hooks/useUser";
 import { Avatar } from "../lib/components/Avatar";
+import { FDButton, FDIconButton } from "../lib/components/Button";
+import { Value } from "../lib/components/Misc";
+import { FDSerialAPI } from "../lib/fdSerialApi";
+import { connectionStatus } from "../lib/serial";
 
 const Wrapper = styled.div`
   background-color: ${colors.gray};
@@ -58,7 +57,7 @@ const LoginLogoutButtons: React.FC<{
   openLogin: () => void;
   openFDHub: () => void;
 }> = ({ openLogin, openFDHub }) => {
-  const { user, loading, error } = useUser();
+  const { user, error } = useUser();
   if (user) {
     return (
       <>

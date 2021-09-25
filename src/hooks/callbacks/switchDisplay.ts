@@ -1,22 +1,26 @@
 import { useCallback } from "react";
 
 import {
-  IButtonPage,
+  IButtonSettingsPage,
   IConvertedImagePage,
-  IDisplayPage,
+  IDisplaySettingsPage,
   IOriginalImagePage,
 } from "../../interfaces";
 
 export const useSwitchDisplaysCallback = (
-  buttonSettingsPages: IButtonPage[],
+  buttonSettingsPages: IButtonSettingsPage[],
   convertedImagePages: IConvertedImagePage[],
-  displaySettingsPages: IDisplayPage[],
+  displaySettingsPages: IDisplaySettingsPage[],
   originalImagePages: IOriginalImagePage[],
-  setButtonSettingsPages: React.Dispatch<React.SetStateAction<IButtonPage[]>>,
+  setButtonSettingsPages: React.Dispatch<
+    React.SetStateAction<IButtonSettingsPage[]>
+  >,
   setConvertedImagePages: React.Dispatch<
     React.SetStateAction<IConvertedImagePage[]>
   >,
-  setDisplaySettingsPages: React.Dispatch<React.SetStateAction<IDisplayPage[]>>,
+  setDisplaySettingsPages: React.Dispatch<
+    React.SetStateAction<IDisplaySettingsPage[]>
+  >,
   setOriginalImagePages: React.Dispatch<
     React.SetStateAction<IOriginalImagePage[]>
   >

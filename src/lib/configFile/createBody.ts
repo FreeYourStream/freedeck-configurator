@@ -1,10 +1,10 @@
 import { Buffer } from "buffer";
 
-import { IButtonPage, IConvertedImagePage } from "../../interfaces";
+import { IButtonSettingsPage, IConvertedImagePage } from "../../interfaces";
 import { EAction } from "../../definitions/modes";
 import { optimizeForSSD1306 } from "./ssd1306";
 
-export const createButtonBody = (buttonPages: IButtonPage[]) => {
+export const createButtonBody = (buttonPages: IButtonSettingsPage[]) => {
   const buttonRowCount = buttonPages.length * buttonPages[0].length;
   const buttonRows = new Buffer(16 * buttonRowCount);
   buttonPages.forEach((buttonPage, pageIndex) => {

@@ -84,7 +84,7 @@ export const Device: React.FC<{
         <Label>FreeDeck width:</Label>
         <DisplayCountDropDown
           onChange={(newValue) =>
-            dispatch({ type: "setWidth", value: newValue })
+            dispatch({ type: "setWidth", width: newValue })
           }
           value={state.width}
           options={widthOptions}
@@ -94,7 +94,7 @@ export const Device: React.FC<{
         <Label>FreeDeck height:</Label>
         <DisplayCountDropDown
           onChange={(newValue) =>
-            dispatch({ type: "setHeight", value: newValue })
+            dispatch({ type: "setHeight", height: newValue })
           }
           value={state.height}
           options={heightOptions}

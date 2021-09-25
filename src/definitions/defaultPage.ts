@@ -1,6 +1,7 @@
 import { merge } from "lodash";
 
-import { IButton, IButtonPage, IDisplay } from "../interfaces";
+import { IButtonSettings, IButtonSettingsPage, IDisplay } from "../interfaces";
+import { getEmptyConvertedImage } from "./emptyConvertedImage";
 import { fontMedium } from "./fonts";
 import { EAction } from "./modes";
 
@@ -8,7 +9,7 @@ export type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
 };
 export type IDefaultImageDisplayOptions = RecursivePartial<IDisplay>;
-export const getDefaultButton: () => IButton = () => ({
+export const createDefaultButtonSettings: () => IButtonSettings = () => ({
   primary: {
     mode: EAction.noop,
     values: [],
@@ -20,12 +21,13 @@ export const getDefaultButton: () => IButton = () => ({
     enabled: false,
   },
 });
-export const getDefaultDisplay: (
+export const createDefaultDisplaySettings: (
   options?: IDefaultImageDisplayOptions
 ) => IDisplay = (options) =>
   merge<IDisplay, IDefaultImageDisplayOptions | undefined>(
     {
-      hasOriginalImage: true,
+      originalImage: null,
+      convertedImage: getEmptyConvertedImage(),
       imageSettings: {
         brightness: 0,
         contrast: 0,
@@ -47,15 +49,15 @@ export const getDefaultDisplay: (
     },
     options
   );
-export const getDefaultButtonPage = (
+export const createDefaultButtonSettingsPage = (
   width: number,
   height: number,
   previousPageIndex?: number
-): IButtonPage => {
-  const backButton: IButton = getDefaultButton();
-  const displays: IButtonPage = Array<IButton>(width * height - 1).fill(
-    getDefaultButton()
-  );
+): IButtonSettingsPage => {
+  const backButton: IButtonSettings = createDefaultButtonSettings();
+  const displays: IButtonSettingsPage = Array<IButtonSettings>(
+    width * height - 1
+  ).fill(createDefaultButtonSettings());
   if (previousPageIndex !== undefined) {
     backButton.primary.mode = EAction.changePage;
     backButton.primary.values = [previousPageIndex];
@@ -63,11 +65,18 @@ export const getDefaultButtonPage = (
   displays.unshift(backButton);
   return [...displays];
 };
-export const getDefaultDisplayPage = (
+export const createDefaultDisplaySettingsPage = (
   width: number,
   height: number,
-  options?: IDefaultImageDisplayOptions
+  previousPage?: number
 ) => {
-  const displays = Array<IDisplay>(width * height).fill(getDefaultDisplay());
+  const displays = Array<IDisplay>(width * height).fill(
+    createDefaultDisplaySettings({ previousPage })
+  );
+  if (previousPage) {
+    displays[0].previousPage = previousPage;
+    displays[0].isGeneratedFromDefaultBackImage = true;
+    displays[0].convertedImage;
+  }
   return [...displays];
 };

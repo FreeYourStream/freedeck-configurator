@@ -1,10 +1,10 @@
 import { Buffer } from "buffer";
 
 import {
-  IButtonPage,
+  IButtonSettingsPage,
   IConvertedImagePage,
   IDefaultBackDisplay,
-  IDisplayPage,
+  IDisplaySettingsPage,
   IOriginalImagePage,
 } from "../../interfaces";
 import { monochrome128by64BitmapHeader } from "../../definitions/headers";
@@ -50,9 +50,9 @@ export const parseConfig = (configBuffer: Buffer) => {
   }
 
   let config: {
-    buttonSettingsPages: IButtonPage[];
+    buttonSettingsPages: IButtonSettingsPage[];
     defaultBackDisplay: IDefaultBackDisplay;
-    displaySettingsPages: IDisplayPage[];
+    displaySettingsPages: IDisplaySettingsPage[];
     originalImagePages: IOriginalImagePage[];
     convertedImagePages: IConvertedImagePage[];
   };

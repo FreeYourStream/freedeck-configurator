@@ -3,16 +3,18 @@ import { useCallback } from "react";
 import {
   IConvertedImagePage,
   IDisplay,
-  IDisplayPage,
+  IDisplaySettingsPage,
   IOriginalImagePage,
 } from "../../interfaces";
 import { composeImage, composeText } from "../../lib/image/composeImage";
 
 export const useSetDisplaySettingsCallback = (
-  displaySettingsPages: IDisplayPage[],
+  displaySettingsPages: IDisplaySettingsPage[],
   originalImagePages: IOriginalImagePage[],
   convertedImagePages: IConvertedImagePage[],
-  setDisplaySettingsPages: React.Dispatch<React.SetStateAction<IDisplayPage[]>>,
+  setDisplaySettingsPages: React.Dispatch<
+    React.SetStateAction<IDisplaySettingsPage[]>
+  >,
   setConvertedImagePages: React.Dispatch<
     React.SetStateAction<IConvertedImagePage[]>
   >

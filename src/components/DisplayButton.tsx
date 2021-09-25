@@ -2,10 +2,9 @@ import React, { useContext, useMemo, useState } from "react";
 import { useContextMenuTrigger } from "react-context-menu-wrapper";
 import { useDrag, useDrop } from "react-dnd";
 import styled from "styled-components";
-
-import { IButton, IDisplay } from "../interfaces";
 import { colors } from "../definitions/colors";
 import { EAction } from "../definitions/modes";
+import { IButtonSettings, IDisplay } from "../interfaces";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
 import { DisplaySettingsContainer } from "../lib/components/DisplaySettingsContainer";
 import { ImagePreview } from "../lib/components/ImagePreview";
@@ -13,8 +12,8 @@ import { Column, Row, Title } from "../lib/components/Misc";
 import { Modal, ModalBody } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
 import { getBase64Image } from "../lib/image/base64Encode";
+import { StateContext } from "../state";
 import { Action } from "./ButtonSettings";
-import { DispatchContext, StateContext } from "../state";
 
 const Wrapper = styled.div<{ opacity: number }>`
   opacity: ${(p) => p.opacity};
@@ -39,10 +38,10 @@ const DisplayComponent: React.FC<{
   deleteImage: () => void;
   makeDefaultBackImage: () => void;
   setOriginalImage: (newImage: Buffer) => void;
-  setButtonSettings: (display: IButton) => void;
+  setButtonSettings: (display: IButtonSettings) => void;
   setDisplaySettings: (display: IDisplay) => void;
   originalImage: Buffer | null;
-  actionDisplay: IButton;
+  actionDisplay: IButtonSettings;
   imageDisplay: IDisplay;
   pageIndex: number;
   pages: number[];

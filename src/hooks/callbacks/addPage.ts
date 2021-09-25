@@ -1,15 +1,15 @@
 import { useCallback } from "react";
 
 import {
-  IButtonPage,
+  IButtonSettingsPage,
   IConvertedImagePage,
   IDefaultBackDisplay,
-  IDisplayPage,
+  IDisplaySettingsPage,
   IOriginalImagePage,
 } from "../../interfaces";
 import {
-  getDefaultButtonPage,
-  getDefaultDisplayPage,
+  createDefaultButtonSettingsPage,
+  createDefaultDisplaySettingsPage,
 } from "../../definitions/defaultPage";
 import { getEmptyConvertedImage } from "../../definitions/emptyConvertedImage";
 import { composeImage } from "../../lib/image/composeImage";
@@ -25,10 +25,14 @@ export const useAddPageCallback = (
     React.SetStateAction<IConvertedImagePage[]>
   >,
   convertedImagePages: IConvertedImagePage[],
-  buttonSettingsPages: IButtonPage[],
-  setButtonSettingsPages: React.Dispatch<React.SetStateAction<IButtonPage[]>>,
-  setDisplaySettingsPages: React.Dispatch<React.SetStateAction<IDisplayPage[]>>,
-  displaySettingsPages: IDisplayPage[],
+  buttonSettingsPages: IButtonSettingsPage[],
+  setButtonSettingsPages: React.Dispatch<
+    React.SetStateAction<IButtonSettingsPage[]>
+  >,
+  setDisplaySettingsPages: React.Dispatch<
+    React.SetStateAction<IDisplaySettingsPage[]>
+  >,
+  displaySettingsPages: IDisplaySettingsPage[],
   defaultBackDisplay: IDefaultBackDisplay
 ) =>
   useCallback(
@@ -39,7 +43,7 @@ export const useAddPageCallback = (
     ) => {
       const newOriginalImagePage = [];
       const newConvertedImagePage = [];
-      let newDisplayPage = getDefaultDisplayPage(width, height);
+      let newDisplayPage = createDefaultDisplaySettingsPage(width, height);
       for (let i = 0; i < width * height; i++) {
         if (previousPageIndex !== undefined && i === 0) {
           newOriginalImagePage.push(Buffer.from(defaultBackDisplay.image));
@@ -66,7 +70,7 @@ export const useAddPageCallback = (
 
       const newActionSettingPages = [
         ...buttonSettingsPages,
-        getDefaultButtonPage(width, height, previousPageIndex),
+        createDefaultButtonSettingsPage(width, height, previousPageIndex),
       ];
       if (
         previousDisplayIndex !== undefined &&

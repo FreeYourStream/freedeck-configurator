@@ -1,24 +1,28 @@
 import { useCallback } from "react";
 
 import {
-  IButton,
-  IButtonPage,
+  IButtonSettings,
+  IButtonSettingsPage,
   IConvertedImagePage,
-  IDisplayPage,
+  IDisplaySettingsPage,
   IOriginalImagePage,
 } from "../../interfaces";
 import { EAction } from "../../definitions/modes";
 
 export const useDeletePageCallback = (
-  buttonSettingsPages: IButtonPage[],
+  buttonSettingsPages: IButtonSettingsPage[],
   convertedImagePages: IConvertedImagePage[],
-  displaySettingsPages: IDisplayPage[],
+  displaySettingsPages: IDisplaySettingsPage[],
   originalImagePages: IOriginalImagePage[],
-  setButtonSettingsPages: React.Dispatch<React.SetStateAction<IButtonPage[]>>,
+  setButtonSettingsPages: React.Dispatch<
+    React.SetStateAction<IButtonSettingsPage[]>
+  >,
   setConvertedImagePages: React.Dispatch<
     React.SetStateAction<IConvertedImagePage[]>
   >,
-  setDisplaySettingsPages: React.Dispatch<React.SetStateAction<IDisplayPage[]>>,
+  setDisplaySettingsPages: React.Dispatch<
+    React.SetStateAction<IDisplaySettingsPage[]>
+  >,
   setOriginalImagePages: React.Dispatch<
     React.SetStateAction<IOriginalImagePage[]>
   >
@@ -36,8 +40,8 @@ export const useDeletePageCallback = (
       let newImagePages = [...displaySettingsPages];
       newActionPages.splice(pageIndex, 1);
       newImagePages.splice(pageIndex, 1);
-      newActionPages = newActionPages.map<IButtonPage>((newPage) => {
-        const displays = newPage.map<IButton>((display) => {
+      newActionPages = newActionPages.map<IButtonSettingsPage>((newPage) => {
+        const displays = newPage.map<IButtonSettings>((display) => {
           if (display.primary.mode === EAction.changePage) {
             if (display.primary.values[0] >= pageIndex) {
               display.primary.values[0] -= 1;

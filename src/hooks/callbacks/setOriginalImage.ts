@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import {
   IConvertedImage,
   IConvertedImagePage,
-  IDisplayPage,
+  IDisplaySettingsPage,
   IOriginalImagePage,
 } from "../../interfaces";
 import { getEmptyConvertedImage } from "../../definitions/emptyConvertedImage";
@@ -12,7 +12,7 @@ import { composeImage } from "../../lib/image/composeImage";
 export const useSetOriginalImageCallback = (
   convertedImagePages: IConvertedImagePage[],
   originalImagePages: IOriginalImagePage[],
-  displayPages: IDisplayPage[],
+  displayPages: IDisplaySettingsPage[],
   setOriginalImagePages: (
     value: React.SetStateAction<IOriginalImagePage[]>
   ) => void,

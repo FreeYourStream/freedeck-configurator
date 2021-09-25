@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
 
-import { IButtonSettings } from "../../interfaces";
+import { IButtonSetting } from "../../interfaces";
 import { keys } from "../../definitions/keys";
 import { EAction } from "../../definitions/modes";
 import { SelectWrapper, StyledSelect, Title } from "../../lib/components/Misc";
@@ -18,10 +18,10 @@ const Wrapper = styled.div`
 `;
 
 export const Action: React.FC<{
-  setActionSetting: (newActionSetting: IButtonSettings) => void;
+  setActionSetting: (newActionSetting: IButtonSetting) => void;
   addPage: () => Promise<number>;
   pages: number[];
-  action: IButtonSettings;
+  action: IButtonSetting;
   loadUserInteraction: boolean;
   title: string;
 }> = ({ setActionSetting, pages, addPage, action, title }) => {

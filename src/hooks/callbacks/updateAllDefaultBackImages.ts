@@ -1,9 +1,13 @@
 import { useCallback } from "react";
 
-import { IDefaultBackDisplay, IDisplay, IDisplayPage } from "../../interfaces";
+import {
+  IDefaultBackDisplay,
+  IDisplay,
+  IDisplaySettingsPage,
+} from "../../interfaces";
 
 export const useUpdateAllDefaultBackImagesCallback = (
-  displaySettingsPages: IDisplayPage[],
+  displaySettingsPages: IDisplaySettingsPage[],
   setDefaultBackDisplay: React.Dispatch<
     React.SetStateAction<IDefaultBackDisplay>
   >,

@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 import { IDisplay } from "../../interfaces";
-import { getDefaultDisplay } from "../../definitions/defaultPage";
+import { createDefaultDisplaySettings } from "../../definitions/defaultPage";
 
 export const useDeleteImageCallback = (
   setDisplaySettings: (
@@ -18,7 +18,11 @@ export const useDeleteImageCallback = (
   useCallback(
     async (pageIndex: number, displayIndex: number) => {
       await setOriginalImage(pageIndex, displayIndex, null);
-      await setDisplaySettings(pageIndex, displayIndex, getDefaultDisplay());
+      await setDisplaySettings(
+        pageIndex,
+        displayIndex,
+        createDefaultDisplaySettings()
+      );
     },
     [setDisplaySettings, setOriginalImage]
   );

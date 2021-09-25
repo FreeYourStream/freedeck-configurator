@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IButtonSettings } from "../../interfaces";
+import { IButtonSetting } from "../../interfaces";
 import {
   Row,
   SelectWrapper,
@@ -10,7 +10,7 @@ import {
 } from "../../lib/components/Misc";
 
 export const FreeDeckSettings: React.FC<{
-  action: IButtonSettings;
+  action: IButtonSetting;
   setSetting: (setting: number[]) => void;
 }> = ({ action, setSetting }) => {
   return (
