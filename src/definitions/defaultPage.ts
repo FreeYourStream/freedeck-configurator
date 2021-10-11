@@ -1,6 +1,8 @@
 import { merge } from "lodash";
 
 import { IButtonSettings, IButtonSettingsPage, IDisplay } from "../interfaces";
+import { getBase64Image } from "../lib/image/base64Encode";
+import { createDefaultBackDisplay } from "./defaultBackImage";
 import { getEmptyConvertedImage } from "./emptyConvertedImage";
 import { fontMedium } from "./fonts";
 import { EAction } from "./modes";
@@ -8,7 +10,7 @@ import { EAction } from "./modes";
 export type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
 };
-export type IDefaultImageDisplayOptions = RecursivePartial<IDisplay>;
+export type IDisplayOptions = RecursivePartial<IDisplay>;
 export const createDefaultButtonSettings: () => IButtonSettings = () => ({
   primary: {
     mode: EAction.noop,
@@ -21,13 +23,14 @@ export const createDefaultButtonSettings: () => IButtonSettings = () => ({
     enabled: false,
   },
 });
-export const createDefaultDisplaySettings: (
-  options?: IDefaultImageDisplayOptions
-) => IDisplay = (options) =>
-  merge<IDisplay, IDefaultImageDisplayOptions | undefined>(
+export const createDefaultDisplay: (options?: IDisplayOptions) => IDisplay = (
+  options
+) =>
+  merge<IDisplay, IDisplayOptions | undefined>(
     {
       originalImage: null,
       convertedImage: getEmptyConvertedImage(),
+      previewImage: getBase64Image(getEmptyConvertedImage()),
       imageSettings: {
         brightness: 0,
         contrast: 0,
@@ -65,18 +68,16 @@ export const createDefaultButtonSettingsPage = (
   displays.unshift(backButton);
   return [...displays];
 };
-export const createDefaultDisplaySettingsPage = (
+export const createDefaultDisplayPage = async (
   width: number,
   height: number,
   previousPage?: number
 ) => {
-  const displays = Array<IDisplay>(width * height).fill(
-    createDefaultDisplaySettings({ previousPage })
-  );
+  const displays = Array<IDisplay>(width * height).fill({
+    ...createDefaultDisplay(),
+  });
   if (previousPage) {
-    displays[0].previousPage = previousPage;
-    displays[0].isGeneratedFromDefaultBackImage = true;
-    displays[0].convertedImage;
+    displays[0] = await createDefaultBackDisplay(previousPage);
   }
   return [...displays];
 };

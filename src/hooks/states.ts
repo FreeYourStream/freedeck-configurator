@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import {
   IConvertedImagePage,
-  IDefaultBackDisplay,
   IDisplaySettingsPage,
   IOriginalImagePage,
 } from "../interfaces";
@@ -21,9 +20,6 @@ export const useOriginalImagePages = function () {
 };
 export const useConvertedImagePages = function () {
   return useState<IConvertedImagePage[]>([]);
-};
-export const useDefaultBackDisplay = function () {
-  return useState<IDefaultBackDisplay>(getStockBackDisplay());
 };
 export const useSerialConnectedStatus = function () {
   return useState<boolean>(false);

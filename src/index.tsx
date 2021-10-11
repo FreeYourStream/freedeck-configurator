@@ -5,28 +5,36 @@ import { toast } from "react-toastify";
 
 import App from "./App";
 import { register } from "./serviceWorker";
+import { defaultState } from "./state";
 
-if (process.env.NODE_ENV !== "development")
-  window.onbeforeunload = function () {
-    return "Data will be lost if you leave the page, are you sure?";
-  };
+const main = async () => {
+  if (process.env.NODE_ENV !== "development")
+    window.onbeforeunload = function () {
+      return "Data will be lost if you leave the page, are you sure?";
+    };
 
-if (process.env.REACT_APP_ENABLE_API === "true") {
-  const client = new ApolloClient({
-    cache: new InMemoryCache(),
-    uri: process.env.REACT_APP_API_URL + "/graphql",
-    credentials: "include",
-  });
-  console.log("API ENABLED :)");
-  ReactDOM.render(
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>,
-    document.getElementById("root")
-  );
-} else {
-  ReactDOM.render(<App />, document.getElementById("root"));
-}
+  const awaitedDefaultState = await defaultState();
+  if (process.env.REACT_APP_ENABLE_API === "true") {
+    const client = new ApolloClient({
+      cache: new InMemoryCache(),
+      uri: process.env.REACT_APP_API_URL + "/graphql",
+      credentials: "include",
+    });
+    console.log("API ENABLED :)");
+    ReactDOM.render(
+      <ApolloProvider client={client}>
+        <App defaultState={awaitedDefaultState} />
+      </ApolloProvider>,
+      document.getElementById("root")
+    );
+  } else {
+    ReactDOM.render(
+      <App defaultState={awaitedDefaultState} />,
+      document.getElementById("root")
+    );
+  }
+};
+main();
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

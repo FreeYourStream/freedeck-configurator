@@ -9,14 +9,11 @@ export interface IConverted {
   base64: string;
 }
 
-export const composeImage = async (
-  image: Buffer,
-  width: number,
-  height: number,
-  settings: IDisplay
-): Promise<Buffer> => {
-  const { imageSettings, textWithIconSettings, textSettings } = settings;
-  let jimpImage = await Jimp.read(image);
+export const composeImage = async (display: IDisplay): Promise<Buffer> => {
+  const { imageSettings, textWithIconSettings, textSettings, originalImage } =
+    display;
+  if (!originalImage) throw new Error("no original image");
+  let jimpImage = await Jimp.read(originalImage);
   const ditherBackground = await Jimp.create(
     jimpImage.getWidth(),
     jimpImage.getHeight(),
@@ -42,13 +39,10 @@ export const composeImage = async (
   if (imageSettings.invert) jimpImage.invert();
   await jimpImage.autocrop();
 
-  const background = new Jimp(width, height, "black");
+  const background = new Jimp(128, 64, "black");
 
   if (textSettings.text.length) {
-    jimpImage.scaleToFit(
-      width * textWithIconSettings.iconWidthMultiplier,
-      height
-    );
+    jimpImage.scaleToFit(128 * textWithIconSettings.iconWidthMultiplier, 64);
     const font = await Jimp.loadFont(textSettings.font);
     const fontSize = font.common.lineHeight - 2;
     let lines = textSettings.text.split(/\r?\n/).filter((line) => line);
@@ -65,24 +59,20 @@ export const composeImage = async (
         );
       })
     );
-    background.composite(jimpImage, 0, height / 2 - jimpImage.getHeight() / 2);
+    background.composite(jimpImage, 0, 64 / 2 - jimpImage.getHeight() / 2);
   } else {
-    jimpImage.scaleToFit(width, height);
+    jimpImage.scaleToFit(128, 64);
     background.composite(
       jimpImage,
-      width / 2 - jimpImage.getWidth() / 2,
-      height / 2 - jimpImage.getHeight() / 2
+      128 / 2 - jimpImage.getWidth() / 2,
+      64 / 2 - jimpImage.getHeight() / 2
     );
   }
   const bitmapBuffer = await background.getBufferAsync("image/bmp");
-  return await colorBitmapToMonochromeBitmap(bitmapBuffer, width, height);
+  return await colorBitmapToMonochromeBitmap(bitmapBuffer, 128, 64);
 };
 
-export const composeText = async (
-  width: number,
-  height: number,
-  settings: IDisplay
-): Promise<Buffer> => {
+export const composeText = async (settings: IDisplay): Promise<Buffer> => {
   const { textSettings } = settings;
   const image = await Jimp.create(128, 64, "black");
   const font = await Jimp.loadFont(textSettings.font);
@@ -108,5 +98,5 @@ export const composeText = async (
     (64 - image.getHeight()) / 2
   );
   const bitmapBuffer = await background.getBufferAsync("image/bmp");
-  return await colorBitmapToMonochromeBitmap(bitmapBuffer, width, height);
+  return await colorBitmapToMonochromeBitmap(bitmapBuffer, 128, 64);
 };

@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import styled from "styled-components";
 
 import { IButtonSetting } from "../../interfaces";
@@ -10,6 +10,7 @@ import { FreeDeckSettings } from "./FreeDeckSettings";
 import { Hotkeys } from "./Hotkeys";
 import { SpecialKeys } from "./SpecialKeys";
 import { Text } from "./Text";
+import { DispatchContext } from "../../state";
 
 const Wrapper = styled.div`
   display: flex;
@@ -18,39 +19,53 @@ const Wrapper = styled.div`
 `;
 
 export const Action: React.FC<{
-  setActionSetting: (newActionSetting: IButtonSetting) => void;
-  addPage: () => Promise<number>;
-  pages: number[];
+  pageIndex: number;
+  buttonIndex: number;
+  pageCount: number;
   action: IButtonSetting;
   loadUserInteraction: boolean;
   title: string;
-}> = ({ setActionSetting, pages, addPage, action, title }) => {
-  const setMode = useCallback(
-    (mode: EAction) => {
-      const keepValues =
-        [EAction.hotkeys, EAction.text].includes(action.mode) &&
-        [EAction.hotkeys, EAction.text].includes(mode);
-      setActionSetting({
+  primary: boolean;
+}> = ({ action, title, pageIndex, buttonIndex, pageCount, primary }) => {
+  const dispatch = useContext(DispatchContext);
+  const pages = [...Array(pageCount).keys()].filter(
+    (pageNumber) => pageNumber !== pageIndex
+  );
+  const priOrSec = primary ? "primary" : "secondary";
+  const setMode = (mode: EAction) => {
+    const keepValues =
+      [EAction.hotkeys, EAction.text].includes(action.mode) &&
+      [EAction.hotkeys, EAction.text].includes(mode);
+    dispatch.setButtonSettings({
+      pageIndex,
+      buttonIndex,
+      priOrSec,
+      buttonSettings: {
         ...action,
         mode,
         enabled: mode !== EAction.noop,
         values: keepValues ? action.values : [],
-      });
-    },
-    [action, setActionSetting]
-  );
-  const setMultipleValues = useCallback(
-    (keys: number[]) => {
-      setActionSetting({ ...action, values: keys[0] === -1 ? [] : keys });
-    },
-    [action, setActionSetting]
-  );
-  const setSingleValue = useCallback(
-    (goTo: number) => {
-      setActionSetting({ ...action, values: goTo === -1 ? [] : [goTo] });
-    },
-    [action, setActionSetting]
-  );
+      },
+    });
+  };
+  const setMultipleValues = (keys: number[]) =>
+    dispatch.setButtonSettings({
+      pageIndex,
+      buttonIndex,
+      priOrSec,
+      buttonSettings: {
+        ...action,
+        values: keys[0] === -1 ? [] : keys,
+      },
+    });
+
+  const setSingleValue = (goTo: number) =>
+    dispatch.setButtonSettings({
+      pageIndex,
+      buttonIndex,
+      priOrSec,
+      buttonSettings: { ...action, values: goTo === -1 ? [] : [goTo] },
+    });
   const onKey = useCallback(
     (e: React.KeyboardEvent<any>, lengthLimit = 7) => {
       if (e.repeat) return;
@@ -90,7 +105,7 @@ export const Action: React.FC<{
       {action.mode === EAction.changePage && (
         <ChangePage
           action={action}
-          addPage={addPage}
+          addPage={() => dispatch.addPage(undefined)}
           pages={pages}
           setGoTo={setSingleValue}
         />

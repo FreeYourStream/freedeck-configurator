@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-import { IDefaultBackDisplay } from "../interfaces";
 import { Modal, ModalBody } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
 import { FDSerialAPI } from "../lib/fdSerialApi";
@@ -18,22 +17,17 @@ export const Activator = styled.div<{ visible: boolean }>`
 export const GlobalSettings: React.FC<{
   setClose: () => void;
   onClose: () => void;
-  setDefaultBackDisplay: React.Dispatch<
-    React.SetStateAction<IDefaultBackDisplay>
-  >;
+
   loadConfigFile: (buffer: Buffer) => void;
-  getConfigBuffer: () => Buffer;
-  defaultBackDisplay: IDefaultBackDisplay;
+  getConfigBuffer: () => Promise<Buffer>;
   visible?: boolean;
   readyToSave: boolean;
   serialApi?: FDSerialAPI;
 }> = ({
   setClose,
-  setDefaultBackDisplay,
   onClose,
   loadConfigFile,
   getConfigBuffer,
-  defaultBackDisplay,
   visible,
   readyToSave,
   serialApi,
@@ -61,10 +55,7 @@ export const GlobalSettings: React.FC<{
           return (
             <ModalBody>
               <Activator visible={tab === "Default back button"}>
-                <DefaultBackButtonSettings
-                  defaultBackDisplay={defaultBackDisplay}
-                  setDefaultBackDisplay={setDefaultBackDisplay}
-                />
+                <DefaultBackButtonSettings />
               </Activator>
               <Activator visible={tab === "Brightness (Beta)"}>
                 <Brightness />

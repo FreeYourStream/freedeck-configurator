@@ -57,14 +57,15 @@ export const DropDisplay = React.forwardRef<
   });
   return (
     <DropWrapper ref={ref}>
-      <Drop {...getRootProps({ style: { outline: "none" } })}>
+      <ImagePreview multiplier={2.5} src={previewImage} />
+      {/* <Drop {...getRootProps({ style: { outline: "none" } })}>
         <input {...getInputProps()} />
         {isDragActive ? (
           <DropHere>Drop Here</DropHere>
         ) : (
           <ImagePreview multiplier={2.5} src={previewImage} />
         )}
-      </Drop>
+      </Drop> */}
     </DropWrapper>
   );
 });

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDebounce } from "use-debounce";
 
@@ -21,6 +21,7 @@ import {
   Title,
   Value,
 } from "../Misc";
+import { DispatchContext, StateContext } from "../../../state";
 
 const Wrapper = styled.div`
   display: flex;
@@ -37,189 +38,154 @@ export interface ISettings {
 }
 
 export const ImageSettings: React.FC<{
-  setImageSettings: (settings: IDisplay["imageSettings"]) => void;
-  setTextSettings: (settings: IDisplay["textSettings"]) => void;
-  setTextWithIconSettings: (settings: IDisplay["textWithIconSettings"]) => void;
-  textOnly: boolean;
-  imageSettings: IDisplay["imageSettings"];
-  textWithIconSettings: IDisplay["textWithIconSettings"];
-  textSettings: IDisplay["textSettings"];
-}> = ({
-  setImageSettings,
-  setTextSettings,
-  setTextWithIconSettings,
-  textOnly,
-  imageSettings,
-  textWithIconSettings,
-  textSettings,
-}) => {
-  const [localText, setLocalText] = useState<string>(textSettings.text);
-  const [localWhite, setLocalWhite] = useState<number>(
-    imageSettings.whiteThreshold
-  );
-  const [localBlack, setLocalBlack] = useState<number>(
-    imageSettings.blackThreshold
-  );
-  const [localBrightness, setLocalBrightness] = useState<number>(
-    imageSettings.brightness
-  );
-  const [localContrast, setLocalContrast] = useState<number>(
-    imageSettings.contrast
-  );
-  const [localIconWidth, setLocalIconWidth] = useState<number>(
-    textWithIconSettings.iconWidthMultiplier
-  );
-  const [debouncedText] = useDebounce(localText, 33, {
-    maxWait: 33,
-    leading: true,
-  });
-  const [debouncedWhite] = useDebounce(localWhite, 33, {
-    maxWait: 33,
-    leading: true,
-  });
-  const [debouncedBlack] = useDebounce(localBlack, 33, {
-    maxWait: 33,
-    leading: true,
-  });
-  const [debouncedBrightness] = useDebounce(localBrightness, 33, {
-    maxWait: 33,
-    leading: true,
-  });
-  const [debouncedContrast] = useDebounce(localContrast, 33, {
-    maxWait: 33,
-    leading: true,
-  });
-  const [debouncedIconWidth] = useDebounce(localIconWidth, 33, {
-    maxWait: 33,
-    leading: true,
-  });
-  const setBlack = useCallback(
-    (blackThreshold: number) => {
-      setImageSettings({ ...imageSettings, blackThreshold });
-    },
-    [imageSettings, setImageSettings]
-  );
-  const setWhite = useCallback(
-    (whiteThreshold: number) => {
-      setImageSettings({ ...imageSettings, whiteThreshold });
-    },
-    [imageSettings, setImageSettings]
-  );
-  const setBrightness = useCallback(
-    (brightness: number) => {
-      setImageSettings({ ...imageSettings, brightness });
-    },
-    [imageSettings, setImageSettings]
-  );
-  const setContrast = useCallback(
-    (contrast: number) => {
-      setImageSettings({ ...imageSettings, contrast });
-    },
-    [imageSettings, setImageSettings]
-  );
-  const setInvert = useCallback(
-    (invert: boolean) => {
-      setImageSettings({ ...imageSettings, invert });
-    },
-    [imageSettings, setImageSettings]
-  );
-  const setDither = useCallback(
-    (dither: any) => {
-      setImageSettings({ ...imageSettings, dither });
-    },
-    [imageSettings, setImageSettings]
-  );
-  const setfontName = useCallback(
-    (font: string) => {
-      setTextSettings({ ...textSettings, font });
-    },
-    [textSettings, setTextSettings]
-  );
-  const setText = useCallback(
-    (text: string) => {
-      setTextSettings({ ...textSettings, text });
-    },
-    [setTextSettings, textSettings]
-  );
-  const setIconWidthMultiplier = useCallback(
-    (value: number) => {
-      setTextWithIconSettings({
-        ...textWithIconSettings,
-        iconWidthMultiplier: value,
-      });
-    },
-    [setTextWithIconSettings, textWithIconSettings]
-  );
-  useEffect(() => {
-    setLocalText(textSettings.text);
-    setLocalWhite(imageSettings.whiteThreshold);
-    setLocalBlack(imageSettings.blackThreshold);
-    setLocalBrightness(imageSettings.brightness);
-    setLocalContrast(imageSettings.contrast);
-    setLocalIconWidth(textWithIconSettings.iconWidthMultiplier);
-  }, [imageSettings, textSettings, textWithIconSettings]);
-  useEffect(() => {
-    setText(debouncedText);
-    // eslint-disable-next-line
-  }, [debouncedText]); // dont put setText there, we will have an endless loop if you do
-  useEffect(() => {
-    setWhite(debouncedWhite);
-    // eslint-disable-next-line
-  }, [debouncedWhite]);
-  useEffect(() => {
-    setBlack(debouncedBlack);
-    // eslint-disable-next-line
-  }, [debouncedBlack]);
-  useEffect(() => {
-    setBrightness(debouncedBrightness);
-    // eslint-disable-next-line
-  }, [debouncedBrightness]);
-  useEffect(() => {
-    setContrast(debouncedContrast);
-    // eslint-disable-next-line
-  }, [debouncedContrast]);
-  useEffect(() => {
-    setIconWidthMultiplier(debouncedIconWidth);
-    // eslint-disable-next-line
-  }, [debouncedIconWidth]);
+  displayIndex: number;
+  pageIndex: number;
+}> = ({ displayIndex, pageIndex }) => {
+  const state = useContext(StateContext);
+  const display =
+    pageIndex === -1
+      ? state.defaultBackDisplay
+      : state.displaySettingsPages[pageIndex][displayIndex];
+  // console.log(
+  //   pageIndex,
+  //   displayIndex
+  //   state.displaySettingsPages
+  //     .map((page) => page.map((d) => d.textSettings.text))
+  //     .toString()
+  // );
+  const dispatch = useContext(DispatchContext);
+
+  const setBlack = (blackThreshold: number) => {
+    dispatch.setDisplaySettings({
+      displaySettings: {
+        ...display,
+        imageSettings: { ...display.imageSettings, blackThreshold },
+      },
+      pageIndex,
+      buttonIndex: displayIndex,
+    });
+  };
+  const setWhite = (whiteThreshold: number) => {
+    dispatch.setDisplaySettings({
+      displaySettings: {
+        ...display,
+        imageSettings: { ...display.imageSettings, whiteThreshold },
+      },
+      pageIndex,
+      buttonIndex: displayIndex,
+    });
+  };
+  const setBrightness = (brightness: number) => {
+    dispatch.setDisplaySettings({
+      displaySettings: {
+        ...display,
+        imageSettings: { ...display.imageSettings, brightness },
+      },
+      pageIndex,
+      buttonIndex: displayIndex,
+    });
+  };
+  const setContrast = (contrast: number) => {
+    dispatch.setDisplaySettings({
+      displaySettings: {
+        ...display,
+        imageSettings: { ...display.imageSettings, contrast },
+      },
+      pageIndex,
+      buttonIndex: displayIndex,
+    });
+  };
+  const setInvert = (invert: boolean) => {
+    dispatch.setDisplaySettings({
+      displaySettings: {
+        ...display,
+        imageSettings: { ...display.imageSettings, invert },
+      },
+      pageIndex,
+      buttonIndex: displayIndex,
+    });
+  };
+  const setDither = (dither: any) => {
+    dispatch.setDisplaySettings({
+      displaySettings: {
+        ...display,
+        imageSettings: { ...display.imageSettings, dither },
+      },
+      pageIndex,
+      buttonIndex: displayIndex,
+    });
+  };
+  const setfontName = (font: string) => {
+    dispatch.setDisplaySettings({
+      displaySettings: {
+        ...display,
+        textSettings: { ...display.textSettings, font },
+      },
+      pageIndex,
+      buttonIndex: displayIndex,
+    });
+  };
+  const setText = (text: string) => {
+    dispatch.setDisplaySettings({
+      displaySettings: {
+        ...display,
+        textSettings: { ...display.textSettings, text },
+      },
+      pageIndex,
+      buttonIndex: displayIndex,
+    });
+  };
+  const setIconWidthMultiplier = (iconWidthMultiplier: number) => {
+    dispatch.setDisplaySettings({
+      displaySettings: {
+        ...display,
+        textWithIconSettings: {
+          ...display.textWithIconSettings,
+          iconWidthMultiplier,
+        },
+      },
+      pageIndex,
+      buttonIndex: displayIndex,
+    });
+  };
 
   return (
     <Wrapper>
       <Column>
         <Disabler
-          disable={textOnly}
+          disable={!display.originalImage}
           title="These options are disabled. Load an image by clicking on the black box or just enter some text"
         />
         <Title>Image Settings</Title>
-        {!imageSettings.dither ? (
+        {!display.imageSettings.dither ? (
           <>
             <Row>
               <Label>White Threshold:</Label>
-              <Value>{imageSettings.whiteThreshold}</Value>
+              <Value>{display.imageSettings.whiteThreshold}</Value>
             </Row>
             <Row>
               <StyledSlider
                 min={0}
                 max={128}
                 step={1}
-                value={localWhite}
+                value={display.imageSettings.whiteThreshold}
                 onChange={(event) =>
-                  setLocalWhite(event.currentTarget.valueAsNumber)
+                  setWhite(event.currentTarget.valueAsNumber)
                 }
               />
             </Row>
             <Row>
               <Label>Black Threshold:</Label>
-              <Value>{imageSettings.blackThreshold}</Value>
+              <Value>{display.imageSettings.blackThreshold}</Value>
             </Row>
             <Row>
               <StyledSlider
                 min={128}
                 max={255}
                 step={1}
-                value={localBlack}
+                value={display.imageSettings.blackThreshold}
                 onChange={(event) =>
-                  setLocalBlack(event.currentTarget.valueAsNumber)
+                  setBlack(event.currentTarget.valueAsNumber)
                 }
               />
             </Row>
@@ -228,31 +194,31 @@ export const ImageSettings: React.FC<{
           <>
             <Row>
               <Label>Brightness:</Label>
-              <Value>{imageSettings.brightness}</Value>
+              <Value>{display.imageSettings.brightness}</Value>
             </Row>
             <Row>
               <StyledSlider
                 min={-1}
                 max={1}
                 step={0.02}
-                value={localBrightness}
+                value={display.imageSettings.brightness}
                 onChange={(event) =>
-                  setLocalBrightness(event.currentTarget.valueAsNumber)
+                  setBrightness(event.currentTarget.valueAsNumber)
                 }
               />
             </Row>
             <Row>
               <Label>Contrast:</Label>
-              <Value>{imageSettings.contrast}</Value>
+              <Value>{display.imageSettings.contrast}</Value>
             </Row>
             <Row>
               <StyledSlider
                 min={-1}
                 max={1}
                 step={0.02}
-                value={localContrast}
+                value={display.imageSettings.contrast}
                 onChange={(event) =>
-                  setLocalContrast(event.currentTarget.valueAsNumber)
+                  setContrast(event.currentTarget.valueAsNumber)
                 }
               />
             </Row>
@@ -261,34 +227,36 @@ export const ImageSettings: React.FC<{
 
         <Row>
           <MicroToggle
-            activated={imageSettings.invert}
+            activated={display.imageSettings.invert}
             width="48%"
-            onClick={() => setInvert(!imageSettings.invert)}
+            onClick={() => setInvert(!display.imageSettings.invert)}
           >
             Invert
           </MicroToggle>
 
           <MicroToggle
-            activated={imageSettings.dither}
+            activated={display.imageSettings.dither}
             width="48%"
-            onClick={() => setDither(!imageSettings.dither)}
+            onClick={() => setDither(!display.imageSettings.dither)}
           >
             Dither
           </MicroToggle>
         </Row>
         <Row>
           <Label>Icon width:</Label>
-          <Value>{textWithIconSettings.iconWidthMultiplier.toFixed(2)}</Value>
+          <Value>
+            {display.textWithIconSettings.iconWidthMultiplier.toFixed(2)}
+          </Value>
         </Row>
         <Row>
           <StyledSlider
-            disabled={!textSettings.text.length}
+            disabled={!display.textSettings.text.length}
             min={0.1}
             max={0.9}
             step={0.01}
-            value={localIconWidth}
+            value={display.textWithIconSettings.iconWidthMultiplier}
             onChange={(event) =>
-              setLocalIconWidth(event.currentTarget.valueAsNumber)
+              setIconWidthMultiplier(event.currentTarget.valueAsNumber)
             }
           />
         </Row>
@@ -299,14 +267,14 @@ export const ImageSettings: React.FC<{
         <Row>
           <TextInput
             placeholder={"Enter text"}
-            value={localText}
-            onChange={(e) => setLocalText(e.currentTarget.value)}
+            value={display.textSettings.text}
+            onChange={(e) => setText(e.currentTarget.value)}
           />
         </Row>
         <Row>
           <Label>Font:</Label>
           <StyledSelect
-            defaultValue={textSettings.font}
+            defaultValue={display.textSettings.font}
             onChange={(e) => setfontName(e.currentTarget.value)}
           >
             <option value={fontSmaller}>smaller</option>

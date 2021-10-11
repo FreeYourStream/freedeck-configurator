@@ -10,7 +10,7 @@ const Wrapper = styled.div`
 `;
 export const Serial: React.FC<{
   loadConfigFile: (buffer: Buffer) => void;
-  getConfigBuffer: () => Buffer;
+  getConfigBuffer: () => Promise<Buffer>;
   readyToSave: boolean;
   serialApi?: FDSerialAPI;
 }> = ({ loadConfigFile, getConfigBuffer, readyToSave, serialApi }) => {
@@ -86,9 +86,9 @@ export const Serial: React.FC<{
           px={5}
           py={5}
           size={1}
-          onClick={() =>
+          onClick={async () =>
             serialApi!.writeConfigOverSerial(
-              getConfigBuffer(),
+              await getConfigBuffer(),
               progressCallback
             )
           }

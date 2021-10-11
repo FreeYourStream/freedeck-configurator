@@ -13,6 +13,6 @@ const GET_USER_ME = gql`
 
 export const useUser = () => {
   const { data, error, loading } = useQuery<{ user: User }>(GET_USER_ME);
-  console.log(data);
+  // console.log(data);
   return { user: data?.user, error, loading };
 };

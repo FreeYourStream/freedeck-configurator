@@ -14,7 +14,7 @@ import {
 import { colors } from "../definitions/colors";
 import { getEmptyConvertedImage } from "../definitions/emptyConvertedImage";
 import { Display } from "./DisplayButton";
-import { StateContext } from "../state";
+import { DispatchContext, StateContext } from "../state";
 
 const Wrapper = styled.div`
   position: relative;
@@ -86,47 +86,12 @@ const Grid = styled.div<{ width: number; height: number }>`
 `;
 
 interface IProps {
-  deleteImage: (displayIndex: number) => void;
-  makeDefaultBackImage: (displayIndex: number) => void;
-  originalImages: IOriginalImagePage;
   pageIndex: number;
-  buttonSettingsPages: IButtonSettingsPage;
-  displaySettingsPages: IDisplaySettingsPage;
-  convertedImages: Buffer[];
-  setOriginalImage: (displayIndex: number, image: Buffer) => void;
-  deletePage: (pageIndex: number) => void;
-  addPage: (displayIndex: number, primary: boolean) => Promise<number>;
-  pageCount: number;
-  setButtonSettings: (
-    displayIndex: number,
-    newDisplay: IButtonSettings
-  ) => void;
-  setDisplaySettings: (displayIndex: number, newDisplay: IDisplay) => void;
-  switchDisplays: (
-    aPageIndex: number,
-    bPageIndex: number,
-    aDisplayIndex: number,
-    bDisplayIndex: number
-  ) => void;
 }
 
-const PageComponent: React.FC<IProps> = ({
-  pageIndex,
-  deleteImage,
-  makeDefaultBackImage,
-  originalImages,
-  convertedImages,
-  setOriginalImage,
-  buttonSettingsPages,
-  displaySettingsPages,
-  deletePage,
-  addPage,
-  setButtonSettings,
-  setDisplaySettings,
-  pageCount,
-  switchDisplays,
-}) => {
+export const Page: React.FC<IProps> = ({ pageIndex }) => {
   const state = useContext(StateContext);
+  const dispatch = useContext(DispatchContext);
   return (
     <Wrapper id={`page_${pageIndex}`}>
       <Header>
@@ -136,7 +101,7 @@ const PageComponent: React.FC<IProps> = ({
             const deleteConfirmed = window.confirm(
               "Do you really want to delete this page forever?"
             );
-            if (deleteConfirmed) deletePage(pageIndex);
+            if (deleteConfirmed) dispatch.deletePage(pageIndex);
           }}
         >
           <FaTrashAlt size={18} color="white" />
@@ -144,75 +109,17 @@ const PageComponent: React.FC<IProps> = ({
       </Header>
       <Grid height={state.height} width={state.width}>
         <DndProvider backend={Backend}>
-          {displaySettingsPages.map((imageDisplay, displayIndex) => (
-            <Display
-              deleteImage={() => deleteImage(displayIndex)}
-              makeDefaultBackImage={() => makeDefaultBackImage(displayIndex)}
-              convertedImage={
-                convertedImages?.[displayIndex] ?? getEmptyConvertedImage()
-              }
-              setButtonSettings={(displayAction) =>
-                setButtonSettings(displayIndex, displayAction)
-              }
-              setDisplaySettings={(displayImage) =>
-                setDisplaySettings(displayIndex, displayImage)
-              }
-              actionDisplay={buttonSettingsPages[displayIndex]}
-              imageDisplay={displaySettingsPages[displayIndex]}
-              key={displayIndex}
-              displayIndex={displayIndex}
-              pageIndex={pageIndex}
-              setOriginalImage={(image) =>
-                setOriginalImage(displayIndex, image)
-              }
-              pages={[...Array(pageCount).keys()].filter(
-                (pageNumber) => pageNumber !== pageIndex
-              )}
-              addPage={(primary: boolean) => addPage(displayIndex, primary)}
-              originalImage={originalImages[displayIndex]}
-              switchDisplays={switchDisplays}
-            />
-          ))}
+          {state.displaySettingsPages[pageIndex].map(
+            (imageDisplay, displayIndex) => (
+              <Display
+                key={displayIndex}
+                displayIndex={displayIndex}
+                pageIndex={pageIndex}
+              />
+            )
+          )}
         </DndProvider>
       </Grid>
     </Wrapper>
   );
 };
-
-export const Page = React.memo(PageComponent, (prev, next) => {
-  return false;
-  // if (prev.setActionPage !== next.setActionPage) return false;
-  // if (prev.setImagePage !== next.setImagePage) return false;
-  // if (prev.setOriginalImage !== next.setOriginalImage) return false;
-  // const prevRevisionImage = prev.convertedImages.reduce(
-  //   (acc, image) => acc + image._revision,
-  //   0
-  // );
-  // const nextRevisionImage = next.convertedImages.reduce(
-  //   (acc, image) => acc + image._revision,
-  //   0
-  // );
-  // if (prevRevisionImage !== nextRevisionImage) return false;
-
-  // const prevRevisionImagePage = prev.imagePage.displays.reduce(
-  //   (acc, display) => acc + display._revision,
-  //   0
-  // );
-  // const nextRevisionImagePage = next.imagePage.displays.reduce(
-  //   (acc, display) => acc + display._revision,
-  //   0
-  // );
-  // if (prevRevisionImagePage !== nextRevisionImagePage) return false;
-
-  // const prevRevisionActionPage = prev.actionPage.displays.reduce(
-  //   (acc, display) => acc + display._revision,
-  //   0
-  // );
-  // const nextRevisionActionPage = next.actionPage.displays.reduce(
-  //   (acc, display) => acc + display._revision,
-  //   0
-  // );
-  // if (prevRevisionActionPage !== nextRevisionActionPage) return false;
-
-  // return true;
-});

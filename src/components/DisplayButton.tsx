@@ -4,15 +4,13 @@ import { useDrag, useDrop } from "react-dnd";
 import styled from "styled-components";
 import { colors } from "../definitions/colors";
 import { EAction } from "../definitions/modes";
-import { IButtonSettings, IDisplay } from "../interfaces";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
 import { DisplaySettingsContainer } from "../lib/components/DisplaySettingsContainer";
 import { ImagePreview } from "../lib/components/ImagePreview";
 import { Column, Row, Title } from "../lib/components/Misc";
 import { Modal, ModalBody } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
-import { getBase64Image } from "../lib/image/base64Encode";
-import { StateContext } from "../state";
+import { DispatchContext, StateContext } from "../state";
 import { Action } from "./ButtonSettings";
 
 const Wrapper = styled.div<{ opacity: number }>`
@@ -32,51 +30,16 @@ const DisclaimerTitle = styled(Title)`
   margin-top: auto;
 `;
 
-const DisplayComponent: React.FC<{
-  convertedImage: Buffer;
-  addPage: (primary: boolean) => Promise<number>;
-  deleteImage: () => void;
-  makeDefaultBackImage: () => void;
-  setOriginalImage: (newImage: Buffer) => void;
-  setButtonSettings: (display: IButtonSettings) => void;
-  setDisplaySettings: (display: IDisplay) => void;
-  originalImage: Buffer | null;
-  actionDisplay: IButtonSettings;
-  imageDisplay: IDisplay;
+export const Display: React.FC<{
   pageIndex: number;
-  pages: number[];
   displayIndex: number;
-  switchDisplays: (
-    aPageIndex: number,
-    bPageIndex: number,
-    aDisplayIndex: number,
-    bDisplayIndex: number
-  ) => void;
-}> = ({
-  originalImage,
-  convertedImage,
-  addPage,
-  deleteImage,
-  setOriginalImage,
-  setButtonSettings,
-  setDisplaySettings,
-  actionDisplay,
-  imageDisplay,
-  pageIndex,
-  pages,
-  displayIndex,
-  switchDisplays,
-  makeDefaultBackImage,
-  // connectDragSource,
-}) => {
+}> = ({ pageIndex, displayIndex }) => {
   const state = useContext(StateContext);
+  const dispatch = useContext(DispatchContext);
 
   const [showSettings, setShowSettings] = useState<boolean>(false);
-  const previewImage = useMemo(
-    () => getBase64Image(convertedImage),
-    [convertedImage]
-  );
-
+  const display = state.displaySettingsPages[pageIndex][displayIndex];
+  const button = state.buttonSettingsPages[pageIndex][displayIndex];
   const [{ isDragging }, dragRef] = useDrag({
     item: {
       type: "display",
@@ -92,12 +55,12 @@ const DisplayComponent: React.FC<{
     options: {},
     accept: "display",
     drop: (item, monitor): void =>
-      switchDisplays(
-        targetPageIndex,
-        monitor.getItem().pageIndex,
-        targetDisplayIndex,
-        monitor.getItem().displayIndex
-      ),
+      dispatch.switchButtons({
+        pageAIndex: targetPageIndex,
+        buttonAIndex: targetDisplayIndex,
+        pageBIndex: monitor.getItem().pageIndex,
+        buttonBIndex: monitor.getItem().displayIndex,
+      }),
     collect: () => ({
       targetDisplayIndex: displayIndex,
       targetPageIndex: pageIndex,
@@ -106,7 +69,6 @@ const DisplayComponent: React.FC<{
 
   const opacity = useMemo(() => {
     const value = (0.5 + state.brightness / 512) / (isDragging ? 2 : 1);
-    console.log("VALUE", value);
     return value;
   }, [isDragging, state.brightness]);
 
@@ -121,7 +83,7 @@ const DisplayComponent: React.FC<{
         ref={drop}
         multiplier={1}
         onClick={() => setShowSettings(true)}
-        src={previewImage}
+        src={display.previewImage}
       />
 
       {showSettings && (
@@ -136,13 +98,23 @@ const DisplayComponent: React.FC<{
             <ContextMenuItem
               text="Delete image"
               icon="fa/FaTrash"
-              onClick={() => deleteImage()}
+              onClick={() =>
+                dispatch.deleteImage({
+                  buttonIndex: displayIndex,
+                  pageIndex: pageIndex,
+                })
+              }
               dangerous
             ></ContextMenuItem>
             <ContextMenuItem
               text="Make default back Image"
               icon="gi/GiBackForth"
-              onClick={() => makeDefaultBackImage()}
+              onClick={() =>
+                dispatch.makeDefaultBackButton({
+                  pageIndex,
+                  buttonIndex: displayIndex,
+                })
+              }
               dangerous
             ></ContextMenuItem>
           </ContextMenu>
@@ -156,24 +128,8 @@ const DisplayComponent: React.FC<{
                   </Title>
                   <DisplaySettingsContainer
                     ref={menuRef}
-                    display={imageDisplay}
-                    originalImage={originalImage}
-                    setOriginalImage={setOriginalImage}
-                    setImageSettings={(imageSettings) =>
-                      setDisplaySettings({ ...imageDisplay, imageSettings })
-                    }
-                    setTextSettings={(textSettings) =>
-                      setDisplaySettings({
-                        ...imageDisplay,
-                        textSettings,
-                      })
-                    }
-                    setTextWithIconSettings={(textWithIconSettings) =>
-                      setDisplaySettings({
-                        ...imageDisplay,
-                        textWithIconSettings,
-                      })
-                    }
+                    pageIndex={pageIndex}
+                    displayIndex={displayIndex}
                   />
                 </ModalBody>
                 <ModalBody visible={tabName === "Button Settings"}>
@@ -183,26 +139,24 @@ const DisplayComponent: React.FC<{
                   <Row>
                     <Column>
                       <Action
-                        setActionSetting={(primary) =>
-                          setButtonSettings({ ...actionDisplay, primary })
-                        }
+                        primary={true}
                         title="Short press"
-                        pages={pages}
-                        action={actionDisplay.primary}
-                        addPage={() => addPage(true)}
+                        pageIndex={pageIndex}
+                        buttonIndex={displayIndex}
+                        pageCount={state.buttonSettingsPages.length}
+                        action={button.primary}
                         loadUserInteraction={false}
                       />
                     </Column>
                     <Column>
-                      {actionDisplay.primary.mode !== EAction.text && (
+                      {button.primary.mode !== EAction.text && (
                         <Action
-                          setActionSetting={(secondary) =>
-                            setButtonSettings({ ...actionDisplay, secondary })
-                          }
+                          primary={false}
                           title="Long press"
-                          pages={pages}
-                          action={actionDisplay.secondary}
-                          addPage={() => addPage(false)}
+                          pageIndex={pageIndex}
+                          buttonIndex={displayIndex}
+                          pageCount={state.buttonSettingsPages.length}
+                          action={button.secondary}
                           loadUserInteraction={false}
                         />
                       )}
@@ -227,16 +181,3 @@ const DisplayComponent: React.FC<{
     </Wrapper>
   );
 };
-
-export const Display = React.memo(DisplayComponent, (prev, next) => {
-  return false;
-  // if (prev.setDisplayAction !== next.setDisplayAction) return false;
-  // if (prev.setDisplayImage !== next.setDisplayImage) return false;
-  // if (prev.setOriginalImage !== next.setOriginalImage) return false;
-  // if (prev.actionDisplay._revision !== next.actionDisplay._revision)
-  //   return false;
-  // if (prev.imageDisplay._revision === next.imageDisplay._revision) return false;
-  // if (prev.image._revision !== next.image._revision) return false;
-
-  // return true;
-});

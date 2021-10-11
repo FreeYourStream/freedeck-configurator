@@ -8,7 +8,7 @@ import { scrollToPage } from "../../lib/scrollToPage";
 export const ChangePage: React.FC<{
   action: IButtonSetting;
   setGoTo: (page: number) => void;
-  addPage: () => Promise<number>;
+  addPage: () => void;
   pages: number[];
 }> = ({ action, setGoTo, addPage, pages }) => {
   return (

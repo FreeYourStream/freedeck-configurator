@@ -28,7 +28,9 @@ export interface ITextWithIconSettings {
 }
 
 export type IOriginalImage = Buffer | null;
+export type IOriginalImagePage = IOriginalImage[];
 export type IConvertedImage = Buffer;
+export type IConvertedImagePage = IConvertedImage[];
 export interface IDisplay {
   imageSettings: IImageSettings;
   textSettings: ITextSettings;
@@ -38,11 +40,8 @@ export interface IDisplay {
   previousDisplay?: number;
   originalImage: IOriginalImage;
   convertedImage: IConvertedImage;
+  previewImage: string;
 }
 
 export type IButtonSettingsPage = IButtonSettings[];
 export type IDisplaySettingsPage = IDisplay[];
-export interface IDefaultBackDisplay {
-  image: Buffer;
-  settings: IDisplay;
-}

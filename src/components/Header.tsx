@@ -89,7 +89,7 @@ export const Header: React.FC<{
   loadConfigFile: (filesOrBuffer: Buffer | FileList) => void;
   saveConfigFile: () => void;
   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
-  createConfigBuffer: () => Buffer;
+  createConfigBuffer: () => Promise<Buffer>;
   openLogin: () => void;
   serialApi?: FDSerialAPI;
 }> = ({
@@ -143,9 +143,9 @@ export const Header: React.FC<{
                 icon="fa/FaUpload"
                 ml={4}
                 size={3}
-                onClick={() =>
+                onClick={async () =>
                   serialApi!.writeConfigOverSerial(
-                    createConfigBuffer(),
+                    await createConfigBuffer(),
                     (rec, size) => setProgress(rec / size)
                   )
                 }
