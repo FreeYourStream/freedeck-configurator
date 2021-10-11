@@ -1,16 +1,6 @@
-import {
-  IButtonSettingsPage,
-  IDisplay,
-  IDisplaySettingsPage,
-  IOriginalImagePage,
-} from "../../interfaces";
+import { State } from "../../state";
 
-export const createFooter = (config: {
-  displaySettingsPages: IDisplaySettingsPage[];
-  buttonSettingsPages: IButtonSettingsPage[];
-  defaultBackDisplay: IDisplay;
-  originalImagePages: IOriginalImagePage[];
-}) => {
+export const createFooter = (state: State) => {
   //save this at the end of the config
-  return Buffer.from(JSON.stringify(config), "binary");
+  return Buffer.from(JSON.stringify(state), "binary");
 };

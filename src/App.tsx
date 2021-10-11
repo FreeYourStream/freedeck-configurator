@@ -115,14 +115,7 @@ const App: React.FC<{ defaultState: State }> = ({ defaultState }) => {
           page.map((display) => display.convertedImage)
         )
       ),
-      createFooter({
-        buttonSettingsPages: state.buttonSettingsPages,
-        defaultBackDisplay: await state.defaultBackDisplay,
-        displaySettingsPages: state.displaySettingsPages,
-        originalImagePages: state.displaySettingsPages.map((page) =>
-          page.map((display) => display.originalImage)
-        ),
-      }),
+      createFooter(state),
     ]);
   return (
     <StateContext.Provider value={state}>

@@ -1,8 +1,15 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef } from "react";
+import styled from "styled-components";
 import { DispatchContext, StateContext } from "../../../state";
 import { fileToImage } from "../../fileToImage";
 import { DropDisplay } from "./DropDisplay";
 import { ImageSettings } from "./ImageSettings";
+
+const Wrapper = styled.div`
+  :focus-visible {
+    outline: none;
+  }
+`;
 
 export const DisplaySettingsContainer = React.forwardRef<
   any,
@@ -17,6 +24,14 @@ export const DisplaySettingsContainer = React.forwardRef<
       ? state.defaultBackDisplay
       : state.displaySettingsPages[pageIndex][displayIndex];
   const dispatch = useContext(DispatchContext);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.contentEditable = "true";
+      ref.current.focus();
+      ref.current.contentEditable = "false";
+    }
+  }, []);
   const onDrop = async (acceptedFiles: File[]) => {
     const resizedBuffer = await fileToImage(acceptedFiles[0]);
     dispatch.setOriginalImage({
@@ -26,7 +41,19 @@ export const DisplaySettingsContainer = React.forwardRef<
     });
   };
   return (
-    <>
+    <Wrapper
+      tabIndex={0}
+      contentEditable={false}
+      ref={ref}
+      onPaste={async (e) => {
+        console.log("PASTE");
+        dispatch.setOriginalImage({
+          buttonIndex: displayIndex,
+          pageIndex,
+          originalImage: await fileToImage(e.clipboardData.files[0]),
+        });
+      }}
+    >
       {
         <DropDisplay
           ref={menuRef}
@@ -35,6 +62,6 @@ export const DisplaySettingsContainer = React.forwardRef<
         />
       }
       <ImageSettings pageIndex={pageIndex} displayIndex={displayIndex} />
-    </>
+    </Wrapper>
   );
 });

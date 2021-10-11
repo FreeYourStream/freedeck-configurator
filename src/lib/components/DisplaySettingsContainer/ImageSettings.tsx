@@ -46,104 +46,77 @@ export const ImageSettings: React.FC<{
     pageIndex === -1
       ? state.defaultBackDisplay
       : state.displaySettingsPages[pageIndex][displayIndex];
-  // console.log(
-  //   pageIndex,
-  //   displayIndex
-  //   state.displaySettingsPages
-  //     .map((page) => page.map((d) => d.textSettings.text))
-  //     .toString()
-  // );
+
   const dispatch = useContext(DispatchContext);
 
   const setBlack = (blackThreshold: number) => {
+    display.imageSettings.blackThreshold = blackThreshold;
     dispatch.setDisplaySettings({
-      displaySettings: {
-        ...display,
-        imageSettings: { ...display.imageSettings, blackThreshold },
-      },
+      displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
     });
   };
   const setWhite = (whiteThreshold: number) => {
+    display.imageSettings.whiteThreshold = whiteThreshold;
     dispatch.setDisplaySettings({
-      displaySettings: {
-        ...display,
-        imageSettings: { ...display.imageSettings, whiteThreshold },
-      },
+      displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
     });
   };
   const setBrightness = (brightness: number) => {
+    display.imageSettings.brightness = brightness;
     dispatch.setDisplaySettings({
-      displaySettings: {
-        ...display,
-        imageSettings: { ...display.imageSettings, brightness },
-      },
+      displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
     });
   };
   const setContrast = (contrast: number) => {
+    display.imageSettings.contrast = contrast;
     dispatch.setDisplaySettings({
-      displaySettings: {
-        ...display,
-        imageSettings: { ...display.imageSettings, contrast },
-      },
+      displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
     });
   };
   const setInvert = (invert: boolean) => {
+    display.imageSettings.invert = invert;
     dispatch.setDisplaySettings({
-      displaySettings: {
-        ...display,
-        imageSettings: { ...display.imageSettings, invert },
-      },
+      displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
     });
   };
   const setDither = (dither: any) => {
+    display.imageSettings.dither = dither;
     dispatch.setDisplaySettings({
-      displaySettings: {
-        ...display,
-        imageSettings: { ...display.imageSettings, dither },
-      },
+      displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
     });
   };
   const setfontName = (font: string) => {
+    display.textSettings.font = font;
     dispatch.setDisplaySettings({
-      displaySettings: {
-        ...display,
-        textSettings: { ...display.textSettings, font },
-      },
+      displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
     });
   };
   const setText = (text: string) => {
+    display.textSettings.text = text;
     dispatch.setDisplaySettings({
-      displaySettings: {
-        ...display,
-        textSettings: { ...display.textSettings, text },
-      },
+      displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
     });
   };
-  const setIconWidthMultiplier = (iconWidthMultiplier: number) => {
+  const setIconWidthMultiplier = (value: number) => {
+    display.textWithIconSettings.iconWidthMultiplier = value;
     dispatch.setDisplaySettings({
-      displaySettings: {
-        ...display,
-        textWithIconSettings: {
-          ...display.textWithIconSettings,
-          iconWidthMultiplier,
-        },
-      },
+      displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
     });

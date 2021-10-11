@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { AiFillCloseSquare } from "react-icons/ai";
 import styled from "styled-components";
-
 import { colors } from "../../definitions/colors";
 
 const Wrapper = styled.div<{ visible: boolean }>`

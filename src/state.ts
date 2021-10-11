@@ -157,9 +157,11 @@ export const reducer: IReducer = {
       display = state.displaySettingsPages[pageIndex][buttonIndex];
     }
     display = displaySettings;
-    display.convertedImage = displaySettings.textSettings.text?.length
-      ? await composeText(displaySettings)
-      : await composeImage(displaySettings);
+    display.convertedImage =
+      displaySettings.textSettings.text?.length &&
+      !displaySettings.originalImage
+        ? await composeText(displaySettings)
+        : await composeImage(displaySettings);
     display.previewImage = getBase64Image(display.convertedImage);
     state.displaySettingsPages[pageIndex][buttonIndex] = { ...display };
     return state;
@@ -169,9 +171,10 @@ export const reducer: IReducer = {
     const { buttonIndex, pageIndex, originalImage } = data;
     const display = state.displaySettingsPages[pageIndex][buttonIndex];
     display.originalImage = originalImage;
-    display.convertedImage = display.textSettings.text?.length
-      ? await composeText(display)
-      : await composeImage(display);
+    display.convertedImage =
+      display.textSettings.text?.length && !display.originalImage
+        ? await composeText(display)
+        : await composeImage(display);
     display.previewImage = getBase64Image(display.convertedImage);
     return { ...state };
   },

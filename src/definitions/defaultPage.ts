@@ -1,6 +1,11 @@
 import { merge } from "lodash";
 
-import { IButtonSettings, IButtonSettingsPage, IDisplay } from "../interfaces";
+import {
+  IButtonSettings,
+  IButtonSettingsPage,
+  IDisplay,
+  IDisplaySettingsPage,
+} from "../interfaces";
 import { getBase64Image } from "../lib/image/base64Encode";
 import { createDefaultBackDisplay } from "./defaultBackImage";
 import { getEmptyConvertedImage } from "./emptyConvertedImage";
@@ -58,9 +63,10 @@ export const createDefaultButtonSettingsPage = (
   previousPageIndex?: number
 ): IButtonSettingsPage => {
   const backButton: IButtonSettings = createDefaultButtonSettings();
-  const displays: IButtonSettingsPage = Array<IButtonSettings>(
-    width * height - 1
-  ).fill(createDefaultButtonSettings());
+  const displays: IButtonSettingsPage = [];
+  for (let i = 0; i < width * height; i++) {
+    displays.push(createDefaultButtonSettings());
+  }
   if (previousPageIndex !== undefined) {
     backButton.primary.mode = EAction.changePage;
     backButton.primary.values = [previousPageIndex];
@@ -73,9 +79,11 @@ export const createDefaultDisplayPage = async (
   height: number,
   previousPage?: number
 ) => {
-  const displays = Array<IDisplay>(width * height).fill({
-    ...createDefaultDisplay(),
-  });
+  const displays: IDisplaySettingsPage = [];
+  for (let i = 0; i < width * height; i++) {
+    displays.push(createDefaultDisplay());
+  }
+
   if (previousPage) {
     displays[0] = await createDefaultBackDisplay(previousPage);
   }
