@@ -3,28 +3,9 @@ import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
 import { FaTrashAlt } from "react-icons/fa";
 import styled from "styled-components";
-
-import {
-  IButtonSettings,
-  IButtonSettingsPage,
-  IDisplay,
-  IDisplaySettingsPage,
-  IOriginalImagePage,
-} from "../interfaces";
 import { colors } from "../definitions/colors";
-import { getEmptyConvertedImage } from "../definitions/emptyConvertedImage";
-import { Display } from "./DisplayButton";
 import { DispatchContext, StateContext } from "../state";
-
-const Wrapper = styled.div`
-  position: relative;
-  margin: 24px;
-  padding: 18px;
-  /* border: 1px solid ${colors.white}; */
-  border-radius: 21px;
-  background: ${colors.gray};
-  box-shadow: 13px 13px 21px #11161d, -13px -13px 21px #2d3a49;
-`;
+import { Display } from "./DisplayButton";
 
 const Header = styled.div`
   display: flex;
@@ -35,17 +16,16 @@ const PageIndicator = styled.div`
   font-size: 20px;
   font-weight: bold;
   font-family: sans-serif;
-  border-radius: 50%;
-  border: 1px solid #555;
+  border-radius: 21px 0px 21px 0px;
   text-align: center;
   vertical-align: middle;
   line-height: 38px;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   color: ${colors.white};
   position: absolute;
-  top: -20px;
-  left: -20px;
+  top: 0px;
+  left: 0px;
   background-color: ${colors.black};
 `;
 
@@ -60,8 +40,22 @@ const DeletePage = styled.div`
   width: 30px;
   top: -15px;
   right: -15px;
+  visibility: hidden;
   position: absolute;
   border-style: none;
+`;
+
+const Wrapper = styled.div`
+  position: relative;
+  margin: 24px;
+  padding: 24px;
+  /* border: 1px solid ${colors.white}; */
+  border-radius: 21px;
+  background: ${colors.gray};
+  box-shadow: 13px 13px 21px #11161d, -13px -13px 21px #2d3a49;
+  &:hover ${DeletePage} {
+    visibility: visible;
+  }
 `;
 
 const Grid = styled.div<{ width: number; height: number }>`

@@ -1,6 +1,7 @@
 import { createContext } from "react";
 import { createDefaultBackDisplay } from "./definitions/defaultBackImage";
 import {
+  createDefaultButtonSettings,
   createDefaultButtonSettingsPage,
   createDefaultDisplay,
   createDefaultDisplayPage,
@@ -41,8 +42,10 @@ declare type FunctionForFirstParamType<ParamType> = (arg0: ParamType) => void;
 
 export interface IReducer extends Actions {
   setBrightness(state: State, brightness: number): Promise<State>;
-  setWidth(state: State, width: number): Promise<State>;
-  setHeight(state: State, height: number): Promise<State>;
+  setDimensions(
+    state: State,
+    data: { width?: number; height?: number }
+  ): Promise<State>;
   addPage(state: State, previousPage?: number): Promise<State>;
   deletePage(state: State, pageIndex: number): Promise<State>;
   setButtonSettings(
@@ -99,13 +102,30 @@ export const reducer: IReducer = {
     console.log("setBrightness");
     return { ...state, brightness };
   },
-  async setWidth(state, width) {
+  async setDimensions(state, data) {
     console.log("setWidth");
-    return { ...state, width };
-  },
-  async setHeight(state, height) {
-    console.log("setHeight");
-    return { ...state, height };
+    const width = data.width ?? state.width;
+    const height = data.height ?? state.height;
+    if (width * height > state.width * state.height) {
+      const diff = width * height - state.width * state.height;
+      for (let i = 0; i < diff; i++) {
+        state.buttonSettingsPages.forEach((page) =>
+          page.push(createDefaultButtonSettings())
+        );
+        state.displaySettingsPages.forEach((page) =>
+          page.push(createDefaultDisplay())
+        );
+      }
+    } else if (width * height < state.width * state.height) {
+      state.buttonSettingsPages = state.buttonSettingsPages.map((page) =>
+        page.slice(0, width * height)
+      );
+      state.displaySettingsPages = state.displaySettingsPages.map((page) =>
+        page.slice(0, width * height)
+      );
+    }
+    state.width = width;
+    return { ...state };
   },
   async addPage(state, previousPage) {
     console.log("addPage");
