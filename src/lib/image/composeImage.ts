@@ -12,6 +12,7 @@ export interface IConverted {
 export const composeImage = async (display: IDisplay): Promise<Buffer> => {
   const { imageSettings, textWithIconSettings, textSettings, originalImage } =
     display;
+  console.log(originalImage);
   if (!originalImage) throw new Error("no original image");
   let jimpImage = await Jimp.read(originalImage);
   const ditherBackground = await Jimp.create(

@@ -49,7 +49,6 @@ export const DisplaySettingsContainer = React.forwardRef<
       contentEditable={false}
       ref={ref}
       onPaste={async (e) => {
-        console.log("PASTE");
         configDispatch.setOriginalImage({
           buttonIndex: displayIndex,
           pageIndex,

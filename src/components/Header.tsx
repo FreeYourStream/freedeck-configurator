@@ -100,11 +100,9 @@ export const Header: React.FC<{
   openLogin,
 }) => {
   const { serialApi, ctrlDown } = useContext(AppStateContext);
-  console.log("WAAAAS", ctrlDown);
   const [connected, setConnected] = useState<boolean>(!!serialApi?.connected);
   const [progress, setProgress] = useState<number>(0);
   useEffect(() => {
-    console.log("SERIAL", serialApi);
     if (!serialApi) return;
     const id = serialApi.registerOnConStatusChange((type) => {
       setConnected(type === connectionStatus.connect);
