@@ -170,7 +170,11 @@ export const configReducer: IConfigReducer = {
     const { pageIndex, buttonIndex, displaySettings } = data;
     let display: IDisplay;
     if (pageIndex === -1 && buttonIndex === -1) {
-      display = await state.defaultBackDisplay;
+      localStorage.setItem(
+        "defaultBackDisplay",
+        JSON.stringify(state.defaultBackDisplay)
+      );
+      display = state.defaultBackDisplay;
     } else {
       display = state.displaySettingsPages[pageIndex][buttonIndex];
     }
