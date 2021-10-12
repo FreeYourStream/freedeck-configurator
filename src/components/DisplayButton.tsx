@@ -75,7 +75,6 @@ export const Display: React.FC<{
 
     return value;
   }, [isDragging, configState.brightness]);
-  console.log("VALUE", opacity);
   const menuId = `${pageIndex}:${displayIndex}`;
   let menuRef = useContextMenuTrigger<HTMLDivElement>({
     menuId,

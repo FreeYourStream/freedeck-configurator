@@ -101,7 +101,6 @@ export const Page: React.FC<IProps> = ({ pageIndex }) => {
             const deleteConfirmed =
               appState.ctrlDown ||
               window.confirm("Do you really want to delete this page forever?");
-            console.log("deleteConfirmed", deleteConfirmed);
             if (deleteConfirmed) configDispatch.deletePage(pageIndex);
           }}
         >

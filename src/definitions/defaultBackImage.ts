@@ -39,7 +39,6 @@ export const createDefaultBackDisplay = async function (
   });
   display.convertedImage = await composeImage(display);
   display.previewImage = getBase64Image(display.convertedImage);
-  console.log(display.previewImage);
   return display;
 };
 

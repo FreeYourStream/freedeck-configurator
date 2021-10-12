@@ -17,7 +17,6 @@ export const useTranslateKeyboardLayout = (values: number[]) => {
       );
     } else {
       (navigator as any).keyboard.getLayoutMap().then((layout: any) => {
-        console.log(layout);
         const translatedKeys = values.map((value) => {
           const key =
             Object.keys(keys).find(

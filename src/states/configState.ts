@@ -97,11 +97,9 @@ export interface IConfigReducer extends Actions<ConfigState> {
 
 export const configReducer: IConfigReducer = {
   async setBrightness(state, brightness) {
-    console.log("setBrightness");
     return { ...state, brightness };
   },
   async setDimensions(state, data) {
-    console.log("setWidth");
     const width = data.width ?? state.width;
     const height = data.height ?? state.height;
     if (width * height > state.width * state.height) {
@@ -126,7 +124,6 @@ export const configReducer: IConfigReducer = {
     return { ...state };
   },
   async addPage(state, previousPage) {
-    console.log("addPage");
     state.buttonSettingsPages.push(
       createDefaultButtonSettingsPage(state.width, state.height, previousPage)
     );
@@ -136,7 +133,6 @@ export const configReducer: IConfigReducer = {
     return { ...state };
   },
   async deletePage(state, pageIndex) {
-    console.log("deletePage");
     state.buttonSettingsPages.splice(pageIndex, 1);
     state.displaySettingsPages.splice(pageIndex, 1);
     state.buttonSettingsPages = state.buttonSettingsPages.map((page) => {
@@ -160,7 +156,6 @@ export const configReducer: IConfigReducer = {
     return { ...state };
   },
   async setButtonSettings(state, data) {
-    console.log("setButtonSettings");
     const { pageIndex, buttonIndex, priOrSec, buttonSettings } = data;
     state.buttonSettingsPages[pageIndex][buttonIndex][priOrSec] =
       buttonSettings;
@@ -189,7 +184,6 @@ export const configReducer: IConfigReducer = {
     return state;
   },
   async setOriginalImage(state, data) {
-    console.log("setOriginalImage");
     const { buttonIndex, pageIndex, originalImage } = data;
     const display = state.displaySettingsPages[pageIndex][buttonIndex];
     display.originalImage = originalImage;
@@ -201,15 +195,12 @@ export const configReducer: IConfigReducer = {
     return { ...state };
   },
   async deleteImage(state, data) {
-    console.log("deleteImage");
     const { buttonIndex, pageIndex } = data;
     state.displaySettingsPages[pageIndex][buttonIndex] = createDefaultDisplay();
     return { ...state };
   },
   async switchButtons(state, data) {
-    console.log("switchButtons");
     const { pageAIndex, pageBIndex, buttonAIndex, buttonBIndex } = data;
-    console.log(pageAIndex, buttonAIndex, pageBIndex, buttonBIndex);
     const buttonA = { ...state.buttonSettingsPages[pageAIndex][buttonAIndex] };
     state.buttonSettingsPages[pageAIndex][buttonAIndex] = {
       ...state.buttonSettingsPages[pageBIndex][buttonBIndex],
@@ -226,7 +217,6 @@ export const configReducer: IConfigReducer = {
     return { ...state };
   },
   async updateAllDefaultBackImages(state, newBackDisplay) {
-    console.log("updateAllDefaultBackImages");
     state.displaySettingsPages.forEach((page, pageIndex) => {
       page.forEach((display, displayIndex) => {
         if (display.isGeneratedFromDefaultBackImage)
@@ -236,14 +226,12 @@ export const configReducer: IConfigReducer = {
     return { ...state };
   },
   async makeDefaultBackButton(state, data) {
-    console.log("makeDefaultBackButton");
     const { buttonIndex, pageIndex } = data;
     state.displaySettingsPages[pageIndex][buttonIndex] =
       await state.defaultBackDisplay;
     return { ...state };
   },
   async setState(state, newState) {
-    console.log("setState");
     return { ...newState };
   },
 };

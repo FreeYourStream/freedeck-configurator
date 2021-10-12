@@ -5,7 +5,6 @@ export const stringToImage = async (input: string) => {
   const jimage = await Jimp.read(input);
   const mime = jimage.getMIME();
   const newMime = mime === "image/jpeg" ? mime : "image/gif";
-  console.log(mime, newMime);
   const resizedBuffer = await jimage
     .quality(70)
     .scaleToFit(256, 128, "")
@@ -17,7 +16,6 @@ export const fileToImage = async (file: File) => {
   const jimage = await Jimp.read(Buffer.from(buffer));
   const mime = jimage.getMIME();
   const newMime = mime === "image/jpeg" ? mime : "image/gif";
-  console.log(mime, newMime);
   const resizedBuffer = await jimage
     .quality(70)
     .scaleToFit(256, 128, "")

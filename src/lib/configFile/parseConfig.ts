@@ -13,6 +13,5 @@ export const parseConfig = (configBuffer: Buffer): ConfigState => {
   }
   const jsonConfigSlice = configBuffer.slice(jsonOffset);
   const rawConfig = JSON.parse(jsonConfigSlice.toString());
-  console.log(rawConfig);
   return rawConfig;
 };
