@@ -10,7 +10,10 @@ import { ImagePreview } from "../lib/components/ImagePreview";
 import { Column, Row, Title } from "../lib/components/Misc";
 import { Modal, ModalBody } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
-import { DispatchContext, StateContext } from "../state";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../states/configState";
 import { Action } from "./ButtonSettings";
 
 const Wrapper = styled.div<{ opacity: number }>`
@@ -34,18 +37,18 @@ export const Display: React.FC<{
   pageIndex: number;
   displayIndex: number;
 }> = ({ pageIndex, displayIndex }) => {
-  const state = useContext(StateContext);
-  const dispatch = useContext(DispatchContext);
+  const configState = useContext(ConfigStateContext);
+  const configDispatch = useContext(ConfigDispatchContext);
 
   const [showSettings, setShowSettings] = useState<boolean>(false);
-  const display = state.displaySettingsPages[pageIndex][displayIndex];
-  const button = state.buttonSettingsPages[pageIndex][displayIndex];
+  const display = configState.displaySettingsPages[pageIndex][displayIndex];
+  const button = configState.buttonSettingsPages[pageIndex][displayIndex];
   const [{ isDragging }, dragRef] = useDrag({
     item: {
       type: "display",
       pageIndex,
       displayIndex,
-      brightness: state.brightness,
+      brightness: configState.brightness,
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -55,7 +58,7 @@ export const Display: React.FC<{
     options: {},
     accept: "display",
     drop: (item, monitor): void =>
-      dispatch.switchButtons({
+      configDispatch.switchButtons({
         pageAIndex: targetPageIndex,
         buttonAIndex: targetDisplayIndex,
         pageBIndex: monitor.getItem().pageIndex,
@@ -68,10 +71,11 @@ export const Display: React.FC<{
   });
 
   const opacity = useMemo(() => {
-    const value = (0.5 + state.brightness / 512) / (isDragging ? 2 : 1);
-    return value;
-  }, [isDragging, state.brightness]);
+    const value = (0.5 + configState.brightness / 512) / (isDragging ? 2 : 1);
 
+    return value;
+  }, [isDragging, configState.brightness]);
+  console.log("VALUE", opacity);
   const menuId = `${pageIndex}:${displayIndex}`;
   let menuRef = useContextMenuTrigger<HTMLDivElement>({
     menuId,
@@ -99,7 +103,7 @@ export const Display: React.FC<{
               text="Delete image"
               icon="fa/FaTrash"
               onClick={() =>
-                dispatch.deleteImage({
+                configDispatch.deleteImage({
                   buttonIndex: displayIndex,
                   pageIndex: pageIndex,
                 })
@@ -110,7 +114,7 @@ export const Display: React.FC<{
               text="Make default back Image"
               icon="gi/GiBackForth"
               onClick={() =>
-                dispatch.makeDefaultBackButton({
+                configDispatch.makeDefaultBackButton({
                   pageIndex,
                   buttonIndex: displayIndex,
                 })
@@ -143,7 +147,7 @@ export const Display: React.FC<{
                         title="Short press"
                         pageIndex={pageIndex}
                         buttonIndex={displayIndex}
-                        pageCount={state.buttonSettingsPages.length}
+                        pageCount={configState.buttonSettingsPages.length}
                         action={button.primary}
                         loadUserInteraction={false}
                       />
@@ -155,7 +159,7 @@ export const Display: React.FC<{
                           title="Long press"
                           pageIndex={pageIndex}
                           buttonIndex={displayIndex}
-                          pageCount={state.buttonSettingsPages.length}
+                          pageCount={configState.buttonSettingsPages.length}
                           action={button.secondary}
                           loadUserInteraction={false}
                         />

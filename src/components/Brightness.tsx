@@ -1,5 +1,8 @@
 import React, { useContext } from "react";
-import { DispatchContext, StateContext } from "../state";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../states/configState";
 
 import { Label, Row, StyledSlider, Title, Value } from "../lib/components/Misc";
 
@@ -7,8 +10,8 @@ export const Brightness: React.FC<{
   // setBrightness: (brightness: number) => void;
   // brightness: number;
 }> = (/*{ setBrightness, brightness }*/) => {
-  const state = useContext(StateContext);
-  const dispatch = useContext(DispatchContext);
+  const configState = useContext(ConfigStateContext);
+  const configDispatch = useContext(ConfigDispatchContext);
   return (
     <>
       <Title>Brightness</Title>
@@ -17,12 +20,12 @@ export const Brightness: React.FC<{
         <StyledSlider
           min={0}
           max={255}
-          value={state.brightness}
+          value={configState.brightness}
           onChange={(e) =>
-            dispatch.setBrightness(e.currentTarget.valueAsNumber)
+            configDispatch.setBrightness(e.currentTarget.valueAsNumber)
           }
         />
-        <Value>{state.brightness}</Value>
+        <Value>{configState.brightness}</Value>
       </Row>
     </>
   );

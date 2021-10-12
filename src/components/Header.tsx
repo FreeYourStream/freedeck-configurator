@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { colors } from "../definitions/colors";
 import { useUser } from "../graphql/hooks/useUser";
@@ -7,6 +7,7 @@ import { FDButton, FDIconButton } from "../lib/components/Button";
 import { Value } from "../lib/components/Misc";
 import { FDSerialAPI } from "../lib/fdSerialApi";
 import { connectionStatus } from "../lib/serial";
+import { AppStateContext } from "../states/appState";
 
 const Wrapper = styled.div`
   background-color: ${colors.gray};
@@ -91,18 +92,19 @@ export const Header: React.FC<{
   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
   createConfigBuffer: () => Promise<Buffer>;
   openLogin: () => void;
-  serialApi?: FDSerialAPI;
 }> = ({
   loadConfigFile,
   saveConfigFile,
-  serialApi,
   setShowSettings,
   createConfigBuffer,
   openLogin,
 }) => {
+  const { serialApi, ctrlDown } = useContext(AppStateContext);
+  console.log("WAAAAS", ctrlDown);
   const [connected, setConnected] = useState<boolean>(!!serialApi?.connected);
   const [progress, setProgress] = useState<number>(0);
   useEffect(() => {
+    console.log("SERIAL", serialApi);
     if (!serialApi) return;
     const id = serialApi.registerOnConStatusChange((type) => {
       setConnected(type === connectionStatus.connect);
@@ -115,7 +117,6 @@ export const Header: React.FC<{
       <HeadLine>
         <HeadLineThin>Free</HeadLineThin>
         <HeadLineThick>Deck</HeadLineThick>
-        <HeadLineThick>{connected}</HeadLineThick>
       </HeadLine>
       <Buttons>
         <form
@@ -123,7 +124,7 @@ export const Header: React.FC<{
             event.preventDefault();
           }}
         >
-          {connected ? (
+          {connected && !ctrlDown ? (
             <Horiz>
               <FDIconButton
                 icon="fa/FaDownload"
@@ -137,7 +138,7 @@ export const Header: React.FC<{
                     .then(loadConfigFile)
                 }
               >
-                Download Config (Serial)
+                Download Config
               </FDIconButton>
               <FDIconButton
                 icon="fa/FaUpload"
@@ -150,7 +151,7 @@ export const Header: React.FC<{
                   )
                 }
               >
-                Upload Config (Serial)
+                Upload Config
               </FDIconButton>
               <Value ml={16}>
                 {progress ? `${(progress * 100).toFixed(0)}%` : ""}

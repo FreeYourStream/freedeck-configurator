@@ -1,23 +1,24 @@
 import { createContext } from "react";
-import { createDefaultBackDisplay } from "./definitions/defaultBackImage";
+import { createDefaultBackDisplay } from "../definitions/defaultBackImage";
 import {
   createDefaultButtonSettings,
   createDefaultButtonSettingsPage,
   createDefaultDisplay,
   createDefaultDisplayPage,
-} from "./definitions/defaultPage";
-import { EAction } from "./definitions/modes";
+} from "../definitions/defaultPage";
+import { EAction } from "../definitions/modes";
 import {
   IButtonSetting,
   IButtonSettingsPage,
   IDisplay,
   IDisplaySettingsPage,
   IOriginalImage,
-} from "./interfaces";
-import { getBase64Image } from "./lib/image/base64Encode";
-import { composeImage, composeText } from "./lib/image/composeImage";
+} from "../interfaces";
+import { getBase64Image } from "../lib/image/base64Encode";
+import { composeImage, composeText } from "../lib/image/composeImage";
+import { Actions, FunctionForFirstParamType } from "./interfaces";
 
-export interface State {
+export interface ConfigState {
   brightness: number;
   width: number;
   height: number;
@@ -25,7 +26,7 @@ export interface State {
   displaySettingsPages: IDisplaySettingsPage[];
   defaultBackDisplay: IDisplay;
 }
-export const defaultState: () => Promise<State> = async () => ({
+export const defaultConfigState: () => Promise<ConfigState> = async () => ({
   brightness: 200,
   width: 3,
   height: 2,
@@ -34,70 +35,67 @@ export const defaultState: () => Promise<State> = async () => ({
   defaultBackDisplay: await createDefaultBackDisplay(),
 });
 
-interface BaseActions<RetType> {
-  [key: string]: (...args: any[]) => RetType;
-}
-type Actions = BaseActions<Promise<State>>;
-declare type FunctionForFirstParamType<ParamType> = (arg0: ParamType) => void;
-
-export interface IReducer extends Actions {
-  setBrightness(state: State, brightness: number): Promise<State>;
+export interface IConfigReducer extends Actions<ConfigState> {
+  setBrightness(state: ConfigState, brightness: number): Promise<ConfigState>;
   setDimensions(
-    state: State,
+    state: ConfigState,
     data: { width?: number; height?: number }
-  ): Promise<State>;
-  addPage(state: State, previousPage?: number): Promise<State>;
-  deletePage(state: State, pageIndex: number): Promise<State>;
+  ): Promise<ConfigState>;
+  addPage(state: ConfigState, previousPage?: number): Promise<ConfigState>;
+  deletePage(state: ConfigState, pageIndex: number): Promise<ConfigState>;
   setButtonSettings(
-    state: State,
+    state: ConfigState,
     data: {
       buttonSettings: IButtonSetting;
       priOrSec: "primary" | "secondary";
       pageIndex: number;
       buttonIndex: number;
     }
-  ): Promise<State>;
+  ): Promise<ConfigState>;
   setDisplaySettings(
-    state: State,
+    state: ConfigState,
     data: {
       displaySettings: IDisplay;
       pageIndex: number;
       buttonIndex: number;
     }
-  ): Promise<State>;
+  ): Promise<ConfigState>;
   setOriginalImage(
-    state: State,
+    state: ConfigState,
     data: {
       pageIndex: number;
       buttonIndex: number;
       originalImage: IOriginalImage;
     }
-  ): Promise<State>;
+  ): Promise<ConfigState>;
   deleteImage(
-    state: State,
+    state: ConfigState,
     data: {
       pageIndex: number;
       buttonIndex: number;
     }
-  ): Promise<State>;
+  ): Promise<ConfigState>;
   switchButtons(
-    state: State,
+    state: ConfigState,
     data: {
       pageAIndex: number;
       buttonAIndex: number;
       pageBIndex: number;
       buttonBIndex: number;
     }
-  ): Promise<State>;
-  updateAllDefaultBackImages(state: State, data: IDisplay): Promise<State>;
+  ): Promise<ConfigState>;
+  updateAllDefaultBackImages(
+    state: ConfigState,
+    data: IDisplay
+  ): Promise<ConfigState>;
   makeDefaultBackButton(
-    state: State,
+    state: ConfigState,
     data: { pageIndex: number; buttonIndex: number }
-  ): Promise<State>;
-  setState(state: State, newState: State): Promise<State>;
+  ): Promise<ConfigState>;
+  setState(state: ConfigState, newState: ConfigState): Promise<ConfigState>;
 }
 
-export const reducer: IReducer = {
+export const configReducer: IConfigReducer = {
   async setBrightness(state, brightness) {
     console.log("setBrightness");
     return { ...state, brightness };
@@ -247,12 +245,14 @@ export const reducer: IReducer = {
 };
 
 export type IDispatch = {
-  [PropertyType in keyof IReducer]: FunctionForFirstParamType<
-    Parameters<IReducer[PropertyType]>[1]
+  [PropertyType in keyof IConfigReducer]: FunctionForFirstParamType<
+    Parameters<IConfigReducer[PropertyType]>[1]
   >;
 };
 
-export const StateContext = createContext<State>({} as unknown as any);
-export const DispatchContext = createContext<IDispatch>(
-  reducer as unknown as IDispatch
+export const ConfigStateContext = createContext<ConfigState>(
+  {} as unknown as any
+);
+export const ConfigDispatchContext = createContext<IDispatch>(
+  configReducer as unknown as IDispatch
 );

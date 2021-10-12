@@ -17,14 +17,22 @@ import { createFooter } from "./lib/configFile/createFooter";
 import { createHeader } from "./lib/configFile/createHeader";
 import { loadConfigFile } from "./lib/configFile/loadConfigFile";
 import { download } from "./lib/download";
+import { AddEventListeners } from "./lib/eventListeners";
 import { FDSerialAPI } from "./lib/fdSerialApi";
 import {
-  DispatchContext,
-  IReducer,
-  reducer,
-  State,
-  StateContext,
-} from "./state";
+  AppDispatchContext,
+  appReducer,
+  AppState,
+  AppStateContext,
+  IAppReducer,
+} from "./states/appState";
+import {
+  ConfigDispatchContext,
+  IConfigReducer,
+  configReducer,
+  ConfigState,
+  ConfigStateContext,
+} from "./states/configState";
 
 const StyledToastContainer = styled(ToastContainer).attrs({
   // custom props
@@ -69,34 +77,21 @@ const Content = styled.div`
   height: 100%;
 `;
 
-const App: React.FC<{ defaultState: State }> = ({ defaultState }) => {
-  const [state, dispatch] = useSimpleReducer<State, IReducer>(
-    defaultState,
-    reducer
+const App: React.FC<{
+  defaultConfigState: ConfigState;
+  defaultAppState: AppState;
+}> = ({ defaultConfigState, defaultAppState }) => {
+  const [configState, configDispatch] = useSimpleReducer<
+    ConfigState,
+    IConfigReducer
+  >(defaultConfigState, configReducer);
+
+  const [appState, appDispatch] = useSimpleReducer<AppState, IAppReducer>(
+    defaultAppState,
+    appReducer
   );
 
-  useEffect(() => {
-    window.addEventListener("beforeinstallprompt", (e) => {
-      e.preventDefault();
-      if (!localStorage.getItem("closedPWACTA"))
-        toast(
-          "You can install the configurator to have it offline! Click here to install",
-          {
-            autoClose: false,
-            position: "bottom-right",
-            onClose: () => localStorage.setItem("closedPWACTA", "true"),
-            onClick: () => (e as any).prompt(),
-          }
-        );
-    });
-    // eslint-disable-next-line
-  }, []); // only execute on page load
-
-  const [serialApi, setSerialApi] = useState<FDSerialAPI>();
-  useEffect(() => {
-    if (!(navigator as any).serial) return;
-    setSerialApi(new FDSerialAPI());
-  }, []);
+  AddEventListeners({ appDispatchContext: appDispatch });
 
   const [showSettings, setShowSettings] = useShowSettings();
   const [showLogin, setShowLogin] = useShowLogin();
@@ -104,69 +99,76 @@ const App: React.FC<{ defaultState: State }> = ({ defaultState }) => {
   const createConfigBuffer = async (): Promise<Buffer> =>
     Buffer.concat([
       createHeader(
-        state.width,
-        state.height,
-        state.brightness,
-        state.buttonSettingsPages.length
+        configState.width,
+        configState.height,
+        configState.brightness,
+        configState.buttonSettingsPages.length
       ),
-      createButtonBody(state.buttonSettingsPages),
+      createButtonBody(configState.buttonSettingsPages),
       createImageBody(
-        state.displaySettingsPages.map((page) =>
+        configState.displaySettingsPages.map((page) =>
           page.map((display) => display.convertedImage)
         )
       ),
-      createFooter(state),
+      createFooter(configState),
     ]);
   return (
-    <StateContext.Provider value={state}>
-      <DispatchContext.Provider value={dispatch}>
-        <Main>
-          {
-            <Header
-              loadConfigFile={(filesOrBuffer) =>
-                loadConfigFile(filesOrBuffer, dispatch.setState)
-              }
-              saveConfigFile={async () => {
-                if (state.displaySettingsPages.length === 0) return;
-                const completeBuffer = await createConfigBuffer();
+    <ConfigStateContext.Provider value={configState}>
+      <ConfigDispatchContext.Provider value={configDispatch}>
+        <AppStateContext.Provider value={appState}>
+          <AppDispatchContext.Provider value={appDispatch}>
+            <Main>
+              {
+                <Header
+                  loadConfigFile={(filesOrBuffer) =>
+                    loadConfigFile(filesOrBuffer, configDispatch.setState)
+                  }
+                  saveConfigFile={async () => {
+                    if (configState.displaySettingsPages.length === 0) return;
+                    const completeBuffer = await createConfigBuffer();
 
-                completeBuffer && download(completeBuffer);
-              }}
-              setShowSettings={setShowSettings}
-              createConfigBuffer={createConfigBuffer}
-              openLogin={() => setShowLogin(true)}
-              serialApi={serialApi}
-            />
-          }
-          <Content id="pages">
-            {state.displaySettingsPages.map((imagePage, pageIndex) => (
-              <Page pageIndex={pageIndex} key={pageIndex} />
-            ))}
-          </Content>
-          <GlobalSettings
-            visible={showSettings}
-            setClose={() => setShowSettings(false)}
-            onClose={async () =>
-              dispatch.updateAllDefaultBackImages(
-                await state.defaultBackDisplay
-              )
-            }
-            readyToSave={!!state.buttonSettingsPages.length}
-            loadConfigFile={(buffer: Buffer) =>
-              loadConfigFile(buffer, dispatch.setState)
-            }
-            getConfigBuffer={createConfigBuffer}
-            serialApi={serialApi}
-          />
-          <Login visible={showLogin} setClose={() => setShowLogin(false)} />
-          <StyledToastContainer />
-          <FDIconButtonFixed ml={5} onClick={() => dispatch.addPage(undefined)}>
-            <HiDocumentAdd size={22} />
-            Add Page
-          </FDIconButtonFixed>
-        </Main>
-      </DispatchContext.Provider>
-    </StateContext.Provider>
+                    completeBuffer && download(completeBuffer);
+                  }}
+                  setShowSettings={setShowSettings}
+                  createConfigBuffer={createConfigBuffer}
+                  openLogin={() => setShowLogin(true)}
+                />
+              }
+              <Content id="pages">
+                {configState.displaySettingsPages.map(
+                  (imagePage, pageIndex) => (
+                    <Page pageIndex={pageIndex} key={pageIndex} />
+                  )
+                )}
+              </Content>
+              <GlobalSettings
+                visible={showSettings}
+                setClose={() => setShowSettings(false)}
+                onClose={async () =>
+                  configDispatch.updateAllDefaultBackImages(
+                    await configState.defaultBackDisplay
+                  )
+                }
+                readyToSave={!!configState.buttonSettingsPages.length}
+                loadConfigFile={(buffer: Buffer) =>
+                  loadConfigFile(buffer, configDispatch.setState)
+                }
+                getConfigBuffer={createConfigBuffer}
+              />
+              <Login visible={showLogin} setClose={() => setShowLogin(false)} />
+              <StyledToastContainer />
+              <FDIconButtonFixed
+                ml={5}
+                onClick={() => configDispatch.addPage(undefined)}
+              >
+                <HiDocumentAdd size={22} />
+                Add Page
+              </FDIconButtonFixed>
+            </Main>
+          </AppDispatchContext.Provider>
+        </AppStateContext.Provider>
+      </ConfigDispatchContext.Provider>
+    </ConfigStateContext.Provider>
   );
 };
 

@@ -6,4 +6,5 @@ export const colors = {
   brightWhite: "#ecf0f1",
   accent: "#66fcf1",
   accentDark: "#45a29e",
+  red: "#e23535",
 };

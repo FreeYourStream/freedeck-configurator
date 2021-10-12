@@ -5,7 +5,8 @@ import { toast } from "react-toastify";
 
 import App from "./App";
 import { register } from "./serviceWorker";
-import { defaultState } from "./state";
+import { defaultAppState } from "./states/appState";
+import { defaultConfigState } from "./states/configState";
 
 const main = async () => {
   if (process.env.NODE_ENV !== "development")
@@ -13,7 +14,8 @@ const main = async () => {
       return "Data will be lost if you leave the page, are you sure?";
     };
 
-  const awaitedDefaultState = await defaultState();
+  const awaitedDefaultConfigState = await defaultConfigState();
+  const awaitedDefaultAppState = await defaultAppState();
   if (process.env.REACT_APP_ENABLE_API === "true") {
     const client = new ApolloClient({
       cache: new InMemoryCache(),
@@ -21,15 +23,22 @@ const main = async () => {
       credentials: "include",
     });
     console.log("API ENABLED :)");
+    // todo remove duplicate code
     ReactDOM.render(
       <ApolloProvider client={client}>
-        <App defaultState={awaitedDefaultState} />
+        <App
+          defaultConfigState={awaitedDefaultConfigState}
+          defaultAppState={awaitedDefaultAppState}
+        />
       </ApolloProvider>,
       document.getElementById("root")
     );
   } else {
     ReactDOM.render(
-      <App defaultState={awaitedDefaultState} />,
+      <App
+        defaultConfigState={awaitedDefaultConfigState}
+        defaultAppState={awaitedDefaultAppState}
+      />,
       document.getElementById("root")
     );
   }

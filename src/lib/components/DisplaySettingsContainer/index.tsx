@@ -1,6 +1,9 @@
 import React, { useContext, useEffect, useRef } from "react";
 import styled from "styled-components";
-import { DispatchContext, StateContext } from "../../../state";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../../../states/configState";
 import { fileToImage } from "../../fileToImage";
 import { DropDisplay } from "./DropDisplay";
 import { ImageSettings } from "./ImageSettings";
@@ -18,12 +21,12 @@ export const DisplaySettingsContainer = React.forwardRef<
     displayIndex: number;
   }
 >(({ pageIndex, displayIndex }, menuRef) => {
-  const state = useContext(StateContext);
+  const configState = useContext(ConfigStateContext);
   const display =
     pageIndex === -1
-      ? state.defaultBackDisplay
-      : state.displaySettingsPages[pageIndex][displayIndex];
-  const dispatch = useContext(DispatchContext);
+      ? configState.defaultBackDisplay
+      : configState.displaySettingsPages[pageIndex][displayIndex];
+  const configDispatch = useContext(ConfigDispatchContext);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (ref.current) {
@@ -34,7 +37,7 @@ export const DisplaySettingsContainer = React.forwardRef<
   }, []);
   const onDrop = async (acceptedFiles: File[]) => {
     const resizedBuffer = await fileToImage(acceptedFiles[0]);
-    dispatch.setOriginalImage({
+    configDispatch.setOriginalImage({
       pageIndex,
       buttonIndex: displayIndex,
       originalImage: resizedBuffer,
@@ -47,7 +50,7 @@ export const DisplaySettingsContainer = React.forwardRef<
       ref={ref}
       onPaste={async (e) => {
         console.log("PASTE");
-        dispatch.setOriginalImage({
+        configDispatch.setOriginalImage({
           buttonIndex: displayIndex,
           pageIndex,
           originalImage: await fileToImage(e.clipboardData.files[0]),

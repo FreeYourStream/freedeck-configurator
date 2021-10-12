@@ -10,7 +10,7 @@ import { FreeDeckSettings } from "./FreeDeckSettings";
 import { Hotkeys } from "./Hotkeys";
 import { SpecialKeys } from "./SpecialKeys";
 import { Text } from "./Text";
-import { DispatchContext } from "../../state";
+import { ConfigDispatchContext } from "../../states/configState";
 
 const Wrapper = styled.div`
   display: flex;
@@ -27,7 +27,7 @@ export const Action: React.FC<{
   title: string;
   primary: boolean;
 }> = ({ action, title, pageIndex, buttonIndex, pageCount, primary }) => {
-  const dispatch = useContext(DispatchContext);
+  const configDispatch = useContext(ConfigDispatchContext);
   const pages = [...Array(pageCount).keys()].filter(
     (pageNumber) => pageNumber !== pageIndex
   );
@@ -36,7 +36,7 @@ export const Action: React.FC<{
     const keepValues =
       [EAction.hotkeys, EAction.text].includes(action.mode) &&
       [EAction.hotkeys, EAction.text].includes(mode);
-    dispatch.setButtonSettings({
+    configDispatch.setButtonSettings({
       pageIndex,
       buttonIndex,
       priOrSec,
@@ -49,7 +49,7 @@ export const Action: React.FC<{
     });
   };
   const setMultipleValues = (keys: number[]) =>
-    dispatch.setButtonSettings({
+    configDispatch.setButtonSettings({
       pageIndex,
       buttonIndex,
       priOrSec,
@@ -60,7 +60,7 @@ export const Action: React.FC<{
     });
 
   const setSingleValue = (goTo: number) =>
-    dispatch.setButtonSettings({
+    configDispatch.setButtonSettings({
       pageIndex,
       buttonIndex,
       priOrSec,
@@ -105,7 +105,7 @@ export const Action: React.FC<{
       {action.mode === EAction.changePage && (
         <ChangePage
           action={action}
-          addPage={() => dispatch.addPage(undefined)}
+          addPage={() => configDispatch.addPage(undefined)}
           pages={pages}
           setGoTo={setSingleValue}
         />

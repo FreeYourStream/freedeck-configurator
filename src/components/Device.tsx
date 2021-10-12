@@ -12,7 +12,10 @@ import {
 } from "../lib/components/Misc";
 import { FDSerialAPI } from "../lib/fdSerialApi";
 import { connectionStatus } from "../lib/serial";
-import { DispatchContext, StateContext } from "../state";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../states/configState";
 
 const FW_UNKNOWN = "unknown, please connect serial";
 
@@ -42,8 +45,8 @@ const DisplayCountDropDown: React.FC<{
 export const Device: React.FC<{
   serialApi?: FDSerialAPI;
 }> = ({ serialApi }) => {
-  const state = useContext(StateContext);
-  const dispatch = useContext(DispatchContext);
+  const configState = useContext(ConfigStateContext);
+  const configDispatch = useContext(ConfigDispatchContext);
 
   const [widthOptions, setWOptions] = useState<Array<number>>([]);
   const [heightOptions, setHOptions] = useState<Array<number>>([]);
@@ -64,18 +67,18 @@ export const Device: React.FC<{
   useEffect(() => {
     const wArray = [];
     let possibleWidth = 1;
-    while (state.height * possibleWidth <= 16) {
+    while (configState.height * possibleWidth <= 16) {
       wArray.push(possibleWidth++);
     }
 
     const hArray = [];
     let possibleHeight = 1;
-    while (state.width * possibleHeight <= 16) {
+    while (configState.width * possibleHeight <= 16) {
       hArray.push(possibleHeight++);
     }
     setWOptions(wArray);
     setHOptions(hArray);
-  }, [state.width, state.height]);
+  }, [configState.width, configState.height]);
 
   return (
     <Wrapper>
@@ -83,16 +86,16 @@ export const Device: React.FC<{
       <Row>
         <Label>FreeDeck width:</Label>
         <DisplayCountDropDown
-          onChange={(width) => dispatch.setDimensions({ width })}
-          value={state.width}
+          onChange={(width) => configDispatch.setDimensions({ width })}
+          value={configState.width}
           options={widthOptions}
         />
       </Row>
       <Row>
         <Label>FreeDeck height:</Label>
         <DisplayCountDropDown
-          onChange={(height) => dispatch.setDimensions({ height })}
-          value={state.height}
+          onChange={(height) => configDispatch.setDimensions({ height })}
+          value={configState.height}
           options={heightOptions}
         />
       </Row>

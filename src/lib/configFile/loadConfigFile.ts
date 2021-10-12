@@ -1,4 +1,4 @@
-import { State } from "../../state";
+import { ConfigState } from "../../states/configState";
 import { handleFileSelect } from "../handleFileSelect";
 import { parseConfig } from "./parseConfig";
 const isBuffer = (data: Buffer | FileList): data is Buffer => {
@@ -6,7 +6,7 @@ const isBuffer = (data: Buffer | FileList): data is Buffer => {
 };
 export const loadConfigFile = async (
   fileList: FileList | Buffer,
-  setState: (newState: State) => any
+  setState: (newState: ConfigState) => any
 ) => {
   const file = isBuffer(fileList)
     ? fileList

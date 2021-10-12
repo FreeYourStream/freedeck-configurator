@@ -21,7 +21,10 @@ import {
   Title,
   Value,
 } from "../Misc";
-import { DispatchContext, StateContext } from "../../../state";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../../../states/configState";
 
 const Wrapper = styled.div`
   display: flex;
@@ -41,17 +44,17 @@ export const ImageSettings: React.FC<{
   displayIndex: number;
   pageIndex: number;
 }> = ({ displayIndex, pageIndex }) => {
-  const state = useContext(StateContext);
+  const configState = useContext(ConfigStateContext);
   const display =
     pageIndex === -1
-      ? state.defaultBackDisplay
-      : state.displaySettingsPages[pageIndex][displayIndex];
+      ? configState.defaultBackDisplay
+      : configState.displaySettingsPages[pageIndex][displayIndex];
 
-  const dispatch = useContext(DispatchContext);
+  const configDispatch = useContext(ConfigDispatchContext);
 
   const setBlack = (blackThreshold: number) => {
     display.imageSettings.blackThreshold = blackThreshold;
-    dispatch.setDisplaySettings({
+    configDispatch.setDisplaySettings({
       displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
@@ -59,7 +62,7 @@ export const ImageSettings: React.FC<{
   };
   const setWhite = (whiteThreshold: number) => {
     display.imageSettings.whiteThreshold = whiteThreshold;
-    dispatch.setDisplaySettings({
+    configDispatch.setDisplaySettings({
       displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
@@ -67,7 +70,7 @@ export const ImageSettings: React.FC<{
   };
   const setBrightness = (brightness: number) => {
     display.imageSettings.brightness = brightness;
-    dispatch.setDisplaySettings({
+    configDispatch.setDisplaySettings({
       displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
@@ -75,7 +78,7 @@ export const ImageSettings: React.FC<{
   };
   const setContrast = (contrast: number) => {
     display.imageSettings.contrast = contrast;
-    dispatch.setDisplaySettings({
+    configDispatch.setDisplaySettings({
       displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
@@ -83,7 +86,7 @@ export const ImageSettings: React.FC<{
   };
   const setInvert = (invert: boolean) => {
     display.imageSettings.invert = invert;
-    dispatch.setDisplaySettings({
+    configDispatch.setDisplaySettings({
       displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
@@ -91,7 +94,7 @@ export const ImageSettings: React.FC<{
   };
   const setDither = (dither: any) => {
     display.imageSettings.dither = dither;
-    dispatch.setDisplaySettings({
+    configDispatch.setDisplaySettings({
       displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
@@ -99,7 +102,7 @@ export const ImageSettings: React.FC<{
   };
   const setfontName = (font: string) => {
     display.textSettings.font = font;
-    dispatch.setDisplaySettings({
+    configDispatch.setDisplaySettings({
       displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
@@ -107,7 +110,7 @@ export const ImageSettings: React.FC<{
   };
   const setText = (text: string) => {
     display.textSettings.text = text;
-    dispatch.setDisplaySettings({
+    configDispatch.setDisplaySettings({
       displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,
@@ -115,7 +118,7 @@ export const ImageSettings: React.FC<{
   };
   const setIconWidthMultiplier = (value: number) => {
     display.textWithIconSettings.iconWidthMultiplier = value;
-    dispatch.setDisplaySettings({
+    configDispatch.setDisplaySettings({
       displaySettings: display,
       pageIndex,
       buttonIndex: displayIndex,

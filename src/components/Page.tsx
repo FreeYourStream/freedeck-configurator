@@ -4,7 +4,11 @@ import Backend from "react-dnd-html5-backend";
 import { FaTrashAlt } from "react-icons/fa";
 import styled from "styled-components";
 import { colors } from "../definitions/colors";
-import { DispatchContext, StateContext } from "../state";
+import { AppStateContext } from "../states/appState";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../states/configState";
 import { Display } from "./DisplayButton";
 
 const Header = styled.div`
@@ -34,15 +38,16 @@ const DeletePage = styled.div`
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  background-color: red;
+  background-color: ${colors.red};
   border-radius: 50%;
   height: 30px;
   width: 30px;
   top: -15px;
   right: -15px;
-  visibility: hidden;
+  opacity: 0;
   position: absolute;
   border-style: none;
+  transition: opacity 100ms ease-in-out;
 `;
 
 const Wrapper = styled.div`
@@ -54,7 +59,7 @@ const Wrapper = styled.div`
   background: ${colors.gray};
   box-shadow: 13px 13px 21px #11161d, -13px -13px 21px #2d3a49;
   &:hover ${DeletePage} {
-    visibility: visible;
+    opacity: 1;
   }
 `;
 
@@ -84,26 +89,28 @@ interface IProps {
 }
 
 export const Page: React.FC<IProps> = ({ pageIndex }) => {
-  const state = useContext(StateContext);
-  const dispatch = useContext(DispatchContext);
+  const configState = useContext(ConfigStateContext);
+  const appState = useContext(AppStateContext);
+  const configDispatch = useContext(ConfigDispatchContext);
   return (
     <Wrapper id={`page_${pageIndex}`}>
       <Header>
         <PageIndicator>{pageIndex}</PageIndicator>
         <DeletePage
           onClick={() => {
-            const deleteConfirmed = window.confirm(
-              "Do you really want to delete this page forever?"
-            );
-            if (deleteConfirmed) dispatch.deletePage(pageIndex);
+            const deleteConfirmed =
+              appState.ctrlDown ||
+              window.confirm("Do you really want to delete this page forever?");
+            console.log("deleteConfirmed", deleteConfirmed);
+            if (deleteConfirmed) configDispatch.deletePage(pageIndex);
           }}
         >
           <FaTrashAlt size={18} color="white" />
         </DeletePage>
       </Header>
-      <Grid height={state.height} width={state.width}>
+      <Grid height={configState.height} width={configState.width}>
         <DndProvider backend={Backend}>
-          {state.displaySettingsPages[pageIndex].map(
+          {configState.displaySettingsPages[pageIndex].map(
             (imageDisplay, displayIndex) => (
               <Display
                 key={displayIndex}
