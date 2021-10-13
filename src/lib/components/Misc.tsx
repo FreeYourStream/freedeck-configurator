@@ -87,7 +87,7 @@ export const Column = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 12px;
+  padding: 16px;
   width: 50%;
 `;
 export const Disabler = styled.div<{ disable: boolean }>`
@@ -118,7 +118,6 @@ export const StyledSelect = styled.select`
   border-radius: 5px;
   font-size: 16px;
   font-family: sans-serif;
-  margin-top: 8px;
   width: 100%;
 `;
 export const SelectWrapper = styled.div`
@@ -127,7 +126,6 @@ export const SelectWrapper = styled.div`
     content: "\u25BE";
     position: absolute;
     right: 8px;
-    top: 8px;
     font-family: sans-serif;
     color: ${colors.black};
     pointer-events: none;
@@ -138,8 +136,8 @@ export const Row = styled.div<{ padding?: number }>`
   display: flex;
   width: 100%;
   justify-content: space-between;
-  align-content: center;
-  margin-top: 8px;
+  align-items: center;
+  margin-top: 16px;
   min-height: 30px;
   padding: ${(p) => p.padding ?? 0}px ${(p) => p.padding ?? 0}px 0px 0px;
 `;

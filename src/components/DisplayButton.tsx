@@ -91,11 +91,11 @@ export const Display: React.FC<{
 
       {showSettings && (
         <Modal
-          title={`Page ${pageIndex} | Display and Button ${displayIndex}`}
+          title={`Page ${pageIndex} / Display ${displayIndex}`}
           visible={showSettings}
           setClose={() => setShowSettings(false)}
           height={720}
-          width={628}
+          width={670}
         >
           <ContextMenu menuId={menuId}>
             <ContextMenuItem
@@ -126,9 +126,6 @@ export const Display: React.FC<{
             renderTab={(tabName) => (
               <>
                 <ModalBody visible={tabName === "Display Settings"}>
-                  <Title divider size={3}>
-                    Display Settings
-                  </Title>
                   <DisplaySettingsContainer
                     ref={menuRef}
                     pageIndex={pageIndex}
@@ -136,9 +133,6 @@ export const Display: React.FC<{
                   />
                 </ModalBody>
                 <ModalBody visible={tabName === "Button Settings"}>
-                  <Title divider size={3}>
-                    Button Settings
-                  </Title>
                   <Row>
                     <Column>
                       <Action

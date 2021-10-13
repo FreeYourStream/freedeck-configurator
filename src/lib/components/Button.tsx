@@ -114,10 +114,17 @@ export const FDButton = (props: IFDButtonProps) => (
     </FDButtonInner>
   </Wrapper>
 );
+export const Icon: React.FC<{ icon: string; size?: number; color?: string }> =
+  ({ color, icon, size }) => {
+    const iconClass = icon.split("/")[0];
+    const iconName = icon.split("/")[1];
+    const Icon =
+      // @ts-ignore
+      Icons[iconClass][iconName];
+    console.log(iconClass, iconName);
+    return <Icon size={size ?? 22} color={color ?? colors.white} />;
+  };
 export const FDIconButton = (props: IFDButtonProps & { icon?: string }) => {
-  const Icon =
-    //@ts-ignore
-    props.icon && Icons[props.icon.split("/")[0]][props.icon.split("/")[1]];
   return (
     <Label htmlFor={props.htmlFor}>
       <Wrapper
@@ -134,7 +141,7 @@ export const FDIconButton = (props: IFDButtonProps & { icon?: string }) => {
         >
           {props.icon && Icon ? (
             <Spacer mr={props.children?.length ? 4 : 0}>
-              <Icon size={22} />
+              <Icon size={22} icon={props.icon} />
             </Spacer>
           ) : (
             ""

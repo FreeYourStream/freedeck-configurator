@@ -25,6 +25,10 @@ import {
   ConfigDispatchContext,
   ConfigStateContext,
 } from "../../../states/configState";
+import { AppStateContext } from "../../../states/appState";
+import { Icons } from "../Icons";
+import { FDIconButton, Icon } from "../Button";
+import { CtrlDuo } from "../CtrlDuo";
 
 const Wrapper = styled.div`
   display: flex;
@@ -45,6 +49,8 @@ export const ImageSettings: React.FC<{
   pageIndex: number;
 }> = ({ displayIndex, pageIndex }) => {
   const configState = useContext(ConfigStateContext);
+  const { ctrlDown } = useContext(AppStateContext);
+
   const display =
     pageIndex === -1
       ? configState.defaultBackDisplay
@@ -136,110 +142,111 @@ export const ImageSettings: React.FC<{
         {!display.imageSettings.dither ? (
           <>
             <Row>
-              <Label>White Threshold:</Label>
-              <Value>{display.imageSettings.whiteThreshold}</Value>
+              <CtrlDuo>
+                <Icon icon="fa/FaAdjust" color="white" />
+                <Label>White Threshold:</Label>
+              </CtrlDuo>
+              <CtrlDuo>
+                <StyledSlider
+                  style={{ width: "180px" }}
+                  min={0}
+                  max={128}
+                  step={1}
+                  value={display.imageSettings.whiteThreshold}
+                  onChange={(event) =>
+                    setWhite(event.currentTarget.valueAsNumber)
+                  }
+                />
+                <Value>{display.imageSettings.whiteThreshold}</Value>
+              </CtrlDuo>
             </Row>
             <Row>
-              <StyledSlider
-                min={0}
-                max={128}
-                step={1}
-                value={display.imageSettings.whiteThreshold}
-                onChange={(event) =>
-                  setWhite(event.currentTarget.valueAsNumber)
-                }
-              />
-            </Row>
-            <Row>
-              <Label>Black Threshold:</Label>
-              <Value>{display.imageSettings.blackThreshold}</Value>
-            </Row>
-            <Row>
-              <StyledSlider
-                min={128}
-                max={255}
-                step={1}
-                value={display.imageSettings.blackThreshold}
-                onChange={(event) =>
-                  setBlack(event.currentTarget.valueAsNumber)
-                }
-              />
+              <CtrlDuo>
+                <Icon icon="fa/FaAdjust" color="black" />
+                <Label>Black Threshold:</Label>
+              </CtrlDuo>
+              <CtrlDuo>
+                <StyledSlider
+                  style={{ width: "180px" }}
+                  min={128}
+                  max={255}
+                  step={1}
+                  value={display.imageSettings.blackThreshold}
+                  onChange={(event) =>
+                    setBlack(event.currentTarget.valueAsNumber)
+                  }
+                />
+                <Value>{display.imageSettings.blackThreshold}</Value>
+              </CtrlDuo>
             </Row>
           </>
         ) : (
           <>
             <Row>
-              <Label>Brightness:</Label>
-              <Value>{display.imageSettings.brightness}</Value>
+              <CtrlDuo>
+                <Icon icon="md/MdBrightnessMedium" color="white" />
+                <Label>Brightness:</Label>
+              </CtrlDuo>
+              <CtrlDuo>
+                <StyledSlider
+                  style={{ width: "180px" }}
+                  min={-1}
+                  max={1}
+                  step={0.02}
+                  value={display.imageSettings.brightness}
+                  onChange={(event) =>
+                    setBrightness(event.currentTarget.valueAsNumber)
+                  }
+                />
+                <Value>{display.imageSettings.brightness}</Value>
+              </CtrlDuo>
             </Row>
             <Row>
-              <StyledSlider
-                min={-1}
-                max={1}
-                step={0.02}
-                value={display.imageSettings.brightness}
-                onChange={(event) =>
-                  setBrightness(event.currentTarget.valueAsNumber)
-                }
-              />
-            </Row>
-            <Row>
-              <Label>Contrast:</Label>
-              <Value>{display.imageSettings.contrast}</Value>
-            </Row>
-            <Row>
-              <StyledSlider
-                min={-1}
-                max={1}
-                step={0.02}
-                value={display.imageSettings.contrast}
-                onChange={(event) =>
-                  setContrast(event.currentTarget.valueAsNumber)
-                }
-              />
+              <CtrlDuo>
+                <Icon icon="fa/FaAdjust" color="black" />
+                <Label>Contrast:</Label>
+              </CtrlDuo>
+              <CtrlDuo>
+                <StyledSlider
+                  style={{ width: "180px" }}
+                  min={-1}
+                  max={1}
+                  step={0.02}
+                  value={display.imageSettings.contrast}
+                  onChange={(event) =>
+                    setContrast(event.currentTarget.valueAsNumber)
+                  }
+                />
+                <Value>{display.imageSettings.contrast}</Value>
+              </CtrlDuo>
             </Row>
           </>
         )}
 
         <Row>
+          <Label>Invert</Label>
           <MicroToggle
             activated={display.imageSettings.invert}
-            width="48%"
+            width="25%"
             onClick={() => setInvert(!display.imageSettings.invert)}
           >
-            Invert
+            {display.imageSettings.invert ? "on" : "off"}
           </MicroToggle>
-
+        </Row>
+        <Row>
+          <Label>Dither</Label>
           <MicroToggle
             activated={display.imageSettings.dither}
-            width="48%"
+            width="25%"
             onClick={() => setDither(!display.imageSettings.dither)}
           >
-            Dither
+            {display.imageSettings.dither ? "on" : "off"}
           </MicroToggle>
-        </Row>
-        <Row>
-          <Label>Icon width:</Label>
-          <Value>
-            {display.textWithIconSettings.iconWidthMultiplier.toFixed(2)}
-          </Value>
-        </Row>
-        <Row>
-          <StyledSlider
-            disabled={!display.textSettings.text.length}
-            min={0.1}
-            max={0.9}
-            step={0.01}
-            value={display.textWithIconSettings.iconWidthMultiplier}
-            onChange={(event) =>
-              setIconWidthMultiplier(event.currentTarget.valueAsNumber)
-            }
-          />
         </Row>
       </Column>
 
       <Column>
-        <Title>Text</Title>
+        <Title>Text Settings</Title>
         <Row>
           <TextInput
             placeholder={"Enter text"}
@@ -248,16 +255,45 @@ export const ImageSettings: React.FC<{
           />
         </Row>
         <Row>
-          <Label>Font:</Label>
-          <StyledSelect
-            defaultValue={display.textSettings.font}
-            onChange={(e) => setfontName(e.currentTarget.value)}
-          >
-            <option value={fontSmaller}>smaller</option>
-            <option value={fontSmall}>small</option>
-            <option value={fontMedium}>medium</option>
-            <option value={fontLarge}>large</option>
-          </StyledSelect>
+          <CtrlDuo>
+            <Icon icon="fa/FaFont" />
+            <Label>Font:</Label>
+          </CtrlDuo>
+          <CtrlDuo>
+            <StyledSelect
+              style={{ width: "180px" }}
+              defaultValue={display.textSettings.font}
+              onChange={(e) => setfontName(e.currentTarget.value)}
+            >
+              <option value={fontSmaller}>smaller</option>
+              <option value={fontSmall}>small</option>
+              <option value={fontMedium}>medium</option>
+              <option value={fontLarge}>large</option>
+            </StyledSelect>
+            <Value>{display.textSettings.font}</Value>
+          </CtrlDuo>
+        </Row>
+        <Row>
+          <CtrlDuo>
+            <Icon icon="ai/AiOutlineColumnWidth" />
+            <Label>Icon width:</Label>
+          </CtrlDuo>
+          <CtrlDuo>
+            <StyledSlider
+              style={{ width: "180px" }}
+              disabled={!display.textSettings.text.length}
+              min={0.1}
+              max={0.9}
+              step={0.01}
+              value={display.textWithIconSettings.iconWidthMultiplier}
+              onChange={(event) =>
+                setIconWidthMultiplier(event.currentTarget.valueAsNumber)
+              }
+            />
+            <Value>
+              {display.textWithIconSettings.iconWidthMultiplier.toFixed(2)}
+            </Value>
+          </CtrlDuo>
         </Row>
       </Column>
     </Wrapper>
