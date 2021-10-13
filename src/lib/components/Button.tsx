@@ -24,10 +24,10 @@ export const FDButton = (props: IFDButtonProps) => (
   <label htmlFor={props.htmlFor}>
     <div
       className={c(
-        "rounded select-none",
-        props.size === 1 && "px-3 py-0.5",
-        (props.size === 2 || props.size === undefined) && "px-3 py-1",
-        props.size === 3 && "px-6 py-2",
+        "rounded-lg select-none",
+        props.size === 1 && "px-3 py-1",
+        (props.size === 2 || props.size === undefined) && "px-5 py-2",
+        props.size === 3 && "px-6 py-3",
         props.type === "danger" && "bg-red-600 hover:bg-red-500",
         (props.type ?? "normal") === "normal" && "bg-gray-300 hover:bg-white",
         props.type === "cta" && "bg-green-600 hover:bg-green-500"
@@ -36,11 +36,12 @@ export const FDButton = (props: IFDButtonProps) => (
     >
       <div
         className={c(
-          props.size === 1 && "text-lg",
-          (props.size === 2 || props.size === undefined) && "text-xl",
-          props.size === 3 && "text-2xl",
+          props.size === 1 && "text-lg font-normal",
+          (props.size === 2 || props.size === undefined) &&
+            "text-xl font-normal",
+          props.size === 3 && "text-2xl font-semibold",
           (props.type ?? "normal") === "normal" ? "text-black" : "text-white",
-          "flex items-center font-normal align text-center"
+          "flex items-center justify-center text-center"
         )}
       >
         {props.children}

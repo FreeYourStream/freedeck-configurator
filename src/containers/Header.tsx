@@ -1,12 +1,9 @@
 import c from "clsx";
 import React, { useContext, useEffect, useState } from "react";
-import styled from "styled-components";
-import { colors } from "../definitions/colors";
 import { useUser } from "../graphql/hooks/useUser";
 import { Avatar } from "../lib/components/Avatar";
 import { FDButton, FDIconButton } from "../lib/components/Button";
 import { Value } from "../lib/components/Misc";
-import { FDSerialAPI } from "../lib/fdSerialApi";
 import { connectionStatus } from "../lib/serial";
 import { AppStateContext } from "../states/appState";
 
@@ -31,14 +28,12 @@ const LoginLogoutButtons: React.FC<{
         ></FDIconButton>
       </>
     );
-  } else if (error) {
-    return (
-      <FDIconButton icon="bi/BiUser" onClick={() => openLogin()}>
-        Login
-      </FDIconButton>
-    );
   }
-  return <></>;
+  return (
+    <FDIconButton icon="bi/BiUser" onClick={() => openLogin()}>
+      Login
+    </FDIconButton>
+  );
 };
 
 export const Header: React.FC<{
@@ -70,7 +65,7 @@ export const Header: React.FC<{
       id="header"
       className={c("bg-gray-900 border-b-2 border-gray-600 flex p-4")}
     >
-      <div className={c("flex mr-8")}>
+      <div className={c("flex mr-12 ml-6")}>
         <div className={c("font-thin text-5xl text-white")}>Free</div>
         <div className={c("font-medium text-5xl text-white")}>Deck</div>
       </div>
