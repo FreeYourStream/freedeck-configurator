@@ -3,6 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { toast } from "react-toastify";
 
+import "./tailwind.css";
 import App from "./App";
 import { register } from "./serviceWorker";
 import { defaultAppState } from "./states/appState";

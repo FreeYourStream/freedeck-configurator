@@ -1,119 +1,54 @@
+import c from "clsx";
 import React from "react";
 import styled from "styled-components";
 
 import { colors } from "../../definitions/colors";
 import { Icons } from "./Icons";
 
-export const FDButtonInner = styled.div<{
-  size: number;
-  px?: number;
-  py?: number;
-  disabled?: boolean;
-  type: "danger" | "normal";
-}>`
-  padding: ${(p) => (p.size === 1 ? "0px" : p.size === 2 ? "4px" : "8px")};
-  ${(p) => (p.px ? `padding-left: ${p.px}px;padding-right: ${p.px}px;` : "")}
-  font-family: "Barlow", sans-serif;
-  position: relative;
-  font-weight: 500;
-  width: auto;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ecf0f1;
-  text-decoration: none;
-  border-radius: 5px;
-  border: solid 1px ${(p) => (!p.disabled ? colors.accent : colors.white)};
-  background-color: ${(p) =>
-    p.type === "danger" ? " #c54800" : colors.accentDark};
-  ${(p) => p.disabled && `background-color: ${colors.lightGray};`}
-  white-space: nowrap;
-  transition: all 0.1s;
-  box-shadow: 0px 0px 0px, 0px 0px 0px,
-    0px 6px 0px ${(p) => (!p.disabled ? colors.accentDark : colors.lightGray)},
-    0px 0px 0px;
-  cursor: pointer;
-  user-select: none;
-`;
-
-const Font = styled.div<{ size: number }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: ${(p) => (p.size === 1 ? "16px" : p.size === 2 ? "20px" : "24px")};
-`;
 export const Spacer = styled.div<{ mr: number }>`
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: ${(p) => p.mr}px;
 `;
-const Wrapper = styled.div<{
-  ml: number;
-  mt: number;
-  width: string;
-  disabled: boolean;
-}>`
-  transition: all 0.1s;
-  width: ${(p) => p.width};
-  padding-bottom: 8px;
-  margin-left: ${(p) => p.ml}px;
-  margin-top: ${(p) => p.mt}px;
-  ${(p) =>
-    !p.disabled &&
-    `:hover {
-    padding-top: 6px;
-    padding-bottom: 2px;
-  }
-  &:hover > ${FDButtonInner} {
-    box-shadow: 0px 0px 0px, 0px 0px 0px, 0px 2px 0px ${colors.accentDark},
-      0px 0px 0px;
-  }
-
-  :active {
-    padding-top: 6px;
-    padding-bottom: 0px;
-  }
-  &:active > ${FDButtonInner} {
-    box-shadow: none;
-  }`}
-`;
-const Label = styled.label``;
 
 export interface IFDButtonProps {
-  disabled?: boolean;
-  type?: "danger" | "normal";
+  type?: "danger" | "normal" | "cta";
   children?: any;
   htmlFor?: any;
   onClick?: (e: any) => void;
-  background?: string;
   size?: 1 | 2 | 3;
-  ml?: number;
-  mt?: number;
-  px?: number;
-  py?: number;
-  width?: string;
 }
 
 export const FDButton = (props: IFDButtonProps) => (
-  <Wrapper
-    ml={props.ml ?? 0}
-    mt={props.mt ?? 0}
-    width={props.width ?? "auto"}
-    disabled={props.disabled ?? false}
-  >
-    <FDButtonInner
-      type={props.type ?? "normal"}
-      size={props.size ?? 2}
-      px={props.px}
-      {...props}
-      onClick={props.disabled ? () => undefined : props.onClick}
+  <label htmlFor={props.htmlFor}>
+    <div
+      className={c(
+        "rounded select-none",
+        props.size === 1 && "px-3 py-0.5",
+        (props.size === 2 || props.size === undefined) && "px-3 py-1",
+        props.size === 3 && "px-6 py-2",
+        props.type === "danger" && "bg-red-600 hover:bg-red-500",
+        (props.type ?? "normal") === "normal" && "bg-gray-300 hover:bg-white",
+        props.type === "cta" && "bg-green-600 hover:bg-green-500"
+      )}
+      onClick={props.onClick}
     >
-      <Font size={props.size ?? 2}>{props.children}</Font>
-    </FDButtonInner>
-  </Wrapper>
+      <div
+        className={c(
+          props.size === 1 && "text-lg",
+          (props.size === 2 || props.size === undefined) && "text-xl",
+          props.size === 3 && "text-2xl",
+          (props.type ?? "normal") === "normal" ? "text-black" : "text-white",
+          "flex items-center font-normal align text-center"
+        )}
+      >
+        {props.children}
+      </div>
+    </div>
+  </label>
 );
+
 export const Icon: React.FC<{ icon: string; size?: number; color?: string }> =
   ({ color, icon, size }) => {
     const iconClass = icon.split("/")[0];
@@ -121,52 +56,38 @@ export const Icon: React.FC<{ icon: string; size?: number; color?: string }> =
     const Icon =
       // @ts-ignore
       Icons[iconClass][iconName];
-    console.log(iconClass, iconName);
-    return <Icon size={size ?? 22} color={color ?? colors.white} />;
+    return <Icon size={size ?? 22} color={color ?? colors.black} />;
   };
-export const FDIconButton = (props: IFDButtonProps & { icon?: string }) => {
-  return (
-    <Label htmlFor={props.htmlFor}>
-      <Wrapper
-        ml={props.ml ?? 0}
-        mt={props.mt ?? 0}
-        width={props.width ?? "auto"}
-        disabled={props.disabled ?? false}
-      >
-        <FDButtonInner
-          type={props.type ?? "normal"}
-          size={props.size ?? 2}
-          px={props.px}
-          {...props}
-        >
-          {props.icon && Icon ? (
-            <Spacer mr={props.children?.length ? 4 : 0}>
-              <Icon size={22} icon={props.icon} />
-            </Spacer>
-          ) : (
-            ""
-          )}
-          {props.children?.length && (
-            <Font size={props.size ?? 2}>{props.children}</Font>
-          )}
-        </FDButtonInner>
-      </Wrapper>
-    </Label>
-  );
-};
 
-const FixedWrapper = styled.div`
-  position: fixed;
-  bottom: 10px;
-  right: 25px;
-`;
+export const FDIconButton = (props: IFDButtonProps & { icon?: string }) => (
+  <FDButton {...props}>
+    {props.icon && Icon ? (
+      <div
+        className={c(
+          props.children && (props.size ?? 2) === 1 && "mr-1",
+          props.children && (props.size ?? 2) === 2 && "mr-2",
+          props.children && (props.size ?? 2) === 3 && "mr-4"
+        )}
+      >
+        <Icon
+          size={16 + (props.size ?? 2) * 3}
+          icon={props.icon}
+          color={(props.type ?? "normal") === "normal" ? "black" : "white"}
+        />
+      </div>
+    ) : (
+      ""
+    )}
+    {props.children}
+  </FDButton>
+);
 
 export const FDIconButtonFixed = (
   props: IFDButtonProps & { icon?: string }
 ) => {
   return (
-    <FixedWrapper>
+    <div className="fixed bottom-5 right-6">
       <FDIconButton {...props} />
-    </FixedWrapper>
+    </div>
   );
 };

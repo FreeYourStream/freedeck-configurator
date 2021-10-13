@@ -1,15 +1,16 @@
 import { useSimpleReducer } from "@bitovi/use-simple-reducer";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { HiDocumentAdd } from "react-icons/hi";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
 import { GlobalSettings } from "./components/GeneralSettings";
-import { Header } from "./components/Header";
+import { Header } from "./containers/Header";
 import { Login } from "./components/Login";
 import { Page } from "./components/Page";
+import { ContentBody } from "./containers/ContentBody";
+import { Main } from "./containers/Main";
 import { colors } from "./definitions/colors";
-import { createDefaultBackDisplay } from "./definitions/defaultBackImage";
 import { useShowLogin, useShowSettings } from "./hooks/states";
 import { FDIconButtonFixed } from "./lib/components/Button";
 import { createButtonBody, createImageBody } from "./lib/configFile/createBody";
@@ -18,7 +19,6 @@ import { createHeader } from "./lib/configFile/createHeader";
 import { loadConfigFile } from "./lib/configFile/loadConfigFile";
 import { download } from "./lib/download";
 import { AddEventListeners } from "./lib/eventListeners";
-import { FDSerialAPI } from "./lib/fdSerialApi";
 import {
   AppDispatchContext,
   appReducer,
@@ -28,10 +28,10 @@ import {
 } from "./states/appState";
 import {
   ConfigDispatchContext,
-  IConfigReducer,
   configReducer,
   ConfigState,
   ConfigStateContext,
+  IConfigReducer,
 } from "./states/configState";
 
 const StyledToastContainer = styled(ToastContainer).attrs({
@@ -55,26 +55,6 @@ const StyledToastContainer = styled(ToastContainer).attrs({
   .Toastify__progress-bar {
     background-color: ${colors.gray};
   }
-`;
-const Main = styled.div`
-  * {
-    box-sizing: border-box;
-  }
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-`;
-
-const Content = styled.div`
-  background-color: ${colors.gray};
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  align-items: center;
-  overflow: auto;
-  width: 100%;
-  height: 100%;
 `;
 
 const App: React.FC<{
@@ -134,13 +114,13 @@ const App: React.FC<{
                   openLogin={() => setShowLogin(true)}
                 />
               }
-              <Content id="pages">
+              <ContentBody>
                 {configState.displaySettingsPages.map(
                   (imagePage, pageIndex) => (
                     <Page pageIndex={pageIndex} key={pageIndex} />
                   )
                 )}
-              </Content>
+              </ContentBody>
               <GlobalSettings
                 visible={showSettings}
                 setClose={() => setShowSettings(false)}
@@ -158,10 +138,11 @@ const App: React.FC<{
               <Login visible={showLogin} setClose={() => setShowLogin(false)} />
               <StyledToastContainer />
               <FDIconButtonFixed
-                ml={5}
+                icon="hi/HiDocumentAdd"
+                size={3}
+                type="cta"
                 onClick={() => configDispatch.addPage(undefined)}
               >
-                <HiDocumentAdd size={22} />
                 Add Page
               </FDIconButtonFixed>
             </Main>

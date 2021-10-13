@@ -1,5 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import tw from "tailwind-styled-components";
 import { useDebounce } from "use-debounce";
 
 import { IDisplay } from "../../../interfaces";
@@ -29,6 +30,22 @@ import { AppStateContext } from "../../../states/appState";
 import { Icons } from "../Icons";
 import { FDIconButton, Icon } from "../Button";
 import { CtrlDuo } from "../CtrlDuo";
+import { colors } from "../../../definitions/colors";
+import c from "clsx";
+const Toggle: React.FC<{ $on: boolean; onClick?: any }> = ({
+  $on,
+  onClick,
+}) => (
+  <div
+    onClick={onClick}
+    className={c(
+      $on ? "bg-green-600 hover:bg-green-500" : "bg-red-600 hover:bg-red-500",
+      "px-2 py-0.5 w-14 font-semibold rounded-sm text-center text-white"
+    )}
+  >
+    {$on ? "I" : "O"}
+  </div>
+);
 
 const Wrapper = styled.div`
   display: flex;
@@ -49,8 +66,6 @@ export const ImageSettings: React.FC<{
   pageIndex: number;
 }> = ({ displayIndex, pageIndex }) => {
   const configState = useContext(ConfigStateContext);
-  const { ctrlDown } = useContext(AppStateContext);
-
   const display =
     pageIndex === -1
       ? configState.defaultBackDisplay
@@ -225,23 +240,17 @@ export const ImageSettings: React.FC<{
 
         <Row>
           <Label>Invert</Label>
-          <MicroToggle
-            activated={display.imageSettings.invert}
-            width="25%"
+          <Toggle
+            $on={display.imageSettings.invert}
             onClick={() => setInvert(!display.imageSettings.invert)}
-          >
-            {display.imageSettings.invert ? "on" : "off"}
-          </MicroToggle>
+          />
         </Row>
         <Row>
           <Label>Dither</Label>
-          <MicroToggle
-            activated={display.imageSettings.dither}
-            width="25%"
+          <Toggle
+            $on={display.imageSettings.dither}
             onClick={() => setDither(!display.imageSettings.dither)}
-          >
-            {display.imageSettings.dither ? "on" : "off"}
-          </MicroToggle>
+          />
         </Row>
       </Column>
 
