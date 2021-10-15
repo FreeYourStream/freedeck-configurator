@@ -1,11 +1,22 @@
 import c from "clsx";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+
+import {
+  CogIcon,
+  DownloadIcon,
+  LogoutIcon,
+  UploadIcon,
+  UserIcon,
+} from "@heroicons/react/solid";
+
 import { useUser } from "../graphql/hooks/useUser";
 import { Avatar } from "../lib/components/Avatar";
 import { FDButton, FDIconButton } from "../lib/components/Button";
 import { Value } from "../lib/components/Misc";
 import { connectionStatus } from "../lib/serial";
 import { AppStateContext } from "../states/appState";
+
+const iconSize = "w-5 h-5";
 
 const LoginLogoutButtons: React.FC<{
   openLogin: () => void;
@@ -15,24 +26,30 @@ const LoginLogoutButtons: React.FC<{
   if (user) {
     return (
       <>
-        <FDButton onClick={() => openFDHub()}>
-          <Avatar src={user.avatar} />
-          <div className={c("ml-1")}>{user.displayName}</div>
+        <FDButton
+          prefix={<Avatar src={user.avatar} />}
+          onClick={() => openFDHub()}
+        >
+          {user.displayName}
         </FDButton>
-        <FDIconButton
-          type="danger"
-          icon="ri/RiLogoutBoxLine"
+        <FDButton
+          prefix={<LogoutIcon className={iconSize} />}
           onClick={() =>
             (window.location.href = `${process.env.REACT_APP_API_URL}/logout`)
           }
-        ></FDIconButton>
+        >
+          {user.displayName}
+        </FDButton>
       </>
     );
   }
   return (
-    <FDIconButton icon="bi/BiUser" onClick={() => openLogin()}>
+    <FDButton
+      prefix={<UserIcon className={iconSize} />}
+      onClick={() => openLogin()}
+    >
       Login
-    </FDIconButton>
+    </FDButton>
   );
 };
 
@@ -52,6 +69,7 @@ export const Header: React.FC<{
   const { serialApi, ctrlDown } = useContext(AppStateContext);
   const [connected, setConnected] = useState<boolean>(!!serialApi?.connected);
   const [progress, setProgress] = useState<number>(0);
+  const loadConfigRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     if (!serialApi) return;
     const id = serialApi.registerOnConStatusChange((type) => {
@@ -63,20 +81,22 @@ export const Header: React.FC<{
   return (
     <div
       id="header"
-      className={c("bg-gray-900 border-b-2 border-gray-600 flex p-4")}
+      className={c("bg-gray-2 flex h-20 items-center px-10 shadow-2xl")}
     >
-      <div className={c("flex mr-12 ml-6")}>
+      <div className={c("flex mr-12")}>
         <div className={c("font-thin text-5xl text-white")}>Free</div>
+        {/*"font-thin text-5xl text-white "/*/}
+        {/*"font-thin text-5xl bg-gradient-to-br from-red-100 to-gray-400 rounded-sm"*/}
         <div className={c("font-medium text-5xl text-white")}>Deck</div>
       </div>
       <div className={c("flex h-14 justify-between items-center w-full")}>
         <form
-          className="flex items-center"
+          className="flex items-center space-x-4"
           onSubmit={(event) => {
             event.preventDefault();
           }}
         >
-          <div className={c("grid grid-cols-2 grid-rows-1 gap-x-4 h-auto")}>
+          <div className={c("flex items-center space-x-4 h-auto")}>
             {connected && !ctrlDown ? (
               <>
                 <FDIconButton
@@ -110,40 +130,42 @@ export const Header: React.FC<{
               </>
             ) : (
               <>
-                <FDIconButton
+                <FDButton
+                  prefix={<UploadIcon className={iconSize} />}
                   size={2}
-                  icon={"fa/FaFileUpload"}
-                  htmlFor="loadConfig"
+                  onClick={() => loadConfigRef.current?.click()}
                 >
                   Load Config
-                </FDIconButton>
+                </FDButton>
                 <input
                   className={c("hidden")}
                   type="file"
                   id="loadConfig"
+                  ref={loadConfigRef}
                   onChange={(event) =>
                     event.currentTarget.files &&
                     loadConfigFile(event.currentTarget.files)
                   }
                 ></input>
-                <FDIconButton
-                  icon="fa/FaSave"
+                <FDButton
+                  prefix={<DownloadIcon className={iconSize} />}
                   size={2}
                   onClick={() => saveConfigFile()}
                 >
                   Save Config
-                </FDIconButton>
+                </FDButton>
               </>
             )}
           </div>
         </form>
-        <div className={c("grid grid-cols-2 grid-rows-1 gap-x-4")}>
-          <FDIconButton
-            icon="ai/AiFillSetting"
+        <div className={c("flex items-center space-x-4")}>
+          <FDButton
+            prefix={<CogIcon className={iconSize} />}
+            size={2}
             onClick={() => setShowSettings(true)}
           >
             Settings
-          </FDIconButton>
+          </FDButton>
           {process.env.REACT_APP_ENABLE_API === "true" && (
             <LoginLogoutButtons
               openLogin={openLogin}

@@ -15,40 +15,46 @@ export const Spacer = styled.div<{ mr: number }>`
 export interface IFDButtonProps {
   type?: "danger" | "normal" | "cta";
   children?: any;
-  htmlFor?: any;
   onClick?: (e: any) => void;
   size?: 1 | 2 | 3;
+  prefix?: JSX.Element;
+  suffix?: JSX.Element;
 }
 
-export const FDButton = (props: IFDButtonProps) => (
-  <label htmlFor={props.htmlFor}>
-    <div
-      className={c(
-        "rounded-lg select-none",
-        props.size === 1 && "px-3 py-1",
-        (props.size === 2 || props.size === undefined) && "px-5 py-2",
-        props.size === 3 && "px-6 py-3",
-        props.type === "danger" && "bg-red-600 hover:bg-red-500",
-        (props.type ?? "normal") === "normal" && "bg-gray-300 hover:bg-white",
-        props.type === "cta" && "bg-green-600 hover:bg-green-500"
-      )}
-      onClick={props.onClick}
+export const FDButton = ({
+  size = 2,
+  type = "normal",
+  onClick,
+  children,
+  prefix,
+  suffix,
+}: IFDButtonProps) => {
+  const sizeClasses = c(
+    size === 1 && "px-3 py-1 space-x-2",
+    size === 2 && "px-5 py-2 space-x-2",
+    size === 3 && "px-6 py-3 space-x-2"
+  );
+
+  const typeClasses = c(
+    type === "danger" &&
+      "bg-danger-3 shadow-lg text-white hover:bg-danger-4 hover:shadow-xl",
+    type === "normal" &&
+      "bg-gray-3 shadow-lg text-white hover:bg-gray-4 hover:shadow-xl",
+    type === "cta" &&
+      "bg-success-3 shadow-lg text-white hover:bg-success-4 hover:shadow-xl"
+  );
+
+  return (
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center text-lg font-semibold tracking-wide rounded-md select-none cursor-pointer ${sizeClasses} ${typeClasses}`}
     >
-      <div
-        className={c(
-          props.size === 1 && "text-lg font-normal",
-          (props.size === 2 || props.size === undefined) &&
-            "text-xl font-normal",
-          props.size === 3 && "text-2xl font-semibold",
-          (props.type ?? "normal") === "normal" ? "text-black" : "text-white",
-          "flex items-center justify-center text-center"
-        )}
-      >
-        {props.children}
-      </div>
-    </div>
-  </label>
-);
+      {!!prefix && <span>{prefix}</span>}
+      <span>{children}</span>
+      {!!suffix && <span>{suffix}</span>}
+    </button>
+  );
+};
 
 export const Icon: React.FC<{ icon: string; size?: number; color?: string }> =
   ({ color, icon, size }) => {
@@ -73,7 +79,7 @@ export const FDIconButton = (props: IFDButtonProps & { icon?: string }) => (
         <Icon
           size={16 + (props.size ?? 2) * 3}
           icon={props.icon}
-          color={(props.type ?? "normal") === "normal" ? "black" : "white"}
+          color="white"
         />
       </div>
     ) : (

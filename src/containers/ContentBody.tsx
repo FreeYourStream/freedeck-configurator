@@ -5,9 +5,7 @@ export const ContentBody: React.FC = (props) => {
   return (
     <div
       id="page"
-      className={c(
-        "flex flex-wrap justify-around items-center w-full bg-gray-800"
-      )}
+      className={c("flex flex-wrap justify-around items-center w-full")}
     >
       {props.children}
     </div>

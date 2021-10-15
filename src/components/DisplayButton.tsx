@@ -91,7 +91,7 @@ export const Display: React.FC<{
 
       {showSettings && (
         <Modal
-          title={`Page ${pageIndex} / Display ${displayIndex}`}
+          title={`Page ${pageIndex + 1} -> Display ${displayIndex + 1}`}
           visible={showSettings}
           setClose={() => setShowSettings(false)}
           height={720}

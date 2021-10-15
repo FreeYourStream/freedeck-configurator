@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { FDIconButton } from "../lib/components/Button";
+import { FDButton, Icon } from "../lib/components/Button";
 import { Row } from "../lib/components/Misc";
 import { Modal, ModalBody } from "../lib/components/Modal";
 
@@ -27,33 +27,30 @@ export const Login: React.FC<{
     >
       <ModalBody>
         <Row padding={5}>
-          <FDIconButton
-            ml={5}
-            icon="gr/GrGoogle"
+          <FDButton
+            prefix={<Icon icon="gr/GrGoogle" color="#fff" />}
             onClick={() =>
               (window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`)
             }
           >
             Google
-          </FDIconButton>
-          <FDIconButton
-            ml={5}
-            icon="ai/AiFillGithub"
+          </FDButton>
+          <FDButton
+            prefix={<Icon icon="ai/AiFillGithub" color="#fff" />}
             onClick={() =>
               (window.location.href = `${process.env.REACT_APP_API_URL}/auth/github`)
             }
           >
             Github
-          </FDIconButton>
-          <FDIconButton
-            ml={5}
-            icon="fa/FaDiscord"
+          </FDButton>
+          <FDButton
+            prefix={<Icon icon="fa/FaDiscord" color="#fff" />}
             onClick={() =>
               (window.location.href = `${process.env.REACT_APP_API_URL}/auth/discord`)
             }
           >
             Discord
-          </FDIconButton>
+          </FDButton>
         </Row>
       </ModalBody>
     </Modal>

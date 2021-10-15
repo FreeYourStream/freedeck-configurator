@@ -1,15 +1,25 @@
+import c from "clsx";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import tw from "tailwind-styled-components";
 import { useDebounce } from "use-debounce";
 
-import { IDisplay } from "../../../interfaces";
+import { colors } from "../../../definitions/colors";
 import {
   fontLarge,
   fontMedium,
   fontSmall,
   fontSmaller,
 } from "../../../definitions/fonts";
+import { IDisplay } from "../../../interfaces";
+import { AppStateContext } from "../../../states/appState";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../../../states/configState";
+import { FDIconButton, Icon } from "../Button";
+import { CtrlDuo } from "../CtrlDuo";
+import { Icons } from "../Icons";
 import {
   Column,
   Disabler,
@@ -22,16 +32,7 @@ import {
   Title,
   Value,
 } from "../Misc";
-import {
-  ConfigDispatchContext,
-  ConfigStateContext,
-} from "../../../states/configState";
-import { AppStateContext } from "../../../states/appState";
-import { Icons } from "../Icons";
-import { FDIconButton, Icon } from "../Button";
-import { CtrlDuo } from "../CtrlDuo";
-import { colors } from "../../../definitions/colors";
-import c from "clsx";
+
 const Toggle: React.FC<{ $on: boolean; onClick?: any }> = ({
   $on,
   onClick,
@@ -39,7 +40,7 @@ const Toggle: React.FC<{ $on: boolean; onClick?: any }> = ({
   <div
     onClick={onClick}
     className={c(
-      $on ? "bg-green-600 hover:bg-green-500" : "bg-red-600 hover:bg-red-500",
+      $on ? "bg-green-600 hover:bg-green-500" : "bg-danger-4 hover:bg-danger-3",
       "px-2 py-0.5 w-14 font-semibold rounded-sm text-center text-white"
     )}
   >

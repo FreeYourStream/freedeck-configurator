@@ -1,48 +1,11 @@
+import c from "clsx";
 import React from "react";
 import ReactDOM from "react-dom";
 import { AiFillCloseSquare } from "react-icons/ai";
 import styled from "styled-components";
+
 import { colors } from "../../definitions/colors";
-
-const Wrapper = styled.div<{ visible: boolean }>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #555555db;
-  z-index: 1000;
-  display: ${(p) => (p.visible ? "flex" : "none")};
-  justify-content: center;
-  align-items: center;
-`;
-
-const TitleBar = styled.div`
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  color: ${colors.white};
-  font-family: "Barlow", sans-serif;
-  background-color: ${colors.black};
-`;
-
-const Content = styled.div<{
-  minWidth: number;
-  minHeight: number;
-  width?: number;
-  height?: number;
-}>`
-  position: relative;
-  border: 1px solid ${colors.black};
-  background: ${colors.gray};
-  border-radius: 8px 0px 8px 8px;
-  min-width: ${(p) => p.minWidth}px;
-  min-height: ${(p) => p.minHeight}px;
-  ${(p) => (p.width ? `width: ${p.width}px;` : "")}
-  ${(p) => (p.height ? `height: ${p.height}px;` : "")}
-`;
+import { Icon } from "./Button";
 
 const Close = styled.div`
   position: absolute;
@@ -87,21 +50,35 @@ export const Modal: React.FC<{
   minHeight = 200,
 }) => {
   const content = (
-    <Wrapper visible={visible ?? true}>
-      <Content
-        minWidth={minWidth}
-        width={width}
-        minHeight={minHeight}
-        height={height}
-      >
-        {title && <TitleBar>{title}</TitleBar>}
-        <CloseBackground />
-        <Close onClick={() => setClose()}>
-          <AiFillCloseSquare size={30} color="red" />
-        </Close>
+    <div
+      className={c(
+        "fixed top-0 left-0 right-0 bottom-0 bg-gray-2 bg-opacity-70 z-50 ",
+        visible ? "flex" : "hidden",
+        "justify-center items-center"
+      )}
+    >
+      <div className="relative bg-gray-2 rounded-2xl w-modal">
+        <div
+          className={c(
+            "h-11 flex items-center justify-center font-medium text-xl text-white bg-gray-2 rounded-t-2xl",
+            !title?.length && "hidden"
+          )}
+        >
+          {title}
+        </div>
+        <div className={"absolute top-0.5 right-1"}>
+          <div
+            className={
+              "box-content p-1 rounded-full flex items-center justify-center cursor-pointer"
+            }
+            onClick={() => setClose()}
+          >
+            <Icon icon="ri/RiCloseCircleFill" size={32} color="white" />
+          </div>
+        </div>
         {children}
-      </Content>
-    </Wrapper>
+      </div>
+    </div>
   );
 
   return ReactDOM.createPortal(content, document.querySelector("#modal")!);

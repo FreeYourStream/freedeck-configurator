@@ -1,18 +1,22 @@
-import { useSimpleReducer } from "@bitovi/use-simple-reducer";
+import "react-toastify/dist/ReactToastify.css";
+
+import c from "clsx";
 import React from "react";
 import { HiDocumentAdd } from "react-icons/hi";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
+
+import { useSimpleReducer } from "@bitovi/use-simple-reducer";
+
 import { GlobalSettings } from "./components/GeneralSettings";
-import { Header } from "./containers/Header";
 import { Login } from "./components/Login";
-import { Page } from "./components/Page";
 import { ContentBody } from "./containers/ContentBody";
+import { Header } from "./containers/Header";
 import { Main } from "./containers/Main";
+import { Page } from "./containers/Page";
 import { colors } from "./definitions/colors";
 import { useShowLogin, useShowSettings } from "./hooks/states";
-import { FDIconButtonFixed } from "./lib/components/Button";
+import { FDButton, Icon } from "./lib/components/Button";
 import { createButtonBody, createImageBody } from "./lib/configFile/createBody";
 import { createFooter } from "./lib/configFile/createFooter";
 import { createHeader } from "./lib/configFile/createHeader";
@@ -21,17 +25,17 @@ import { download } from "./lib/download";
 import { AddEventListeners } from "./lib/eventListeners";
 import {
   AppDispatchContext,
-  appReducer,
   AppState,
   AppStateContext,
   IAppReducer,
+  appReducer,
 } from "./states/appState";
 import {
   ConfigDispatchContext,
-  configReducer,
   ConfigState,
   ConfigStateContext,
   IConfigReducer,
+  configReducer,
 } from "./states/configState";
 
 const StyledToastContainer = styled(ToastContainer).attrs({
@@ -97,23 +101,21 @@ const App: React.FC<{
       <ConfigDispatchContext.Provider value={configDispatch}>
         <AppStateContext.Provider value={appState}>
           <AppDispatchContext.Provider value={appDispatch}>
-            <Main>
-              {
-                <Header
-                  loadConfigFile={(filesOrBuffer) =>
-                    loadConfigFile(filesOrBuffer, configDispatch.setState)
-                  }
-                  saveConfigFile={async () => {
-                    if (configState.displaySettingsPages.length === 0) return;
-                    const completeBuffer = await createConfigBuffer();
+            <div className={c("flex flex-col h-full w-full")}>
+              <Header
+                loadConfigFile={(filesOrBuffer) =>
+                  loadConfigFile(filesOrBuffer, configDispatch.setState)
+                }
+                saveConfigFile={async () => {
+                  if (configState.displaySettingsPages.length === 0) return;
+                  const completeBuffer = await createConfigBuffer();
 
-                    completeBuffer && download(completeBuffer);
-                  }}
-                  setShowSettings={setShowSettings}
-                  createConfigBuffer={createConfigBuffer}
-                  openLogin={() => setShowLogin(true)}
-                />
-              }
+                  completeBuffer && download(completeBuffer);
+                }}
+                setShowSettings={setShowSettings}
+                createConfigBuffer={createConfigBuffer}
+                openLogin={() => setShowLogin(true)}
+              />
               <ContentBody>
                 {configState.displaySettingsPages.map(
                   (imagePage, pageIndex) => (
@@ -137,15 +139,17 @@ const App: React.FC<{
               />
               <Login visible={showLogin} setClose={() => setShowLogin(false)} />
               <StyledToastContainer />
-              <FDIconButtonFixed
-                icon="hi/HiDocumentAdd"
-                size={3}
-                type="cta"
-                onClick={() => configDispatch.addPage(undefined)}
-              >
-                Add Page
-              </FDIconButtonFixed>
-            </Main>
+              <div className="fixed bottom-5 right-6">
+                <FDButton
+                  prefix={<Icon icon="hi/HiDocumentAdd" color="#fff" />}
+                  size={3}
+                  type="cta"
+                  onClick={() => configDispatch.addPage(undefined)}
+                >
+                  Add Page
+                </FDButton>
+              </div>
+            </div>
           </AppDispatchContext.Provider>
         </AppStateContext.Provider>
       </ConfigDispatchContext.Provider>

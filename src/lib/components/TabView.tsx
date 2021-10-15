@@ -1,47 +1,32 @@
+import c from "clsx";
 import React, { ReactNode, useState } from "react";
-import styled from "styled-components";
 
-import { colors } from "../../definitions/colors";
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-`;
-const Tabs = styled.div`
-  display: flex;
-  background-color: #000000a1;
-`;
-const Tab = styled.div<{ active: boolean }>`
-  display: flex;
-  padding: 8px 12px;
-  background-color: ${(p) => (p.active ? colors.white : colors.black)};
-  /* border: 1px solid ${(p) => (p.active ? colors.black : colors.white)}; */
-  color: ${(p) => (p.active ? colors.black : colors.white)};
-  font-family: "barlow";
-  font-size: 20px;
-  user-select: none;
-  cursor: pointer;
-`;
 export const TabView: React.FC<{
   tabs: string[];
   renderTab: (tabName: string) => ReactNode;
 }> = ({ tabs, renderTab }) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   return (
-    <Wrapper>
-      <Tabs>
+    <div className="flex h-full">
+      <div className="h-auto bg-gradient-to-r from-red-100 to-gray-400 rounded-bl-2xl">
         {tabs.map((tab, index) => (
-          <Tab
+          <div
+            className={c(
+              "text-2xl  whitespace-nowrap  p-2  cursor-pointer select-none w-64",
+              activeTabIndex === index
+                ? "text-white bg-gradient-to-r from-gray-900 to-gray-600 font-semibold"
+                : "text-black hover:bg-danger-1 font-normal"
+            )}
             onClick={() => setActiveTabIndex(index)}
-            active={activeTabIndex === index}
             key={index}
           >
             {tab}
-          </Tab>
+          </div>
         ))}
-      </Tabs>
-      {renderTab(tabs[activeTabIndex])}
-    </Wrapper>
+      </div>
+      <div className="flex justify-center w-full p-4 h-modal">
+        {renderTab(tabs[activeTabIndex])}
+      </div>
+    </div>
   );
 };

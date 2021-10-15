@@ -1,10 +1,8 @@
-import React from "react";
 import c from "clsx";
+import React from "react";
 
 export const Main: React.FC = (props) => {
   return (
-    <div className={c("flex flex-col h-full w-full bg-gray-800")}>
-      {props.children}
-    </div>
+    <div className={c("flex flex-col h-full w-full")}>{props.children}</div>
   );
 };

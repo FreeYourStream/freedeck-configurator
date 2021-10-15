@@ -53,7 +53,7 @@ export const GlobalSettings: React.FC<{
         ]}
         renderTab={(tab) => {
           return (
-            <ModalBody>
+            <>
               <Activator visible={tab === "Default back button"}>
                 <DefaultBackButtonSettings />
               </Activator>
@@ -75,7 +75,7 @@ export const GlobalSettings: React.FC<{
               <Activator visible={tab === "About"}>
                 <About />
               </Activator>
-            </ModalBody>
+            </>
           );
         }}
       />
