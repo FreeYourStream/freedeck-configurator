@@ -37,6 +37,7 @@ import {
   IConfigReducer,
   configReducer,
 } from "./states/configState";
+import { PlusCircleIcon } from "@heroicons/react/outline";
 
 const StyledToastContainer = styled(ToastContainer).attrs({
   // custom props
@@ -141,7 +142,7 @@ const App: React.FC<{
               <StyledToastContainer />
               <div className="fixed bottom-5 right-6">
                 <FDButton
-                  prefix={<Icon icon="hi/HiDocumentAdd" color="#fff" />}
+                  prefix={<PlusCircleIcon className="w-6 h-6" />}
                   size={3}
                   type="cta"
                   onClick={() => configDispatch.addPage(undefined)}

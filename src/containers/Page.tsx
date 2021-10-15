@@ -1,3 +1,4 @@
+import { TrashIcon } from "@heroicons/react/outline";
 import c from "clsx";
 import React, { useContext } from "react";
 import { DndProvider } from "react-dnd";
@@ -25,8 +26,8 @@ export const Page: React.FC<IProps> = ({ pageIndex }) => {
       className="relative p-12 m-6 rounded-2xl rounded-tl-3xl bg-gray-2"
     >
       <div className="flex justify-between">
-        <div className="absolute flex items-center justify-center w-10 h-10 border-2 border-white rounded-full top-2 left-2">
-          <div className="text-xl font-semibold text-center text-white align-middle">
+        <div className="absolute flex items-center justify-center w-9 h-9 border-2 border-white rounded-full top-2 left-2">
+          <div className="text-xl font-bold text-center text-white align-middle">
             {pageIndex + 1}
           </div>
         </div>
@@ -39,7 +40,7 @@ export const Page: React.FC<IProps> = ({ pageIndex }) => {
             if (deleteConfirmed) configDispatch.deletePage(pageIndex);
           }}
         >
-          <Icon icon="fa/FaTrashAlt" size={18} color="white" />
+          <TrashIcon className="w-6 h-6" />
         </div>
       </div>
       <div
