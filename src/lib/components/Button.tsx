@@ -41,7 +41,7 @@ export const FDButton = ({
     type === "normal" &&
       "bg-gray-3 shadow-lg text-white hover:bg-gray-4 hover:shadow-xl",
     type === "cta" &&
-      "bg-success-3 shadow-lg text-white hover:bg-success-4 hover:shadow-xl"
+      "bg-primary-3 shadow-lg text-white hover:bg-primary-5 hover:shadow-xl"
   );
 
   return (

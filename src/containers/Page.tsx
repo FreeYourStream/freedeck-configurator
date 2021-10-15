@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
 
-import { Display } from "../components/DisplayButton";
+import { Display } from "./DisplayButton";
 import { Icon } from "../lib/components/Button";
 import { AppStateContext } from "../states/appState";
 import {
@@ -23,16 +23,16 @@ export const Page: React.FC<IProps> = ({ pageIndex }) => {
   return (
     <div
       id={`page_${pageIndex}`}
-      className="relative p-12 m-6 rounded-2xl rounded-tl-3xl bg-gray-2"
+      className="relative p-12 m-6 rounded-2xl rounded-tl-3xl bg-gray-2 shadow-lg"
     >
       <div className="flex justify-between">
-        <div className="absolute flex items-center justify-center w-9 h-9 border-2 border-white rounded-full top-2 left-2">
+        <div className="absolute flex items-center justify-center w-9 h-9 border-2 shadow-md border-white rounded-full top-2 left-2">
           <div className="text-xl font-bold text-center text-white align-middle">
             {pageIndex + 1}
           </div>
         </div>
         <div
-          className="absolute flex items-center justify-center w-8 h-8 rounded-full cursor-pointer bg-danger-4 -top-4 -right-4"
+          className="absolute flex items-center justify-center w-8 h-8 rounded-full cursor-pointer shadow-lg bg-danger-3 hover:bg-danger-5 -top-4 -right-4"
           onClick={() => {
             const deleteConfirmed =
               appState.ctrlDown ||

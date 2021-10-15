@@ -1,3 +1,10 @@
+import {
+  BackspaceIcon,
+  ChipIcon,
+  InformationCircleIcon,
+  SunIcon,
+  SwitchVerticalIcon,
+} from "@heroicons/react/outline";
 import React from "react";
 import styled from "styled-components";
 
@@ -45,39 +52,39 @@ export const GlobalSettings: React.FC<{
     >
       <TabView
         tabs={[
-          "Default back button",
-          "Brightness (Beta)",
-          "Serial (Beta)",
-          "Device",
-          "About",
+          {
+            title: "Default back button",
+            prefix: <BackspaceIcon className="h-6 w-6" />,
+            content: <DefaultBackButtonSettings />,
+          },
+          {
+            title: "Brightness",
+            prefix: <SunIcon className="h-6 w-6" />,
+            content: <Brightness />,
+          },
+          {
+            title: "Serial (Beta)",
+            prefix: <SwitchVerticalIcon className="h-6 w-6" />,
+            content: (
+              <Serial
+                getConfigBuffer={getConfigBuffer}
+                loadConfigFile={loadConfigFile}
+                readyToSave={readyToSave}
+                serialApi={serialApi}
+              />
+            ),
+          },
+          {
+            title: "Device",
+            prefix: <ChipIcon className="h-6 w-6" />,
+            content: <Device serialApi={serialApi} />,
+          },
+          {
+            title: "About",
+            prefix: <InformationCircleIcon className="h-6 w-6" />,
+            content: <About />,
+          },
         ]}
-        renderTab={(tab) => {
-          return (
-            <>
-              <Activator visible={tab === "Default back button"}>
-                <DefaultBackButtonSettings />
-              </Activator>
-              <Activator visible={tab === "Brightness (Beta)"}>
-                <Brightness />
-              </Activator>
-
-              <Activator visible={tab === "Serial (Beta)"}>
-                <Serial
-                  getConfigBuffer={getConfigBuffer}
-                  loadConfigFile={loadConfigFile}
-                  readyToSave={readyToSave}
-                  serialApi={serialApi}
-                />
-              </Activator>
-              <Activator visible={tab === "Device"}>
-                <Device serialApi={serialApi} />
-              </Activator>
-              <Activator visible={tab === "About"}>
-                <About />
-              </Activator>
-            </>
-          );
-        }}
       />
     </Modal>
   );

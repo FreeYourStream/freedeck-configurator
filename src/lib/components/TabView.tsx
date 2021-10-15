@@ -2,30 +2,34 @@ import c from "clsx";
 import React, { ReactNode, useState } from "react";
 
 export const TabView: React.FC<{
-  tabs: string[];
-  renderTab: (tabName: string) => ReactNode;
-}> = ({ tabs, renderTab }) => {
+  tabs: { title: string; prefix: JSX.Element; content: JSX.Element }[];
+}> = ({ tabs }) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   return (
     <div className="flex h-full">
-      <div className="h-auto bg-gradient-to-r from-red-100 to-gray-400 rounded-bl-2xl">
+      <div className="h-auto rounded-bl-2xl">
         {tabs.map((tab, index) => (
           <div
             className={c(
-              "text-2xl  whitespace-nowrap  p-2  cursor-pointer select-none w-64",
+              "inline-flex items-center font-normal text-lg tracking-wide  whitespace-nowrap  p-3  cursor-pointer select-none w-56  rounded-r-sm",
               activeTabIndex === index
-                ? "text-white bg-gradient-to-r from-gray-900 to-gray-600 font-semibold"
-                : "text-black hover:bg-danger-1 font-normal"
+                ? "text-gray-6 bg-primary-4 shadow-xl "
+                : "text-white hover:bg-gray-3"
             )}
             onClick={() => setActiveTabIndex(index)}
             key={index}
           >
-            {tab}
+            <span className="mr-2">{tab.prefix}</span>
+            {tab.title}
           </div>
         ))}
       </div>
       <div className="flex justify-center w-full p-4 h-modal">
-        {renderTab(tabs[activeTabIndex])}
+        {tabs.map((tab, index) => (
+          <div className={c(activeTabIndex === index ? "flex" : "hidden")}>
+            {tab.content}
+          </div>
+        ))}
       </div>
     </div>
   );

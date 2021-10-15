@@ -1,3 +1,4 @@
+import { XCircleIcon } from "@heroicons/react/solid";
 import c from "clsx";
 import React from "react";
 import ReactDOM from "react-dom";
@@ -57,7 +58,7 @@ export const Modal: React.FC<{
         "justify-center items-center"
       )}
     >
-      <div className="relative bg-gray-2 rounded-2xl w-modal">
+      <div className="relative bg-gray-1 rounded-2xl w-modal">
         <div
           className={c(
             "h-11 flex items-center justify-center font-medium text-xl text-white bg-gray-2 rounded-t-2xl",
@@ -73,7 +74,8 @@ export const Modal: React.FC<{
             }
             onClick={() => setClose()}
           >
-            <Icon icon="ri/RiCloseCircleFill" size={32} color="white" />
+            {/* <Icon icon="ri/RiCloseCircleFill" size={32} color="white" /> */}
+            <XCircleIcon className="h-7 w-7 hover:text-danger-4" />
           </div>
         </div>
         {children}
