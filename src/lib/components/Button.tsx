@@ -63,7 +63,7 @@ export const Icon: React.FC<{ icon: string; size?: number; color?: string }> =
     const Icon =
       // @ts-ignore
       Icons[iconClass][iconName];
-    return <Icon size={size ?? 22} color={color ?? colors.black} />;
+    return <Icon size={size ?? 22} color={color ?? colors.white} />;
   };
 
 export const FDIconButton = (props: IFDButtonProps & { icon?: string }) => (
