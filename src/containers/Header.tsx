@@ -1,17 +1,16 @@
-import c from "clsx";
-import React, { useContext, useEffect, useRef, useState } from "react";
-
 import {
   CogIcon,
   DownloadIcon,
   LogoutIcon,
+  SaveIcon,
   UploadIcon,
   UserIcon,
-} from "@heroicons/react/solid";
-
+} from "@heroicons/react/outline";
+import c from "clsx";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useUser } from "../graphql/hooks/useUser";
 import { Avatar } from "../lib/components/Avatar";
-import { FDButton, FDIconButton } from "../lib/components/Button";
+import { FDButton } from "../lib/components/Button";
 import { Value } from "../lib/components/Misc";
 import { connectionStatus } from "../lib/serial";
 import { AppStateContext } from "../states/appState";
@@ -99,8 +98,8 @@ export const Header: React.FC<{
           <div className={c("flex items-center space-x-4 h-auto")}>
             {connected && !ctrlDown ? (
               <>
-                <FDIconButton
-                  icon="fa/FaDownload"
+                <FDButton
+                  prefix={<UploadIcon className={iconSize} />}
                   size={2}
                   onClick={() =>
                     serialApi!
@@ -110,10 +109,10 @@ export const Header: React.FC<{
                       .then(loadConfigFile)
                   }
                 >
-                  Download Config
-                </FDIconButton>
-                <FDIconButton
-                  icon="fa/FaUpload"
+                  Load from FreeDeck
+                </FDButton>
+                <FDButton
+                  prefix={<SaveIcon className={iconSize} />}
                   size={2}
                   onClick={async () =>
                     serialApi!.writeConfigOverSerial(
@@ -122,8 +121,8 @@ export const Header: React.FC<{
                     )
                   }
                 >
-                  Upload Config
-                </FDIconButton>
+                  Save to FreeDeck
+                </FDButton>
                 <Value ml={16}>
                   {progress ? `${(progress * 100).toFixed(0)}%` : ""}
                 </Value>
