@@ -20,6 +20,7 @@ export interface IFDButtonProps {
   size?: 1 | 2 | 3;
   prefix?: JSX.Element;
   suffix?: JSX.Element;
+  title?: string;
 }
 
 export const FDButton = ({
@@ -30,6 +31,7 @@ export const FDButton = ({
   children,
   prefix,
   suffix,
+  title,
 }: IFDButtonProps) => {
   const sizeClasses = c(
     size === 1 && "px-3 py-0 space-x-2",
@@ -51,7 +53,7 @@ export const FDButton = ({
     type === "primary" &&
       (!disabled
         ? "bg-primary-600 shadow-lg text-white hover:bg-primary-500 hover:shadow-xl"
-        : "text-gray-400 bg-primary-400"),
+        : "text-gray-400 bg-primary-300"),
     disabled && "cursor-not-allowed"
   );
 
@@ -59,6 +61,7 @@ export const FDButton = ({
     <button
       disabled={disabled}
       onClick={onClick}
+      title={title}
       className={`inline-flex items-center text-lg font-normal tracking-wider rounded-md select-none ${sizeClasses} ${typeClasses}`}
     >
       {!!prefix && <span>{prefix}</span>}

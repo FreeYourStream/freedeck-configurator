@@ -1,6 +1,7 @@
 import {
   CogIcon,
   DownloadIcon,
+  LightningBoltIcon,
   LogoutIcon,
   SaveIcon,
   UploadIcon,
@@ -14,6 +15,7 @@ import { FDButton } from "../lib/components/Button";
 import { Value } from "../lib/components/Misc";
 import { connectionStatus } from "../lib/serial";
 import { AppStateContext } from "../states/appState";
+import { ConfigStateContext } from "../states/configState";
 
 const iconSize = "w-5 h-5";
 
@@ -65,6 +67,7 @@ export const Header: React.FC<{
   createConfigBuffer,
   openLogin,
 }) => {
+  const { buttonSettingsPages } = useContext(ConfigStateContext);
   const { serialApi, ctrlDown } = useContext(AppStateContext);
   const [connected, setConnected] = useState<boolean>(!!serialApi?.connected);
   const [progress, setProgress] = useState<number>(0);
@@ -146,13 +149,25 @@ export const Header: React.FC<{
                     loadConfigFile(event.currentTarget.files)
                   }
                 ></input>
-                <FDButton
-                  prefix={<DownloadIcon className={iconSize} />}
-                  size={2}
-                  onClick={() => saveConfigFile()}
-                >
-                  Save Config
-                </FDButton>
+                {!!buttonSettingsPages.length && (
+                  <FDButton
+                    prefix={<DownloadIcon className={iconSize} />}
+                    disabled={!buttonSettingsPages.length}
+                    size={2}
+                    onClick={() => saveConfigFile()}
+                  >
+                    Save Config
+                  </FDButton>
+                )}
+                {serialApi && !serialApi.connected && (
+                  <FDButton
+                    prefix={<LightningBoltIcon className={iconSize} />}
+                    size={2}
+                    onClick={() => serialApi.connect()}
+                  >
+                    Connect to FreeDeck
+                  </FDButton>
+                )}
               </>
             )}
           </div>
