@@ -59,7 +59,7 @@ export const FDButton = ({
     <button
       disabled={disabled}
       onClick={onClick}
-      className={`inline-flex items-center text-lg font-semibold tracking-wide rounded-md select-none ${sizeClasses} ${typeClasses}`}
+      className={`inline-flex items-center text-lg font-normal tracking-wider rounded-md select-none ${sizeClasses} ${typeClasses}`}
     >
       {!!prefix && <span>{prefix}</span>}
       <span>{children}</span>
