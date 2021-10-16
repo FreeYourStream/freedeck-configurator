@@ -163,7 +163,9 @@ export const Header: React.FC<{
                   <FDButton
                     prefix={<LightningBoltIcon className={iconSize} />}
                     size={2}
-                    onClick={() => serialApi.connect()}
+                    onClick={() =>
+                      serialApi.connect().catch((e) => console.log(e))
+                    }
                   >
                     Connect to FreeDeck
                   </FDButton>

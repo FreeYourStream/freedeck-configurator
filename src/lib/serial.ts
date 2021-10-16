@@ -70,7 +70,7 @@ export class SerialConnector {
       //     // port.open({ baudRate: this.baudrate }).then(console.log);
       //   });
       // }
-      this.openPort(port);
+      await this.openPort(port);
     } catch (err) {
       const message = "There was an error while connecting to serial device";
       throw new Error(message + " " + err);
@@ -134,7 +134,8 @@ export class SerialConnector {
     if (this.open) return;
     this.open = true;
     await port.open({ baudRate: this.baudrate });
-    const reader: ReadableStreamDefaultReader<Uint8Array> = port.readable.getReader();
+    const reader: ReadableStreamDefaultReader<Uint8Array> =
+      port.readable.getReader();
     this.writer = port.writable.getWriter();
     this.buffer = [];
     if (this.readLoop) clearInterval(this.readLoop);
