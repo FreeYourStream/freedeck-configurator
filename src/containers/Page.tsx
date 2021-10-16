@@ -26,7 +26,7 @@ export const Page: React.FC<IProps> = ({ pageIndex }) => {
       className="relative p-12 m-6 rounded-2xl rounded-tl-3xl bg-gray-700 shadow-lg"
     >
       <div className="flex justify-between">
-        <div className="absolute flex items-center justify-center w-9 h-9 border-2 shadow-md border-white rounded-full top-2 left-2">
+        <div className="absolute flex items-center justify-center w-9 h-9 shadow-md bg-gray-400 rounded-full top-2 left-2 ">
           <div className="text-xl font-bold text-center text-white align-middle">
             {pageIndex + 1}
           </div>
