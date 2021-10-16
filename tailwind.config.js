@@ -65,7 +65,7 @@ module.exports = {
     },
     extend: {
       height: {
-        modal: "560px",
+        modal: "600px",
       },
       width: {
         modal: "800px",

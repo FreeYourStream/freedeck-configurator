@@ -140,7 +140,7 @@ export const ImageSettings: React.FC<{
 
   return (
     <div className="grid grid-cols-2 gap-4 grid-rows-1 w-full">
-      <div className="relative flex flex-col p-4 bg-gray-700 rounded-2xl">
+      <div className="relative flex flex-col p-8  bg-gray-700 rounded-2xl">
         <div
           className={c(
             "z-10 bg-gray-900 opacity-80 top-0 left-0 right-0 bottom-0 absolute rounded-2xl",
@@ -154,7 +154,7 @@ export const ImageSettings: React.FC<{
             <Row className="h-7">
               <CtrlDuo>
                 <SunIconAlt className="h-7 w-7Te" />
-                <Label>White Threshold:</Label>
+                <Label>White Threshold</Label>
               </CtrlDuo>
               <FDSlider
                 className="w-32"
@@ -170,7 +170,7 @@ export const ImageSettings: React.FC<{
             <Row className="h-7">
               <CtrlDuo>
                 <SunIcon className="h-7 w-7Te" />
-                <Label>Black Threshold:</Label>
+                <Label>Black Threshold</Label>
               </CtrlDuo>
               <FDSlider
                 className="w-32"
@@ -241,7 +241,7 @@ export const ImageSettings: React.FC<{
         </Row>
       </div>
 
-      <div className="relative flex flex-col p-4 bg-gray-700 rounded-2xl">
+      <div className="relative flex flex-col p-8 bg-gray-700 rounded-2xl">
         <Title className="mb-8">Text Settings</Title>
         <Row>
           <TextInput

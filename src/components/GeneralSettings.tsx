@@ -60,7 +60,7 @@ export const GlobalSettings: React.FC<{
             content: <Brightness />,
           },
           {
-            title: "Serial (Beta)",
+            title: "Serial",
             prefix: <SwitchVerticalIcon className="h-6 w-6" />,
             content: (
               <Serial

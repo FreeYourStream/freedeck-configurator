@@ -26,7 +26,7 @@ export const DropDisplay = React.forwardRef<
   });
   return (
     <div
-      className="relative flex w-full justify-center mb-8 bg-gray-700 rounded-2xl shadow-2xl"
+      className="relative flex w-full justify-center mb-4 bg-gray-700 rounded-2xl shadow-2xl"
       ref={ref}
     >
       <Drop {...getRootProps({ style: { outline: "none" } })}>
