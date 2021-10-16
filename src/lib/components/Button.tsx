@@ -51,7 +51,7 @@ export const FDButton = ({
     type === "primary" &&
       (!disabled
         ? "bg-primary-600 shadow-lg text-white hover:bg-primary-500 hover:shadow-xl"
-        : "text-gray-300 bg-primary-400"),
+        : "text-gray-400 bg-primary-400"),
     disabled && "cursor-not-allowed"
   );
 
