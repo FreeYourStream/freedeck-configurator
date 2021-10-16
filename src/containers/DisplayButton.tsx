@@ -1,26 +1,18 @@
-import {
-  AdjustmentsIcon,
-  PhotographIcon,
-  SparklesIcon,
-} from "@heroicons/react/outline";
-import React, { useContext, useMemo, useState } from "react";
+import { AdjustmentsIcon, PhotographIcon } from "@heroicons/react/outline";
+import c from "clsx";
+import React, { useContext, useState } from "react";
 import { useContextMenuTrigger } from "react-context-menu-wrapper";
 import { useDrag, useDrop } from "react-dnd";
-import styled from "styled-components";
-import { ButtonSettingsContainer } from "./ButtonSettings";
-import { colors } from "../definitions/colors";
-import { EAction } from "../definitions/modes";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
 import { DisplaySettingsContainer } from "../lib/components/DisplaySettingsContainer";
 import { ImagePreview } from "../lib/components/ImagePreview";
-import { Row, Title } from "../lib/components/Misc";
-import { Modal, ModalBody } from "../lib/components/Modal";
+import { Modal } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
 } from "../states/configState";
-import c from "clsx";
+import { ButtonSettingsContainer } from "./ButtonSettings";
 
 export const Display: React.FC<{
   pageIndex: number;
