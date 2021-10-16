@@ -1,17 +1,18 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { FDButton } from "../lib/components/Button";
 import { Label, Value } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
 import { Title } from "../lib/components/Title";
 import { FDSerialAPI } from "../lib/fdSerialApi";
 import { connectionStatus } from "../lib/serial";
+import { AppStateContext } from "../states/appState";
 
 export const Serial: React.FC<{
   loadConfigFile: (buffer: Buffer) => void;
   getConfigBuffer: () => Promise<Buffer>;
   readyToSave: boolean;
-  serialApi?: FDSerialAPI;
-}> = ({ loadConfigFile, getConfigBuffer, readyToSave, serialApi }) => {
+}> = ({ loadConfigFile, getConfigBuffer, readyToSave }) => {
+  const { serialApi } = useContext(AppStateContext);
   const [progress, setProgress] = useState<number | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
   const [fileSize, setFileSize] = useState<number | null>(null);
@@ -29,7 +30,6 @@ export const Serial: React.FC<{
     if (!serialApi) return;
     try {
       await serialApi.connect();
-      setConnected(true);
     } catch (e) {
       console.log(e);
       if (e.message === "No port selected by the user") return;
@@ -47,15 +47,21 @@ export const Serial: React.FC<{
   return (
     <div className="w-full">
       <Title>Serial {connected ? "connected" : "not connected"}</Title>
-      <Title>Chrome based browsers only!</Title>
       {/* <Divider /> */}
       <Row>
         <Label>Connect:</Label>
         <FDButton
           type="primary"
           size={1}
-          disabled={!serialApi}
+          disabled={
+            !serialApi || serialApi.connected === connectionStatus.connect
+          }
           onClick={() => connectSerial()}
+          title={
+            serialApi?.connected === connectionStatus.connect
+              ? "Already connected"
+              : ""
+          }
         >
           Connect
         </FDButton>
@@ -111,6 +117,8 @@ export const Serial: React.FC<{
           <Value>{((fileSize / duration) * progress).toFixed(0)}kb/s</Value>
         )}
       </Row>
+
+      <Title>Chrome based browsers only!</Title>
     </div>
   );
 };

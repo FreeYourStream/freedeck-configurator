@@ -28,7 +28,6 @@ export const GlobalSettings: React.FC<{
   getConfigBuffer: () => Promise<Buffer>;
   visible?: boolean;
   readyToSave: boolean;
-  serialApi?: FDSerialAPI;
 }> = ({
   setClose,
   onClose,
@@ -36,7 +35,6 @@ export const GlobalSettings: React.FC<{
   getConfigBuffer,
   visible,
   readyToSave,
-  serialApi,
 }) => {
   return (
     <Modal
@@ -69,7 +67,6 @@ export const GlobalSettings: React.FC<{
                 getConfigBuffer={getConfigBuffer}
                 loadConfigFile={loadConfigFile}
                 readyToSave={readyToSave}
-                serialApi={serialApi}
               />
             ),
           },
