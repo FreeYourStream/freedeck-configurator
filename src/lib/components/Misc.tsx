@@ -83,23 +83,7 @@ export const Value = styled.p<{ minWidth?: number; ml?: number }>`
   margin-left: ${(p) => p.ml ?? 0}px;
   min-width: ${(p) => (p.minWidth !== undefined ? p.minWidth : 40)}px;
 `;
-export const Column = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  width: 50%;
-`;
-export const Disabler = styled.div<{ disable: boolean }>`
-  z-index: 10;
-  display: ${(p) => (p.disable ? "block" : "none")};
-  background: ${(p) => (p.disable ? colors.gray + "aa" : "transparent")};
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-`;
+
 export const CheckButton = styled(FDButton).attrs({ size: 1 })<{
   activated: boolean;
 }>`

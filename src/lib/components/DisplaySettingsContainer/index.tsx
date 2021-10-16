@@ -45,6 +45,7 @@ export const DisplaySettingsContainer = React.forwardRef<
   };
   return (
     <Wrapper
+      className="w-full"
       tabIndex={0}
       contentEditable={false}
       ref={ref}

@@ -29,15 +29,11 @@ export const ChangePage: React.FC<{
         </SelectWrapper>
       ) : null}
       {!action.values?.length || action.values[0] === -1 ? (
-        <FDButton mt={8} size={1} onClick={async () => await addPage()}>
+        <FDButton size={1} onClick={async () => await addPage()}>
           Add Page +
         </FDButton>
       ) : (
-        <FDButton
-          mt={8}
-          size={1}
-          onClick={() => scrollToPage(action.values[0])}
-        >
+        <FDButton size={1} onClick={() => scrollToPage(action.values[0])}>
           Scroll To {action.values[0].toString()}
         </FDButton>
       )}

@@ -8,6 +8,7 @@ import {
   StyledSlider,
   Value,
 } from "../../lib/components/Misc";
+import { FDSlider } from "../../lib/components/Slider";
 
 export const FreeDeckSettings: React.FC<{
   action: IButtonSetting;
@@ -27,7 +28,7 @@ export const FreeDeckSettings: React.FC<{
         </StyledSelect>
         {action.values[0] === 3 && (
           <Row>
-            <StyledSlider
+            <FDSlider
               value={action.values[1] || 128}
               min={1}
               max={255}

@@ -1,5 +1,5 @@
 import {
-  BackspaceIcon,
+  ArrowCircleLeftIcon,
   ChipIcon,
   InformationCircleIcon,
   SunIcon,
@@ -7,15 +7,14 @@ import {
 } from "@heroicons/react/outline";
 import React from "react";
 import styled from "styled-components";
-
-import { Modal, ModalBody } from "../lib/components/Modal";
+import { Modal } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
 import { FDSerialAPI } from "../lib/fdSerialApi";
-import { About } from "./About";
+import { About } from "../containers/About";
 import { Brightness } from "./Brightness";
 import { DefaultBackButtonSettings } from "./DefaultBackButtonSettings";
-import { Device } from "./Device";
-import { Serial } from "./Serial";
+import { Device } from "../containers/Device";
+import { Serial } from "../containers/Serial";
 
 export const Activator = styled.div<{ visible: boolean }>`
   display: ${(p) => (p.visible ? "flex" : "none")};
@@ -54,11 +53,11 @@ export const GlobalSettings: React.FC<{
         tabs={[
           {
             title: "Default back button",
-            prefix: <BackspaceIcon className="h-6 w-6" />,
+            prefix: <ArrowCircleLeftIcon className="h-6 w-6" />,
             content: <DefaultBackButtonSettings />,
           },
           {
-            title: "Brightness",
+            title: "Displays",
             prefix: <SunIcon className="h-6 w-6" />,
             content: <Brightness />,
           },
@@ -77,7 +76,7 @@ export const GlobalSettings: React.FC<{
           {
             title: "Device",
             prefix: <ChipIcon className="h-6 w-6" />,
-            content: <Device serialApi={serialApi} />,
+            content: <Device />,
           },
           {
             title: "About",

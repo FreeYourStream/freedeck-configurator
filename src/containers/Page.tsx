@@ -23,7 +23,7 @@ export const Page: React.FC<IProps> = ({ pageIndex }) => {
   return (
     <div
       id={`page_${pageIndex}`}
-      className="relative p-12 m-6 rounded-2xl rounded-tl-3xl bg-gray-2 shadow-lg"
+      className="relative p-12 m-6 rounded-2xl rounded-tl-3xl bg-gray-700 shadow-lg"
     >
       <div className="flex justify-between">
         <div className="absolute flex items-center justify-center w-9 h-9 border-2 shadow-md border-white rounded-full top-2 left-2">
@@ -32,7 +32,7 @@ export const Page: React.FC<IProps> = ({ pageIndex }) => {
           </div>
         </div>
         <div
-          className="absolute flex items-center justify-center w-8 h-8 rounded-full cursor-pointer shadow-lg bg-danger-3 hover:bg-danger-5 -top-4 -right-4"
+          className="absolute flex items-center justify-center w-8 h-8 rounded-full cursor-pointer shadow-lg bg-danger-600 hover:bg-danger-400 -top-4 -right-4"
           onClick={() => {
             const deleteConfirmed =
               appState.ctrlDown ||

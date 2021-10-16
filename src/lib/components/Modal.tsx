@@ -40,28 +40,19 @@ export const Modal: React.FC<{
   height?: number;
   minWidth?: number;
   minHeight?: number;
-}> = ({
-  visible,
-  setClose,
-  children,
-  title,
-  width,
-  height,
-  minWidth = 200,
-  minHeight = 200,
-}) => {
+}> = ({ visible, setClose, children, title }) => {
   const content = (
     <div
       className={c(
-        "fixed top-0 left-0 right-0 bottom-0 bg-gray-2 bg-opacity-70 z-50 ",
+        "fixed top-0 left-0 right-0 bottom-0 bg-gray-200 bg-opacity-70 z-50 ",
         visible ? "flex" : "hidden",
         "justify-center items-center"
       )}
     >
-      <div className="relative bg-gray-1 rounded-2xl w-modal">
+      <div className="relative bg-gray-900 rounded-2xl w-modal">
         <div
           className={c(
-            "h-11 flex items-center justify-center font-medium text-xl text-white bg-gray-2 rounded-t-2xl",
+            "h-11 flex items-center justify-center font-medium text-xl text-white bg-gray-700 rounded-t-2xl",
             !title?.length && "hidden"
           )}
         >
@@ -75,7 +66,7 @@ export const Modal: React.FC<{
             onClick={() => setClose()}
           >
             {/* <Icon icon="ri/RiCloseCircleFill" size={32} color="white" /> */}
-            <XCircleIcon className="h-7 w-7 hover:text-danger-4" />
+            <XCircleIcon className="h-7 w-7 hover:text-danger-500" />
           </div>
         </div>
         {children}

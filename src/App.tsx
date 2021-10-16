@@ -144,7 +144,7 @@ const App: React.FC<{
                 <FDButton
                   prefix={<PlusCircleIcon className="w-6 h-6" />}
                   size={3}
-                  type="cta"
+                  type="primary"
                   onClick={() => configDispatch.addPage(undefined)}
                 >
                   Add Page

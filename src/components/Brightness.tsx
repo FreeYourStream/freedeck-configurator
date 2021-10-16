@@ -1,23 +1,22 @@
 import React, { useContext } from "react";
+import { Label } from "../lib/components/LabelValue";
+import { Row } from "../lib/components/Row";
+import { FDSlider } from "../lib/components/Slider";
+import { Title } from "../lib/components/Title";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
 } from "../states/configState";
 
-import { Label, Row, StyledSlider, Title, Value } from "../lib/components/Misc";
-
-export const Brightness: React.FC<{
-  // setBrightness: (brightness: number) => void;
-  // brightness: number;
-}> = (/*{ setBrightness, brightness }*/) => {
+export const Brightness: React.FC<{}> = () => {
   const configState = useContext(ConfigStateContext);
   const configDispatch = useContext(ConfigDispatchContext);
   return (
-    <>
+    <div className="w-full">
       <Title>Brightness</Title>
       <Row>
         <Label>Brightness:</Label>
-        <StyledSlider
+        <FDSlider
           min={0}
           max={255}
           value={configState.brightness}
@@ -25,8 +24,7 @@ export const Brightness: React.FC<{
             configDispatch.setBrightness(e.currentTarget.valueAsNumber)
           }
         />
-        <Value>{configState.brightness}</Value>
       </Row>
-    </>
+    </div>
   );
 };

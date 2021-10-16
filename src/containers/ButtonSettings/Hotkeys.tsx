@@ -32,9 +32,6 @@ const HotkeyKeys: React.FC<{
     <>
       {translatedKeys.map((key, index) => (
         <FDButton
-          mt={8}
-          ml={8}
-          px={8}
           size={1}
           key={`${key}-${index}`}
           onClick={() => {

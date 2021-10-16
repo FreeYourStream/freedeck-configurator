@@ -1,13 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
-import styled from "styled-components";
 import { FDButton } from "../lib/components/Button";
-import { Divider, Label, Row, Title, Value } from "../lib/components/Misc";
+import { Label, Value } from "../lib/components/LabelValue";
+import { Row } from "../lib/components/Row";
+import { Title } from "../lib/components/Title";
 import { FDSerialAPI } from "../lib/fdSerialApi";
 import { connectionStatus } from "../lib/serial";
 
-const Wrapper = styled.div`
-  min-width: 470px;
-`;
 export const Serial: React.FC<{
   loadConfigFile: (buffer: Buffer) => void;
   getConfigBuffer: () => Promise<Buffer>;
@@ -47,15 +45,14 @@ export const Serial: React.FC<{
     [setProgress]
   );
   return (
-    <Wrapper>
-      <Title divider>Serial {connected ? "connected" : "not connected"}</Title>
-      <Title size={1}>Chrome based browsers only!</Title>
-      <Divider />
+    <div className="w-full">
+      <Title>Serial {connected ? "connected" : "not connected"}</Title>
+      <Title>Chrome based browsers only!</Title>
+      {/* <Divider /> */}
       <Row>
         <Label>Connect:</Label>
         <FDButton
-          px={5}
-          py={5}
+          type="primary"
           size={1}
           disabled={!serialApi}
           onClick={() => connectSerial()}
@@ -66,8 +63,6 @@ export const Serial: React.FC<{
       <Row>
         <Label>Read config from FreeDeck:</Label>
         <FDButton
-          px={5}
-          py={5}
           size={1}
           disabled={!connected}
           onClick={async () =>
@@ -83,8 +78,6 @@ export const Serial: React.FC<{
         <Label>Write config to FreeDeck:</Label>
         <FDButton
           disabled={!connected || !readyToSave}
-          px={5}
-          py={5}
           size={1}
           onClick={async () =>
             serialApi!.writeConfigOverSerial(
@@ -97,7 +90,7 @@ export const Serial: React.FC<{
         </FDButton>
       </Row>
 
-      <Divider />
+      {/* <Divider /> */}
       <Row>
         <Label>Progress:</Label>
         {progress !== null && (
@@ -118,6 +111,6 @@ export const Serial: React.FC<{
           <Value>{((fileSize / duration) * progress).toFixed(0)}kb/s</Value>
         )}
       </Row>
-    </Wrapper>
+    </div>
   );
 };

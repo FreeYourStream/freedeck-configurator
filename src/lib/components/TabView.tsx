@@ -7,14 +7,14 @@ export const TabView: React.FC<{
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   return (
     <div className="flex h-full">
-      <div className="h-auto rounded-bl-2xl">
+      <div className="h-auto rounded-bl-2xl w-56 bg-gray-800">
         {tabs.map((tab, index) => (
           <div
             className={c(
-              "inline-flex items-center font-normal text-lg tracking-wide  whitespace-nowrap  p-3  cursor-pointer select-none w-56  rounded-r-sm",
+              "w-full inline-flex items-center font-normal text-lg tracking-wide  whitespace-nowrap  p-3  cursor-pointer select-none  rounded-r-sm",
               activeTabIndex === index
-                ? "text-gray-6 bg-primary-4 shadow-xl "
-                : "text-white hover:bg-gray-3"
+                ? "text-white bg-primary-600 shadow-xl "
+                : "text-white hover:bg-gray-400"
             )}
             onClick={() => setActiveTabIndex(index)}
             key={index}
@@ -24,9 +24,14 @@ export const TabView: React.FC<{
           </div>
         ))}
       </div>
-      <div className="flex justify-center w-full p-4 h-modal">
+      <div className="flex justify-center w-full p-8 h-modal">
         {tabs.map((tab, index) => (
-          <div className={c(activeTabIndex === index ? "flex" : "hidden")}>
+          <div
+            className={c(
+              "w-full",
+              activeTabIndex === index ? "flex" : "hidden"
+            )}
+          >
             {tab.content}
           </div>
         ))}

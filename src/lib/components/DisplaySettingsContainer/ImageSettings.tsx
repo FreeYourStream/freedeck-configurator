@@ -1,37 +1,31 @@
+import {
+  LightningBoltIcon,
+  MoonIcon,
+  RefreshIcon,
+  SunIcon,
+  SwitchHorizontalIcon,
+  TranslateIcon,
+} from "@heroicons/react/outline";
+import { SunIcon as SunIconAlt } from "@heroicons/react/solid";
 import c from "clsx";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import styled from "styled-components";
-import tw from "tailwind-styled-components";
-import { useDebounce } from "use-debounce";
-
-import { colors } from "../../../definitions/colors";
+import React, { useContext } from "react";
 import {
   fontLarge,
   fontMedium,
   fontSmall,
   fontSmaller,
 } from "../../../definitions/fonts";
-import { IDisplay } from "../../../interfaces";
-import { AppStateContext } from "../../../states/appState";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
 } from "../../../states/configState";
-import { FDIconButton, Icon } from "../Button";
 import { CtrlDuo } from "../CtrlDuo";
-import { Icons } from "../Icons";
-import {
-  Column,
-  Disabler,
-  Label,
-  MicroToggle,
-  Row,
-  StyledSelect,
-  StyledSlider,
-  TextInput,
-  Title,
-  Value,
-} from "../Misc";
+import { Label, Value } from "../LabelValue";
+import { StyledSelect, TextInput } from "../Misc";
+import { Row } from "../Row";
+import { FDSlider } from "../Slider";
+import { Switch } from "../Switch";
+import { Title } from "../Title";
 
 const Toggle: React.FC<{ $on: boolean; onClick?: any }> = ({
   $on,
@@ -40,18 +34,15 @@ const Toggle: React.FC<{ $on: boolean; onClick?: any }> = ({
   <div
     onClick={onClick}
     className={c(
-      $on ? "bg-green-600 hover:bg-green-500" : "bg-danger-4 hover:bg-danger-3",
-      "px-2 py-0.5 w-14 font-semibold rounded-sm text-center text-white"
+      $on
+        ? "bg-success-600 hover:bg-success-400"
+        : "bg-danger-600 hover:bg-danger-400",
+      "px-2 py-0.5 w-14 font-semibold rounded-sm text-center text-white select-none"
     )}
   >
     {$on ? "I" : "O"}
   </div>
 );
-
-const Wrapper = styled.div`
-  display: flex;
-  min-width: 500px;
-`;
 
 export interface ISettings {
   contrast: number;
@@ -148,115 +139,110 @@ export const ImageSettings: React.FC<{
   };
 
   return (
-    <Wrapper>
-      <Column>
-        <Disabler
-          disable={!display.originalImage}
+    <div className="grid grid-cols-2 gap-4 grid-rows-1 w-full">
+      <div className="relative flex flex-col p-4 bg-gray-700 rounded-2xl">
+        <div
+          className={c(
+            "z-10 bg-gray-900 opacity-80 top-0 left-0 right-0 bottom-0 absolute rounded-2xl",
+            display.originalImage ? "hidden" : "block"
+          )}
           title="These options are disabled. Load an image by clicking on the black box or just enter some text"
         />
-        <Title>Image Settings</Title>
+        <Title className="mb-8">Image Settings</Title>
         {!display.imageSettings.dither ? (
           <>
-            <Row>
+            <Row className="h-7">
               <CtrlDuo>
-                <Icon icon="fa/FaAdjust" color="white" />
+                <SunIconAlt className="h-7 w-7Te" />
                 <Label>White Threshold:</Label>
               </CtrlDuo>
-              <CtrlDuo>
-                <StyledSlider
-                  style={{ width: "180px" }}
-                  min={0}
-                  max={128}
-                  step={1}
-                  value={display.imageSettings.whiteThreshold}
-                  onChange={(event) =>
-                    setWhite(event.currentTarget.valueAsNumber)
-                  }
-                />
-                <Value>{display.imageSettings.whiteThreshold}</Value>
-              </CtrlDuo>
+              <FDSlider
+                className="w-32"
+                min={0}
+                max={128}
+                step={1}
+                value={display.imageSettings.whiteThreshold}
+                onChange={(event) =>
+                  setWhite(event.currentTarget.valueAsNumber)
+                }
+              />
             </Row>
-            <Row>
+            <Row className="h-7">
               <CtrlDuo>
-                <Icon icon="fa/FaAdjust" color="black" />
+                <SunIcon className="h-7 w-7Te" />
                 <Label>Black Threshold:</Label>
               </CtrlDuo>
-              <CtrlDuo>
-                <StyledSlider
-                  style={{ width: "180px" }}
-                  min={128}
-                  max={255}
-                  step={1}
-                  value={display.imageSettings.blackThreshold}
-                  onChange={(event) =>
-                    setBlack(event.currentTarget.valueAsNumber)
-                  }
-                />
-                <Value>{display.imageSettings.blackThreshold}</Value>
-              </CtrlDuo>
+              <FDSlider
+                className="w-32"
+                min={128}
+                max={255}
+                step={1}
+                value={display.imageSettings.blackThreshold}
+                onChange={(event) =>
+                  setBlack(event.currentTarget.valueAsNumber)
+                }
+              />
             </Row>
           </>
         ) : (
           <>
-            <Row>
+            <Row className="h-7">
               <CtrlDuo>
-                <Icon icon="md/MdBrightnessMedium" color="white" />
+                <SunIconAlt className="h-7 w-7Te" />
                 <Label>Brightness:</Label>
               </CtrlDuo>
-              <CtrlDuo>
-                <StyledSlider
-                  style={{ width: "180px" }}
-                  min={-1}
-                  max={1}
-                  step={0.02}
-                  value={display.imageSettings.brightness}
-                  onChange={(event) =>
-                    setBrightness(event.currentTarget.valueAsNumber)
-                  }
-                />
-                <Value>{display.imageSettings.brightness}</Value>
-              </CtrlDuo>
+              <FDSlider
+                min={-1}
+                max={1}
+                step={0.02}
+                value={display.imageSettings.brightness}
+                onChange={(event) =>
+                  setBrightness(event.currentTarget.valueAsNumber)
+                }
+              />
             </Row>
-            <Row>
+            <Row className="h-7">
               <CtrlDuo>
-                <Icon icon="fa/FaAdjust" color="black" />
+                <MoonIcon className="h-7 w-7Te" />
                 <Label>Contrast:</Label>
               </CtrlDuo>
-              <CtrlDuo>
-                <StyledSlider
-                  style={{ width: "180px" }}
-                  min={-1}
-                  max={1}
-                  step={0.02}
-                  value={display.imageSettings.contrast}
-                  onChange={(event) =>
-                    setContrast(event.currentTarget.valueAsNumber)
-                  }
-                />
-                <Value>{display.imageSettings.contrast}</Value>
-              </CtrlDuo>
+              <FDSlider
+                min={-1}
+                max={1}
+                step={0.02}
+                value={display.imageSettings.contrast}
+                onChange={(event) =>
+                  setContrast(event.currentTarget.valueAsNumber)
+                }
+              />
             </Row>
           </>
         )}
 
-        <Row>
-          <Label>Invert</Label>
-          <Toggle
-            $on={display.imageSettings.invert}
-            onClick={() => setInvert(!display.imageSettings.invert)}
+        <Row className="h-7">
+          <CtrlDuo>
+            <RefreshIcon className="h-7 w-7Te" />
+            <Label>Invert</Label>
+          </CtrlDuo>
+          <Switch
+            onChange={(value) => setInvert(value)}
+            value={display.imageSettings.invert}
           />
         </Row>
-        <Row>
-          <Label>Dither</Label>
-          <Toggle
-            $on={display.imageSettings.dither}
-            onClick={() => setDither(!display.imageSettings.dither)}
+        <Row className="h-7">
+          <CtrlDuo>
+            <LightningBoltIcon className="h-7 w-7" />
+            <Label>Dither</Label>
+          </CtrlDuo>
+          <Switch
+            onChange={(value) => setDither(value)}
+            value={display.imageSettings.dither}
           />
         </Row>
-      </Column>
+      </div>
 
-      <Column>
-        <Title>Text Settings</Title>
+      <div className="relative flex flex-col p-4 bg-gray-700 rounded-2xl">
+        <Title className="mb-8">Text Settings</Title>
         <Row>
           <TextInput
             placeholder={"Enter text"}
@@ -266,7 +252,7 @@ export const ImageSettings: React.FC<{
         </Row>
         <Row>
           <CtrlDuo>
-            <Icon icon="fa/FaFont" />
+            <TranslateIcon className="h-7 w-7" />
             <Label>Font:</Label>
           </CtrlDuo>
           <CtrlDuo>
@@ -285,27 +271,21 @@ export const ImageSettings: React.FC<{
         </Row>
         <Row>
           <CtrlDuo>
-            <Icon icon="ai/AiOutlineColumnWidth" />
+            <SwitchHorizontalIcon className="h-7 w-7Te" />
             <Label>Icon width:</Label>
           </CtrlDuo>
-          <CtrlDuo>
-            <StyledSlider
-              style={{ width: "180px" }}
-              disabled={!display.textSettings.text.length}
-              min={0.1}
-              max={0.9}
-              step={0.01}
-              value={display.textWithIconSettings.iconWidthMultiplier}
-              onChange={(event) =>
-                setIconWidthMultiplier(event.currentTarget.valueAsNumber)
-              }
-            />
-            <Value>
-              {display.textWithIconSettings.iconWidthMultiplier.toFixed(2)}
-            </Value>
-          </CtrlDuo>
+          <FDSlider
+            disabled={!display.textSettings.text.length}
+            min={0.1}
+            max={0.9}
+            step={0.01}
+            value={display.textWithIconSettings.iconWidthMultiplier}
+            onChange={(event) =>
+              setIconWidthMultiplier(event.currentTarget.valueAsNumber)
+            }
+          />
         </Row>
-      </Column>
-    </Wrapper>
+      </div>
+    </div>
   );
 };

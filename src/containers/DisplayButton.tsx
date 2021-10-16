@@ -13,21 +13,14 @@ import { EAction } from "../definitions/modes";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
 import { DisplaySettingsContainer } from "../lib/components/DisplaySettingsContainer";
 import { ImagePreview } from "../lib/components/ImagePreview";
-import { Column, Row, Title } from "../lib/components/Misc";
+import { Row, Title } from "../lib/components/Misc";
 import { Modal, ModalBody } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
 } from "../states/configState";
-
-const Wrapper = styled.div<{ opacity: number }>`
-  opacity: ${(p) => p.opacity};
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  position: relative;
-`;
+import c from "clsx";
 
 export const Display: React.FC<{
   pageIndex: number;
@@ -38,7 +31,6 @@ export const Display: React.FC<{
 
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const display = configState.displaySettingsPages[pageIndex][displayIndex];
-  const button = configState.buttonSettingsPages[pageIndex][displayIndex];
   const [{ isDragging }, dragRef] = useDrag({
     item: {
       type: "display",
@@ -66,18 +58,19 @@ export const Display: React.FC<{
     }),
   });
 
-  const opacity = useMemo(() => {
-    const value = (0.5 + configState.brightness / 512) / (isDragging ? 2 : 1);
-
-    return value;
-  }, [isDragging, configState.brightness]);
   const menuId = `${pageIndex}:${displayIndex}`;
   let menuRef = useContextMenuTrigger<HTMLDivElement>({
     menuId,
   });
 
   return (
-    <Wrapper ref={dragRef} opacity={opacity}>
+    <div
+      ref={dragRef}
+      className={c(
+        "flex items-center flex-col relative shadow-xl",
+        isDragging && "opacity-40"
+      )}
+    >
       <ImagePreview
         ref={drop}
         multiplier={1}
@@ -87,11 +80,9 @@ export const Display: React.FC<{
 
       {showSettings && (
         <Modal
-          title={`Page ${pageIndex + 1} -> Display ${displayIndex + 1}`}
+          title={`Page ${pageIndex + 1} Display ${displayIndex + 1}`}
           visible={showSettings}
           setClose={() => setShowSettings(false)}
-          height={720}
-          width={670}
         >
           <ContextMenu menuId={menuId}>
             <ContextMenuItem
@@ -144,6 +135,6 @@ export const Display: React.FC<{
           />
         </Modal>
       )}
-    </Wrapper>
+    </div>
   );
 };
