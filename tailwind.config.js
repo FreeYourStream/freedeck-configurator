@@ -83,6 +83,9 @@ module.exports = {
       width: {
         modal: "800px",
       },
+      gap: {
+        "1px": "1px",
+      },
     },
   },
   variants: {

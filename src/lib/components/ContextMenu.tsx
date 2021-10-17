@@ -1,83 +1,37 @@
 import c from "clsx";
 import React, { ReactNode, ReactNodeArray } from "react";
 import { ContextMenuWrapper } from "react-context-menu-wrapper";
-import styled from "styled-components";
-
-import { colors } from "../../definitions/colors";
-import { Spacer } from "./Button";
-import { Icons } from "./Icons";
 import { Label } from "./LabelValue";
 
-const isReactNodeArray = (
-  children: ReactNode | ReactNodeArray
-): children is ReactNodeArray => {
-  return !!(children as ReactNodeArray).length;
-};
-
-const ItemWrapper = styled.div<{ dangerous: boolean }>`
-  min-width: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 4px;
-  cursor: pointer;
-  ${(p) => (p.dangerous ? `background-color: red` : "")};
-`;
-const EmptyIcon = styled.div<{ size: number }>`
-  width: ${(p) => p.size}px;
-  margin-right: 4px;
-`;
-
 export const ContextMenuItem: React.FC<{
-  icon?: string;
+  prefix?: JSX.Element;
   text: string;
   dangerous?: boolean;
   onClick: () => void;
-}> = ({ icon, dangerous, text, onClick }) => {
-  const Icon =
-    //@ts-ignore
-    icon && Icons[icon.split("/")[0]][icon.split("/")[1]];
+}> = ({ dangerous, text, onClick, prefix }) => {
   return (
-    <ItemWrapper dangerous={dangerous ?? false} onClick={() => onClick()}>
-      {icon && Icon ? (
-        <Spacer mr={4}>
-          <Icon color={dangerous ? "white" : colors.gray} size={18} />
-        </Spacer>
-      ) : (
-        <EmptyIcon size={18} />
+    <div
+      className={c(
+        "flex items-center content-start px-2 py-1 gap-2 cursor-pointer font-normal text-lg",
+        dangerous ? "bg-danger-600 hover:bg-danger-500" : "bg-gray-600"
       )}
-      <Label className={c(dangerous ? "text-white" : "text-gray-400")}>
-        {text}
-      </Label>
-    </ItemWrapper>
+      onClick={() => onClick()}
+    >
+      {!!prefix && prefix}
+      {text}
+    </div>
   );
 };
-
-const Wrapper = styled.div`
-  background-color: ${colors.white};
-  border: 1px solid ${colors.black};
-`;
-const Divider = styled.div`
-  border-bottom: 1px solid ${colors.black};
-`;
 
 export const ContextMenu: React.FC<{
   children: ReactNode | ReactNodeArray;
   menuId: string;
 }> = ({ children, menuId }) => {
-  const childrenArray = isReactNodeArray(children) ? children : [children];
-  const childrenWithDividers = childrenArray.reduce(
-    (acc: ReactNodeArray, child, index) => {
-      if (!acc.length) return [child];
-      acc.push(<Divider key={index} />);
-      acc.push(child);
-      return acc;
-    },
-    []
-  );
   return (
     <ContextMenuWrapper id={menuId}>
-      <Wrapper>{childrenWithDividers}</Wrapper>
+      <div className="flex flex-col justify-center gap-1px bg-gray-900 rounded-md overflow-hidden">
+        {children}
+      </div>
     </ContextMenuWrapper>
   );
 };

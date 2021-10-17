@@ -2,6 +2,7 @@ import React from "react";
 import { useContextMenuTrigger } from "react-context-menu-wrapper";
 import { DisplaySettingsContainer } from "./DisplaySettings";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
+import { RefreshIcon } from "@heroicons/react/outline";
 
 export const DefaultBackButtonSettings: React.FC<{}> = () => {
   const menuId = `defaultBackButtonSettings`;
@@ -12,7 +13,7 @@ export const DefaultBackButtonSettings: React.FC<{}> = () => {
       <ContextMenu menuId={menuId}>
         <ContextMenuItem
           text="Reset to default"
-          icon="bi/BiReset"
+          prefix={<RefreshIcon className="h-6 w-6" />}
           onClick={() => {
             console.log("LZLZLZ");
           }}

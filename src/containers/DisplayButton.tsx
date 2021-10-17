@@ -1,4 +1,9 @@
-import { AdjustmentsIcon, PhotographIcon } from "@heroicons/react/outline";
+import {
+  AdjustmentsIcon,
+  ArrowCircleLeftIcon,
+  PhotographIcon,
+  TrashIcon,
+} from "@heroicons/react/outline";
 import c from "clsx";
 import React, { useContext, useState } from "react";
 import { useContextMenuTrigger } from "react-context-menu-wrapper";
@@ -79,7 +84,7 @@ export const Display: React.FC<{
           <ContextMenu menuId={menuId}>
             <ContextMenuItem
               text="Delete image"
-              icon="fa/FaTrash"
+              prefix={<TrashIcon className="h-6 w-6 " />}
               onClick={() =>
                 configDispatch.deleteImage({
                   buttonIndex: displayIndex,
@@ -90,7 +95,7 @@ export const Display: React.FC<{
             ></ContextMenuItem>
             <ContextMenuItem
               text="Make default back Image"
-              icon="gi/GiBackForth"
+              prefix={<ArrowCircleLeftIcon className="h-6 w-6" />}
               onClick={() =>
                 configDispatch.makeDefaultBackButton({
                   pageIndex,
