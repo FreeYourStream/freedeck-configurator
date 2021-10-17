@@ -8,12 +8,12 @@ import {
   ConfigStateContext,
 } from "../states/configState";
 
-export const Brightness: React.FC<{}> = () => {
+export const Displays: React.FC<{}> = () => {
   const configState = useContext(ConfigStateContext);
   const configDispatch = useContext(ConfigDispatchContext);
   return (
     <div className="w-full">
-      <Title>Brightness</Title>
+      <Title>Displays</Title>
       <Row>
         <Label>Brightness:</Label>
         <FDSlider

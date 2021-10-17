@@ -12,7 +12,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { useUser } from "../graphql/hooks/useUser";
 import { Avatar } from "../lib/components/Avatar";
 import { FDButton } from "../lib/components/Button";
-import { Value } from "../lib/components/Misc";
+import { Value } from "../lib/components/LabelValue";
 import { connectionStatus } from "../lib/serial";
 import { AppStateContext } from "../states/appState";
 import { ConfigStateContext } from "../states/configState";
@@ -23,7 +23,7 @@ const LoginLogoutButtons: React.FC<{
   openLogin: () => void;
   openFDHub: () => void;
 }> = ({ openLogin, openFDHub }) => {
-  const { user, error } = useUser();
+  const { user } = useUser();
   if (user) {
     return (
       <>
@@ -126,7 +126,7 @@ export const Header: React.FC<{
                 >
                   Save to FreeDeck
                 </FDButton>
-                <Value ml={16}>
+                <Value className="ml-4">
                   {progress ? `${(progress * 100).toFixed(0)}%` : ""}
                 </Value>
               </>

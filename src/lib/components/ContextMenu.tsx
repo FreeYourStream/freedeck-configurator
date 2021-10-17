@@ -1,3 +1,4 @@
+import c from "clsx";
 import React, { ReactNode, ReactNodeArray } from "react";
 import { ContextMenuWrapper } from "react-context-menu-wrapper";
 import styled from "styled-components";
@@ -5,7 +6,7 @@ import styled from "styled-components";
 import { colors } from "../../definitions/colors";
 import { Spacer } from "./Button";
 import { Icons } from "./Icons";
-import { Label } from "./Misc";
+import { Label } from "./LabelValue";
 
 const isReactNodeArray = (
   children: ReactNode | ReactNodeArray
@@ -45,7 +46,9 @@ export const ContextMenuItem: React.FC<{
       ) : (
         <EmptyIcon size={18} />
       )}
-      <Label color={dangerous ? "white" : colors.gray}>{text}</Label>
+      <Label className={c(dangerous ? "text-white" : "text-gray-400")}>
+        {text}
+      </Label>
     </ItemWrapper>
   );
 };

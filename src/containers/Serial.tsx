@@ -3,7 +3,6 @@ import { FDButton } from "../lib/components/Button";
 import { Label, Value } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
 import { Title } from "../lib/components/Title";
-import { FDSerialAPI } from "../lib/fdSerialApi";
 import { connectionStatus } from "../lib/serial";
 import { AppStateContext } from "../states/appState";
 

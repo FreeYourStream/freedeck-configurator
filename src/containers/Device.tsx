@@ -1,10 +1,9 @@
 import { XIcon } from "@heroicons/react/outline";
 import React, { useContext, useEffect, useState } from "react";
 import { Label, Value } from "../lib/components/LabelValue";
-import { SelectWrapper, StyledSelect } from "../lib/components/Misc";
 import { Row } from "../lib/components/Row";
+import { StyledSelect } from "../lib/components/SelectInput";
 import { Title } from "../lib/components/Title";
-import { FDSerialAPI } from "../lib/fdSerialApi";
 import { connectionStatus } from "../lib/serial";
 import { AppStateContext } from "../states/appState";
 import {
@@ -19,18 +18,17 @@ const DisplayCountDropDown: React.FC<{
   options: number[];
   onChange: (newValue: number) => void;
 }> = ({ onChange, options, value }) => (
-  <SelectWrapper>
-    <StyledSelect
-      value={value}
-      onChange={(e) => onChange(parseInt(e.target.value, 10))}
-    >
-      {options.map((option) => (
-        <option key={option} value={option}>
-          {option.toString()}
-        </option>
-      ))}
-    </StyledSelect>
-  </SelectWrapper>
+  <StyledSelect
+    className="w-14"
+    value={value}
+    onChange={(e) => onChange(parseInt(e.target.value, 10))}
+  >
+    {options.map((option) => (
+      <option key={option} value={option}>
+        {option.toString()}
+      </option>
+    ))}
+  </StyledSelect>
 );
 
 export const Device: React.FC<{}> = () => {

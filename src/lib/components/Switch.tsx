@@ -1,5 +1,5 @@
-import React from "react";
 import c from "clsx";
+import React from "react";
 
 export const Switch: React.FC<{
   className?: string;
@@ -8,7 +8,7 @@ export const Switch: React.FC<{
 }> = ({ className, value, onChange }) => {
   return (
     <div
-      onClick={() => (console.log("CLICK"), onChange(!value))}
+      onClick={() => onChange(!value)}
       className={c(
         className,
         "flex w-12 h-6 rounded-full items-center p-1",

@@ -1,5 +1,5 @@
 import c from "clsx";
-import React, { ReactNode, useState } from "react";
+import React, { useState } from "react";
 
 export const TabView: React.FC<{
   tabs: { title: string; prefix: JSX.Element; content: JSX.Element }[];
@@ -27,6 +27,7 @@ export const TabView: React.FC<{
       <div className="flex justify-center w-full p-8 h-modal">
         {tabs.map((tab, index) => (
           <div
+            key={index}
             className={c(
               "w-full",
               activeTabIndex === index ? "flex" : "hidden"

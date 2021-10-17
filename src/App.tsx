@@ -1,22 +1,18 @@
-import "react-toastify/dist/ReactToastify.css";
-
+import { useSimpleReducer } from "@bitovi/use-simple-reducer";
+import { PlusCircleIcon } from "@heroicons/react/outline";
 import c from "clsx";
 import React from "react";
-import { HiDocumentAdd } from "react-icons/hi";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
-
-import { useSimpleReducer } from "@bitovi/use-simple-reducer";
-
-import { GlobalSettings } from "./components/GeneralSettings";
 import { Login } from "./components/Login";
 import { ContentBody } from "./containers/ContentBody";
+import { GlobalSettings } from "./containers/GeneralSettings";
 import { Header } from "./containers/Header";
-import { Main } from "./containers/Main";
 import { Page } from "./containers/Page";
 import { colors } from "./definitions/colors";
 import { useShowLogin, useShowSettings } from "./hooks/states";
-import { FDButton, Icon } from "./lib/components/Button";
+import { FDButton } from "./lib/components/Button";
 import { createButtonBody, createImageBody } from "./lib/configFile/createBody";
 import { createFooter } from "./lib/configFile/createFooter";
 import { createHeader } from "./lib/configFile/createHeader";
@@ -25,19 +21,18 @@ import { download } from "./lib/download";
 import { AddEventListeners } from "./lib/eventListeners";
 import {
   AppDispatchContext,
+  appReducer,
   AppState,
   AppStateContext,
   IAppReducer,
-  appReducer,
 } from "./states/appState";
 import {
   ConfigDispatchContext,
+  configReducer,
   ConfigState,
   ConfigStateContext,
   IConfigReducer,
-  configReducer,
 } from "./states/configState";
-import { PlusCircleIcon } from "@heroicons/react/outline";
 
 const StyledToastContainer = styled(ToastContainer).attrs({
   // custom props

@@ -2,28 +2,8 @@ import { XCircleIcon } from "@heroicons/react/solid";
 import c from "clsx";
 import React from "react";
 import ReactDOM from "react-dom";
-import { AiFillCloseSquare } from "react-icons/ai";
 import styled from "styled-components";
 
-import { colors } from "../../definitions/colors";
-import { Icon } from "./Button";
-
-const Close = styled.div`
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-`;
-const CloseBackground = styled.div`
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 20px;
-  height: 20px;
-  background-color: white;
-`;
 export const ModalBody = styled.div<{ visible?: boolean }>`
   display: ${(p) => (p.visible || p.visible === undefined ? "flex" : "none")};
   height: 100%;
@@ -33,6 +13,7 @@ export const ModalBody = styled.div<{ visible?: boolean }>`
   flex-direction: column;
 `;
 export const Modal: React.FC<{
+  className?: string;
   visible?: boolean;
   setClose: () => void;
   title?: string;
@@ -40,7 +21,7 @@ export const Modal: React.FC<{
   height?: number;
   minWidth?: number;
   minHeight?: number;
-}> = ({ visible, setClose, children, title }) => {
+}> = ({ visible, setClose, children, title, className }) => {
   const content = (
     <div
       className={c(
@@ -49,7 +30,7 @@ export const Modal: React.FC<{
         "justify-center items-center"
       )}
     >
-      <div className="relative bg-gray-900 rounded-2xl w-modal">
+      <div className={c("relative bg-gray-900 rounded-2xl", className)}>
         <div
           className={c(
             "h-11 flex items-center justify-center font-medium text-xl text-white bg-gray-700 rounded-t-2xl",

@@ -4,7 +4,7 @@ import React, { useContext, useState } from "react";
 import { useContextMenuTrigger } from "react-context-menu-wrapper";
 import { useDrag, useDrop } from "react-dnd";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
-import { DisplaySettingsContainer } from "../lib/components/DisplaySettingsContainer";
+import { DisplaySettingsContainer } from "./DisplaySettings";
 import { ImagePreview } from "../lib/components/ImagePreview";
 import { Modal } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";

@@ -6,24 +6,17 @@ import {
   SwitchVerticalIcon,
 } from "@heroicons/react/outline";
 import React from "react";
-import styled from "styled-components";
+import { About } from "./About";
+import { Displays } from "./Brightness";
+import { Device } from "./Device";
+import { Serial } from "./Serial";
 import { Modal } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
-import { FDSerialAPI } from "../lib/fdSerialApi";
-import { About } from "../containers/About";
-import { Brightness } from "./Brightness";
 import { DefaultBackButtonSettings } from "./DefaultBackButtonSettings";
-import { Device } from "../containers/Device";
-import { Serial } from "../containers/Serial";
 
-export const Activator = styled.div<{ visible: boolean }>`
-  display: ${(p) => (p.visible ? "flex" : "none")};
-  flex-direction: column;
-`;
 export const GlobalSettings: React.FC<{
   setClose: () => void;
   onClose: () => void;
-
   loadConfigFile: (buffer: Buffer) => void;
   getConfigBuffer: () => Promise<Buffer>;
   visible?: boolean;
@@ -38,6 +31,7 @@ export const GlobalSettings: React.FC<{
 }) => {
   return (
     <Modal
+      className="w-modal"
       visible={visible}
       setClose={() => {
         onClose();
@@ -57,7 +51,7 @@ export const GlobalSettings: React.FC<{
           {
             title: "Displays",
             prefix: <SunIcon className="h-6 w-6" />,
-            content: <Brightness />,
+            content: <Displays />,
           },
           {
             title: "Serial",

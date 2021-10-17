@@ -1,14 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-
-import { IButtonSetting } from "../../interfaces";
 import { colors } from "../../definitions/colors";
 import { keys } from "../../definitions/keys";
-import {
-  SelectWrapper,
-  StyledSelect,
-  WrapRow,
-} from "../../lib/components/Misc";
+import { IButtonSetting } from "../../interfaces";
+import { StyledSelect } from "../../lib/components/SelectInput";
 import { useTranslateKeyboardLayout } from "../../lib/localisation/keyboard";
 
 const TextBox = styled.textarea`
@@ -33,25 +28,24 @@ export const Text: React.FC<{
   const translatedKeys = useTranslateKeyboardLayout(action.values);
   return (
     <>
-      <SelectWrapper>
-        <StyledSelect
-          value={0}
-          onChange={(e) => {
-            if (action.values.length < 15)
-              setKeys([...action.values, parseInt(e.target.value)]);
-          }}
-        >
-          <option key={0} value={0}>
-            Choose Key
+      <StyledSelect
+        value={0}
+        onChange={(e) => {
+          if (action.values.length < 15)
+            setKeys([...action.values, parseInt(e.target.value)]);
+        }}
+      >
+        <option key={0} value={0}>
+          Choose Key
+        </option>
+        {Object.keys(keys).map((keyName) => (
+          <option key={keyName} value={keys[keyName]?.hid}>
+            {keyName}
           </option>
-          {Object.keys(keys).map((keyName) => (
-            <option key={keyName} value={keys[keyName]?.hid}>
-              {keyName}
-            </option>
-          ))}
-        </StyledSelect>
-      </SelectWrapper>
-      <WrapRow>
+        ))}
+      </StyledSelect>
+      <div>
+        {/* wraprow */}
         <TextBox
           rows={12}
           onKeyDown={(e) => {
@@ -62,7 +56,7 @@ export const Text: React.FC<{
           }}
           value={translatedKeys.reduce((acc, value) => `${acc}[${value}]`, "")}
         />
-      </WrapRow>
+      </div>
     </>
   );
 };

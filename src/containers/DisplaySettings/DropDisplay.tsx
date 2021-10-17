@@ -5,7 +5,7 @@ import {
 import React from "react";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
-import { ImagePreview } from "../ImagePreview";
+import { ImagePreview } from "../../lib/components/ImagePreview";
 
 const Drop = styled.div`
   border-radius: 8px;

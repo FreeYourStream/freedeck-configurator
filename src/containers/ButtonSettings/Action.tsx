@@ -1,22 +1,15 @@
 import React, { useCallback, useContext } from "react";
-import styled from "styled-components";
-
-import { IButtonSetting } from "../../interfaces";
 import { keys } from "../../definitions/keys";
 import { EAction } from "../../definitions/modes";
-import { SelectWrapper, StyledSelect, Title } from "../../lib/components/Misc";
+import { IButtonSetting } from "../../interfaces";
+import { StyledSelect } from "../../lib/components/SelectInput";
+import { Title } from "../../lib/components/Title";
+import { ConfigDispatchContext } from "../../states/configState";
 import { ChangePage } from "./ChangePage";
 import { FreeDeckSettings } from "./FreeDeckSettings";
 import { Hotkeys } from "./Hotkeys";
 import { SpecialKeys } from "./SpecialKeys";
 import { Text } from "./Text";
-import { ConfigDispatchContext } from "../../states/configState";
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  min-height: 100px;
-`;
 
 export const Action: React.FC<{
   pageIndex: number;
@@ -84,21 +77,19 @@ export const Action: React.FC<{
     [action]
   );
   return (
-    <Wrapper>
+    <div className="flex flex-col">
       <Title>{title}</Title>
-      <SelectWrapper>
-        <StyledSelect
-          value={action.mode}
-          onChange={(e) => setMode(parseInt(e.target.value))}
-        >
-          <option value="2">Do nothing</option>
-          <option value="1">Change Page</option>
-          <option value="0">Hot Key</option>
-          <option value="3">Special Keys</option>
-          <option value="4">Text (Beta)</option>
-          <option value="5">Settings (Beta)</option>
-        </StyledSelect>
-      </SelectWrapper>
+      <StyledSelect
+        value={action.mode}
+        onChange={(e) => setMode(parseInt(e.target.value))}
+      >
+        <option value="2">Do nothing</option>
+        <option value="1">Change Page</option>
+        <option value="0">Hot Key</option>
+        <option value="3">Special Keys</option>
+        <option value="4">Text (Beta)</option>
+        <option value="5">Settings (Beta)</option>
+      </StyledSelect>
       {action.mode === EAction.hotkeys && (
         <Hotkeys action={action} onKey={onKey} setKeys={setMultipleValues} />
       )}
@@ -119,6 +110,6 @@ export const Action: React.FC<{
       {action.mode === EAction.settings && (
         <FreeDeckSettings action={action} setSetting={setMultipleValues} />
       )}
-    </Wrapper>
+    </div>
   );
 };

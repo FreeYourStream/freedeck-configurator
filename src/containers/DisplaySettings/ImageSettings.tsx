@@ -14,19 +14,19 @@ import {
   fontMedium,
   fontSmall,
   fontSmaller,
-} from "../../../definitions/fonts";
+} from "../../definitions/fonts";
+import { CtrlDuo } from "../../lib/components/CtrlDuo";
+import { Label, Value } from "../../lib/components/LabelValue";
+import { Row } from "../../lib/components/Row";
+import { StyledSelect } from "../../lib/components/SelectInput";
+import { FDSlider } from "../../lib/components/Slider";
+import { Switch } from "../../lib/components/Switch";
+import { TextInput } from "../../lib/components/TextInput";
+import { Title } from "../../lib/components/Title";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
-} from "../../../states/configState";
-import { CtrlDuo } from "../CtrlDuo";
-import { Label, Value } from "../LabelValue";
-import { StyledSelect } from "../Misc";
-import { Row } from "../Row";
-import { FDSlider } from "../Slider";
-import { Switch } from "../Switch";
-import { TextInput } from "../TextInput";
-import { Title } from "../Title";
+} from "../../states/configState";
 
 export interface ISettings {
   contrast: number;
@@ -242,9 +242,9 @@ export const ImageSettings: React.FC<{
           </CtrlDuo>
           <CtrlDuo>
             <StyledSelect
-              style={{ width: "180px" }}
-              defaultValue={display.textSettings.font}
-              onChange={(e) => setfontName(e.currentTarget.value)}
+              className="w-32"
+              value={display.textSettings.font}
+              onChange={(e) => setfontName(e.target.value)}
             >
               <option value={fontSmaller}>smaller</option>
               <option value={fontSmall}>small</option>

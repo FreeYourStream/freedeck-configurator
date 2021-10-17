@@ -1,15 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-
-import { IButtonSetting } from "../../interfaces";
 import { colors } from "../../definitions/colors";
 import { keys } from "../../definitions/keys";
+import { IButtonSetting } from "../../interfaces";
 import { FDButton } from "../../lib/components/Button";
-import {
-  SelectWrapper,
-  StyledSelect,
-  WrapRow,
-} from "../../lib/components/Misc";
+import { StyledSelect } from "../../lib/components/SelectInput";
 import { useTranslateKeyboardLayout } from "../../lib/localisation/keyboard";
 
 const KeyScanner = styled.div`
@@ -54,30 +49,30 @@ export const Hotkeys: React.FC<{
 }> = ({ action, setKeys, onKey }) => {
   return (
     <>
-      <SelectWrapper>
-        <StyledSelect
-          value={0}
-          onChange={(e) => {
-            if (action.values.length < 7)
-              setKeys([...action.values, parseInt(e.target.value)]);
-          }}
-        >
-          <option key={0} value={0}>
-            Choose Key
+      <StyledSelect
+        value={0}
+        onChange={(e) => {
+          if (action.values.length < 7)
+            setKeys([...action.values, parseInt(e.target.value)]);
+        }}
+      >
+        <option key={0} value={0}>
+          Choose Key
+        </option>
+        {Object.keys(keys).map((keyName) => (
+          <option key={keyName} value={keys[keyName]?.hid}>
+            {keyName}
           </option>
-          {Object.keys(keys).map((keyName) => (
-            <option key={keyName} value={keys[keyName]?.hid}>
-              {keyName}
-            </option>
-          ))}
-        </StyledSelect>
-      </SelectWrapper>
+        ))}
+      </StyledSelect>
       <KeyScanner tabIndex={0} onKeyDown={(e) => onKey(e)}>
         Click to recognize
       </KeyScanner>
-      <WrapRow>
+      <div>
+        {" "}
+        {/* wraprow */}
         <HotkeyKeys setKeys={setKeys} values={action.values} />
-      </WrapRow>
+      </div>
     </>
   );
 };

@@ -1,7 +1,5 @@
-import c from "clsx";
 import React, { useContext } from "react";
 import { EAction } from "../../definitions/modes";
-import { Row } from "../../lib/components/Misc";
 import { ConfigStateContext } from "../../states/configState";
 import { Action } from "./Action";
 

@@ -3,14 +3,12 @@ import c from "clsx";
 import React, { useContext } from "react";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
-
-import { Display } from "./DisplayButton";
-import { Icon } from "../lib/components/Button";
 import { AppStateContext } from "../states/appState";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
 } from "../states/configState";
+import { Display } from "./DisplayButton";
 
 interface IProps {
   pageIndex: number;

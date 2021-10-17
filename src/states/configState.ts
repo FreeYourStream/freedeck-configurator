@@ -102,6 +102,7 @@ export const configReducer: IConfigReducer = {
   async setDimensions(state, data) {
     const width = data.width ?? state.width;
     const height = data.height ?? state.height;
+    console.log({ width, height });
     if (width * height > state.width * state.height) {
       const diff = width * height - state.width * state.height;
       for (let i = 0; i < diff; i++) {
@@ -121,6 +122,7 @@ export const configReducer: IConfigReducer = {
       );
     }
     state.width = width;
+    state.height = height;
     return { ...state };
   },
   async addPage(state, previousPage) {

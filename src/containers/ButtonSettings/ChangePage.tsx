@@ -1,8 +1,7 @@
 import React from "react";
-
 import { IButtonSetting } from "../../interfaces";
 import { FDButton } from "../../lib/components/Button";
-import { SelectWrapper, StyledSelect } from "../../lib/components/Misc";
+import { StyledSelect } from "../../lib/components/SelectInput";
 import { scrollToPage } from "../../lib/scrollToPage";
 
 export const ChangePage: React.FC<{
@@ -14,19 +13,17 @@ export const ChangePage: React.FC<{
   return (
     <>
       {pages.length ? (
-        <SelectWrapper>
-          <StyledSelect
-            value={action.values[0]}
-            onChange={(e) => setGoTo(parseInt(e.target.value))}
-          >
-            <option value={-1}>Select Page</option>
-            {pages.map((pageNumber) => (
-              <option key={pageNumber} value={pageNumber}>
-                Go to {pageNumber}
-              </option>
-            ))}
-          </StyledSelect>
-        </SelectWrapper>
+        <StyledSelect
+          value={action.values[0]}
+          onChange={(e) => setGoTo(parseInt(e.target.value))}
+        >
+          <option value={-1}>Select Page</option>
+          {pages.map((pageNumber) => (
+            <option key={pageNumber} value={pageNumber}>
+              Go to {pageNumber}
+            </option>
+          ))}
+        </StyledSelect>
       ) : null}
       {!action.values?.length || action.values[0] === -1 ? (
         <FDButton size={1} onClick={async () => await addPage()}>

@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useContextMenuTrigger } from "react-context-menu-wrapper";
+import { DisplaySettingsContainer } from "./DisplaySettings";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
-import { DisplaySettingsContainer } from "../lib/components/DisplaySettingsContainer";
 
-export const DefaultBackButtonSettings: React.FC<{}> = ({}) => {
+export const DefaultBackButtonSettings: React.FC<{}> = () => {
   const menuId = `defaultBackButtonSettings`;
   const menuRef = useContextMenuTrigger<HTMLDivElement>({ menuId }); //image loading
 
