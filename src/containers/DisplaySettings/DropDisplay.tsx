@@ -4,14 +4,7 @@ import {
 } from "@heroicons/react/outline";
 import React from "react";
 import { useDropzone } from "react-dropzone";
-import styled from "styled-components";
 import { ImagePreview } from "../../lib/components/ImagePreview";
-
-const Drop = styled.div`
-  border-radius: 8px;
-  border-top: none;
-  border-bottom: none;
-`;
 
 export const DropDisplay = React.forwardRef<
   any,
@@ -29,7 +22,10 @@ export const DropDisplay = React.forwardRef<
       className="relative flex w-full justify-center mb-4 bg-gray-700 rounded-2xl shadow-2xl"
       ref={ref}
     >
-      <Drop {...getRootProps({ style: { outline: "none" } })}>
+      <div
+        className="rounded-sm border-0"
+        {...getRootProps({ style: { outline: "none" } })}
+      >
         <input {...getInputProps()} />
         {isDragActive ? (
           <div className="flex text-2xl font-extrabold h-32 items-center justify-center">
@@ -38,9 +34,9 @@ export const DropDisplay = React.forwardRef<
             <PhotographIcon className="h-12 w-12 m-4" />
           </div>
         ) : (
-          <ImagePreview multiplier={2.5} src={previewImage} />
+          <ImagePreview big src={previewImage} />
         )}
-      </Drop>
+      </div>
     </div>
   );
 });

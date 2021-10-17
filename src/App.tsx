@@ -4,13 +4,11 @@ import c from "clsx";
 import React from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import styled from "styled-components";
-import { Login } from "./components/Login";
 import { ContentBody } from "./containers/ContentBody";
 import { GlobalSettings } from "./containers/GeneralSettings";
 import { Header } from "./containers/Header";
+import { Login } from "./containers/Login";
 import { Page } from "./containers/Page";
-import { colors } from "./definitions/colors";
 import { useShowLogin, useShowSettings } from "./hooks/states";
 import { FDButton } from "./lib/components/Button";
 import { createButtonBody, createImageBody } from "./lib/configFile/createBody";
@@ -33,29 +31,6 @@ import {
   ConfigStateContext,
   IConfigReducer,
 } from "./states/configState";
-
-const StyledToastContainer = styled(ToastContainer).attrs({
-  // custom props
-})`
-  .Toastify__toast-container {
-  }
-  .Toastify__toast {
-    background-color: ${colors.accentDark};
-    border: 1px solid ${colors.accent};
-  }
-  .Toastify__toast--error {
-  }
-  .Toastify__toast--warning {
-  }
-  .Toastify__toast--success {
-  }
-  .Toastify__toast-body {
-    color: ${colors.brightWhite};
-  }
-  .Toastify__progress-bar {
-    background-color: ${colors.gray};
-  }
-`;
 
 const App: React.FC<{
   defaultConfigState: ConfigState;
@@ -134,7 +109,7 @@ const App: React.FC<{
                 getConfigBuffer={createConfigBuffer}
               />
               <Login visible={showLogin} setClose={() => setShowLogin(false)} />
-              <StyledToastContainer />
+              <ToastContainer />
               <div className="fixed bottom-5 right-6">
                 <FDButton
                   prefix={<PlusCircleIcon className="w-6 h-6" />}

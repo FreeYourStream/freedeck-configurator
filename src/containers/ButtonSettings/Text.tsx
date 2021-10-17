@@ -1,25 +1,23 @@
 import React from "react";
-import styled from "styled-components";
-import { colors } from "../../definitions/colors";
 import { keys } from "../../definitions/keys";
 import { IButtonSetting } from "../../interfaces";
 import { StyledSelect } from "../../lib/components/SelectInput";
 import { useTranslateKeyboardLayout } from "../../lib/localisation/keyboard";
 
-const TextBox = styled.textarea`
-  font-family: "Barlow";
-  font-size: 16px;
-  color: ${colors.white};
-  background-color: ${colors.black};
-  width: 100%;
-  user-select: none;
-  margin-top: 16px;
-  border: none;
-  resize: none;
-  :focus {
-    outline: none;
-  }
-`;
+// const TextBox = styled.textarea`
+//   font-family: "Barlow";
+//   font-size: 16px;
+//   color: ${colors.white};
+//   background-color: ${colors.black};
+//   width: 100%;
+//   user-select: none;
+//   margin-top: 16px;
+//   border: none;
+//   resize: none;
+//   :focus {
+//     outline: none;
+//   }
+// `;
 export const Text: React.FC<{
   action: IButtonSetting;
   setKeys: (keys: number[]) => void;
@@ -45,8 +43,7 @@ export const Text: React.FC<{
         ))}
       </StyledSelect>
       <div>
-        {/* wraprow */}
-        <TextBox
+        <textarea
           rows={12}
           onKeyDown={(e) => {
             if (e.nativeEvent.code !== "Backspace") return onKey(e, 15);

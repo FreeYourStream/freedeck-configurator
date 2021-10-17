@@ -19,7 +19,6 @@
     "@types/preval.macro": "^3.0.0",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.2",
-    "@types/styled-components": "^5.0.1",
     "clsx": "^1.1.1",
     "floyd-steinberg": "^1.0.6",
     "graphql": "^15.5.0",
@@ -38,7 +37,6 @@
     "react-icons": "^3.11.0",
     "react-scripts": "4.0.0",
     "react-toastify": "^6.0.8",
-    "styled-components": "^5.0.1",
     "tailwind-styled-components": "^2.0.3",
     "typescript": "^3.7.5",
     "use-debounce": "^3.4.3"

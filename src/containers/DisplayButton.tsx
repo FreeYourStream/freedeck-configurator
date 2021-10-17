@@ -10,7 +10,6 @@ import { useContextMenuTrigger } from "react-context-menu-wrapper";
 import { useDrag, useDrop } from "react-dnd";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
 import { DisplaySettingsContainer } from "./DisplaySettings";
-import { ImagePreview } from "../lib/components/ImagePreview";
 import { Modal } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
 import {
@@ -18,6 +17,7 @@ import {
   ConfigStateContext,
 } from "../states/configState";
 import { ButtonSettingsContainer } from "./ButtonSettings";
+import { ImagePreview } from "../lib/components/ImagePreview";
 
 export const Display: React.FC<{
   pageIndex: number;
@@ -70,7 +70,6 @@ export const Display: React.FC<{
     >
       <ImagePreview
         ref={drop}
-        multiplier={1}
         onClick={() => setShowSettings(true)}
         src={display.previewImage}
       />

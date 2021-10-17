@@ -1,16 +1,7 @@
 import c from "clsx";
 import React from "react";
-import styled from "styled-components";
-
 import { colors } from "../../definitions/colors";
 import { Icons } from "./Icons";
-
-export const Spacer = styled.div<{ mr: number }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: ${(p) => p.mr}px;
-`;
 
 export interface IFDButtonProps {
   className?: string;

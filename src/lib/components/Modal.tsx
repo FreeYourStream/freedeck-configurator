@@ -2,16 +2,7 @@ import { XCircleIcon } from "@heroicons/react/solid";
 import c from "clsx";
 import React from "react";
 import ReactDOM from "react-dom";
-import styled from "styled-components";
 
-export const ModalBody = styled.div<{ visible?: boolean }>`
-  display: ${(p) => (p.visible || p.visible === undefined ? "flex" : "none")};
-  height: 100%;
-  padding: 40px 64px 64px 64px;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-`;
 export const Modal: React.FC<{
   className?: string;
   visible?: boolean;
