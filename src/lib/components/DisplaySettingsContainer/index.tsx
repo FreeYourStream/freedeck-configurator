@@ -44,8 +44,8 @@ export const DisplaySettingsContainer = React.forwardRef<
     });
   };
   return (
-    <Wrapper
-      className="w-full"
+    <div
+      className="w-full flex flex-col justify-between focus:outline-none"
       tabIndex={0}
       contentEditable={false}
       ref={ref}
@@ -65,6 +65,6 @@ export const DisplaySettingsContainer = React.forwardRef<
         />
       }
       <ImageSettings pageIndex={pageIndex} displayIndex={displayIndex} />
-    </Wrapper>
+    </div>
   );
 });

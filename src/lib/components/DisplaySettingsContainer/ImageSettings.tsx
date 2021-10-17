@@ -21,28 +21,12 @@ import {
 } from "../../../states/configState";
 import { CtrlDuo } from "../CtrlDuo";
 import { Label, Value } from "../LabelValue";
-import { StyledSelect, TextInput } from "../Misc";
+import { StyledSelect } from "../Misc";
 import { Row } from "../Row";
 import { FDSlider } from "../Slider";
 import { Switch } from "../Switch";
+import { TextInput } from "../TextInput";
 import { Title } from "../Title";
-
-const Toggle: React.FC<{ $on: boolean; onClick?: any }> = ({
-  $on,
-  onClick,
-}) => (
-  <div
-    onClick={onClick}
-    className={c(
-      $on
-        ? "bg-success-600 hover:bg-success-400"
-        : "bg-danger-600 hover:bg-danger-400",
-      "px-2 py-0.5 w-14 font-semibold rounded-sm text-center text-white select-none"
-    )}
-  >
-    {$on ? "I" : "O"}
-  </div>
-);
 
 export interface ISettings {
   contrast: number;
@@ -139,7 +123,7 @@ export const ImageSettings: React.FC<{
   };
 
   return (
-    <div className="grid grid-cols-2 gap-4 grid-rows-1 w-full">
+    <div className="grid grid-cols-2 gap-4 grid-rows-1 w-full h-full">
       <div className="relative flex flex-col p-8  bg-gray-700 rounded-2xl">
         <div
           className={c(
@@ -148,7 +132,7 @@ export const ImageSettings: React.FC<{
           )}
           title="These options are disabled. Load an image by clicking on the black box or just enter some text"
         />
-        <Title className="mb-8">Image Settings</Title>
+        <Title className="mb-2">Image Settings</Title>
         {!display.imageSettings.dither ? (
           <>
             <Row className="h-7">
@@ -242,12 +226,13 @@ export const ImageSettings: React.FC<{
       </div>
 
       <div className="relative flex flex-col p-8 bg-gray-700 rounded-2xl">
-        <Title className="mb-8">Text Settings</Title>
+        <Title className="mb-2">Text Settings</Title>
         <Row>
           <TextInput
+            className="w-full"
             placeholder={"Enter text"}
             value={display.textSettings.text}
-            onChange={(e) => setText(e.currentTarget.value)}
+            onChange={(value) => setText(value)}
           />
         </Row>
         <Row>

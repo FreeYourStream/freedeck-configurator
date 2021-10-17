@@ -174,11 +174,9 @@ export const configReducer: IConfigReducer = {
       display = state.displaySettingsPages[pageIndex][buttonIndex];
     }
     display = displaySettings;
-    display.convertedImage =
-      displaySettings.textSettings.text?.length &&
-      !displaySettings.originalImage
-        ? await composeText(displaySettings)
-        : await composeImage(displaySettings);
+    display.convertedImage = !displaySettings.originalImage
+      ? await composeText(displaySettings)
+      : await composeImage(displaySettings);
     display.previewImage = getBase64Image(display.convertedImage);
     state.displaySettingsPages[pageIndex][buttonIndex] = { ...display };
     return state;
