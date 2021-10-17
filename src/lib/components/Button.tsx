@@ -13,6 +13,7 @@ export const Spacer = styled.div<{ mr: number }>`
 `;
 
 export interface IFDButtonProps {
+  className?: string;
   disabled?: boolean;
   type?: "danger" | "normal" | "primary" | "success";
   children?: any;
@@ -24,6 +25,7 @@ export interface IFDButtonProps {
 }
 
 export const FDButton = ({
+  className,
   disabled = false,
   size = 2,
   type = "normal",
@@ -34,14 +36,14 @@ export const FDButton = ({
   title,
 }: IFDButtonProps) => {
   const sizeClasses = c(
-    size === 1 && "px-3 py-0 space-x-2",
+    size === 1 && "px-3 py-1 space-x-2",
     size === 2 && "px-5 py-2 space-x-2",
     size === 3 && "px-6 py-3 space-x-2"
   );
 
   const typeClasses = c(
     type === "danger" &&
-      "bg-danger-300 shadow-lg text-white hover:bg-danger-400 hover:shadow-xl",
+      "bg-danger-500 shadow-lg text-white hover:bg-danger-400 hover:shadow-xl",
     type === "normal" &&
       (!disabled
         ? "bg-gray-400 shadow-lg text-white hover:bg-gray-300 hover:shadow-xl"
@@ -62,7 +64,7 @@ export const FDButton = ({
       disabled={disabled}
       onClick={onClick}
       title={title}
-      className={`inline-flex items-center text-lg font-normal tracking-wider rounded-md select-none ${sizeClasses} ${typeClasses}`}
+      className={`inline-flex items-center text-lg font-normal tracking-wider rounded-md select-none ${sizeClasses} ${typeClasses} ${className}`}
     >
       {!!prefix && <span>{prefix}</span>}
       <span>{children}</span>

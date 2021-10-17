@@ -1,7 +1,6 @@
 import c from "clsx";
 import React, { ReactNode, ReactNodeArray } from "react";
 import { ContextMenuWrapper } from "react-context-menu-wrapper";
-import { Label } from "./LabelValue";
 
 export const ContextMenuItem: React.FC<{
   prefix?: JSX.Element;

@@ -84,7 +84,7 @@ export const createDefaultDisplayPage = async (
     displays.push(createDefaultDisplay());
   }
 
-  if (previousPage) {
+  if (previousPage !== undefined) {
     displays[0] = await createDefaultBackDisplay(previousPage);
   }
   return [...displays];

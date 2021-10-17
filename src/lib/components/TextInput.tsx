@@ -15,7 +15,6 @@ export const TextInput: React.FC<{
         className
       )}
       onChange={(e) => {
-        console.log(e.currentTarget.value);
         onChange(e.currentTarget.value);
       }}
       value={value}

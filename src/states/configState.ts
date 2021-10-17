@@ -41,7 +41,10 @@ export interface IConfigReducer extends Actions<ConfigState> {
     state: ConfigState,
     data: { width?: number; height?: number }
   ): Promise<ConfigState>;
-  addPage(state: ConfigState, previousPage?: number): Promise<ConfigState>;
+  addPage(
+    state: ConfigState,
+    data?: { previousPage: number; previousDisplay: number }
+  ): Promise<ConfigState>;
   deletePage(state: ConfigState, pageIndex: number): Promise<ConfigState>;
   setButtonSettings(
     state: ConfigState,
@@ -125,13 +128,26 @@ export const configReducer: IConfigReducer = {
     state.height = height;
     return { ...state };
   },
-  async addPage(state, previousPage) {
+  async addPage(state, data) {
     state.buttonSettingsPages.push(
-      createDefaultButtonSettingsPage(state.width, state.height, previousPage)
+      createDefaultButtonSettingsPage(
+        state.width,
+        state.height,
+        data?.previousPage
+      )
     );
     state.displaySettingsPages.push(
-      await createDefaultDisplayPage(state.width, state.height, previousPage)
+      await createDefaultDisplayPage(
+        state.width,
+        state.height,
+        data?.previousPage
+      )
     );
+    if (data) {
+      const { previousDisplay, previousPage } = data;
+      state.buttonSettingsPages[previousPage][previousDisplay].primary.values =
+        [state.buttonSettingsPages.length - 1];
+    }
     return { ...state };
   },
   async deletePage(state, pageIndex) {

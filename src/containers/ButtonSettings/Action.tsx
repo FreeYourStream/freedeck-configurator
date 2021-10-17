@@ -2,6 +2,8 @@ import React, { useCallback, useContext } from "react";
 import { keys } from "../../definitions/keys";
 import { EAction } from "../../definitions/modes";
 import { IButtonSetting } from "../../interfaces";
+import { Label } from "../../lib/components/LabelValue";
+import { Row } from "../../lib/components/Row";
 import { StyledSelect } from "../../lib/components/SelectInput";
 import { Title } from "../../lib/components/Title";
 import { ConfigDispatchContext } from "../../states/configState";
@@ -78,25 +80,34 @@ export const Action: React.FC<{
   );
   return (
     <div className="flex flex-col">
-      <Title>{title}</Title>
-      <StyledSelect
-        value={action.mode}
-        onChange={(e) => setMode(parseInt(e.target.value))}
-      >
-        <option value="2">Do nothing</option>
-        <option value="1">Change Page</option>
-        <option value="0">Hot Key</option>
-        <option value="3">Special Keys</option>
-        <option value="4">Text (Beta)</option>
-        <option value="5">Settings (Beta)</option>
-      </StyledSelect>
+      <Title className="mb-2">{title}</Title>
+      <Row>
+        <Label>Mode</Label>
+        <StyledSelect
+          className="w-32"
+          value={action.mode}
+          onChange={(e) => setMode(parseInt(e.target.value))}
+        >
+          <option value="2">Do nothing</option>
+          <option value="1">Change Page</option>
+          <option value="0">Hot Key</option>
+          <option value="3">Special Keys</option>
+          <option value="4">Text (Beta)</option>
+          <option value="5">Settings (Beta)</option>
+        </StyledSelect>
+      </Row>
       {action.mode === EAction.hotkeys && (
         <Hotkeys action={action} onKey={onKey} setKeys={setMultipleValues} />
       )}
       {action.mode === EAction.changePage && (
         <ChangePage
           action={action}
-          addPage={() => configDispatch.addPage(undefined)}
+          addPage={() => {
+            configDispatch.addPage({
+              previousPage: pageIndex,
+              previousDisplay: buttonIndex,
+            });
+          }}
           pages={pages}
           setGoTo={setSingleValue}
         />

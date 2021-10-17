@@ -77,6 +77,7 @@ export const Display: React.FC<{
 
       {showSettings && (
         <Modal
+          className="w-modal"
           title={`Page ${pageIndex + 1} Display ${displayIndex + 1}`}
           visible={showSettings}
           setClose={() => setShowSettings(false)}

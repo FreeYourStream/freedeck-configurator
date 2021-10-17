@@ -9,6 +9,7 @@ import {
   ConfigStateContext,
 } from "../states/configState";
 import { Display } from "./DisplayButton";
+import { confirm } from "../lib/components/confirmAlert";
 
 interface IProps {
   pageIndex: number;
@@ -31,10 +32,13 @@ export const Page: React.FC<IProps> = ({ pageIndex }) => {
         </div>
         <div
           className="absolute flex items-center justify-center w-8 h-8 rounded-full cursor-pointer shadow-lg bg-danger-600 hover:bg-danger-400 -top-4 -right-4"
-          onClick={() => {
+          onClick={async () => {
             const deleteConfirmed =
               appState.ctrlDown ||
-              window.confirm("Do you really want to delete this page forever?");
+              (await confirm(
+                "Do you really want to delete this page forever?",
+                "Tipp: Hold Ctrl to skip this dialog next time"
+              ));
             if (deleteConfirmed) configDispatch.deletePage(pageIndex);
           }}
         >

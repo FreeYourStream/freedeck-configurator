@@ -8,7 +8,6 @@ export const ButtonSettingsContainer: React.FC<{
   displayIndex: number;
 }> = ({ pageIndex, displayIndex }) => {
   const { buttonSettingsPages } = useContext(ConfigStateContext);
-  console.log(pageIndex, displayIndex);
   const button = buttonSettingsPages[pageIndex][displayIndex];
   return (
     <div className="flex flex-col">

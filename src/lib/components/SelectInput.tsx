@@ -9,16 +9,13 @@ export const StyledSelect: React.FC<{
   value: any;
 }> = ({ onChange, value, title, className, children, defaultValue }) => {
   return (
-    <label className={c("block text-left", className)}>
-      {!!title && <span className="text-gray-700">Select</span>}
-      <select
-        defaultValue={defaultValue}
-        className="form-select block w-full mt-1 p-1 bg-gray-400 rounded"
-        onChange={onChange}
-        value={value}
-      >
-        {children}
-      </select>
-    </label>
+    <select
+      defaultValue={defaultValue}
+      className={c("form-select block p-1 bg-gray-400 rounded", className)}
+      onChange={onChange}
+      value={value}
+    >
+      {children}
+    </select>
   );
 };
