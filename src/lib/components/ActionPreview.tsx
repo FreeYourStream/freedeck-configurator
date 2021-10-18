@@ -18,7 +18,9 @@ const Pill: React.FC<{ className?: string; button: IButtonSetting }> = ({
 }) => {
   const keys = useTranslateKeyboardLayout(button.values);
   return (
-    <div className={c("w-full flex justify-center", className)}>
+    <div
+      className={c("w-full flex justify-center whitespace-nowrap", className)}
+    >
       {button.mode === EAction.changePage && !!button.values.length && (
         <div className="absolute top-14  rounded-full bg-gray-400 px-2 flex justify-center items-center gap-1 align-middle h-6 text-base">
           <ArrowCircleRightIcon className="w-4 h-4" />
