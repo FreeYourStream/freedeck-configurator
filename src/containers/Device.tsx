@@ -94,6 +94,10 @@ export const Device: React.FC<{}> = () => {
         <Label>Firmware version:</Label>
         <Value>{fwVersion}</Value>
       </Row>
+      <Row>
+        <Label>Config version:</Label>
+        <Value>{configState.configVersion || "1.0.0"}</Value>
+      </Row>
     </div>
   );
 };

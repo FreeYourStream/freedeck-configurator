@@ -6,29 +6,14 @@
   "dependencies": {
     "@apollo/client": "^3.3.15",
     "@bitovi/use-simple-reducer": "^0.0.1",
-    "@craco/craco": "^6.3.0",
     "@heroicons/react": "^1.0.4",
-    "@jimp/core": "^0.16.0",
-    "@jimp/plugin-threshold": "^0.16.1",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
-    "@testing-library/user-event": "^7.2.1",
-    "@types/jest": "^24.9.1",
-    "@types/lodash": "^4.14.160",
-    "@types/node": "^12.12.29",
-    "@types/pngjs": "^3.4.1",
-    "@types/preval.macro": "^3.0.0",
-    "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.2",
     "clsx": "^1.1.1",
     "floyd-steinberg": "^1.0.6",
     "graphql": "^15.5.0",
     "jimp": "^0.16.0",
     "lodash": "^4.17.20",
-    "pngjs": "^3.4.0",
     "preval.macro": "^5.0.0",
     "react": "^17.0.2",
-    "react-async-hook": "^4.0.0",
     "react-confirm-alert": "^2.7.0",
     "react-context-menu-wrapper": "^3.0.0",
     "react-dnd": "^10.0.2",
@@ -36,16 +21,12 @@
     "react-dom": "^17.0.2",
     "react-dropzone": "^10.2.2",
     "react-icons": "^3.11.0",
-    "react-scripts": "4.0.0",
-    "react-toastify": "^6.0.8",
-    "tailwind-styled-components": "^2.0.3",
-    "typescript": "^3.7.5",
-    "use-debounce": "^3.4.3"
+    "react-toastify": "^6.0.8"
   },
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "test": "craco test",
+    "check:clean": "unimported",
     "eject": "react-scripts eject",
     "codegen": "graphql-codegen --config codegen.yml"
   },
@@ -65,13 +46,22 @@
     ]
   },
   "devDependencies": {
+    "@craco/craco": "^6.3.0",
     "@graphql-codegen/cli": "1.21.4",
     "@graphql-codegen/introspection": "1.18.2",
     "@graphql-codegen/typescript": "1.22.0",
     "@graphql-codegen/typescript-operations": "1.17.16",
     "@graphql-codegen/typescript-react-apollo": "2.2.4",
+    "@types/lodash": "^4.14.160",
+    "@types/node": "^12.12.29",
+    "@types/preval.macro": "^3.0.0",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.2",
     "autoprefixer": "^9.8.8",
     "postcss": "^7.0.39",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.16"
+    "react-scripts": "4.0.0",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.16",
+    "typescript": "^3.7.5",
+    "unimported": "^1.19.1"
   }
 }

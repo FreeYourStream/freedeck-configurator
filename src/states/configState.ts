@@ -184,23 +184,38 @@ export const configReducer: IConfigReducer = {
   },
   async setDisplaySettings(state, data) {
     const { pageIndex, buttonIndex, displaySettings } = data;
-    let display: IDisplay;
+    console.log("waat", pageIndex, buttonIndex);
     if (pageIndex === -1 && buttonIndex === -1) {
+      state.defaultBackDisplay = { ...displaySettings };
+      state.defaultBackDisplay.convertedImage = !state.defaultBackDisplay
+        .originalImage
+        ? await composeText(state.defaultBackDisplay)
+        : await composeImage(state.defaultBackDisplay);
+      state.defaultBackDisplay.previewImage = getBase64Image(
+        state.defaultBackDisplay.convertedImage
+      );
+      state.defaultBackDisplay.isGeneratedFromDefaultBackImage = true;
       localStorage.setItem(
         "defaultBackDisplay",
         JSON.stringify(state.defaultBackDisplay)
       );
-      display = state.defaultBackDisplay;
     } else {
-      display = state.displaySettingsPages[pageIndex][buttonIndex];
+      state.displaySettingsPages[pageIndex][buttonIndex] = {
+        ...displaySettings,
+      };
+      state.displaySettingsPages[pageIndex][buttonIndex].convertedImage = !state
+        .displaySettingsPages[pageIndex][buttonIndex].originalImage
+        ? await composeText(state.displaySettingsPages[pageIndex][buttonIndex])
+        : await composeImage(
+            state.displaySettingsPages[pageIndex][buttonIndex]
+          );
+
+      state.displaySettingsPages[pageIndex][buttonIndex].previewImage =
+        getBase64Image(
+          state.displaySettingsPages[pageIndex][buttonIndex].convertedImage
+        );
     }
-    display = displaySettings;
-    display.convertedImage = !displaySettings.originalImage
-      ? await composeText(displaySettings)
-      : await composeImage(displaySettings);
-    display.previewImage = getBase64Image(display.convertedImage);
-    state.displaySettingsPages[pageIndex][buttonIndex] = { ...display };
-    return state;
+    return { ...state };
   },
   async setOriginalImage(state, data) {
     const { buttonIndex, pageIndex, originalImage } = data;

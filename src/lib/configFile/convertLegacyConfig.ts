@@ -18,6 +18,7 @@ export const convertLegacyConfig = async (
       (dsp, pageIndex): Promise<IDisplaySettingsPage> =>
         Promise.all(
           dsp.map(async (display, displayIndex): Promise<IDisplay> => {
+            console.log(display.isGeneratedFromDefaultBackImage);
             let temp = {
               imageSettings: display.imageSettings,
               isGeneratedFromDefaultBackImage:
@@ -43,6 +44,8 @@ export const convertLegacyConfig = async (
         )
     )
   );
+  const originalImage = Buffer.from(rawConfig.defaultBackDisplay.image);
+  console.log("ORIGINAL image", originalImage);
   const temp: ConfigState = {
     brightness: rawConfig.brightness || 128,
     configVersion: "1.1.0",
@@ -50,8 +53,13 @@ export const convertLegacyConfig = async (
     height: configBuffer.readUInt8(1),
     buttonSettingsPages: rawConfig.buttonSettingsPages,
     defaultBackDisplay: createDefaultDisplay({
-      originalImage: Buffer.from(rawConfig.defaultBackDisplay.image),
-      ...rawConfig.defaultBackDisplay,
+      originalImage,
+      imageSettings: {
+        ...rawConfig.defaultBackDisplay.settings,
+        invert: !rawConfig.defaultBackDisplay.settings.invert,
+      },
+      textSettings: rawConfig.defaultBackDisplay.textSettings,
+      textWithIconSettings: rawConfig.defaultBackDisplay.textWithIconSettings,
     }),
     displaySettingsPages,
   };
@@ -61,6 +69,5 @@ export const convertLegacyConfig = async (
   temp.defaultBackDisplay.previewImage = getBase64Image(
     temp.defaultBackDisplay.convertedImage
   );
-  console.log(rawConfig.defaultBackDisplay);
   return temp;
 };

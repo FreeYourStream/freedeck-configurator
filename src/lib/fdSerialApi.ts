@@ -128,7 +128,7 @@ export class FDSerialAPI {
   }
 
   private async readAsciiLine() {
-    const result = await this.Serial.readLine(300);
+    const result = await this.Serial.readLine(3000);
     return String.fromCharCode(...result);
   }
 
