@@ -1,9 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { fileToImage } from "../../lib/fileToImage";
-import {
-  ConfigDispatchContext,
-  ConfigStateContext,
-} from "../../states/configState";
+import { ConfigDispatchContext } from "../../states/configState";
 import { DropDisplay } from "./DropDisplay";
 import { ImageSettings } from "./ImageSettings";
 
@@ -14,11 +11,6 @@ export const DisplaySettingsContainer = React.forwardRef<
     displayIndex: number;
   }
 >(({ pageIndex, displayIndex }, menuRef) => {
-  const configState = useContext(ConfigStateContext);
-  const display =
-    pageIndex === -1
-      ? configState.defaultBackDisplay
-      : configState.displaySettingsPages[pageIndex][displayIndex];
   const configDispatch = useContext(ConfigDispatchContext);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -54,7 +46,8 @@ export const DisplaySettingsContainer = React.forwardRef<
         <DropDisplay
           ref={menuRef}
           onDrop={onDrop}
-          previewImage={display.previewImage}
+          pageIndex={pageIndex}
+          displayIndex={displayIndex}
         />
       }
       <ImageSettings pageIndex={pageIndex} displayIndex={displayIndex} />

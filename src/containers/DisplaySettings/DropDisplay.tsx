@@ -10,9 +10,10 @@ export const DropDisplay = React.forwardRef<
   any,
   {
     onDrop: (acceptedFiles: File[]) => Promise<void> | void;
-    previewImage: string;
+    displayIndex: number;
+    pageIndex: number;
   }
->(({ onDrop, previewImage }, ref) => {
+>(({ onDrop, pageIndex, displayIndex }, ref) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: [".jpg", ".jpeg", ".png"],
@@ -34,7 +35,7 @@ export const DropDisplay = React.forwardRef<
             <PhotographIcon className="h-12 w-12 m-4" />
           </div>
         ) : (
-          <ImagePreview big src={previewImage} />
+          <ImagePreview big pageIndex={pageIndex} displayIndex={displayIndex} />
         )}
       </div>
     </div>

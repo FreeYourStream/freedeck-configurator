@@ -8,8 +8,9 @@ import c from "clsx";
 import React, { useContext, useState } from "react";
 import { useContextMenuTrigger } from "react-context-menu-wrapper";
 import { useDrag, useDrop } from "react-dnd";
+import { ActionPreview } from "../lib/components/ActionPreview";
 import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
-import { DisplaySettingsContainer } from "./DisplaySettings";
+import { ImagePreview } from "../lib/components/ImagePreview";
 import { Modal } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
 import {
@@ -17,7 +18,7 @@ import {
   ConfigStateContext,
 } from "../states/configState";
 import { ButtonSettingsContainer } from "./ButtonSettings";
-import { ImagePreview } from "../lib/components/ImagePreview";
+import { DisplaySettingsContainer } from "./DisplaySettings";
 
 export const Display: React.FC<{
   pageIndex: number;
@@ -27,7 +28,6 @@ export const Display: React.FC<{
   const configDispatch = useContext(ConfigDispatchContext);
 
   const [showSettings, setShowSettings] = useState<boolean>(false);
-  const display = configState.displaySettingsPages[pageIndex][displayIndex];
   const [{ isDragging }, dragRef] = useDrag({
     item: {
       type: "display",
@@ -71,8 +71,10 @@ export const Display: React.FC<{
       <ImagePreview
         ref={drop}
         onClick={() => setShowSettings(true)}
-        src={display.previewImage}
+        pageIndex={pageIndex}
+        displayIndex={displayIndex}
       />
+      <ActionPreview pageIndex={pageIndex} displayIndex={displayIndex} />
 
       {showSettings && (
         <Modal

@@ -47,7 +47,7 @@ export const Page: React.FC<IProps> = ({ pageIndex }) => {
       </div>
       <div
         className={c(
-          "grid gap-4",
+          "grid gap-8",
           `grid-cols-${configState.width}`,
           `grid-rows-${configState.height}`
         )}

@@ -1,27 +1,34 @@
 import c from "clsx";
-import React from "react";
+import React, { useContext } from "react";
+import { ConfigStateContext } from "../../states/configState";
 
 export const ImagePreview: React.FC<{
-  src: string;
+  pageIndex: number;
+  displayIndex: number;
   className?: string;
   ref?: React.LegacyRef<HTMLImageElement>;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
   big?: boolean;
-}> = ({ ref, className, children, onClick, src, big = false }) => {
+}> = ({ ref, className, onClick, big = false, pageIndex, displayIndex }) => {
+  const configState = useContext(ConfigStateContext);
+  const display =
+    pageIndex === -1
+      ? configState.defaultBackDisplay
+      : configState.displaySettingsPages[pageIndex][displayIndex];
   return (
-    <img
-      alt=""
-      src={src}
-      ref={ref}
-      onClick={onClick}
-      className={c(
-        "cursor-pointer",
-        big ? "w-64 h-32" : "w-32 h-16",
-        className
-      )}
-      style={{ imageRendering: "pixelated" }}
-    >
-      {children}
-    </img>
+    <div>
+      <img
+        alt=""
+        src={display.previewImage}
+        ref={ref}
+        onClick={onClick}
+        className={c(
+          "cursor-pointer",
+          big ? "w-64 h-32" : "w-32 h-16",
+          className
+        )}
+        style={{ imageRendering: "pixelated" }}
+      />
+    </div>
   );
 };
