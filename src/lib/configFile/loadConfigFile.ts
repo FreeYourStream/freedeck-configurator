@@ -11,12 +11,6 @@ export const loadConfigFile = async (
   const file = isBuffer(fileList)
     ? fileList
     : Buffer.from(await handleFileSelect(fileList[0]));
-  const config = parseConfig(file);
+  const config = await parseConfig(file);
   setState(config);
-
-  // setDefaultBackDisplay(config.defaultBackDisplay);
-  // setOriginalImagePages(config.originalImagePages);
-  // setButtonSettingsPages(config.buttonSettingsPages);
-  // setConvertedImagePages(config.convertedImagePages);
-  // setDisplaySettingsPages(config.displaySettingsPages);
 };

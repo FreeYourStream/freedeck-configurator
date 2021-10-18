@@ -19,6 +19,7 @@ import { composeImage, composeText } from "../lib/image/composeImage";
 import { Actions, FunctionForFirstParamType } from "./interfaces";
 
 export interface ConfigState {
+  configVersion: string;
   brightness: number;
   width: number;
   height: number;
@@ -27,6 +28,7 @@ export interface ConfigState {
   defaultBackDisplay: IDisplay;
 }
 export const defaultConfigState: () => Promise<ConfigState> = async () => ({
+  configVersion: (await import("../../package.json")).configFileVersion,
   brightness: 200,
   width: 3,
   height: 2,
