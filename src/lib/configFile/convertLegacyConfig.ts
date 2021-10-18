@@ -18,7 +18,6 @@ export const convertLegacyConfig = async (
       (dsp, pageIndex): Promise<IDisplaySettingsPage> =>
         Promise.all(
           dsp.map(async (display, displayIndex): Promise<IDisplay> => {
-            console.log(display.imageSettings);
             let temp = {
               imageSettings: display.imageSettings,
               isGeneratedFromDefaultBackImage:

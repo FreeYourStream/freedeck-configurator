@@ -3,7 +3,6 @@ import {
   createDefaultDisplay,
   IDisplayOptions,
 } from "../definitions/defaultPage";
-import { getEmptyConvertedImage } from "../definitions/emptyConvertedImage";
 import { IDisplay } from "../interfaces";
 import { stringToImage } from "../lib/fileToImage";
 import { getBase64Image } from "../lib/image/base64Encode";
@@ -17,7 +16,7 @@ export const createDefaultBackDisplay = async function (
     localStorage.getItem("defaultBackDisplay") || "{}"
   );
   let displayOptions: IDisplayOptions;
-  if (Object.keys(localDefaultBackDisplay).length) {
+  if (Object.keys(localDefaultBackDisplay).length && previousPage !== -1) {
     localDefaultBackDisplay.convertedImage = Buffer.from(
       localDefaultBackDisplay.convertedImage
     );
@@ -41,11 +40,3 @@ export const createDefaultBackDisplay = async function (
   display.previewImage = getBase64Image(display.convertedImage);
   return display;
 };
-
-export const getStockBackDisplay = (image?: Buffer) => ({
-  image: image ?? getEmptyConvertedImage(),
-  settings: createDefaultDisplay({
-    imageSettings: { invert: true },
-    isGeneratedFromDefaultBackImage: true,
-  }),
-});

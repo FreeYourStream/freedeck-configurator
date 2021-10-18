@@ -97,6 +97,7 @@ export interface IConfigReducer extends Actions<ConfigState> {
     state: ConfigState,
     data: { pageIndex: number; buttonIndex: number }
   ): Promise<ConfigState>;
+  resetDefaultBackButton(state: ConfigState): Promise<ConfigState>;
   setState(state: ConfigState, newState: ConfigState): Promise<ConfigState>;
 }
 
@@ -248,6 +249,9 @@ export const configReducer: IConfigReducer = {
     state.displaySettingsPages[pageIndex][buttonIndex] =
       await state.defaultBackDisplay;
     return { ...state };
+  },
+  async resetDefaultBackButton(state) {
+    return { ...state, defaultBackDisplay: await createDefaultBackDisplay(-1) };
   },
   async setState(state, newState) {
     return { ...newState };
