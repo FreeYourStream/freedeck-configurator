@@ -204,7 +204,13 @@ export const configReducer: IConfigReducer = {
   },
   async setOriginalImage(state, data) {
     const { buttonIndex, pageIndex, originalImage } = data;
-    const display = state.displaySettingsPages[pageIndex][buttonIndex];
+
+    let display: IDisplay;
+    if (pageIndex === -1 && buttonIndex === -1) {
+      display = state.defaultBackDisplay;
+    } else {
+      display = state.displaySettingsPages[pageIndex][buttonIndex];
+    }
     display.originalImage = originalImage;
     display.convertedImage =
       display.textSettings.text?.length && !display.originalImage

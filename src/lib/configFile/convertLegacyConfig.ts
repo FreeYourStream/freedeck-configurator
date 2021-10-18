@@ -61,5 +61,6 @@ export const convertLegacyConfig = async (
   temp.defaultBackDisplay.previewImage = getBase64Image(
     temp.defaultBackDisplay.convertedImage
   );
+  console.log(rawConfig.defaultBackDisplay);
   return temp;
 };
