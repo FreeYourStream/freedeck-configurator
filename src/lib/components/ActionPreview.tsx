@@ -17,28 +17,30 @@ const Pill: React.FC<{ className?: string; button: IButtonSetting }> = ({
   button,
 }) => {
   const keys = useTranslateKeyboardLayout(button.values);
+  const pillClassName =
+    "absolute top-14  px-2 flex justify-center items-center gap-1 align-middle h-6 text-base shadow-lg rounded-full";
   return (
     <div
       className={c("w-full flex justify-center whitespace-nowrap", className)}
     >
       {button.mode === EAction.changePage && !!button.values.length && (
-        <div className="absolute top-14  rounded-full bg-gray-400 px-2 flex justify-center items-center gap-1 align-middle h-6 text-base">
+        <div className={c(pillClassName, "bg-gray-500")}>
           <ArrowCircleRightIcon className="w-4 h-4" />
           <span>{button.values[0] + 1}</span>
         </div>
       )}
       {button.mode === EAction.hotkeys && !!button.values.length && (
-        <div className="absolute top-14 rounded-full bg-gray-400 px-2 flex justify-center items-center gap-1 align-middle h-6 text-base">
+        <div className={c(pillClassName, "bg-gray-500")}>
           <span>{keys.join("+")}</span>
         </div>
       )}
       {button.mode === EAction.special_keys && !!button.values.length && (
-        <div className="absolute top-14 rounded-full bg-gray-400 px-2 flex justify-center items-center gap-1 align-middle h-6 text-base">
+        <div className={c(pillClassName, "bg-gray-500")}>
           <span>{EMediaKeys[button.values[0]].toString()}</span>
         </div>
       )}
       {button.mode === EAction.settings && !!button.values.length && (
-        <div className="absolute top-14 rounded-full bg-gray-400 px-2 flex justify-center items-center gap-1 align-middle h-6 text-base">
+        <div className={c(pillClassName, "bg-gray-500")}>
           <span>{FDSettings[button.values[0]]}</span>
           {button.values[0] === FDSettings["Brightness"] &&
             button.values[1] !== undefined && (
@@ -47,7 +49,7 @@ const Pill: React.FC<{ className?: string; button: IButtonSetting }> = ({
         </div>
       )}
       {button.mode !== EAction.noop && !button.values.length && (
-        <div className="absolute top-14 rounded-full bg-danger-500 px-2 flex justify-center items-center gap-1 align-middle h-6 text-base">
+        <div className={c(pillClassName, "bg-danger-500")}>
           <ExclamationCircleIcon className="w-4 h-4" />
           <span>Error</span>
         </div>
