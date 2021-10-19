@@ -73,36 +73,3 @@ export const Icon: React.FC<{ icon: string; size?: number; color?: string }> =
       Icons[iconClass][iconName];
     return <Icon size={size ?? 22} color={color ?? colors.white} />;
   };
-
-export const FDIconButton = (props: IFDButtonProps & { icon?: string }) => (
-  <FDButton {...props}>
-    {props.icon && Icon ? (
-      <div
-        className={c(
-          props.children && (props.size ?? 2) === 1 && "mr-1",
-          props.children && (props.size ?? 2) === 2 && "mr-2",
-          props.children && (props.size ?? 2) === 3 && "mr-4"
-        )}
-      >
-        <Icon
-          size={16 + (props.size ?? 2) * 3}
-          icon={props.icon}
-          color="white"
-        />
-      </div>
-    ) : (
-      ""
-    )}
-    {props.children}
-  </FDButton>
-);
-
-export const FDIconButtonFixed = (
-  props: IFDButtonProps & { icon?: string }
-) => {
-  return (
-    <div className="fixed bottom-5 right-6">
-      <FDIconButton {...props} />
-    </div>
-  );
-};
