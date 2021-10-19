@@ -1,4 +1,4 @@
-export const base64Encode = (input: Buffer) => {
+const base64Encode = (input: Buffer) => {
   var keyStr =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
   var output = "";

@@ -4,11 +4,6 @@ import Jimp from "jimp";
 import { IDisplay } from "../../interfaces";
 import { colorBitmapToMonochromeBitmap } from "./colorToMonoBitmap";
 
-export interface IConverted {
-  bytes: Buffer;
-  base64: string;
-}
-
 export const composeImage = async (display: IDisplay): Promise<Buffer> => {
   const { imageSettings, textWithIconSettings, textSettings, originalImage } =
     display;

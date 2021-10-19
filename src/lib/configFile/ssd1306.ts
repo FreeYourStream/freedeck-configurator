@@ -1,13 +1,3 @@
-import { rotateCCW } from "../matrix";
-
-export const dec2bin = (dec: number, length = 8) => {
-  const result = (dec >>> 0).toString(2).split("");
-  while (result.length < length) {
-    result.unshift("0");
-  }
-  return result;
-};
-
 export const optimizeForSSD1306 = (buffer: Buffer) => {
   // let optimizedImage = new Buffer(0);
   let optimizedImage = Buffer.alloc(0);
@@ -42,29 +32,4 @@ export const optimizeForSSD1306 = (buffer: Buffer) => {
     } // for j
   }
   return Buffer.from(optimizedImage);
-};
-
-export const unoptimizeFromSSD1306 = (buffer: Buffer) => {
-  const image = [...buffer];
-  // return Buffer.from(image);
-  let optimizedImage = new Buffer(1024);
-  for (let k = 0; k < 8; k++) {
-    // 8 rows form a display
-    for (let j = 0; j < 16; j++) {
-      // 16 packages form a row
-      const bytes: string[][] = [];
-      for (let i = 0; i < 8; i++) {
-        // each byte column in an 8 byte package
-        let byte = image.splice(0, 1);
-        bytes.push(dec2bin(byte[0]));
-      }
-      const rotated = rotateCCW(bytes);
-      const rotatedBytes = rotated.map((byte) => parseInt(byte.join(""), 2));
-      rotatedBytes.forEach((rotatedByte, index) => {
-        optimizedImage.writeUInt8(rotatedByte, k * 128 + j + index * 16);
-      });
-    }
-  }
-  //return buffer;
-  return optimizedImage;
 };

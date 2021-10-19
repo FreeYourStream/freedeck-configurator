@@ -165,5 +165,3 @@ export class FDSerialAPI {
     Object.values(this.connectCallbacks).forEach((cb) => cb(status));
   };
 }
-
-export const useSerialApi = function () {};

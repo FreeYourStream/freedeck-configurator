@@ -28,15 +28,6 @@ import {
   ConfigStateContext,
 } from "../../states/configState";
 
-export interface ISettings {
-  contrast: number;
-  dither: boolean;
-  invert: boolean;
-  text: string;
-  textEnabled: boolean;
-  fontName: string;
-}
-
 export const ImageSettings: React.FC<{
   displayIndex: number;
   pageIndex: number;
