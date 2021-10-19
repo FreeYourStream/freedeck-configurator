@@ -184,7 +184,6 @@ export const configReducer: IConfigReducer = {
   },
   async setDisplaySettings(state, data) {
     const { pageIndex, buttonIndex, displaySettings } = data;
-    console.log("waat", pageIndex, buttonIndex);
     if (pageIndex === -1 && buttonIndex === -1) {
       state.defaultBackDisplay = { ...displaySettings };
       state.defaultBackDisplay.convertedImage = !state.defaultBackDisplay
@@ -279,7 +278,7 @@ export const configReducer: IConfigReducer = {
   },
 };
 
-export type IDispatch = {
+type IDispatch = {
   [PropertyType in keyof IConfigReducer]: FunctionForFirstParamType<
     Parameters<IConfigReducer[PropertyType]>[1]
   >;
