@@ -67,7 +67,7 @@ export const Header: React.FC<{
   createConfigBuffer,
   openLogin,
 }) => {
-  const { buttonSettingsPages } = useContext(ConfigStateContext);
+  const { pages } = useContext(ConfigStateContext);
   const { serialApi, ctrlDown } = useContext(AppStateContext);
   const [connected, setConnected] = useState<boolean>(!!serialApi?.connected);
   const [progress, setProgress] = useState<number>(0);
@@ -149,10 +149,10 @@ export const Header: React.FC<{
                     loadConfigFile(event.currentTarget.files)
                   }
                 ></input>
-                {!!buttonSettingsPages.length && (
+                {!!pages.length && (
                   <FDButton
                     prefix={<DownloadIcon className={iconSize} />}
-                    disabled={!buttonSettingsPages.length}
+                    disabled={!pages.length}
                     size={2}
                     onClick={() => saveConfigFile()}
                   >

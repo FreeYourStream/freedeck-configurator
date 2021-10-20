@@ -3,24 +3,24 @@ import React, { useContext } from "react";
 import { ConfigStateContext } from "../../states/configState";
 
 export const ImagePreview: React.FC<{
+  $ref?: React.LegacyRef<HTMLImageElement>;
   pageIndex: number;
   displayIndex: number;
   className?: string;
-  ref?: React.LegacyRef<HTMLImageElement>;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
   big?: boolean;
-}> = ({ ref, className, onClick, big = false, pageIndex, displayIndex }) => {
+}> = ({ $ref, className, onClick, big = false, pageIndex, displayIndex }) => {
   const configState = useContext(ConfigStateContext);
   const display =
     pageIndex === -1
       ? configState.defaultBackDisplay
-      : configState.displaySettingsPages[pageIndex][displayIndex];
+      : configState.pages[pageIndex][displayIndex].display;
   return (
     <div>
       <img
         alt=""
         src={display.previewImage}
-        ref={ref}
+        ref={$ref}
         onClick={onClick}
         className={c(
           "cursor-pointer",

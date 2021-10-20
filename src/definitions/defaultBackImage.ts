@@ -3,15 +3,14 @@ import {
   createDefaultDisplay,
   IDisplayOptions,
 } from "../definitions/defaultPage";
-import { IDisplay } from "../interfaces";
+import { IDisplaySettings } from "../interfaces";
+import { generateAdditionalImagery } from "../lib/configFile/parseConfig";
 import { stringToImage } from "../lib/fileToImage";
-import { getBase64Image } from "../lib/image/base64Encode";
-import { composeImage } from "../lib/image/composeImage";
 
 export const createDefaultBackDisplay = async function (
   previousPage?: number,
   previousDisplay?: number
-): Promise<IDisplay> {
+): Promise<IDisplaySettings> {
   const localDefaultBackDisplay = JSON.parse(
     localStorage.getItem("defaultBackDisplay") || "{}"
   );
@@ -31,12 +30,11 @@ export const createDefaultBackDisplay = async function (
       isGeneratedFromDefaultBackImage: true,
     };
   }
-  const display: IDisplay = createDefaultDisplay({
+  let display: IDisplaySettings = createDefaultDisplay({
     ...displayOptions,
     previousDisplay,
     previousPage,
   });
-  display.convertedImage = await composeImage(display);
-  display.previewImage = getBase64Image(display.convertedImage);
+  display = await generateAdditionalImagery(display);
   return display;
 };

@@ -1,11 +1,15 @@
-import { createDefaultDisplay } from "../../definitions/defaultPage";
-import { IDisplay, IDisplaySettingsPage } from "../../interfaces";
+import {
+  createDefaultDisplay,
+  createDefaultDisplayButton,
+} from "../../definitions/defaultPage";
+import { IDisplaySettings, IPage } from "../../interfaces";
 import { ConfigState } from "../../states/configState";
 import { getBase64Image } from "../image/base64Encode";
 import { composeImage, composeText } from "../image/composeImage";
+import { generateAdditionalImagery } from "./parseConfig";
 
 interface LegacyDisplay
-  extends Omit<IDisplay, "previewImage" | "convertedImage"> {
+  extends Omit<IDisplaySettings, "previewImage" | "convertedImage"> {
   hasOriginalImage: boolean;
 }
 type LegacyDSP = LegacyDisplay[];
@@ -13,35 +17,36 @@ export const convertLegacyConfig = async (
   rawConfig: any,
   configBuffer: Buffer
 ): Promise<ConfigState> => {
-  const displaySettingsPages: IDisplaySettingsPage[] = await Promise.all(
+  const pages: IPage[] = await Promise.all(
     (rawConfig.displaySettingsPages as LegacyDSP[]).map(
-      (dsp, pageIndex): Promise<IDisplaySettingsPage> =>
-        Promise.all(
-          dsp.map(async (display, displayIndex): Promise<IDisplay> => {
-            console.log(display.isGeneratedFromDefaultBackImage);
-            let temp = {
-              imageSettings: display.imageSettings,
-              isGeneratedFromDefaultBackImage:
-                display.isGeneratedFromDefaultBackImage,
-              textSettings: display.textSettings,
-              textWithIconSettings: display.textWithIconSettings,
-              previousDisplay: display.previousDisplay,
-              previousPage: display.previousPage,
-              originalImage:
-                rawConfig.originalImagePages[pageIndex][displayIndex] &&
-                Buffer.from(
-                  rawConfig.originalImagePages[pageIndex][displayIndex]
-                ),
-            };
-            (temp as any).convertedImage = temp.originalImage
-              ? await composeImage(temp as unknown as IDisplay)
-              : await composeText(temp as unknown as IDisplay);
-            (temp as any).previewImage = getBase64Image(
-              (temp as any).convertedImage
-            );
-            return temp as unknown as IDisplay;
-          })
-        )
+      async (dsp, pageIndex): Promise<IPage> => {
+        let page: IPage = [];
+        for (let dpIndex = 0; dpIndex < dsp.length; dpIndex++) {
+          const display = dsp[dpIndex];
+
+          let displayButton = await createDefaultDisplayButton({
+            imageSettings: display.imageSettings,
+            isGeneratedFromDefaultBackImage:
+              display.isGeneratedFromDefaultBackImage,
+            textSettings: display.textSettings,
+            textWithIconSettings: display.textWithIconSettings,
+            previousDisplay: display.previousDisplay,
+            previousPage: display.previousPage,
+            originalImage:
+              rawConfig.originalImagePages[pageIndex][dpIndex] &&
+              Buffer.from(rawConfig.originalImagePages[pageIndex][dpIndex]),
+          });
+
+          displayButton.display = await generateAdditionalImagery(
+            displayButton.display
+          );
+
+          displayButton.button =
+            rawConfig.buttonSettingsPages[pageIndex][dpIndex];
+          page.push(displayButton);
+        }
+        return page;
+      }
     )
   );
   const originalImage = Buffer.from(rawConfig.defaultBackDisplay.image);
@@ -51,7 +56,7 @@ export const convertLegacyConfig = async (
     configVersion: "1.1.0",
     width: configBuffer.readUInt8(0),
     height: configBuffer.readUInt8(1),
-    buttonSettingsPages: rawConfig.buttonSettingsPages,
+    pages,
     defaultBackDisplay: createDefaultDisplay({
       originalImage,
       imageSettings: {
@@ -61,7 +66,6 @@ export const convertLegacyConfig = async (
       textSettings: rawConfig.defaultBackDisplay.textSettings,
       textWithIconSettings: rawConfig.defaultBackDisplay.textWithIconSettings,
     }),
-    displaySettingsPages,
   };
   temp.defaultBackDisplay.convertedImage = temp.defaultBackDisplay.originalImage
     ? await composeImage(temp.defaultBackDisplay)

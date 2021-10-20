@@ -1,10 +1,9 @@
 import { merge } from "lodash";
-
 import {
   IButtonSettings,
-  IButtonSettingsPage,
-  IDisplay,
-  IDisplaySettingsPage,
+  IDisplayButton,
+  IDisplaySettings,
+  IPage,
 } from "../interfaces";
 import { getBase64Image } from "../lib/image/base64Encode";
 import { createDefaultBackDisplay } from "./defaultBackImage";
@@ -15,8 +14,8 @@ import { EAction } from "./modes";
 export type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
 };
-export type IDisplayOptions = RecursivePartial<IDisplay>;
-export const createDefaultButtonSettings: () => IButtonSettings = () => ({
+export type IDisplayOptions = RecursivePartial<IDisplaySettings>;
+export const createDefaultButton: () => IButtonSettings = () => ({
   primary: {
     mode: EAction.noop,
     values: [],
@@ -28,10 +27,10 @@ export const createDefaultButtonSettings: () => IButtonSettings = () => ({
     enabled: false,
   },
 });
-export const createDefaultDisplay: (options?: IDisplayOptions) => IDisplay = (
-  options
-) =>
-  merge<IDisplay, IDisplayOptions | undefined>(
+export const createDefaultDisplay: (
+  options?: IDisplayOptions
+) => IDisplaySettings = (options) =>
+  merge<IDisplaySettings, IDisplayOptions | undefined>(
     {
       originalImage: null,
       convertedImage: getEmptyConvertedImage(),
@@ -57,35 +56,28 @@ export const createDefaultDisplay: (options?: IDisplayOptions) => IDisplay = (
     },
     options
   );
-export const createDefaultButtonSettingsPage = (
-  width: number,
-  height: number,
-  previousPageIndex?: number
-): IButtonSettingsPage => {
-  const backButton: IButtonSettings = createDefaultButtonSettings();
-  const displays: IButtonSettingsPage = [];
-  for (let i = 0; i < width * height; i++) {
-    displays.push(createDefaultButtonSettings());
-  }
-  if (previousPageIndex !== undefined) {
-    backButton.primary.mode = EAction.changePage;
-    backButton.primary.values = [previousPageIndex];
-  }
-  displays.unshift(backButton);
-  return [...displays];
+export const createDefaultDisplayButton = async (
+  displayOptions?: RecursivePartial<IDisplaySettings>
+): Promise<IDisplayButton> => {
+  return {
+    button: createDefaultButton(),
+    display: await createDefaultDisplay(displayOptions),
+  };
 };
-export const createDefaultDisplayPage = async (
-  width: number,
-  height: number,
-  previousPage?: number
-) => {
-  const displays: IDisplaySettingsPage = [];
-  for (let i = 0; i < width * height; i++) {
-    displays.push(createDefaultDisplay());
-  }
 
-  if (previousPage !== undefined) {
-    displays[0] = await createDefaultBackDisplay(previousPage);
+export const createDefaultPage = async (
+  count: number,
+  previousPage?: number
+): Promise<IPage> => {
+  const page: IPage = [];
+  for (var i = 0; i < count; i++) {
+    page.push(await createDefaultDisplayButton());
   }
-  return [...displays];
+  console.log("page", page);
+  if (previousPage !== undefined) {
+    page[0].button.primary.mode = EAction.changePage;
+    page[0].button.primary.values = [previousPage];
+    page[0].display = await createDefaultBackDisplay(previousPage);
+  }
+  return page;
 };

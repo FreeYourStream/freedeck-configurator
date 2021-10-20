@@ -57,14 +57,10 @@ const App: React.FC<{
         configState.width,
         configState.height,
         configState.brightness,
-        configState.buttonSettingsPages.length
+        configState.pages.length
       ),
-      createButtonBody(configState.buttonSettingsPages),
-      createImageBody(
-        configState.displaySettingsPages.map((page) =>
-          page.map((display) => display.convertedImage)
-        )
-      ),
+      createButtonBody(configState.pages),
+      createImageBody(configState.pages),
       createFooter(configState),
     ]);
   return (
@@ -78,7 +74,7 @@ const App: React.FC<{
                   loadConfigFile(filesOrBuffer, configDispatch.setState)
                 }
                 saveConfigFile={async () => {
-                  if (configState.displaySettingsPages.length === 0) return;
+                  if (configState.pages.length === 0) return;
                   const completeBuffer = await createConfigBuffer();
 
                   completeBuffer && download(completeBuffer);
@@ -88,11 +84,9 @@ const App: React.FC<{
                 openLogin={() => setShowLogin(true)}
               />
               <ContentBody>
-                {configState.displaySettingsPages.map(
-                  (imagePage, pageIndex) => (
-                    <Page pageIndex={pageIndex} key={pageIndex} />
-                  )
-                )}
+                {configState.pages.map((page, pageIndex) => (
+                  <Page pageIndex={pageIndex} key={pageIndex} />
+                ))}
               </ContentBody>
               <GlobalSettings
                 visible={showSettings}
@@ -102,7 +96,7 @@ const App: React.FC<{
                     await configState.defaultBackDisplay
                   )
                 }
-                readyToSave={!!configState.buttonSettingsPages.length}
+                readyToSave={!!configState.pages.length}
                 loadConfigFile={(buffer: Buffer) =>
                   loadConfigFile(buffer, configDispatch.setState)
                 }

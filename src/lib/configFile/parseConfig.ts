@@ -1,12 +1,14 @@
 import { createDefaultDisplay } from "../../definitions/defaultPage";
-import { IDisplay, IDisplaySettingsPage } from "../../interfaces";
+import { IDisplaySettings, IPage } from "../../interfaces";
 import { ConfigState } from "../../states/configState";
 import { getBase64Image } from "../image/base64Encode";
 import { composeImage, composeText } from "../image/composeImage";
 import { convertLegacyConfig } from "./convertLegacyConfig";
 
-const generateAdditionalImagery = async (display: IDisplay) => {
-  const temp = createDefaultDisplay({
+export const generateAdditionalImagery = async (
+  display: IDisplaySettings
+): Promise<IDisplaySettings> => {
+  display = createDefaultDisplay({
     imageSettings: display.imageSettings,
     isGeneratedFromDefaultBackImage: display.isGeneratedFromDefaultBackImage,
     textSettings: display.textSettings,
@@ -16,27 +18,29 @@ const generateAdditionalImagery = async (display: IDisplay) => {
     originalImage:
       display.originalImage && Buffer.from(display.originalImage as any),
   });
-  temp.convertedImage = temp.originalImage
-    ? await composeImage(temp)
-    : await composeText(temp);
-  temp.previewImage = getBase64Image(temp.convertedImage);
-  return temp;
+  display.convertedImage = display.originalImage
+    ? await composeImage(display)
+    : await composeText(display);
+  display.previewImage = getBase64Image(display.convertedImage);
+  return display;
 };
 
 const convertCurrentConfig = async (
   rawConfig: ConfigState
 ): Promise<ConfigState> => {
-  const dsp = await Promise.all(
-    rawConfig.displaySettingsPages.map<Promise<IDisplaySettingsPage>>(
-      (dsp, pageIndex) =>
-        Promise.all(
-          dsp.map(async (display) => generateAdditionalImagery(display))
-        )
+  const pages = await Promise.all(
+    rawConfig.pages.map<Promise<IPage>>((page, pageIndex) =>
+      Promise.all(
+        page.map(async (displayButton) => ({
+          ...displayButton,
+          display: await generateAdditionalImagery(displayButton.display),
+        }))
+      )
     )
   );
   return {
     ...rawConfig,
-    displaySettingsPages: dsp,
+    pages,
     defaultBackDisplay: await generateAdditionalImagery(
       rawConfig.defaultBackDisplay
     ),

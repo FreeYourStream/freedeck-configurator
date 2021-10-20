@@ -64,7 +64,7 @@ export const ActionPreview: React.FC<{
   displayIndex: number;
 }> = ({ pageIndex, displayIndex, children, className }) => {
   const config = useContext(ConfigStateContext);
-  const button = config.buttonSettingsPages[pageIndex][displayIndex];
+  const button = config.pages[pageIndex][displayIndex].button;
   return (
     <div className={c("", className)}>
       <CtrlDuo>

@@ -8,7 +8,7 @@ import {
   ConfigDispatchContext,
   ConfigStateContext,
 } from "../states/configState";
-import { Display } from "./DisplayButton";
+import { DisplayButton } from "./DisplayButton";
 import { confirm } from "../lib/components/confirmAlert";
 
 interface IProps {
@@ -53,15 +53,13 @@ export const Page: React.FC<IProps> = ({ pageIndex }) => {
         )}
       >
         <DndProvider backend={Backend}>
-          {configState.displaySettingsPages[pageIndex].map(
-            (imageDisplay, displayIndex) => (
-              <Display
-                key={displayIndex}
-                displayIndex={displayIndex}
-                pageIndex={pageIndex}
-              />
-            )
-          )}
+          {configState.pages[pageIndex].map((db, displayIndex) => (
+            <DisplayButton
+              key={displayIndex}
+              displayIndex={displayIndex}
+              pageIndex={pageIndex}
+            />
+          ))}
         </DndProvider>
       </div>
     </div>

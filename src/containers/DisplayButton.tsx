@@ -20,7 +20,7 @@ import {
 import { ButtonSettingsContainer } from "./ButtonSettings";
 import { DisplaySettingsContainer } from "./DisplaySettings";
 
-export const Display: React.FC<{
+export const DisplayButton: React.FC<{
   pageIndex: number;
   displayIndex: number;
 }> = ({ pageIndex, displayIndex }) => {
@@ -69,7 +69,7 @@ export const Display: React.FC<{
       )}
     >
       <ImagePreview
-        ref={drop}
+        $ref={drop}
         onClick={() => setShowSettings(true)}
         pageIndex={pageIndex}
         displayIndex={displayIndex}

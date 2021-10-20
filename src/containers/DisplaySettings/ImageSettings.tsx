@@ -36,7 +36,7 @@ export const ImageSettings: React.FC<{
   const display =
     pageIndex === -1
       ? configState.defaultBackDisplay
-      : configState.displaySettingsPages[pageIndex][displayIndex];
+      : configState.pages[pageIndex][displayIndex].display;
 
   const configDispatch = useContext(ConfigDispatchContext);
 

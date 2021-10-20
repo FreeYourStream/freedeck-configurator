@@ -1,10 +1,12 @@
 import fs from "floyd-steinberg";
 import Jimp from "jimp";
 
-import { IDisplay } from "../../interfaces";
+import { IDisplaySettings } from "../../interfaces";
 import { colorBitmapToMonochromeBitmap } from "./colorToMonoBitmap";
 
-export const composeImage = async (display: IDisplay): Promise<Buffer> => {
+export const composeImage = async (
+  display: IDisplaySettings
+): Promise<Buffer> => {
   const { imageSettings, textWithIconSettings, textSettings, originalImage } =
     display;
   if (!originalImage) throw new Error("no original image");
@@ -67,7 +69,9 @@ export const composeImage = async (display: IDisplay): Promise<Buffer> => {
   return await colorBitmapToMonochromeBitmap(bitmapBuffer, 128, 64);
 };
 
-export const composeText = async (settings: IDisplay): Promise<Buffer> => {
+export const composeText = async (
+  settings: IDisplaySettings
+): Promise<Buffer> => {
   const { textSettings } = settings;
   const image = await Jimp.create(128, 64, "black");
   const font = await Jimp.loadFont(textSettings.font);

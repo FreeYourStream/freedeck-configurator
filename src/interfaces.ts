@@ -31,7 +31,7 @@ export type IOriginalImage = Buffer | null;
 export type IOriginalImagePage = IOriginalImage[];
 export type IConvertedImage = Buffer;
 export type IConvertedImagePage = IConvertedImage[];
-export interface IDisplay {
+export interface IDisplaySettings {
   imageSettings: IImageSettings;
   textSettings: ITextSettings;
   textWithIconSettings: ITextWithIconSettings;
@@ -43,5 +43,9 @@ export interface IDisplay {
   previewImage: string;
 }
 
-export type IButtonSettingsPage = IButtonSettings[];
-export type IDisplaySettingsPage = IDisplay[];
+export type IDisplayButton = {
+  display: IDisplaySettings;
+  button: IButtonSettings;
+};
+
+export type IPage = IDisplayButton[];

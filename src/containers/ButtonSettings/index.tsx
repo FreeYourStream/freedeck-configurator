@@ -7,8 +7,8 @@ export const ButtonSettingsContainer: React.FC<{
   pageIndex: number;
   displayIndex: number;
 }> = ({ pageIndex, displayIndex }) => {
-  const { buttonSettingsPages } = useContext(ConfigStateContext);
-  const button = buttonSettingsPages[pageIndex][displayIndex];
+  const { pages } = useContext(ConfigStateContext);
+  const button = pages[pageIndex][displayIndex].button;
   return (
     <div className="flex flex-col">
       <div className="grid grid-cols-2 grid-rows-1 gap-4 h-full mb-4">
@@ -18,7 +18,7 @@ export const ButtonSettingsContainer: React.FC<{
             title="Short press"
             pageIndex={pageIndex}
             buttonIndex={displayIndex}
-            pageCount={buttonSettingsPages.length}
+            pageCount={pages.length}
             action={button.primary}
             loadUserInteraction={false}
           />
@@ -30,7 +30,7 @@ export const ButtonSettingsContainer: React.FC<{
               title="Long press"
               pageIndex={pageIndex}
               buttonIndex={displayIndex}
-              pageCount={buttonSettingsPages.length}
+              pageCount={pages.length}
               action={button.secondary}
               loadUserInteraction={false}
             />

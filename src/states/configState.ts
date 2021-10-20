@@ -1,21 +1,19 @@
+import { cloneDeep } from "lodash";
 import { createContext } from "react";
 import { createDefaultBackDisplay } from "../definitions/defaultBackImage";
 import {
-  createDefaultButtonSettings,
-  createDefaultButtonSettingsPage,
   createDefaultDisplay,
-  createDefaultDisplayPage,
+  createDefaultDisplayButton,
+  createDefaultPage,
 } from "../definitions/defaultPage";
 import { EAction } from "../definitions/modes";
 import {
   IButtonSetting,
-  IButtonSettingsPage,
-  IDisplay,
-  IDisplaySettingsPage,
+  IDisplaySettings,
   IOriginalImage,
+  IPage,
 } from "../interfaces";
-import { getBase64Image } from "../lib/image/base64Encode";
-import { composeImage, composeText } from "../lib/image/composeImage";
+import { generateAdditionalImagery } from "../lib/configFile/parseConfig";
 import { Actions, FunctionForFirstParamType } from "./interfaces";
 
 export interface ConfigState {
@@ -23,17 +21,15 @@ export interface ConfigState {
   brightness: number;
   width: number;
   height: number;
-  buttonSettingsPages: IButtonSettingsPage[];
-  displaySettingsPages: IDisplaySettingsPage[];
-  defaultBackDisplay: IDisplay;
+  pages: IPage[];
+  defaultBackDisplay: IDisplaySettings;
 }
 export const defaultConfigState: () => Promise<ConfigState> = async () => ({
   configVersion: (await import("../../package.json")).configFileVersion,
   brightness: 200,
   width: 3,
   height: 2,
-  buttonSettingsPages: [],
-  displaySettingsPages: [],
+  pages: [],
   defaultBackDisplay: await createDefaultBackDisplay(),
 });
 
@@ -60,7 +56,7 @@ export interface IConfigReducer extends Actions<ConfigState> {
   setDisplaySettings(
     state: ConfigState,
     data: {
-      displaySettings: IDisplay;
+      displaySettings: IDisplaySettings;
       pageIndex: number;
       buttonIndex: number;
     }
@@ -91,7 +87,7 @@ export interface IConfigReducer extends Actions<ConfigState> {
   ): Promise<ConfigState>;
   updateAllDefaultBackImages(
     state: ConfigState,
-    data: IDisplay
+    data: IDisplaySettings
   ): Promise<ConfigState>;
   makeDefaultBackButton(
     state: ConfigState,
@@ -112,86 +108,64 @@ export const configReducer: IConfigReducer = {
     if (width * height > state.width * state.height) {
       const diff = width * height - state.width * state.height;
       for (let i = 0; i < diff; i++) {
-        state.buttonSettingsPages.forEach((page) =>
-          page.push(createDefaultButtonSettings())
-        );
-        state.displaySettingsPages.forEach((page) =>
-          page.push(createDefaultDisplay())
+        state.pages.forEach(async (page) =>
+          page.push(await createDefaultDisplayButton())
         );
       }
     } else if (width * height < state.width * state.height) {
-      state.buttonSettingsPages = state.buttonSettingsPages.map((page) =>
-        page.slice(0, width * height)
-      );
-      state.displaySettingsPages = state.displaySettingsPages.map((page) =>
-        page.slice(0, width * height)
-      );
+      state.pages = state.pages.map((page) => page.slice(0, width * height));
     }
     state.width = width;
     state.height = height;
     return { ...state };
   },
   async addPage(state, data) {
-    state.buttonSettingsPages.push(
-      createDefaultButtonSettingsPage(
-        state.width,
-        state.height,
-        data?.previousPage
-      )
+    const newPage = await createDefaultPage(
+      state.width * state.height,
+      data?.previousPage
     );
-    state.displaySettingsPages.push(
-      await createDefaultDisplayPage(
-        state.width,
-        state.height,
-        data?.previousPage
-      )
-    );
+    state.pages.push(newPage);
     if (data) {
       const { previousDisplay, previousPage } = data;
-      state.buttonSettingsPages[previousPage][previousDisplay].primary.values =
-        [state.buttonSettingsPages.length - 1];
+      state.pages[previousPage][previousDisplay].button.primary.values = [
+        state.pages.length - 1,
+      ];
     }
     return { ...state };
   },
   async deletePage(state, pageIndex) {
-    state.buttonSettingsPages.splice(pageIndex, 1);
-    state.displaySettingsPages.splice(pageIndex, 1);
-    state.buttonSettingsPages = state.buttonSettingsPages.map((page) => {
-      return page.map((display) => {
-        if (display.primary.mode === EAction.changePage) {
-          if (display.primary.values[0] >= pageIndex) {
-            display.primary.values[0] -= 1;
+    state.pages.splice(pageIndex, 1);
+    state.pages = state.pages.map((page) => {
+      return page.map((displayButton) => {
+        if (displayButton.button.primary.mode === EAction.changePage) {
+          if (displayButton.button.primary.values[0] >= pageIndex) {
+            displayButton.button.primary.values[0] -= 1;
           }
         }
         if (
-          display.secondary.enabled &&
-          display.secondary.mode === EAction.changePage
+          displayButton.button.secondary.enabled &&
+          displayButton.button.secondary.mode === EAction.changePage
         ) {
-          if (display.secondary.values[0] >= pageIndex) {
-            display.secondary.values[0] -= 1;
+          if (displayButton.button.secondary.values[0] >= pageIndex) {
+            displayButton.button.secondary.values[0] -= 1;
           }
         }
-        return { ...display };
+        return { ...displayButton };
       });
     });
     return { ...state };
   },
   async setButtonSettings(state, data) {
     const { pageIndex, buttonIndex, priOrSec, buttonSettings } = data;
-    state.buttonSettingsPages[pageIndex][buttonIndex][priOrSec] =
-      buttonSettings;
+    state.pages[pageIndex][buttonIndex].button[priOrSec] = buttonSettings;
     return { ...state };
   },
   async setDisplaySettings(state, data) {
     const { pageIndex, buttonIndex, displaySettings } = data;
     if (pageIndex === -1 && buttonIndex === -1) {
       state.defaultBackDisplay = { ...displaySettings };
-      state.defaultBackDisplay.convertedImage = !state.defaultBackDisplay
-        .originalImage
-        ? await composeText(state.defaultBackDisplay)
-        : await composeImage(state.defaultBackDisplay);
-      state.defaultBackDisplay.previewImage = getBase64Image(
-        state.defaultBackDisplay.convertedImage
+      state.defaultBackDisplay = await generateAdditionalImagery(
+        state.defaultBackDisplay
       );
       state.defaultBackDisplay.isGeneratedFromDefaultBackImage = true;
       localStorage.setItem(
@@ -199,19 +173,13 @@ export const configReducer: IConfigReducer = {
         JSON.stringify(state.defaultBackDisplay)
       );
     } else {
-      state.displaySettingsPages[pageIndex][buttonIndex] = {
+      state.pages[pageIndex][buttonIndex].display = {
         ...displaySettings,
+        isGeneratedFromDefaultBackImage: false,
       };
-      state.displaySettingsPages[pageIndex][buttonIndex].convertedImage = !state
-        .displaySettingsPages[pageIndex][buttonIndex].originalImage
-        ? await composeText(state.displaySettingsPages[pageIndex][buttonIndex])
-        : await composeImage(
-            state.displaySettingsPages[pageIndex][buttonIndex]
-          );
-
-      state.displaySettingsPages[pageIndex][buttonIndex].previewImage =
-        getBase64Image(
-          state.displaySettingsPages[pageIndex][buttonIndex].convertedImage
+      state.pages[pageIndex][buttonIndex].display =
+        await generateAdditionalImagery(
+          state.pages[pageIndex][buttonIndex].display
         );
     }
     return { ...state };
@@ -219,54 +187,51 @@ export const configReducer: IConfigReducer = {
   async setOriginalImage(state, data) {
     const { buttonIndex, pageIndex, originalImage } = data;
 
-    let display: IDisplay;
+    let display: IDisplaySettings;
     if (pageIndex === -1 && buttonIndex === -1) {
       display = state.defaultBackDisplay;
     } else {
-      display = state.displaySettingsPages[pageIndex][buttonIndex];
+      display = state.pages[pageIndex][buttonIndex].display;
     }
     display.originalImage = originalImage;
-    display.convertedImage =
-      display.textSettings.text?.length && !display.originalImage
-        ? await composeText(display)
-        : await composeImage(display);
-    display.previewImage = getBase64Image(display.convertedImage);
+    display = await generateAdditionalImagery(display);
     return { ...state };
   },
   async deleteImage(state, data) {
     const { buttonIndex, pageIndex } = data;
-    state.displaySettingsPages[pageIndex][buttonIndex] = createDefaultDisplay();
+    state.pages[pageIndex][buttonIndex].display = createDefaultDisplay();
     return { ...state };
   },
   async switchButtons(state, data) {
     const { pageAIndex, pageBIndex, buttonAIndex, buttonBIndex } = data;
-    const buttonA = { ...state.buttonSettingsPages[pageAIndex][buttonAIndex] };
-    state.buttonSettingsPages[pageAIndex][buttonAIndex] = {
-      ...state.buttonSettingsPages[pageBIndex][buttonBIndex],
+    const buttonA = { ...state.pages[pageAIndex][buttonAIndex] };
+    state.pages[pageAIndex][buttonAIndex] = {
+      ...state.pages[pageBIndex][buttonBIndex],
     };
-    state.buttonSettingsPages[pageBIndex][buttonBIndex] = buttonA;
+    state.pages[pageBIndex][buttonBIndex] = buttonA;
 
     const displayA = {
-      ...state.displaySettingsPages[pageAIndex][buttonAIndex],
+      ...state.pages[pageAIndex][buttonAIndex],
     };
-    state.displaySettingsPages[pageAIndex][buttonAIndex] = {
-      ...state.displaySettingsPages[pageBIndex][buttonBIndex],
+    state.pages[pageAIndex][buttonAIndex] = {
+      ...state.pages[pageBIndex][buttonBIndex],
     };
-    state.displaySettingsPages[pageBIndex][buttonBIndex] = displayA;
+    state.pages[pageBIndex][buttonBIndex] = displayA;
     return { ...state };
   },
   async updateAllDefaultBackImages(state, newBackDisplay) {
-    state.displaySettingsPages.forEach((page, pageIndex) => {
-      page.forEach((display, displayIndex) => {
-        if (display.isGeneratedFromDefaultBackImage)
-          state.displaySettingsPages[pageIndex][displayIndex] = newBackDisplay;
+    state.pages.forEach((page, pageIndex) => {
+      page.forEach((displayButton, displayIndex) => {
+        if (displayButton.display.isGeneratedFromDefaultBackImage)
+          state.pages[pageIndex][displayIndex].display =
+            cloneDeep(newBackDisplay);
       });
     });
     return { ...state };
   },
   async makeDefaultBackButton(state, data) {
     const { buttonIndex, pageIndex } = data;
-    state.displaySettingsPages[pageIndex][buttonIndex] =
+    state.pages[pageIndex][buttonIndex].display =
       await state.defaultBackDisplay;
     return { ...state };
   },
