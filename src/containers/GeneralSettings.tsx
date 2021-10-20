@@ -16,27 +16,16 @@ import { DefaultBackButtonSettings } from "./DefaultBackButtonSettings";
 
 export const GlobalSettings: React.FC<{
   setClose: () => void;
-  onClose: () => void;
   loadConfigFile: (buffer: Buffer) => void;
   getConfigBuffer: () => Promise<Buffer>;
   visible?: boolean;
   readyToSave: boolean;
-}> = ({
-  setClose,
-  onClose,
-  loadConfigFile,
-  getConfigBuffer,
-  visible,
-  readyToSave,
-}) => {
+}> = ({ setClose, loadConfigFile, getConfigBuffer, visible, readyToSave }) => {
   return (
     <Modal
       className="w-modal"
       visible={visible}
-      setClose={() => {
-        onClose();
-        setClose();
-      }}
+      setClose={setClose}
       minWidth={650}
       minHeight={720}
       title="General settings"

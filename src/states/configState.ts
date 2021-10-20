@@ -85,10 +85,7 @@ export interface IConfigReducer extends Actions<ConfigState> {
       buttonBIndex: number;
     }
   ): Promise<ConfigState>;
-  updateAllDefaultBackImages(
-    state: ConfigState,
-    data: IDisplaySettings
-  ): Promise<ConfigState>;
+  updateAllDefaultBackImages(state: ConfigState): Promise<ConfigState>;
   makeDefaultBackButton(
     state: ConfigState,
     data: { pageIndex: number; buttonIndex: number }
@@ -160,6 +157,7 @@ export const configReducer: IConfigReducer = {
     return { ...state };
   },
   async setDisplaySettings(state, data) {
+    console.log(configReducer.updateAllDefaultBackImages);
     const { pageIndex, buttonIndex, displaySettings } = data;
     if (pageIndex === -1 && buttonIndex === -1) {
       state.defaultBackDisplay = { ...displaySettings };
@@ -171,6 +169,7 @@ export const configReducer: IConfigReducer = {
         "defaultBackDisplay",
         JSON.stringify(state.defaultBackDisplay)
       );
+      return cloneDeep(await configReducer.updateAllDefaultBackImages(state));
     } else {
       state.pages[pageIndex][buttonIndex].display = {
         ...displaySettings,
@@ -194,6 +193,9 @@ export const configReducer: IConfigReducer = {
     }
     display.originalImage = originalImage;
     display = await generateAdditionalImagery(display);
+    if (pageIndex === -1 && buttonIndex === -1) {
+      return cloneDeep(await configReducer.updateAllDefaultBackImages(state));
+    }
     return { ...state };
   },
   async deleteImage(state, data) {
@@ -210,12 +212,13 @@ export const configReducer: IConfigReducer = {
     state.pages[pageBIndex][buttonBIndex] = cloneDeep(tempA);
     return { ...state };
   },
-  async updateAllDefaultBackImages(state, newBackDisplay) {
+  async updateAllDefaultBackImages(state) {
     state.pages.forEach((page, pageIndex) => {
       page.forEach((displayButton, displayIndex) => {
         if (displayButton.display.isGeneratedFromDefaultBackImage)
-          state.pages[pageIndex][displayIndex].display =
-            cloneDeep(newBackDisplay);
+          state.pages[pageIndex][displayIndex].display = cloneDeep(
+            state.defaultBackDisplay
+          );
       });
     });
     return { ...state };

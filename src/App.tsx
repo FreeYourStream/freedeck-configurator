@@ -91,11 +91,6 @@ const App: React.FC<{
               <GlobalSettings
                 visible={showSettings}
                 setClose={() => setShowSettings(false)}
-                onClose={async () =>
-                  configDispatch.updateAllDefaultBackImages(
-                    await configState.defaultBackDisplay
-                  )
-                }
                 readyToSave={!!configState.pages.length}
                 loadConfigFile={(buffer: Buffer) =>
                   loadConfigFile(buffer, configDispatch.setState)
