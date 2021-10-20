@@ -10,8 +10,9 @@ export const FreeDeckSettings: React.FC<{
   setSetting: (setting: number[]) => void;
 }> = ({ action, setSetting }) => {
   return (
-    <>
+    <div className="my-2">
       <StyledSelect
+        className="w-full"
         value={action.values[0]}
         onChange={(e) => setSetting([parseInt(e.target.value)])}
       >
@@ -33,6 +34,6 @@ export const FreeDeckSettings: React.FC<{
           <Value>{(((action.values[1] || 128) / 255) * 100).toFixed(0)}%</Value>
         </Row>
       )}
-    </>
+    </div>
   );
 };

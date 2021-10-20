@@ -84,7 +84,7 @@ export const Action: React.FC<{
       <Row>
         <Label>Mode</Label>
         <StyledSelect
-          className="w-32"
+          className="w-36"
           value={action.mode}
           onChange={(e) => setMode(parseInt(e.target.value))}
         >
