@@ -1,5 +1,6 @@
 import { XIcon } from "@heroicons/react/outline";
 import React, { useContext, useEffect, useState } from "react";
+import { Divider } from "../lib/components/Divider";
 import { Label, Value } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
 import { StyledSelect } from "../lib/components/SelectInput";
@@ -88,7 +89,7 @@ export const Device: React.FC<{}> = () => {
           />
         </div>
       </Row>
-      <div className="h-8" />
+      <Divider />
       <Title>Device Info</Title>
       <Row>
         <Label>Firmware version:</Label>

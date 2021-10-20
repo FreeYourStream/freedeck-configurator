@@ -27,7 +27,7 @@ export const FDButton = ({
   title,
 }: IFDButtonProps) => {
   const sizeClasses = c(
-    size === 1 && "px-3 py-1 space-x-2",
+    size === 1 && "px-3 py-0 space-x-2",
     size === 2 && "px-5 py-2 space-x-2",
     size === 3 && "px-6 py-3 space-x-2"
   );
@@ -46,7 +46,7 @@ export const FDButton = ({
     type === "primary" &&
       (!disabled
         ? "bg-primary-600 shadow-lg text-white hover:bg-primary-500 hover:shadow-xl"
-        : "text-gray-400 bg-primary-300"),
+        : "text-gray-300 bg-primary-200"),
     disabled && "cursor-not-allowed"
   );
 

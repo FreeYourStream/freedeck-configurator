@@ -21,6 +21,40 @@ export const GlobalSettings: React.FC<{
   visible?: boolean;
   readyToSave: boolean;
 }> = ({ setClose, loadConfigFile, getConfigBuffer, visible, readyToSave }) => {
+  const tabs = [
+    {
+      title: "Default back button",
+      prefix: <ArrowCircleLeftIcon className="h-6 w-6" />,
+      content: <DefaultBackButtonSettings />,
+    },
+    {
+      title: "Displays",
+      prefix: <SunIcon className="h-6 w-6" />,
+      content: <Displays />,
+    },
+    {
+      title: "Device",
+      prefix: <ChipIcon className="h-6 w-6" />,
+      content: <Device />,
+    },
+    {
+      title: "About",
+      prefix: <InformationCircleIcon className="h-6 w-6" />,
+      content: <About />,
+    },
+  ];
+  if ((window as any).Serial)
+    tabs.splice(2, 0, {
+      title: "Serial",
+      prefix: <SwitchVerticalIcon className="h-6 w-6" />,
+      content: (
+        <Serial
+          getConfigBuffer={getConfigBuffer}
+          loadConfigFile={loadConfigFile}
+          readyToSave={readyToSave}
+        />
+      ),
+    });
   return (
     <Modal
       className="w-modal"
@@ -30,41 +64,7 @@ export const GlobalSettings: React.FC<{
       minHeight={720}
       title="General settings"
     >
-      <TabView
-        tabs={[
-          {
-            title: "Default back button",
-            prefix: <ArrowCircleLeftIcon className="h-6 w-6" />,
-            content: <DefaultBackButtonSettings />,
-          },
-          {
-            title: "Displays",
-            prefix: <SunIcon className="h-6 w-6" />,
-            content: <Displays />,
-          },
-          {
-            title: "Serial",
-            prefix: <SwitchVerticalIcon className="h-6 w-6" />,
-            content: (
-              <Serial
-                getConfigBuffer={getConfigBuffer}
-                loadConfigFile={loadConfigFile}
-                readyToSave={readyToSave}
-              />
-            ),
-          },
-          {
-            title: "Device",
-            prefix: <ChipIcon className="h-6 w-6" />,
-            content: <Device />,
-          },
-          {
-            title: "About",
-            prefix: <InformationCircleIcon className="h-6 w-6" />,
-            content: <About />,
-          },
-        ]}
-      />
+      <TabView tabs={tabs} />
     </Modal>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { FDButton } from "../lib/components/Button";
+import { Divider } from "../lib/components/Divider";
 import { Label, Value } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
 import { Title } from "../lib/components/Title";
@@ -45,11 +46,11 @@ export const Serial: React.FC<{
   );
   return (
     <div className="w-full">
-      <Title>Serial {connected ? "connected" : "not connected"}</Title>
-      {/* <Divider /> */}
+      <Title>Serial</Title>
       <Row>
         <Label>Connect:</Label>
         <FDButton
+          className="w-24 justify-center"
           type="primary"
           size={1}
           disabled={
@@ -68,6 +69,7 @@ export const Serial: React.FC<{
       <Row>
         <Label>Read config from FreeDeck:</Label>
         <FDButton
+          className="w-24 justify-center"
           size={1}
           disabled={!connected}
           onClick={async () =>
@@ -82,6 +84,7 @@ export const Serial: React.FC<{
       <Row>
         <Label>Write config to FreeDeck:</Label>
         <FDButton
+          className="w-24 justify-center"
           disabled={!connected || !readyToSave}
           size={1}
           onClick={async () =>
@@ -95,7 +98,8 @@ export const Serial: React.FC<{
         </FDButton>
       </Row>
 
-      {/* <Divider /> */}
+      <Divider />
+      <Title>Transmission Stats</Title>
       <Row>
         <Label>Progress:</Label>
         {progress !== null && (
@@ -116,8 +120,6 @@ export const Serial: React.FC<{
           <Value>{((fileSize / duration) * progress).toFixed(0)}kb/s</Value>
         )}
       </Row>
-
-      <Title>Chrome based browsers only!</Title>
     </div>
   );
 };
