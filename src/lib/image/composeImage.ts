@@ -10,7 +10,13 @@ export const composeImage = async (
   const { imageSettings, textWithIconSettings, textSettings, originalImage } =
     display;
   if (!originalImage) throw new Error("no original image");
-  let jimpImage = await Jimp.read(originalImage);
+  let jimpImage: any;
+  try {
+    jimpImage = await Jimp.read(originalImage);
+  } catch {
+    console.log("image is corrupted");
+    jimpImage = await Jimp.create(128, 64, "black");
+  }
   const ditherBackground = await Jimp.create(
     jimpImage.getWidth(),
     jimpImage.getHeight(),
