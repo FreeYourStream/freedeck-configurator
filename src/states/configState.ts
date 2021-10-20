@@ -204,19 +204,11 @@ export const configReducer: IConfigReducer = {
   },
   async switchButtons(state, data) {
     const { pageAIndex, pageBIndex, buttonAIndex, buttonBIndex } = data;
-    const buttonA = { ...state.pages[pageAIndex][buttonAIndex] };
-    state.pages[pageAIndex][buttonAIndex] = {
-      ...state.pages[pageBIndex][buttonBIndex],
-    };
-    state.pages[pageBIndex][buttonBIndex] = buttonA;
-
-    const displayA = {
-      ...state.pages[pageAIndex][buttonAIndex],
-    };
-    state.pages[pageAIndex][buttonAIndex] = {
-      ...state.pages[pageBIndex][buttonBIndex],
-    };
-    state.pages[pageBIndex][buttonBIndex] = displayA;
+    const tempA = state.pages[pageAIndex][buttonAIndex];
+    state.pages[pageAIndex][buttonAIndex] = cloneDeep(
+      state.pages[pageBIndex][buttonBIndex]
+    );
+    state.pages[pageBIndex][buttonBIndex] = cloneDeep(tempA);
     return { ...state };
   },
   async updateAllDefaultBackImages(state, newBackDisplay) {
