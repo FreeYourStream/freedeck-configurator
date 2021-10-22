@@ -26,8 +26,7 @@
       box-shadow: -405px 0 0 400px #a7a7aa;
     }
   }
-  .react-confirm-alert-overlay {
-    background-color: #262627ee !important;
-    animation: react-confirm-alert-fadeIn 0.15s 0.15s forwards !important;
-  }
+}
+.react-confirm-alert-overlay {
+  @apply bg-black bg-opacity-70;
 }
