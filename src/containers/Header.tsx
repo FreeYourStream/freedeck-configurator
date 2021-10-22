@@ -86,7 +86,7 @@ export const Header: React.FC<{
       className={c("bg-gray-700 flex h-20 items-center px-10 shadow-2xl")}
     >
       <div className={c("flex mr-12")}>
-        <div className={c("font-thin text-5xl text-white")}>Free2</div>
+        <div className={c("font-thin text-5xl text-white")}>Free</div>
         {/*"font-thin text-5xl text-white "/*/}
         {/*"font-thin text-5xl bg-gradient-to-br from-red-100 to-gray-400 rounded-sm"*/}
         <div className={c("font-medium text-5xl text-white")}>Deck</div>
