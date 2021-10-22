@@ -73,7 +73,6 @@ export const createDefaultPage = async (
   for (var i = 0; i < count; i++) {
     page.push(await createDefaultDisplayButton());
   }
-  console.log("page", page);
   if (previousPage !== undefined) {
     page[0].button.primary.mode = EAction.changePage;
     page[0].button.primary.values = [previousPage];

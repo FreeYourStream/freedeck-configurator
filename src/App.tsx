@@ -2,8 +2,7 @@ import { useSimpleReducer } from "@bitovi/use-simple-reducer";
 import { PlusCircleIcon } from "@heroicons/react/outline";
 import c from "clsx";
 import React from "react";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "react-hot-toast";
 import { ContentBody } from "./containers/ContentBody";
 import { GlobalSettings } from "./containers/GeneralSettings";
 import { Header } from "./containers/Header";
@@ -31,7 +30,6 @@ import {
   ConfigStateContext,
   IConfigReducer,
 } from "./states/configState";
-
 const App: React.FC<{
   defaultConfigState: ConfigState;
   defaultAppState: AppState;
@@ -98,7 +96,7 @@ const App: React.FC<{
                 getConfigBuffer={createConfigBuffer}
               />
               <Login visible={showLogin} setClose={() => setShowLogin(false)} />
-              <ToastContainer />
+              <Toaster />
               <div className="fixed bottom-5 right-6">
                 <FDButton
                   prefix={<PlusCircleIcon className="w-6 h-6" />}

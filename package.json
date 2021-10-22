@@ -1,6 +1,6 @@
 {
   "name": "freedeck-configurator",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "configFileVersion": "1.1.0",
   "private": true,
   "dependencies": {
@@ -21,7 +21,7 @@
     "react-dom": "^17.0.2",
     "react-dropzone": "^10.2.2",
     "react-icons": "^3.11.0",
-    "react-toastify": "^6.0.8"
+    "react-hot-toast": "^2.1.1"
   },
   "scripts": {
     "start": "craco start",

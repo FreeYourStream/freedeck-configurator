@@ -50,7 +50,6 @@ export const convertLegacyConfig = async (
     )
   );
   const originalImage = Buffer.from(rawConfig.defaultBackDisplay.image);
-  console.log("ORIGINAL image", originalImage);
   const temp: ConfigState = {
     brightness: rawConfig.brightness || 128,
     configVersion: "1.1.0",

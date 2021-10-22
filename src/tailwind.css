@@ -30,25 +30,4 @@
     background-color: #262627ee !important;
     animation: react-confirm-alert-fadeIn 0.15s 0.15s forwards !important;
   }
-  .Toastify__toast-container {
-  }
-  .Toastify__toast {
-    @apply bg-gray-700 rounded !important;
-  }
-  .Toastify__toast--error {
-  }
-  .Toastify__toast--warning {
-  }
-  .Toastify__toast--success {
-  }
-  .Toastify__close-button {
-    @apply text-white !important;
-  }
-  .Toastify__toast-body {
-    @apply bg-gray-700;
-    @apply text-white;
-  }
-  .Toastify__progress-bar {
-    @apply bg-gray-700;
-  }
 }

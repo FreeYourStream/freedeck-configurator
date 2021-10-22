@@ -28,8 +28,8 @@ export const FDButton = ({
 }: IFDButtonProps) => {
   const sizeClasses = c(
     size === 1 && "px-3 py-0 space-x-2",
-    size === 2 && "px-5 py-2 space-x-2",
-    size === 3 && "px-6 py-3 space-x-2"
+    size === 2 && "px-4 py-1 space-x-2",
+    size === 3 && "px-5 py-2 space-x-2"
   );
 
   const typeClasses = c(

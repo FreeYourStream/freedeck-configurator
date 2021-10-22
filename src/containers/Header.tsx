@@ -86,7 +86,7 @@ export const Header: React.FC<{
       className={c("bg-gray-700 flex h-20 items-center px-10 shadow-2xl")}
     >
       <div className={c("flex mr-12")}>
-        <div className={c("font-thin text-5xl text-white")}>Free</div>
+        <div className={c("font-thin text-5xl text-white")}>Free2</div>
         {/*"font-thin text-5xl text-white "/*/}
         {/*"font-thin text-5xl bg-gradient-to-br from-red-100 to-gray-400 rounded-sm"*/}
         <div className={c("font-medium text-5xl text-white")}>Deck</div>
@@ -103,7 +103,7 @@ export const Header: React.FC<{
               <>
                 <FDButton
                   prefix={<UploadIcon className={iconSize} />}
-                  size={2}
+                  size={3}
                   onClick={() =>
                     serialApi!
                       .readConfigFromSerial((rec, size) =>
@@ -116,7 +116,7 @@ export const Header: React.FC<{
                 </FDButton>
                 <FDButton
                   prefix={<SaveIcon className={iconSize} />}
-                  size={2}
+                  size={3}
                   onClick={async () =>
                     serialApi!.writeConfigOverSerial(
                       await createConfigBuffer(),
@@ -134,7 +134,7 @@ export const Header: React.FC<{
               <>
                 <FDButton
                   prefix={<UploadIcon className={iconSize} />}
-                  size={2}
+                  size={3}
                   onClick={() => loadConfigRef.current?.click()}
                 >
                   Load Config
@@ -153,7 +153,7 @@ export const Header: React.FC<{
                   <FDButton
                     prefix={<DownloadIcon className={iconSize} />}
                     disabled={!pages.length}
-                    size={2}
+                    size={3}
                     onClick={() => saveConfigFile()}
                   >
                     Save Config
@@ -162,7 +162,7 @@ export const Header: React.FC<{
                 {serialApi && !serialApi.connected && (
                   <FDButton
                     prefix={<LightningBoltIcon className={iconSize} />}
-                    size={2}
+                    size={3}
                     onClick={() =>
                       serialApi.connect().catch((e) => console.log(e))
                     }
@@ -177,7 +177,7 @@ export const Header: React.FC<{
         <div className={c("flex items-center space-x-4")}>
           <FDButton
             prefix={<CogIcon className={iconSize} />}
-            size={2}
+            size={3}
             onClick={() => setShowSettings(true)}
           >
             Settings

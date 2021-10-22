@@ -1,6 +1,10 @@
+import { CloudDownloadIcon, XIcon } from "@heroicons/react/outline";
+import React from "react";
 import { useEffect } from "react";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { IAppDispatch } from "../states/appState";
+import { FDButton } from "./components/Button";
+import { createToast } from "./createToast";
 
 export const AddEventListeners = ({
   appDispatchContext,
@@ -9,18 +13,36 @@ export const AddEventListeners = ({
 }) => {
   const { setCtrl } = appDispatchContext;
   return useEffect(() => {
-    window.addEventListener("beforeinstallprompt", (e) => {
+    window.addEventListener("beforeinstallprompt", (e: Event) => {
       e.preventDefault();
       if (!localStorage.getItem("closedPWACTA"))
-        toast(
-          "You can install the configurator to have it offline! Click here to install",
-          {
-            autoClose: false,
-            position: "bottom-right",
-            onClose: () => localStorage.setItem("closedPWACTA", "true"),
-            onClick: () => (e as any).prompt(),
-          }
-        );
+        createToast({
+          text: "You can install the configurator to have it offline! Click here to install",
+          danger: (t) => (
+            <FDButton
+              onClick={() => {
+                localStorage.setItem("closedPWACTA", "true");
+                toast.dismiss(t.id);
+              }}
+              prefix={<XIcon className="h-4 w-4" />}
+            >
+              Close
+            </FDButton>
+          ),
+          primary: (t) => (
+            <FDButton
+              type="primary"
+              onClick={() => {
+                localStorage.setItem("closedPWACTA", "true");
+                toast.dismiss(t.id);
+                (e as any).prompt();
+              }}
+              prefix={<CloudDownloadIcon className="h-4 w-4" />}
+            >
+              Install
+            </FDButton>
+          ),
+        });
     });
     const onKeyUpDown = (event: KeyboardEvent) => {
       setCtrl(event.ctrlKey);

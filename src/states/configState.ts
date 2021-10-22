@@ -157,7 +157,6 @@ export const configReducer: IConfigReducer = {
     return { ...state };
   },
   async setDisplaySettings(state, data) {
-    console.log(configReducer.updateAllDefaultBackImages);
     const { pageIndex, buttonIndex, displaySettings } = data;
     if (pageIndex === -1 && buttonIndex === -1) {
       state.defaultBackDisplay = { ...displaySettings };

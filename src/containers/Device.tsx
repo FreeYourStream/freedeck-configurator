@@ -42,7 +42,6 @@ export const Device: React.FC<{}> = () => {
   const [fwVersion, setFwVersion] = useState<string>(FW_UNKNOWN);
 
   useEffect(() => {
-    console.log(serialApi?.connected);
     if (!serialApi) return;
     serialApi.registerOnConStatusChange(async (type) => {
       if (type === connectionStatus.connect) {

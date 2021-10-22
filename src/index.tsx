@@ -1,13 +1,14 @@
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { RefreshIcon } from "@heroicons/react/outline";
 import React from "react";
 import ReactDOM from "react-dom";
-import { toast } from "react-toastify";
-
-import "./tailwind.css";
 import App from "./App";
-import { register } from "./serviceWorker";
+import { FDButton } from "./lib/components/Button";
+import { createToast } from "./lib/createToast";
+import { register } from "./serviceWorkerRegistration";
 import { defaultAppState } from "./states/appState";
 import { defaultConfigState } from "./states/configState";
+import "./tailwind.css";
 
 const main = async () => {
   if (process.env.NODE_ENV !== "development")
@@ -49,17 +50,26 @@ main();
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
+console.log("REGISTER SERVICE WORKER");
 register({
   onUpdate: (registration) => {
-    toast("There is an Update! Click here to update.", {
-      autoClose: false,
-      position: "bottom-right",
-      onClick: () => {
-        if (registration && registration.waiting) {
-          registration.waiting.postMessage({ type: "SKIP_WAITING" });
-        }
-        window.location.reload();
-      },
+    createToast({
+      primary: (t) => (
+        <FDButton
+          prefix={<RefreshIcon className="h-4 w-4" />}
+          type="primary"
+          size={2}
+          onClick={async () => {
+            const caches = await window.caches.keys();
+            caches.forEach((cache) => window.caches.delete(cache));
+            window.location.reload();
+          }}
+        >
+          Refresh
+        </FDButton>
+      ),
+      text: "Refresh to load the newest version!",
+      title: "Update available!",
     });
   },
 });

@@ -1,7 +1,15 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
-  purge: [],
+  important: true,
+  purge: [
+    "./src/**/*.{ts,tsx,js,jsx,}",
+    "*.tsx",
+    "*.ts",
+    "*.css",
+    "./src/*.{ts,tsx,js,jsx,}",
+    "./public/index.html",
+  ],
   darkMode: false, // or 'media' or 'class'
   theme: {
     fontFamily: {
@@ -88,8 +96,6 @@ module.exports = {
       },
     },
   },
-  variants: {
-    extend: {},
-  },
+  variants: {},
   plugins: [],
 };
