@@ -5,7 +5,8 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import { FDButton } from "./lib/components/Button";
 import { createToast } from "./lib/createToast";
-import { register } from "./serviceWorkerRegistration";
+import reportWebVitals from "./reportWebVitals";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { defaultAppState } from "./states/appState";
 import { defaultConfigState } from "./states/configState";
 import "./tailwind.css";
@@ -50,8 +51,7 @@ main();
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-console.log("REGISTER SERVICE WORKER");
-register({
+serviceWorkerRegistration.register({
   onUpdate: (registration) => {
     createToast({
       primary: (t) => (
@@ -60,9 +60,10 @@ register({
           type="primary"
           size={2}
           onClick={async () => {
-            const caches = await window.caches.keys();
-            caches.forEach((cache) => window.caches.delete(cache));
-            window.location.reload();
+            setTimeout(() => {
+              registration.waiting?.postMessage({ type: "SKIP_WAITING" });
+              window.location.reload();
+            });
           }}
         >
           Refresh
@@ -73,3 +74,4 @@ register({
     });
   },
 });
+reportWebVitals();
