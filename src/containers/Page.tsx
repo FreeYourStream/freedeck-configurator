@@ -9,12 +9,14 @@ import {
 } from "../states/configState";
 import { DisplayButton } from "./DisplayButton";
 import { Modal } from "../lib/components/Modal";
+import { AppStateContext } from "../states/appState";
 
 interface IProps {
   pageIndex: number;
 }
 export const Page: React.FC<IProps> = ({ pageIndex }) => {
   const configState = useContext(ConfigStateContext);
+  const appState = useContext(AppStateContext);
 
   const configDispatch = useContext(ConfigDispatchContext);
   const [isOpen, setOpen] = useState(false);
@@ -25,7 +27,10 @@ export const Page: React.FC<IProps> = ({ pageIndex }) => {
     >
       <Modal
         isOpen={isOpen}
-        onAccept={() => configDispatch.deletePage(pageIndex)}
+        onAccept={() => {
+          configDispatch.deletePage(pageIndex);
+          setOpen(false);
+        }}
         onAbort={() => setOpen(false)}
         title="Delete this page?"
         text="Do you want to delete this page? It will be gone forever"
@@ -39,14 +44,8 @@ export const Page: React.FC<IProps> = ({ pageIndex }) => {
         <div
           className="absolute flex items-center justify-center w-8 h-8 rounded-full cursor-pointer shadow-lg bg-danger-600 hover:bg-danger-400 -top-4 -right-4"
           onClick={async () => {
-            setOpen(true);
-            // const deleteConfirmed =
-            //   appState.ctrlDown ||
-            //   (await confirm(
-            //     "Do you really want to delete this page forever?",
-            //     "Tipp: Hold Ctrl to skip this dialog next time"
-            //   ));
-            // if (deleteConfirmed);
+            if (appState.ctrlDown) configDispatch.deletePage(pageIndex);
+            else setOpen(true);
           }}
         >
           <TrashIcon className="w-6 h-6" />
