@@ -4,9 +4,8 @@ import {
   RefreshIcon,
   TrashIcon,
 } from "@heroicons/react/outline";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { FDButton } from "../../lib/components/Button";
 import { ImagePreview } from "../../lib/components/ImagePreview";
 import { Popover, PopoverEntry } from "../../lib/components/Popover";
 import { ConfigDispatchContext } from "../../states/configState";
