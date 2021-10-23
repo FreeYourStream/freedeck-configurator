@@ -60,10 +60,9 @@ serviceWorkerRegistration.register({
           type="primary"
           size={2}
           onClick={async () => {
-            setTimeout(() => {
-              registration.waiting?.postMessage({ type: "SKIP_WAITING" });
-              window.location.reload();
-            });
+            registration.waiting?.postMessage({ type: "SKIP_WAITING" });
+            window.onbeforeunload = () => undefined;
+            window.location.reload();
           }}
         >
           Refresh
