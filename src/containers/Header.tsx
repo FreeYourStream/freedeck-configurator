@@ -13,39 +13,48 @@ import { useUser } from "../graphql/hooks/useUser";
 import { Avatar } from "../lib/components/Avatar";
 import { FDButton } from "../lib/components/Button";
 import { Value } from "../lib/components/LabelValue";
+import { Popover } from "../lib/components/Popover";
 import { connectionStatus } from "../lib/serial";
 import { AppStateContext } from "../states/appState";
 import { ConfigStateContext } from "../states/configState";
 
-const iconSize = "w-5 h-5";
+const iconSize = "w-6 h-6";
 
 const LoginLogoutButtons: React.FC<{
   openLogin: () => void;
   openFDHub: () => void;
 }> = ({ openLogin, openFDHub }) => {
   const { user } = useUser();
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   if (user) {
     return (
       <>
-        <FDButton
-          prefix={<Avatar src={user.avatar} />}
-          onClick={() => openFDHub()}
+        <Popover
+          isOpen={isPopoverOpen}
+          setIsOpen={setIsPopoverOpen}
+          entries={[
+            {
+              title: "Logout",
+              prefix: <LogoutIcon className={iconSize} />,
+              onClick: () =>
+                (window.location.href = `${process.env.REACT_APP_API_URL}/logout`),
+            },
+          ]}
         >
-          {user.displayName}
-        </FDButton>
-        <FDButton
-          prefix={<LogoutIcon className={iconSize} />}
-          onClick={() =>
-            (window.location.href = `${process.env.REACT_APP_API_URL}/logout`)
-          }
-        >
-          {user.displayName}
-        </FDButton>
+          <FDButton
+            size={3}
+            prefix={<Avatar size={24} src={user.avatar} />}
+            onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+          >
+            {user.displayName}
+          </FDButton>
+        </Popover>
       </>
     );
   }
   return (
     <FDButton
+      size={3}
       prefix={<UserIcon className={iconSize} />}
       onClick={() => openLogin()}
     >

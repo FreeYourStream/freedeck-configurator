@@ -1,15 +1,8 @@
-import {
-  AdjustmentsIcon,
-  ArrowCircleLeftIcon,
-  PhotographIcon,
-  TrashIcon,
-} from "@heroicons/react/outline";
+import { AdjustmentsIcon, PhotographIcon } from "@heroicons/react/outline";
 import c from "clsx";
 import React, { useContext, useState } from "react";
-import { useContextMenuTrigger } from "react-context-menu-wrapper";
 import { useDrag, useDrop } from "react-dnd";
 import { ActionPreview } from "../lib/components/ActionPreview";
-import { ContextMenu, ContextMenuItem } from "../lib/components/ContextMenu";
 import { ImagePreview } from "../lib/components/ImagePreview";
 import { Modal } from "../lib/components/Modal";
 import { TabView } from "../lib/components/TabView";
@@ -55,11 +48,6 @@ export const DisplayButton: React.FC<{
     }),
   });
 
-  const menuId = `${pageIndex}:${displayIndex}`;
-  let menuRef = useContextMenuTrigger<HTMLDivElement>({
-    menuId,
-  });
-
   return (
     <div
       ref={dragRef}
@@ -83,30 +71,6 @@ export const DisplayButton: React.FC<{
           visible={showSettings}
           setClose={() => setShowSettings(false)}
         >
-          <ContextMenu menuId={menuId}>
-            <ContextMenuItem
-              text="Delete image"
-              prefix={<TrashIcon className="h-6 w-6 " />}
-              onClick={() =>
-                configDispatch.deleteImage({
-                  buttonIndex: displayIndex,
-                  pageIndex: pageIndex,
-                })
-              }
-              dangerous
-            ></ContextMenuItem>
-            <ContextMenuItem
-              text="Make default back Image"
-              prefix={<ArrowCircleLeftIcon className="h-6 w-6" />}
-              onClick={() =>
-                configDispatch.makeDefaultBackButton({
-                  pageIndex,
-                  buttonIndex: displayIndex,
-                })
-              }
-              dangerous
-            ></ContextMenuItem>
-          </ContextMenu>
           <TabView
             tabs={[
               {
@@ -114,7 +78,6 @@ export const DisplayButton: React.FC<{
                 prefix: <PhotographIcon className="h-6 w-6" />,
                 content: (
                   <DisplaySettingsContainer
-                    ref={menuRef}
                     pageIndex={pageIndex}
                     displayIndex={displayIndex}
                   />

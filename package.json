@@ -15,7 +15,6 @@
     "preval.macro": "^5.0.0",
     "react": "^17.0.2",
     "react-confirm-alert": "^2.7.0",
-    "react-context-menu-wrapper": "^3.0.0",
     "react-dnd": "^10.0.2",
     "react-dnd-html5-backend": "^10.0.2",
     "react-dom": "^17.0.2",

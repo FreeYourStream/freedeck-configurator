@@ -4,13 +4,13 @@ import { ConfigDispatchContext } from "../../states/configState";
 import { DropDisplay } from "./DropDisplay";
 import { ImageSettings } from "./ImageSettings";
 
-export const DisplaySettingsContainer = React.forwardRef<
-  any,
-  {
-    pageIndex: number;
-    displayIndex: number;
-  }
->(({ pageIndex, displayIndex }, menuRef) => {
+export const DisplaySettingsContainer = ({
+  pageIndex,
+  displayIndex,
+}: {
+  pageIndex: number;
+  displayIndex: number;
+}) => {
   const configDispatch = useContext(ConfigDispatchContext);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -44,7 +44,6 @@ export const DisplaySettingsContainer = React.forwardRef<
     >
       {
         <DropDisplay
-          ref={menuRef}
           onDrop={onDrop}
           pageIndex={pageIndex}
           displayIndex={displayIndex}
@@ -53,4 +52,4 @@ export const DisplaySettingsContainer = React.forwardRef<
       <ImageSettings pageIndex={pageIndex} displayIndex={displayIndex} />
     </div>
   );
-});
+};

@@ -133,5 +133,18 @@ module.exports = {
     },
   },
   variants: {},
-  plugins: [],
+  plugins: [
+    function ({ addComponents }) {
+      const arrows = {
+        ".arrow-up": {
+          width: "0px",
+          height: "0px",
+          borderLeft: "8px solid transparent",
+          borderRight: "8px solid transparent",
+          borderBottom: "8px solid #262627",
+        },
+      };
+      addComponents(arrows);
+    },
+  ],
 };

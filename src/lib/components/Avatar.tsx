@@ -7,7 +7,7 @@ export const Avatar: React.FC<{ src: Maybe<string>; size?: number }> = ({
 }) => {
   if (src) {
     return (
-      <div className="w-4 h-4 overflow-hidden rounded-full">
+      <div className="overflow-hidden rounded-full">
         <img src={src} alt="avatar" width={size} />
       </div>
     );
