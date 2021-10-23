@@ -83,7 +83,9 @@ export const Header: React.FC<{
   return (
     <div
       id="header"
-      className={c("bg-gray-700 flex h-20 items-center px-10 shadow-2xl")}
+      className={c(
+        "border-b-2 border-gray-600 bg-gray-700 flex h-24 w-full items-center px-10 shadow-2xl"
+      )}
     >
       <div className={c("flex mr-12")}>
         <div className={c("font-thin text-5xl text-white")}>Free</div>

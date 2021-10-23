@@ -15,7 +15,7 @@ export type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
 };
 export type IDisplayOptions = RecursivePartial<IDisplaySettings>;
-export const createDefaultButton: () => IButtonSettings = () => ({
+const createDefaultButton: () => IButtonSettings = () => ({
   primary: {
     mode: EAction.noop,
     values: [],

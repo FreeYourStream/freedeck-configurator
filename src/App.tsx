@@ -1,13 +1,13 @@
 import { useSimpleReducer } from "@bitovi/use-simple-reducer";
 import { PlusCircleIcon } from "@heroicons/react/outline";
-import c from "clsx";
 import React from "react";
 import { Toaster } from "react-hot-toast";
 import { ContentBody } from "./containers/ContentBody";
+import { FirstPage } from "./containers/FirstTime";
 import { GlobalSettings } from "./containers/GeneralSettings";
 import { Header } from "./containers/Header";
 import { Login } from "./containers/Login";
-import { Page } from "./containers/Page";
+import { Pages } from "./containers/Pages";
 import { useShowLogin, useShowSettings } from "./hooks/states";
 import { FDButton } from "./lib/components/Button";
 import { createButtonBody, createImageBody } from "./lib/configFile/createBody";
@@ -66,7 +66,7 @@ const App: React.FC<{
       <ConfigDispatchContext.Provider value={configDispatch}>
         <AppStateContext.Provider value={appState}>
           <AppDispatchContext.Provider value={appDispatch}>
-            <div className={c("flex flex-col h-full w-full")}>
+            <div className="flex flex-col h-full w-full">
               <Header
                 loadConfigFile={(filesOrBuffer) =>
                   loadConfigFile(filesOrBuffer, configDispatch.setState)
@@ -82,9 +82,7 @@ const App: React.FC<{
                 openLogin={() => setShowLogin(true)}
               />
               <ContentBody>
-                {configState.pages.map((page, pageIndex) => (
-                  <Page pageIndex={pageIndex} key={pageIndex} />
-                ))}
+                {!!configState.pages.length ? <Pages /> : <FirstPage />}
               </ContentBody>
               <GlobalSettings
                 visible={showSettings}
@@ -97,16 +95,18 @@ const App: React.FC<{
               />
               <Login visible={showLogin} setClose={() => setShowLogin(false)} />
               <Toaster />
-              <div className="fixed bottom-5 right-6">
-                <FDButton
-                  prefix={<PlusCircleIcon className="w-6 h-6" />}
-                  size={3}
-                  type="primary"
-                  onClick={() => configDispatch.addPage(undefined)}
-                >
-                  Add Page
-                </FDButton>
-              </div>
+              {!!configState.pages.length && (
+                <div className="fixed bottom-5 right-6">
+                  <FDButton
+                    prefix={<PlusCircleIcon className="w-6 h-6" />}
+                    size={3}
+                    type="primary"
+                    onClick={() => configDispatch.addPage(undefined)}
+                  >
+                    Add Page
+                  </FDButton>
+                </div>
+              )}
             </div>
           </AppDispatchContext.Provider>
         </AppStateContext.Provider>

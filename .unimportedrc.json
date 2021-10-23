@@ -8,7 +8,10 @@
     "**/__tests__/**",
     "**/*.d.ts"
   ],
-  "ignoreUnimported": ["src/containers/_Boilerplate.tsx"],
+  "ignoreUnimported": [
+    "src/containers/_Boilerplate.tsx",
+    "src/service-worker.ts"
+  ],
   "ignoreUnused": [],
   "ignoreUnresolved": []
 }
