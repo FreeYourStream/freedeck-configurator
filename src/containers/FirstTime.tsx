@@ -10,7 +10,7 @@ export const FirstPage: React.FC<{ className?: string }> = ({
 }) => {
   const configDispatch = useContext(ConfigDispatchContext);
   return (
-    <div className="flex flex-col justify-center items-center z-50">
+    <div className="flex flex-col justify-center items-center">
       {/* <div className="flex flex-col justify-center items-center p-8 bg-gray-500 rounded-2xl"> */}
       <Title className="mb-8">Create your first page</Title>
       <FDButton

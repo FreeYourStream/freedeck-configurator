@@ -24,7 +24,7 @@ export const TabView: React.FC<{
           </div>
         ))}
       </div>
-      <div className="flex justify-center w-full p-8 h-modal">
+      <div className="flex justify-center w-full p-8 h-dp-settings">
         {tabs.map((tab, index) => (
           <div
             key={index}

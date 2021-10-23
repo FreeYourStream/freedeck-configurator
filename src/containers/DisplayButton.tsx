@@ -4,7 +4,7 @@ import React, { useContext, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { ActionPreview } from "../lib/components/ActionPreview";
 import { ImagePreview } from "../lib/components/ImagePreview";
-import { Modal } from "../lib/components/Modal";
+import { Window } from "../lib/components/Window";
 import { TabView } from "../lib/components/TabView";
 import {
   ConfigDispatchContext,
@@ -64,9 +64,9 @@ export const DisplayButton: React.FC<{
       />
       <ActionPreview pageIndex={pageIndex} displayIndex={displayIndex} />
 
-      {showSettings && (
-        <Modal
-          className="w-modal"
+      {
+        <Window
+          className="w-dp-settings"
           title={`Page ${pageIndex + 1} Display ${displayIndex + 1}`}
           visible={showSettings}
           setClose={() => setShowSettings(false)}
@@ -95,8 +95,8 @@ export const DisplayButton: React.FC<{
               },
             ]}
           />
-        </Modal>
-      )}
+        </Window>
+      }
     </div>
   );
 };

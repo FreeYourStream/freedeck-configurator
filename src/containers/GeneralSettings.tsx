@@ -10,7 +10,7 @@ import { About } from "./About";
 import { Displays } from "./Brightness";
 import { Device } from "./Device";
 import { Serial } from "./Serial";
-import { Modal } from "../lib/components/Modal";
+import { Window } from "../lib/components/Window";
 import { TabView } from "../lib/components/TabView";
 import { DefaultBackButtonSettings } from "./DefaultBackButtonSettings";
 
@@ -56,15 +56,13 @@ export const GlobalSettings: React.FC<{
       ),
     });
   return (
-    <Modal
-      className="w-modal"
+    <Window
+      className="w-dp-settings"
       visible={visible}
       setClose={setClose}
-      minWidth={650}
-      minHeight={720}
       title="General settings"
     >
       <TabView tabs={tabs} />
-    </Modal>
+    </Window>
   );
 };

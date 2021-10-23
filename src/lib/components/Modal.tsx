@@ -1,50 +1,58 @@
-import { XCircleIcon } from "@heroicons/react/solid";
-import c from "clsx";
-import React from "react";
-import ReactDOM from "react-dom";
+import { Dialog, Transition } from "@headlessui/react";
+import React, { Fragment } from "react";
+import { FDButton } from "./Button";
+import { Title } from "./Title";
 
 export const Modal: React.FC<{
-  className?: string;
-  visible?: boolean;
-  setClose: () => void;
-  title?: string;
-  width?: number;
-  height?: number;
-  minWidth?: number;
-  minHeight?: number;
-}> = ({ visible, setClose, children, title, className }) => {
-  const content = (
-    <div
-      className={c(
-        "fixed top-0 left-0 right-0 bottom-0 bg-gray-200 bg-opacity-70 z-50 ",
-        visible ? "flex" : "hidden",
-        "justify-center items-center"
-      )}
-    >
-      <div className={c("relative bg-gray-900 rounded-2xl", className)}>
-        <div
-          className={c(
-            "h-11 flex items-center justify-center font-medium text-xl text-white bg-gray-700 rounded-t-2xl",
-            !title?.length && "hidden"
-          )}
+  title: string;
+  text: string;
+  onAccept: () => any;
+  onAbort: () => any;
+  isOpen: boolean;
+}> = ({ isOpen, onAbort, onAccept, title, text }) => {
+  return (
+    <Transition show={isOpen} as={Fragment}>
+      <Dialog
+        className="flex justify-center items-center fixed z-40 inset-0"
+        onClose={() => onAbort()}
+      >
+        <Transition.Child
+          as={Fragment}
+          enter="transition duration-50 ease-out"
+          enterFrom="transform opacity-0"
+          enterTo="transform opacity-100"
+          leave="transition duration-50 ease-out"
+          leaveFrom="transform opacity-100"
+          leaveTo="transform opacity-0"
         >
-          {title}
-        </div>
-        <div className={"absolute top-0.5 right-1"}>
-          <div
-            className={
-              "box-content p-1 rounded-full flex items-center justify-center cursor-pointer"
-            }
-            onClick={() => setClose()}
-          >
-            {/* <Icon icon="ri/RiCloseCircleFill" size={32} color="white" /> */}
-            <XCircleIcon className="h-7 w-7 hover:text-danger-500" />
-          </div>
-        </div>
-        {children}
-      </div>
-    </div>
-  );
+          <Dialog.Overlay className="fixed inset-0 bg-black z-10 bg-opacity-70" />
+        </Transition.Child>
 
-  return ReactDOM.createPortal(content, document.querySelector("#modal")!);
+        <Transition.Child
+          as={Fragment}
+          enter="transition duration-100 ease-out"
+          enterFrom="transform scale-95 opacity-0"
+          enterTo="transform scale-100 opacity-70"
+          leave="transition duration-75 ease-out"
+          leaveFrom="transform scale-100 opacity-70"
+          leaveTo="transform scale-95 opacity-0"
+        >
+          <div className="flex flex-col items-start justify-center p-6 bg-gray-600 z-50 rounded-xl shadow-2xl">
+            <Dialog.Title className="mb-2">
+              <Title>{title}</Title>
+            </Dialog.Title>
+            <Dialog.Description className="text-lg mb-8">
+              {text}
+            </Dialog.Description>
+            <div className="flex w-full justify-end gap-2">
+              <FDButton type="danger" onClick={() => onAccept()}>
+                Yes
+              </FDButton>
+              <FDButton onClick={() => onAbort()}>Cancel</FDButton>
+            </div>
+          </div>
+        </Transition.Child>
+      </Dialog>
+    </Transition>
+  );
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import { FDButton } from "../lib/components/Button";
-import { Modal } from "../lib/components/Modal";
+import { Window } from "../lib/components/Window";
 
 export const Login: React.FC<{
   setClose: () => void;
@@ -8,7 +8,7 @@ export const Login: React.FC<{
   onClose?: () => void;
 }> = ({ visible, setClose, onClose }) => {
   return (
-    <Modal
+    <Window
       visible={visible}
       setClose={() => {
         if (onClose) onClose();
@@ -39,6 +39,6 @@ export const Login: React.FC<{
           Discord
         </FDButton>
       </div>
-    </Modal>
+    </Window>
   );
 };
