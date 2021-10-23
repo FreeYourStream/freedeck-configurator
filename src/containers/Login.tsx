@@ -1,5 +1,5 @@
 import React from "react";
-import { FDButton, Icon } from "../lib/components/Button";
+import { FDButton } from "../lib/components/Button";
 import { Modal } from "../lib/components/Modal";
 
 export const Login: React.FC<{
@@ -18,7 +18,6 @@ export const Login: React.FC<{
     >
       <div className="p-8 flex justify-between gap-4">
         <FDButton
-          prefix={<Icon icon="gr/GrGoogle" color="#fff" />}
           onClick={() =>
             (window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`)
           }
@@ -26,7 +25,6 @@ export const Login: React.FC<{
           Google
         </FDButton>
         <FDButton
-          prefix={<Icon icon="ai/AiFillGithub" color="#fff" />}
           onClick={() =>
             (window.location.href = `${process.env.REACT_APP_API_URL}/auth/github`)
           }
@@ -34,7 +32,6 @@ export const Login: React.FC<{
           Github
         </FDButton>
         <FDButton
-          prefix={<Icon icon="fa/FaDiscord" color="#fff" />}
           onClick={() =>
             (window.location.href = `${process.env.REACT_APP_API_URL}/auth/discord`)
           }

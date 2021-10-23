@@ -1,4 +1,4 @@
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 import { createContext } from "react";
 import { createDefaultBackDisplay } from "../definitions/defaultBackImage";
 import {

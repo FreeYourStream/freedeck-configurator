@@ -1,7 +1,5 @@
 import c from "clsx";
 import React from "react";
-import { colors } from "../../definitions/colors";
-import { Icons } from "./Icons";
 
 export interface IFDButtonProps {
   className?: string;
@@ -63,13 +61,3 @@ export const FDButton = ({
     </button>
   );
 };
-
-export const Icon: React.FC<{ icon: string; size?: number; color?: string }> =
-  ({ color, icon, size }) => {
-    const iconClass = icon.split("/")[0];
-    const iconName = icon.split("/")[1];
-    const Icon =
-      // @ts-ignore
-      Icons[iconClass][iconName];
-    return <Icon size={size ?? 22} color={color ?? colors.white} />;
-  };
