@@ -184,14 +184,18 @@ export const configReducer: IConfigReducer = {
   async setOriginalImage(state, data) {
     const { buttonIndex, pageIndex, originalImage } = data;
 
-    let display: IDisplaySettings;
     if (pageIndex === -1 && buttonIndex === -1) {
-      display = state.defaultBackDisplay;
+      state.defaultBackDisplay.originalImage = originalImage;
+      state.defaultBackDisplay = await generateAdditionalImagery(
+        state.defaultBackDisplay
+      );
     } else {
-      display = state.pages[pageIndex][buttonIndex].display;
+      state.pages[pageIndex][buttonIndex].display.originalImage = originalImage;
+      state.pages[pageIndex][buttonIndex].display =
+        await generateAdditionalImagery(
+          state.pages[pageIndex][buttonIndex].display
+        );
     }
-    display.originalImage = originalImage;
-    display = await generateAdditionalImagery(display);
     if (pageIndex === -1 && buttonIndex === -1) {
       return cloneDeep(await configReducer.updateAllDefaultBackImages(state));
     }
