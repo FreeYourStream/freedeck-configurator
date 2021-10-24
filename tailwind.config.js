@@ -43,6 +43,7 @@ module.exports = {
   theme: {
     fontFamily: {
       sans: ["Barlow", ...defaultTheme.fontFamily.sans],
+      fd: ["Barlow", ...defaultTheme.fontFamily.sans],
     },
     colors: {
       white: "#fff",

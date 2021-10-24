@@ -90,10 +90,10 @@ export const Header: React.FC<{
       )}
     >
       <div className={c("flex mr-12")}>
-        <div className={c("font-thin text-5xl text-white")}>Free</div>
+        <div className={c("font-thin text-5xl text-white font-fd")}>Free</div>
         {/*"font-thin text-5xl text-white "/*/}
         {/*"font-thin text-5xl bg-gradient-to-br from-red-100 to-gray-400 rounded-sm"*/}
-        <div className={c("font-medium text-5xl text-white")}>Deck</div>
+        <div className={c("font-medium text-5xl text-white font-fd")}>Deck</div>
       </div>
       <div className={c("flex h-14 justify-between items-center w-full")}>
         <form

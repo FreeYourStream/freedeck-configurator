@@ -18,7 +18,7 @@ const Pill: React.FC<{ className?: string; button: IButtonSetting }> = ({
 }) => {
   const keys = useTranslateKeyboardLayout(button.values);
   const pillClassName =
-    "absolute top-14  px-2 flex justify-center items-center gap-1 align-middle h-6 text-base shadow-lg rounded-full";
+    "absolute top-14  px-2 flex justify-center items-center gap-1 align-middle h-6 text-base shadow-lg rounded-md";
   return (
     <div
       className={c("w-full flex justify-center whitespace-nowrap", className)}

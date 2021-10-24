@@ -44,7 +44,7 @@ export const ChangePage: React.FC<{
         ) : (
           <FDButton
             prefix={<LogoutIcon className="h-5 w-5" />}
-            size={1}
+            size={2}
             onClick={() => scrollToPage(action.values[0])}
           >
             Scroll To {(action.values[0] + 1).toString()}
