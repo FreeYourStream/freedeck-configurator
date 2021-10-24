@@ -62,7 +62,7 @@ export const GlobalSettings: React.FC<{
       setClose={setClose}
       title="General settings"
     >
-      <TabView tabs={tabs} />
+      <TabView tabs={tabs} className="h-dp-settings" />
     </Window>
   );
 };

@@ -41,22 +41,20 @@ export const Hotkeys: React.FC<{
       <Row>
         <Label>Key</Label>
         <StyledSelect
-          className="w-36"
+          className="w-40"
           value={0}
-          onChange={(e) => {
+          onChange={(value) => {
             if (action.values.length < 7)
-              setKeys([...action.values, parseInt(e.target.value)]);
+              setKeys([...action.values, parseInt(value)]);
           }}
-        >
-          <option key={0} value={0}>
-            Choose Key
-          </option>
-          {Object.keys(keys).map((keyName) => (
-            <option key={keyName} value={keys[keyName]?.hid}>
-              {keyName}
-            </option>
-          ))}
-        </StyledSelect>
+          options={[
+            { text: "Choose key", value: 0 },
+            ...Object.keys(keys).map((keyName) => ({
+              text: keyName,
+              value: keys[keyName]?.hid,
+            })),
+          ]}
+        />
       </Row>
       <Row>
         <div

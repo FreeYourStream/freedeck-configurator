@@ -1,6 +1,6 @@
 import React from "react";
 import { IButtonSetting } from "../../interfaces";
-import { Value } from "../../lib/components/LabelValue";
+import { Label, Value } from "../../lib/components/LabelValue";
 import { Row } from "../../lib/components/Row";
 import { StyledSelect } from "../../lib/components/SelectInput";
 import { FDSlider } from "../../lib/components/Slider";
@@ -10,17 +10,21 @@ export const FreeDeckSettings: React.FC<{
   setSetting: (setting: number[]) => void;
 }> = ({ action, setSetting }) => {
   return (
-    <div className="my-2">
-      <StyledSelect
-        className="w-full"
-        value={action.values[0]}
-        onChange={(e) => setSetting([parseInt(e.target.value)])}
-      >
-        <option value={-1}>Select Setting</option>
-        <option value={1}>Decrease Brightness</option>
-        <option value={2}>Increase Brightness</option>
-        <option value={3}>Set Brightness</option>
-      </StyledSelect>
+    <>
+      <Row>
+        <Label>Setting</Label>
+        <StyledSelect
+          className="w-40"
+          value={action.values[0] ?? -1}
+          onChange={(value) => setSetting([parseInt(value)])}
+          options={[
+            { text: "Select Setting", value: -1 },
+            { text: "Decrease Brightness", value: 1 },
+            { text: "Increase Brightness", value: 2 },
+            { text: "Set Brightness", value: 3 },
+          ]}
+        />
+      </Row>
       {action.values[0] === 3 && (
         <Row>
           <FDSlider
@@ -34,6 +38,6 @@ export const FreeDeckSettings: React.FC<{
           <Value>{(((action.values[1] || 128) / 255) * 100).toFixed(0)}%</Value>
         </Row>
       )}
-    </div>
+    </>
   );
 };

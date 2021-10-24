@@ -11,13 +11,13 @@ export const Switch: React.FC<{
       onClick={() => onChange(!value)}
       className={c(
         className,
-        "flex w-12 h-6 rounded-full items-center p-1",
+        "flex w-12 h-6 rounded-md items-center p-1",
         value ? "bg-success-600" : "bg-danger-600"
       )}
     >
       <div
         className={c(
-          "w-4 h-4 rounded-full bg-white transform transition ease-in-out duration-100",
+          "w-4 h-4 rounded bg-white transform transition ease-in-out duration-100",
           value ? "translate-x-6" : "translate-x-0"
         )}
       />

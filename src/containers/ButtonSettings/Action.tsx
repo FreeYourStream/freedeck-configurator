@@ -84,17 +84,18 @@ export const Action: React.FC<{
       <Row>
         <Label>Mode</Label>
         <StyledSelect
-          className="w-36"
+          className="w-40"
           value={action.mode}
-          onChange={(e) => setMode(parseInt(e.target.value))}
-        >
-          <option value="2">Do nothing</option>
-          <option value="1">Change Page</option>
-          <option value="0">Hot Key</option>
-          <option value="3">Special Keys</option>
-          <option value="4">Text (Beta)</option>
-          <option value="5">Settings (Beta)</option>
-        </StyledSelect>
+          onChange={(value) => setMode(parseInt(value))}
+          options={[
+            { value: 2, text: "Do nothing" },
+            { value: 1, text: "Change Page" },
+            { value: 0, text: "Hot Key" },
+            { value: 3, text: "Special Keys" },
+            { value: 4, text: "Text (Beta)" },
+            { value: 5, text: "Settings (Beta)" },
+          ]}
+        />
       </Row>
       {action.mode === EAction.hotkeys && (
         <Hotkeys action={action} onKey={onKey} setKeys={setMultipleValues} />

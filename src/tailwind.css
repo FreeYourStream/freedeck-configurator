@@ -12,21 +12,19 @@
   }
   @media screen and (-webkit-min-device-pixel-ratio: 0) {
     input[type="range"]::-webkit-slider-thumb {
-      width: 15px;
       -webkit-appearance: none;
-      appearance: none;
-      height: 15px;
-      cursor: ew-resize;
-      background: #fff;
-      box-shadow: -405px 0 0 400px #4b4b4e;
-      border-radius: 50%;
-    }
-    input[type="range"]:disabled::-webkit-slider-thumb {
-      background: #87878c;
-      box-shadow: -405px 0 0 400px #a7a7aa;
+      @apply h-4 w-4 rounded-md bg-white;
     }
   }
-}
-.react-confirm-alert-overlay {
-  @apply bg-black bg-opacity-70;
+
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-200;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary-500;
+  }
 }

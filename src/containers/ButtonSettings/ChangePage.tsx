@@ -19,26 +19,24 @@ export const ChangePage: React.FC<{
         <Row>
           <Label>Page</Label>
           <StyledSelect
-            className="w-32"
-            value={action.values[0]}
-            onChange={(e) => setGoTo(parseInt(e.target.value))}
-          >
-            <option value={-1}>Select Page</option>
-            {pages.map((pageNumber) => {
-              return (
-                <option key={pageNumber} value={pageNumber}>
-                  Go to {pageNumber + 1}
-                </option>
-              );
-            })}
-          </StyledSelect>
+            className="w-40"
+            value={action.values[0] ?? -1}
+            onChange={(value) => setGoTo(parseInt(value))}
+            options={[
+              { text: "Select Page", value: -1 },
+              ...pages.map((page) => ({
+                value: page,
+                text: `Go to ${page + 1}`,
+              })),
+            ]}
+          />
         </Row>
       ) : null}
       <div className="flex justify-center my-2">
         {action.values[0] === undefined ? (
           <FDButton
             prefix={<PlusCircleIcon className="h-5 w-5" />}
-            size={1}
+            size={2}
             onClick={async () => await addPage()}
           >
             Add Page

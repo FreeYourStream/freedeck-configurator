@@ -1,6 +1,8 @@
 import React from "react";
 import { EMediaKeys, MediaKeys } from "../../definitions/keys";
 import { IButtonSetting } from "../../interfaces";
+import { Label } from "../../lib/components/LabelValue";
+import { Row } from "../../lib/components/Row";
 import { StyledSelect } from "../../lib/components/SelectInput";
 
 export const SpecialKeys: React.FC<{
@@ -8,22 +10,18 @@ export const SpecialKeys: React.FC<{
   setKeys: (keys: number[]) => void;
 }> = ({ action, setKeys }) => {
   return (
-    <>
+    <Row>
+      <Label>Key</Label>
       <StyledSelect
-        className="mt-2"
-        value={action.values[0]}
-        onChange={(e) => setKeys([parseInt(e.target.value)])}
-      >
-        <option key={0} value={0}>
-          Choose Key
-        </option>
-        {MediaKeys.map((enumKey) => (
-          //@ts-ignore
-          <option key={enumKey} value={EMediaKeys[enumKey]}>
-            {enumKey}
-          </option>
-        ))}
-      </StyledSelect>
-    </>
+        className="w-40"
+        value={action.values[0] ?? 0}
+        onChange={(value) => setKeys([parseInt(value)])}
+        options={[
+          { text: "Choose key", value: 0 },
+          // @ts-ignore
+          ...MediaKeys.map((key) => ({ value: EMediaKeys[key], text: key })),
+        ]}
+      />
+    </Row>
   );
 };

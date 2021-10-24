@@ -15,20 +15,18 @@ export const Text: React.FC<{
       <StyledSelect
         className="w-full my-2"
         value={0}
-        onChange={(e) => {
+        onChange={(value) => {
           if (action.values.length < 15)
-            setKeys([...action.values, parseInt(e.target.value)]);
+            setKeys([...action.values, parseInt(value)]);
         }}
-      >
-        <option key={0} value={0}>
-          Choose Key
-        </option>
-        {Object.keys(keys).map((keyName) => (
-          <option key={keyName} value={keys[keyName]?.hid}>
-            {keyName}
-          </option>
-        ))}
-      </StyledSelect>
+        options={[
+          { value: 0, text: "Choose key" },
+          ...Object.keys(keys).map((keyName) => ({
+            text: keyName,
+            value: keys[keyName]?.hid,
+          })),
+        ]}
+      />
       <textarea
         className="bg-gray-400 my-2 rounded-lg resize-none p-2 w-full h-60"
         rows={12}

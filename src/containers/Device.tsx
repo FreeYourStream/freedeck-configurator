@@ -20,16 +20,14 @@ const DisplayCountDropDown: React.FC<{
   onChange: (newValue: number) => void;
 }> = ({ onChange, options, value }) => (
   <StyledSelect
-    className="w-14"
+    className="w-16"
     value={value}
-    onChange={(e) => onChange(parseInt(e.target.value, 10))}
-  >
-    {options.map((option) => (
-      <option key={option} value={option}>
-        {option.toString()}
-      </option>
-    ))}
-  </StyledSelect>
+    onChange={(value) => onChange(parseInt(value, 10))}
+    options={options.map((option) => ({
+      text: option.toString(),
+      value: option,
+    }))}
+  />
 );
 
 export const Device: React.FC<{}> = () => {

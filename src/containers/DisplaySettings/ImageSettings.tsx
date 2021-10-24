@@ -128,7 +128,7 @@ export const ImageSettings: React.FC<{
           <>
             <Row className="h-7">
               <CtrlDuo>
-                <SunIconAlt className="h-7 w-7Te" />
+                <SunIconAlt className="h-7 w-7" />
                 <Label>White Threshold</Label>
               </CtrlDuo>
               <FDSlider
@@ -144,7 +144,7 @@ export const ImageSettings: React.FC<{
             </Row>
             <Row className="h-7">
               <CtrlDuo>
-                <SunIcon className="h-7 w-7Te" />
+                <SunIcon className="h-7 w-7" />
                 <Label>Black Threshold</Label>
               </CtrlDuo>
               <FDSlider
@@ -163,7 +163,7 @@ export const ImageSettings: React.FC<{
           <>
             <Row className="h-7">
               <CtrlDuo>
-                <SunIconAlt className="h-7 w-7Te" />
+                <SunIconAlt className="h-7 w-7" />
                 <Label>Brightness:</Label>
               </CtrlDuo>
               <FDSlider
@@ -178,7 +178,7 @@ export const ImageSettings: React.FC<{
             </Row>
             <Row className="h-7">
               <CtrlDuo>
-                <MoonIcon className="h-7 w-7Te" />
+                <MoonIcon className="h-7 w-7" />
                 <Label>Contrast:</Label>
               </CtrlDuo>
               <FDSlider
@@ -196,7 +196,7 @@ export const ImageSettings: React.FC<{
 
         <Row className="h-7">
           <CtrlDuo>
-            <RefreshIcon className="h-7 w-7Te" />
+            <RefreshIcon className="h-7 w-7" />
             <Label>Invert</Label>
           </CtrlDuo>
           <Switch
@@ -235,19 +235,20 @@ export const ImageSettings: React.FC<{
             <StyledSelect
               className="w-32"
               value={display.textSettings.font}
-              onChange={(e) => setfontName(e.target.value)}
-            >
-              <option value={fontSmaller}>smaller</option>
-              <option value={fontSmall}>small</option>
-              <option value={fontMedium}>medium</option>
-              <option value={fontLarge}>large</option>
-            </StyledSelect>
+              onChange={(value) => setfontName(value)}
+              options={[
+                { value: fontSmaller, text: "xs" },
+                { value: fontSmall, text: "medium" },
+                { value: fontMedium, text: "large" },
+                { value: fontLarge, text: "xl" },
+              ]}
+            />
             <Value>{display.textSettings.font}</Value>
           </CtrlDuo>
         </Row>
         <Row>
           <CtrlDuo>
-            <SwitchHorizontalIcon className="h-7 w-7Te" />
+            <SwitchHorizontalIcon className="h-7 w-7" />
             <Label>Icon width:</Label>
           </CtrlDuo>
           <FDSlider
