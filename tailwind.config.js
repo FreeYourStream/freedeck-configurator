@@ -42,7 +42,7 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     fontFamily: {
-      sans: ["Barlow", ...defaultTheme.fontFamily.sans],
+      sans: ["Nunito Sans", ...defaultTheme.fontFamily.sans],
       fd: ["Barlow", ...defaultTheme.fontFamily.sans],
     },
     colors: {
