@@ -13,7 +13,7 @@ import { useUser } from "../graphql/hooks/useUser";
 import { Avatar } from "../lib/components/Avatar";
 import { FDButton } from "../lib/components/Button";
 import { Value } from "../lib/components/LabelValue";
-import { Popover } from "../lib/components/Popover";
+import { FDMenu } from "../lib/components/Menu";
 import { connectionStatus } from "../lib/serial";
 import { AppStateContext } from "../states/appState";
 import { ConfigStateContext } from "../states/configState";
@@ -25,13 +25,10 @@ const LoginLogoutButtons: React.FC<{
   openFDHub: () => void;
 }> = ({ openLogin, openFDHub }) => {
   const { user } = useUser();
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   if (user) {
     return (
       <>
-        <Popover
-          isOpen={isPopoverOpen}
-          setIsOpen={setIsPopoverOpen}
+        <FDMenu
           entries={[
             {
               title: "Logout",
@@ -41,14 +38,10 @@ const LoginLogoutButtons: React.FC<{
             },
           ]}
         >
-          <FDButton
-            size={3}
-            prefix={<Avatar size={24} src={user.avatar} />}
-            onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-          >
+          <FDButton size={3} prefix={<Avatar size={24} src={user.avatar} />}>
             {user.displayName}
           </FDButton>
-        </Popover>
+        </FDMenu>
       </>
     );
   }

@@ -31,8 +31,8 @@ export const Modal: React.FC<{
         <Transition.Child
           as={Fragment}
           enter="transition duration-100 ease-out"
-          enterFrom="transform scale-95 opacity-0"
-          enterTo="transform scale-100 opacity-70"
+          enterFrom="transform scale-95 translate-y-8 opacity-0"
+          enterTo="transform scale-100 translate-y-0 opacity-70"
           leave="transition duration-75 ease-out"
           leaveFrom="transform scale-100 opacity-70"
           leaveTo="transform scale-95 opacity-0"

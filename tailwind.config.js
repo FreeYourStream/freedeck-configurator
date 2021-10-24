@@ -134,7 +134,7 @@ module.exports = {
           height: "0px",
           borderLeft: "8px solid transparent",
           borderRight: "8px solid transparent",
-          borderBottom: "8px solid #262627",
+          borderBottom: "8px solid #5D3B88",
         },
       };
       addComponents(arrows);
