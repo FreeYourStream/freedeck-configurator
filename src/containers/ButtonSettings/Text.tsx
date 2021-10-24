@@ -11,7 +11,7 @@ export const Text: React.FC<{
 }> = ({ action, setKeys, onKey }) => {
   const translatedKeys = useTranslateKeyboardLayout(action.values);
   return (
-    <div className="">
+    <>
       <StyledSelect
         className="w-full my-2"
         value={0}
@@ -30,7 +30,7 @@ export const Text: React.FC<{
         ))}
       </StyledSelect>
       <textarea
-        className="bg-gray-400 my-2 rounded-lg resize-none p-2 w-full"
+        className="bg-gray-400 my-2 rounded-lg resize-none p-2 w-full h-60"
         rows={12}
         onKeyDown={(e) => {
           if (e.nativeEvent.code !== "Backspace") return onKey(e, 15);
@@ -40,6 +40,6 @@ export const Text: React.FC<{
         }}
         value={translatedKeys.reduce((acc, value) => `${acc}[${value}]`, "")}
       />
-    </div>
+    </>
   );
 };

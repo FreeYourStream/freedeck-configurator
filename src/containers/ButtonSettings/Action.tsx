@@ -79,7 +79,7 @@ export const Action: React.FC<{
     [action]
   );
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full">
       <Title className="mb-2">{title}</Title>
       <Row>
         <Label>Mode</Label>

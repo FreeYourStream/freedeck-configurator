@@ -10,6 +10,7 @@ export const SpecialKeys: React.FC<{
   return (
     <>
       <StyledSelect
+        className="mt-2"
         value={action.values[0]}
         onChange={(e) => setKeys([parseInt(e.target.value)])}
       >

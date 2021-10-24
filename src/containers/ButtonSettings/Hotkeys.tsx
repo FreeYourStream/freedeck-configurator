@@ -41,7 +41,7 @@ export const Hotkeys: React.FC<{
       <Row>
         <Label>Key</Label>
         <StyledSelect
-          className="w-32"
+          className="w-36"
           value={0}
           onChange={(e) => {
             if (action.values.length < 7)

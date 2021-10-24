@@ -36,8 +36,8 @@ export const FDMenu: React.FC<{
               <div className="flex flex-col justify-center items-center">
                 <div className="mt-1 arrow-up z-50" />
                 <div className="bg-gray-500 rounded-lg gap-1px p-2">
-                  {entries.map((entry) => (
-                    <Menu.Item>
+                  {entries.map((entry, index) => (
+                    <Menu.Item key={index}>
                       {({ active }) => (
                         <div
                           onClick={entry.onClick}

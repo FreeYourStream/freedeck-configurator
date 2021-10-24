@@ -10,7 +10,7 @@ export const ButtonSettingsContainer: React.FC<{
   const { pages } = useContext(ConfigStateContext);
   const button = pages[pageIndex][displayIndex].button;
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full">
       <div className="grid grid-cols-2 grid-rows-1 gap-4 h-full mb-4">
         <div className="relative flex flex-col p-4 bg-gray-700 rounded-2xl">
           <Action

@@ -72,6 +72,7 @@ export const DisplayButton: React.FC<{
           setClose={() => setShowSettings(false)}
         >
           <TabView
+            className="h-dp-settings"
             tabs={[
               {
                 title: "Display Settings",
