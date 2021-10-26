@@ -2,17 +2,24 @@ import c from "clsx";
 import React from "react";
 
 export const Switch: React.FC<{
+  disabled?: boolean;
   className?: string;
   onChange: (value: boolean) => any;
   value: boolean;
-}> = ({ className, value, onChange }) => {
+}> = ({ className, value, onChange, disabled = false }) => {
   return (
     <div
-      onClick={() => onChange(!value)}
+      onClick={() => !disabled && onChange(!value)}
       className={c(
         className,
         "flex w-12 h-6 rounded-md items-center p-1",
-        value ? "bg-success-600" : "bg-danger-600"
+        !disabled
+          ? value
+            ? "bg-success-600"
+            : "bg-danger-600"
+          : value
+          ? "bg-success-300"
+          : "bg-danger-300"
       )}
     >
       <div

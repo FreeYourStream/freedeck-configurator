@@ -19,14 +19,16 @@ import { Actions, FunctionForFirstParamType } from "./interfaces";
 export interface ConfigState {
   configVersion: string;
   brightness: number;
+  screenSaverTimeout: number;
   width: number;
   height: number;
   pages: IPage[];
   defaultBackDisplay: IDisplaySettings;
 }
-export const defaultConfigState: () => Promise<ConfigState> = async () => ({
+export const defaultConfigState = async (): Promise<ConfigState> => ({
   configVersion: (await import("../../package.json")).configFileVersion,
   brightness: 200,
+  screenSaverTimeout: 0 * 60 * 1000, // in milliseconds
   width: 3,
   height: 2,
   pages: [],
@@ -35,6 +37,7 @@ export const defaultConfigState: () => Promise<ConfigState> = async () => ({
 
 export interface IConfigReducer extends Actions<ConfigState> {
   setBrightness(state: ConfigState, brightness: number): Promise<ConfigState>;
+  setScreenSaver(state: ConfigState, timeout: number): Promise<ConfigState>;
   setDimensions(
     state: ConfigState,
     data: { width?: number; height?: number }
@@ -97,6 +100,9 @@ export interface IConfigReducer extends Actions<ConfigState> {
 export const configReducer: IConfigReducer = {
   async setBrightness(state, brightness) {
     return { ...state, brightness };
+  },
+  async setScreenSaver(state, timeout) {
+    return { ...state, screenSaverTimeout: timeout };
   },
   async setDimensions(state, data) {
     const width = data.width ?? state.width;

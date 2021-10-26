@@ -1,5 +1,4 @@
 import fs from "floyd-steinberg";
-import Jimp from "jimp";
 
 import { IDisplaySettings } from "../../interfaces";
 import { colorBitmapToMonochromeBitmap } from "./colorToMonoBitmap";
@@ -12,15 +11,17 @@ export const composeImage = async (
   if (!originalImage) throw new Error("no original image");
   let jimpImage: any;
   try {
-    jimpImage = await Jimp.read(originalImage);
+    jimpImage = await import("jimp").then((jimp) =>
+      jimp.default.read(originalImage)
+    );
   } catch {
     console.log("image is corrupted");
-    jimpImage = await Jimp.create(128, 64, "black");
+    jimpImage = await import("jimp").then((jimp) =>
+      jimp.default.create(128, 64, "black")
+    );
   }
-  const ditherBackground = await Jimp.create(
-    jimpImage.getWidth(),
-    jimpImage.getHeight(),
-    "black"
+  const ditherBackground = await import("jimp").then((jimp) =>
+    jimp.default.create(jimpImage.getWidth(), jimpImage.getHeight(), "black")
   );
   if (imageSettings.invert) ditherBackground.invert();
   jimpImage = await ditherBackground.composite(jimpImage, 0, 0);
@@ -42,11 +43,15 @@ export const composeImage = async (
   if (imageSettings.invert) jimpImage.invert();
   await jimpImage.autocrop();
 
-  const background = new Jimp(128, 64, "black");
+  const background = await import("jimp").then(
+    (jimp) => new jimp.default(128, 64, "black")
+  );
 
   if (textSettings.text.length) {
     jimpImage.scaleToFit(128 * textWithIconSettings.iconWidthMultiplier, 64);
-    const font = await Jimp.loadFont(textSettings.font);
+    const font = await import("jimp").then((jimp) =>
+      jimp.default.loadFont(textSettings.font)
+    );
     const fontSize = font.common.lineHeight - 2;
     let lines = textSettings.text.split(/\r?\n/).filter((line) => line);
     const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
@@ -79,8 +84,12 @@ export const composeText = async (
   settings: IDisplaySettings
 ): Promise<Buffer> => {
   const { textSettings } = settings;
-  const image = await Jimp.create(128, 64, "black");
-  const font = await Jimp.loadFont(textSettings.font);
+  const image = await import("jimp").then((jimp) =>
+    jimp.default.create(128, 64, "black")
+  );
+  const font = await import("jimp").then((jimp) =>
+    jimp.default.loadFont(textSettings.font)
+  );
   const fontSize = font.common.lineHeight - 2;
   let lines = textSettings.text.split(/\r?\n/).filter((line) => line);
   const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
@@ -96,7 +105,9 @@ export const composeText = async (
       );
     })
   );
-  const background = await Jimp.create(128, 64, "black");
+  const background = await import("jimp").then((jimp) =>
+    jimp.default.create(128, 64, "black")
+  );
   background.composite(
     image,
     (128 - image.getWidth()) / 2,
@@ -105,3 +116,10 @@ export const composeText = async (
   const bitmapBuffer = await background.getBufferAsync("image/bmp");
   return await colorBitmapToMonochromeBitmap(bitmapBuffer, 128, 64);
 };
+
+const workaround = {
+  composeText,
+  composeImage,
+};
+
+export default workaround;

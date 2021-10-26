@@ -25,6 +25,17 @@ export const Displays: React.FC<{}> = () => {
           }
         />
       </Row>
+      <Row>
+        <Label>Screen saver timeout:</Label>
+        <FDSlider
+          min={0}
+          max={15 * 60 * 1000}
+          value={configState.screenSaverTimeout}
+          onChange={(e) =>
+            configDispatch.setScreenSaver(e.currentTarget.valueAsNumber)
+          }
+        />
+      </Row>
     </div>
   );
 };

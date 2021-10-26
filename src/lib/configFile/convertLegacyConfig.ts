@@ -5,7 +5,6 @@ import {
 import { IDisplaySettings, IPage } from "../../interfaces";
 import { ConfigState } from "../../states/configState";
 import { getBase64Image } from "../image/base64Encode";
-import { composeImage, composeText } from "../image/composeImage";
 import { generateAdditionalImagery } from "./parseConfig";
 
 interface LegacyDisplay
@@ -52,6 +51,7 @@ export const convertLegacyConfig = async (
   const originalImage = Buffer.from(rawConfig.defaultBackDisplay.image);
   const temp: ConfigState = {
     brightness: rawConfig.brightness || 128,
+    screenSaverTimeout: 0,
     configVersion: "1.1.0",
     width: configBuffer.readUInt8(0),
     height: configBuffer.readUInt8(1),
@@ -67,8 +67,12 @@ export const convertLegacyConfig = async (
     }),
   };
   temp.defaultBackDisplay.convertedImage = temp.defaultBackDisplay.originalImage
-    ? await composeImage(temp.defaultBackDisplay)
-    : await composeText(temp.defaultBackDisplay);
+    ? await (
+        await import("../image/composeImage")
+      ).composeImage(temp.defaultBackDisplay)
+    : await (
+        await import("../image/composeImage")
+      ).composeText(temp.defaultBackDisplay);
   temp.defaultBackDisplay.previewImage = getBase64Image(
     temp.defaultBackDisplay.convertedImage
   );

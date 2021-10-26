@@ -36,10 +36,7 @@ export const Window: React.FC<{
           leaveTo="transform scale-95 opacity-0"
         >
           <div
-            className={c(
-              "relative bg-gray-900 rounded-2xl z-20 overflow-hidden",
-              className
-            )}
+            className={c("relative bg-gray-900 rounded-2xl z-20", className)}
           >
             <div
               className={c(

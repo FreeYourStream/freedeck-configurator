@@ -7,7 +7,7 @@ import {
 } from "@heroicons/react/outline";
 import React from "react";
 import { About } from "./About";
-import { Displays } from "./Brightness";
+import { Displays } from "./Displays";
 import { Device } from "./Device";
 import { Serial } from "./Serial";
 import { Window } from "../lib/components/Window";

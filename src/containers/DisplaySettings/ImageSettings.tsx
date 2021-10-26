@@ -114,16 +114,16 @@ export const ImageSettings: React.FC<{
   };
 
   return (
-    <div className="grid grid-cols-2 gap-4 grid-rows-1 w-full h-full">
-      <div className="relative flex flex-col p-8  bg-gray-700 rounded-2xl">
+    <div className="grid grid-cols-2 gap-2 grid-rows-1 w-full h-full">
+      <div className="relative flex flex-col p-8  bg-gray-700 rounded-l-2xl">
         <div
           className={c(
-            "z-10 bg-gray-900 opacity-80 top-0 left-0 right-0 bottom-0 absolute rounded-2xl",
+            "z-10 bg-gray-900 opacity-80 top-0 left-0 right-0 bottom-0 absolute rounded-l-2xl",
             display.originalImage ? "hidden" : "block"
           )}
           title="These options are disabled. Load an image by clicking on the black box or just enter some text"
         />
-        <Title className="mb-2">Image Settings</Title>
+        <Title className="mb-2">Image</Title>
         {!display.imageSettings.dither ? (
           <>
             <Row className="h-7">
@@ -132,6 +132,7 @@ export const ImageSettings: React.FC<{
                 <Label>White Threshold</Label>
               </CtrlDuo>
               <FDSlider
+                disabled={!display.originalImage}
                 className="w-32"
                 min={0}
                 max={128}
@@ -148,6 +149,7 @@ export const ImageSettings: React.FC<{
                 <Label>Black Threshold</Label>
               </CtrlDuo>
               <FDSlider
+                disabled={!display.originalImage}
                 className="w-32"
                 min={128}
                 max={255}
@@ -167,6 +169,7 @@ export const ImageSettings: React.FC<{
                 <Label>Brightness:</Label>
               </CtrlDuo>
               <FDSlider
+                disabled={!display.originalImage}
                 min={-1}
                 max={1}
                 step={0.02}
@@ -182,6 +185,7 @@ export const ImageSettings: React.FC<{
                 <Label>Contrast:</Label>
               </CtrlDuo>
               <FDSlider
+                disabled={!display.originalImage}
                 min={-1}
                 max={1}
                 step={0.02}
@@ -200,6 +204,7 @@ export const ImageSettings: React.FC<{
             <Label>Invert</Label>
           </CtrlDuo>
           <Switch
+            disabled={!display.originalImage}
             onChange={(value) => setInvert(value)}
             value={display.imageSettings.invert}
           />
@@ -210,14 +215,15 @@ export const ImageSettings: React.FC<{
             <Label>Dither</Label>
           </CtrlDuo>
           <Switch
+            disabled={!display.originalImage}
             onChange={(value) => setDither(value)}
             value={display.imageSettings.dither}
           />
         </Row>
       </div>
 
-      <div className="relative flex flex-col p-8 bg-gray-700 rounded-2xl">
-        <Title className="mb-2">Text Settings</Title>
+      <div className="relative flex flex-col p-8 bg-gray-700 rounded-r-2xl">
+        <Title className="mb-2">Text</Title>
         <Row>
           <TextInput
             className="w-full"
