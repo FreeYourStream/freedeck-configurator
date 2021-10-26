@@ -13,7 +13,7 @@
   @media screen and (-webkit-min-device-pixel-ratio: 0) {
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      @apply h-4 w-4 rounded-md bg-white;
+      @apply h-4 w-4 rounded bg-white;
     }
   }
 

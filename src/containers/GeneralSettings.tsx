@@ -5,22 +5,24 @@ import {
   SunIcon,
   SwitchVerticalIcon,
 } from "@heroicons/react/outline";
-import React from "react";
-import { About } from "./About";
-import { Displays } from "./Displays";
-import { Device } from "./Device";
-import { Serial } from "./Serial";
-import { Window } from "../lib/components/Window";
+import React, { useContext } from "react";
 import { TabView } from "../lib/components/TabView";
+import { Window } from "../lib/components/Window";
+import { AppDispatchContext, AppStateContext } from "../states/appState";
+import { ConfigDispatchContext } from "../states/configState";
+import { About } from "./About";
 import { DefaultBackButtonSettings } from "./DefaultBackButtonSettings";
+import { Device } from "./Device";
+import { Displays } from "./Displays";
+import { Serial } from "./Serial";
 
 export const GlobalSettings: React.FC<{
-  setClose: () => void;
   loadConfigFile: (buffer: Buffer) => void;
   getConfigBuffer: () => Promise<Buffer>;
-  visible?: boolean;
-  readyToSave: boolean;
-}> = ({ setClose, loadConfigFile, getConfigBuffer, visible, readyToSave }) => {
+}> = ({ loadConfigFile, getConfigBuffer }) => {
+  const { showSettings } = useContext(AppStateContext);
+  const { setShowSettings } = useContext(AppDispatchContext);
+  const configDispatch = useContext(ConfigDispatchContext);
   const tabs = [
     {
       title: "Default back button",
@@ -51,15 +53,17 @@ export const GlobalSettings: React.FC<{
         <Serial
           getConfigBuffer={getConfigBuffer}
           loadConfigFile={loadConfigFile}
-          readyToSave={readyToSave}
         />
       ),
     });
   return (
     <Window
       className="w-dp-settings"
-      visible={visible}
-      setClose={setClose}
+      visible={showSettings}
+      setClose={() => {
+        setShowSettings(false);
+        configDispatch.updateAllDefaultBackImages(undefined);
+      }}
       title="General settings"
     >
       <TabView tabs={tabs} className="h-dp-settings" />

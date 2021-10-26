@@ -15,7 +15,7 @@ import { FDButton } from "../lib/components/Button";
 import { Value } from "../lib/components/LabelValue";
 import { FDMenu } from "../lib/components/Menu";
 import { connectionStatus } from "../lib/serial";
-import { AppStateContext } from "../states/appState";
+import { AppDispatchContext, AppStateContext } from "../states/appState";
 import { ConfigStateContext } from "../states/configState";
 
 const iconSize = "w-6 h-6";
@@ -59,18 +59,12 @@ const LoginLogoutButtons: React.FC<{
 export const Header: React.FC<{
   loadConfigFile: (filesOrBuffer: Buffer | FileList) => void;
   saveConfigFile: () => void;
-  setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
   createConfigBuffer: () => Promise<Buffer>;
   openLogin: () => void;
-}> = ({
-  loadConfigFile,
-  saveConfigFile,
-  setShowSettings,
-  createConfigBuffer,
-  openLogin,
-}) => {
+}> = ({ loadConfigFile, saveConfigFile, createConfigBuffer, openLogin }) => {
   const { pages } = useContext(ConfigStateContext);
   const { serialApi, ctrlDown } = useContext(AppStateContext);
+  const { setShowSettings } = useContext(AppDispatchContext);
   const [connected, setConnected] = useState<boolean>(!!serialApi?.connected);
   const [progress, setProgress] = useState<number>(0);
   const loadConfigRef = useRef<HTMLInputElement | null>(null);

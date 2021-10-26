@@ -8,7 +8,7 @@ import { GlobalSettings } from "./containers/GeneralSettings";
 import { Header } from "./containers/Header";
 import { Login } from "./containers/Login";
 import { Pages } from "./containers/Pages";
-import { useShowLogin, useShowSettings } from "./hooks/states";
+import { useShowLogin } from "./hooks/states";
 import { FDButton } from "./lib/components/Button";
 import { createButtonBody, createImageBody } from "./lib/configFile/createBody";
 import { createFooter } from "./lib/configFile/createFooter";
@@ -46,7 +46,6 @@ const App: React.FC<{
 
   AddEventListeners({ appDispatchContext: appDispatch });
 
-  const [showSettings, setShowSettings] = useShowSettings();
   const [showLogin, setShowLogin] = useShowLogin();
 
   const createConfigBuffer = async (): Promise<Buffer> =>
@@ -77,7 +76,6 @@ const App: React.FC<{
 
                   completeBuffer && download(completeBuffer);
                 }}
-                setShowSettings={setShowSettings}
                 createConfigBuffer={createConfigBuffer}
                 openLogin={() => setShowLogin(true)}
               />
@@ -85,9 +83,6 @@ const App: React.FC<{
                 {!!configState.pages.length ? <Pages /> : <FirstPage />}
               </ContentBody>
               <GlobalSettings
-                visible={showSettings}
-                setClose={() => setShowSettings(false)}
-                readyToSave={!!configState.pages.length}
                 loadConfigFile={(buffer: Buffer) =>
                   loadConfigFile(buffer, configDispatch.setState)
                 }

@@ -11,7 +11,7 @@ export const TabView: React.FC<{
       <div className={c("flex", className)}>
         <Tab.List className="flex flex-col gap-1 bg-gray-800 p-2">
           {tabs.map((tab, index) => (
-            <Tab>
+            <Tab key={index}>
               {({ selected }) => (
                 <div
                   className={c(
@@ -21,7 +21,6 @@ export const TabView: React.FC<{
                       : "text-white hover:bg-gray-400"
                   )}
                   // onClick={() => setActiveTabIndex(index)}
-                  key={index}
                 >
                   <span className="mr-2">{tab.prefix}</span>
                   {tab.title}
@@ -32,7 +31,9 @@ export const TabView: React.FC<{
         </Tab.List>
         <Tab.Panels as={Fragment}>
           {tabs.map((tab, index) => (
-            <Tab.Panel className="w-full  p-4">{tab.content}</Tab.Panel>
+            <Tab.Panel key={index} className="w-full  p-4">
+              {tab.content}
+            </Tab.Panel>
           ))}
         </Tab.Panels>
       </div>

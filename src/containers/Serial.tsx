@@ -6,13 +6,14 @@ import { Row } from "../lib/components/Row";
 import { Title } from "../lib/components/Title";
 import { connectionStatus } from "../lib/serial";
 import { AppStateContext } from "../states/appState";
+import { ConfigStateContext } from "../states/configState";
 
 export const Serial: React.FC<{
   loadConfigFile: (buffer: Buffer) => void;
   getConfigBuffer: () => Promise<Buffer>;
-  readyToSave: boolean;
-}> = ({ loadConfigFile, getConfigBuffer, readyToSave }) => {
+}> = ({ loadConfigFile, getConfigBuffer }) => {
   const { serialApi } = useContext(AppStateContext);
+  const { pages } = useContext(ConfigStateContext);
   const [progress, setProgress] = useState<number | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
   const [fileSize, setFileSize] = useState<number | null>(null);
@@ -85,7 +86,7 @@ export const Serial: React.FC<{
         <Label>Write config to FreeDeck:</Label>
         <FDButton
           className="w-24 justify-center"
-          disabled={!connected || !readyToSave}
+          disabled={!connected || !pages.length}
           size={1}
           onClick={async () =>
             serialApi!.writeConfigOverSerial(

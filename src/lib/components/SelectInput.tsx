@@ -27,7 +27,7 @@ export const StyledSelect: React.FC<{
       <div className="relative">
         <Listbox.Button
           className={c(
-            "relative py-1 pl-3 pr-10 text-left bg-gray-400 rounded shadow-md",
+            "relative py-1 pl-3 pr-10 text-left bg-gray-400 rounded-md shadow-md",
             "cursor-default focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500",
             className
           )}
