@@ -8,7 +8,6 @@ import { GlobalSettings } from "./containers/GeneralSettings";
 import { Header } from "./containers/Header";
 import { Login } from "./containers/Login";
 import { Pages } from "./containers/Pages";
-import { useShowLogin } from "./hooks/states";
 import { FDButton } from "./lib/components/Button";
 import { createButtonBody, createImageBody } from "./lib/configFile/createBody";
 import { createFooter } from "./lib/configFile/createFooter";
@@ -46,8 +45,6 @@ const App: React.FC<{
 
   AddEventListeners({ appDispatchContext: appDispatch });
 
-  const [showLogin, setShowLogin] = useShowLogin();
-
   const createConfigBuffer = async (): Promise<Buffer> =>
     Buffer.concat([
       createHeader(
@@ -77,7 +74,6 @@ const App: React.FC<{
                   completeBuffer && download(completeBuffer);
                 }}
                 createConfigBuffer={createConfigBuffer}
-                openLogin={() => setShowLogin(true)}
               />
               <ContentBody>
                 {!!configState.pages.length ? <Pages /> : <FirstPage />}
@@ -88,7 +84,7 @@ const App: React.FC<{
                 }
                 getConfigBuffer={createConfigBuffer}
               />
-              <Login visible={showLogin} setClose={() => setShowLogin(false)} />
+              <Login />
               <Toaster />
               {!!configState.pages.length && (
                 <div className="fixed bottom-5 right-6">

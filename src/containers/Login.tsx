@@ -1,19 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { FDButton } from "../lib/components/Button";
 import { Window } from "../lib/components/Window";
+import { AppDispatchContext, AppStateContext } from "../states/appState";
 
-export const Login: React.FC<{
-  setClose: () => void;
-  visible: boolean;
-  onClose?: () => void;
-}> = ({ visible, setClose, onClose }) => {
+export const Login: React.FC<{}> = () => {
+  const { setShowLogin } = useContext(AppDispatchContext);
+  const { showLogin } = useContext(AppStateContext);
   return (
     <Window
-      visible={visible}
-      setClose={() => {
-        if (onClose) onClose();
-        setClose();
-      }}
+      visible={showLogin}
+      setClose={() => setShowLogin(false)}
       title="Login"
     >
       <div className="p-8 flex justify-between gap-4">

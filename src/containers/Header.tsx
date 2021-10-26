@@ -60,11 +60,10 @@ export const Header: React.FC<{
   loadConfigFile: (filesOrBuffer: Buffer | FileList) => void;
   saveConfigFile: () => void;
   createConfigBuffer: () => Promise<Buffer>;
-  openLogin: () => void;
-}> = ({ loadConfigFile, saveConfigFile, createConfigBuffer, openLogin }) => {
+}> = ({ loadConfigFile, saveConfigFile, createConfigBuffer }) => {
   const { pages } = useContext(ConfigStateContext);
   const { serialApi, ctrlDown } = useContext(AppStateContext);
-  const { setShowSettings } = useContext(AppDispatchContext);
+  const { setShowSettings, setShowLogin } = useContext(AppDispatchContext);
   const [connected, setConnected] = useState<boolean>(!!serialApi?.connected);
   const [progress, setProgress] = useState<number>(0);
   const loadConfigRef = useRef<HTMLInputElement | null>(null);
@@ -182,7 +181,7 @@ export const Header: React.FC<{
           </FDButton>
           {process.env.REACT_APP_ENABLE_API === "true" && (
             <LoginLogoutButtons
-              openLogin={openLogin}
+              openLogin={() => setShowLogin(true)}
               openFDHub={() => console.log("OPEN FD HUB")}
             />
           )}
