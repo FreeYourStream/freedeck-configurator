@@ -6,8 +6,9 @@ import {
   SwitchVerticalIcon,
 } from "@heroicons/react/outline";
 import React, { useContext } from "react";
+
 import { TabView } from "../lib/components/TabView";
-import { Window } from "../lib/components/Window";
+import { FDWindow } from "../lib/components/Window";
 import { AppDispatchContext, AppStateContext } from "../states/appState";
 import { ConfigDispatchContext } from "../states/configState";
 import { About } from "./About";
@@ -57,7 +58,7 @@ export const GlobalSettings: React.FC<{
       ),
     });
   return (
-    <Window
+    <FDWindow
       className="w-dp-settings"
       visible={showSettings}
       setClose={() => {
@@ -67,6 +68,6 @@ export const GlobalSettings: React.FC<{
       title="General settings"
     >
       <TabView tabs={tabs} className="h-dp-settings" />
-    </Window>
+    </FDWindow>
   );
 };

@@ -9,6 +9,7 @@ import {
 import { SunIcon as SunIconAlt } from "@heroicons/react/solid";
 import c from "clsx";
 import React, { useContext } from "react";
+
 import {
   fontLarge,
   fontMedium,
@@ -21,7 +22,7 @@ import { Row } from "../../lib/components/Row";
 import { StyledSelect } from "../../lib/components/SelectInput";
 import { FDSlider } from "../../lib/components/Slider";
 import { Switch } from "../../lib/components/Switch";
-import { TextInput } from "../../lib/components/TextInput";
+import { TextArea } from "../../lib/components/TextArea";
 import { Title } from "../../lib/components/Title";
 import {
   ConfigDispatchContext,
@@ -225,7 +226,7 @@ export const ImageSettings: React.FC<{
       <div className="relative flex flex-col p-8 bg-gray-700 rounded-r-2xl">
         <Title className="mb-2">Text</Title>
         <Row>
-          <TextInput
+          <TextArea
             className="w-full"
             placeholder={"Enter text"}
             value={display.textSettings.text}

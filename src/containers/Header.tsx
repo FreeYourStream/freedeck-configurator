@@ -2,59 +2,19 @@ import {
   CogIcon,
   DownloadIcon,
   LightningBoltIcon,
-  LogoutIcon,
   SaveIcon,
   UploadIcon,
-  UserIcon,
 } from "@heroicons/react/outline";
 import c from "clsx";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useUser } from "../graphql/hooks/useUser";
-import { Avatar } from "../lib/components/Avatar";
+
+import { iconSize } from "../definitions/iconSizes";
 import { FDButton } from "../lib/components/Button";
 import { Value } from "../lib/components/LabelValue";
-import { FDMenu } from "../lib/components/Menu";
 import { connectionStatus } from "../lib/serial";
 import { AppDispatchContext, AppStateContext } from "../states/appState";
 import { ConfigStateContext } from "../states/configState";
-
-const iconSize = "w-6 h-6";
-
-const LoginLogoutButtons: React.FC<{
-  openLogin: () => void;
-  openFDHub: () => void;
-}> = ({ openLogin, openFDHub }) => {
-  const { user } = useUser();
-  if (user) {
-    return (
-      <>
-        <FDMenu
-          entries={[
-            {
-              title: "Logout",
-              prefix: <LogoutIcon className={iconSize} />,
-              onClick: () =>
-                (window.location.href = `${process.env.REACT_APP_API_URL}/logout`),
-            },
-          ]}
-        >
-          <FDButton size={3} prefix={<Avatar size={24} src={user.avatar} />}>
-            {user.displayName}
-          </FDButton>
-        </FDMenu>
-      </>
-    );
-  }
-  return (
-    <FDButton
-      size={3}
-      prefix={<UserIcon className={iconSize} />}
-      onClick={() => openLogin()}
-    >
-      Login
-    </FDButton>
-  );
-};
+import { LoginLogoutButtons } from "./LoginButton";
 
 export const Header: React.FC<{
   loadConfigFile: (filesOrBuffer: Buffer | FileList) => void;
@@ -137,6 +97,7 @@ export const Header: React.FC<{
                   Load Config
                 </FDButton>
                 <input
+                  title="loadConfig"
                   className={c("hidden")}
                   type="file"
                   id="loadConfig"

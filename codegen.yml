@@ -1,10 +1,11 @@
 overwrite: true
-schema: "http://localhost:5000/graphql"
+schema: "../freedeck-backend/schema.gql"
+documents: "./src/graphql/**/*.gql"
 generates:
-  src/generated/graphql.tsx:
+  src/generated/types-and-hooks.ts:
     config:
       avoidOptionals: true
     plugins:
-      - "typescript"
-      # - "typescript-operations"
-      # - "typescript-react-apollo"
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo

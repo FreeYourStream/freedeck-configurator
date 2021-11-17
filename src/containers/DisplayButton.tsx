@@ -2,10 +2,11 @@ import { AdjustmentsIcon, PhotographIcon } from "@heroicons/react/outline";
 import c from "clsx";
 import React, { useContext, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
+
 import { ActionPreview } from "../lib/components/ActionPreview";
 import { ImagePreview } from "../lib/components/ImagePreview";
-import { Window } from "../lib/components/Window";
 import { TabView } from "../lib/components/TabView";
+import { FDWindow } from "../lib/components/Window";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -19,7 +20,10 @@ export const DisplayButton: React.FC<{
 }> = ({ pageIndex, displayIndex }) => {
   const configState = useContext(ConfigStateContext);
   const configDispatch = useContext(ConfigDispatchContext);
-
+  const display =
+    pageIndex === -1
+      ? configState.defaultBackDisplay
+      : configState.pages[pageIndex][displayIndex].display;
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [{ isDragging }, dragRef] = useDrag({
     item: {
@@ -59,13 +63,12 @@ export const DisplayButton: React.FC<{
       <ImagePreview
         $ref={drop}
         onClick={() => setShowSettings(true)}
-        pageIndex={pageIndex}
-        displayIndex={displayIndex}
+        previewImage={display.previewImage}
       />
       <ActionPreview pageIndex={pageIndex} displayIndex={displayIndex} />
 
       {
-        <Window
+        <FDWindow
           className="w-dp-settings"
           title={`Page ${pageIndex + 1} Display ${displayIndex + 1}`}
           visible={showSettings}
@@ -96,7 +99,7 @@ export const DisplayButton: React.FC<{
               },
             ]}
           />
-        </Window>
+        </FDWindow>
       }
     </div>
   );
