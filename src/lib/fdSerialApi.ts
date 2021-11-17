@@ -12,6 +12,9 @@ export class FDSerialAPI {
           {
             usbVendorId: 0x2341,
           },
+          {
+            usbVendorId: 0xf1f0,
+          },
         ],
         ...options,
       },
