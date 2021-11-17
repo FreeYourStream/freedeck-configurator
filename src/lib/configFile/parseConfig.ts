@@ -61,8 +61,6 @@ export const parseConfig = async (
     );
   }
   const jsonConfigSlice = configBuffer.slice(jsonOffset);
-  console.log(jsonOffset);
-  console.log(jsonConfigSlice.toString());
   const rawConfig = JSON.parse(jsonConfigSlice.toString());
   if (!rawConfig.configVersion) {
     return await convertLegacyConfig(rawConfig, configBuffer);
