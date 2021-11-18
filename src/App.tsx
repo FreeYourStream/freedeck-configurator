@@ -2,6 +2,7 @@ import { useSimpleReducer } from "@bitovi/use-simple-reducer";
 import { PlusCircleIcon } from "@heroicons/react/outline";
 import React from "react";
 import { Toaster } from "react-hot-toast";
+
 import { ContentBody } from "./containers/ContentBody";
 import { FirstPage } from "./containers/FirstTime";
 import { GlobalSettings } from "./containers/GeneralSettings";
@@ -17,17 +18,17 @@ import { download } from "./lib/download";
 import { AddEventListeners } from "./lib/eventListeners";
 import {
   AppDispatchContext,
-  appReducer,
   AppState,
   AppStateContext,
   IAppReducer,
+  appReducer,
 } from "./states/appState";
 import {
   ConfigDispatchContext,
-  configReducer,
   ConfigState,
   ConfigStateContext,
   IConfigReducer,
+  configReducer,
 } from "./states/configState";
 const App: React.FC<{
   defaultConfigState: ConfigState;
@@ -51,6 +52,7 @@ const App: React.FC<{
         configState.width,
         configState.height,
         configState.brightness,
+        configState.screenSaverTimeout,
         configState.pages.length
       ),
       createButtonBody(configState.pages),

@@ -3,7 +3,7 @@ import { XCircleIcon } from "@heroicons/react/solid";
 import c from "clsx";
 import React, { Fragment } from "react";
 
-export const Window: React.FC<{
+export const FDWindow: React.FC<{
   className?: string;
   visible?: boolean;
   setClose: () => void;
@@ -12,7 +12,7 @@ export const Window: React.FC<{
   return (
     <Transition show={visible} as={Fragment}>
       <Dialog
-        className="flex justify-center items-center fixed z-40 inset-0"
+        className="flex justify-center items-center fixed z-40 inset-0 m-24"
         onClose={() => setClose()}
       >
         <Transition.Child
@@ -36,7 +36,10 @@ export const Window: React.FC<{
           leaveTo="transform scale-95 opacity-0"
         >
           <div
-            className={c("relative bg-gray-900 rounded-2xl z-20", className)}
+            className={c(
+              "relative bg-gray-900 rounded-2xl z-20 flex flex-col",
+              className
+            )}
           >
             <div
               className={c(

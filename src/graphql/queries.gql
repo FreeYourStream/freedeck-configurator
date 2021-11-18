@@ -1,0 +1,54 @@
+fragment PageFields on Page {
+  width
+  height
+  previewImages
+  previewActions {
+    primary {
+      mode
+      values
+      enabled
+    }
+    secondary {
+      enabled
+      mode
+      values
+    }
+  }
+  createdBy {
+    avatar
+    displayName
+  }
+  name
+  upvotes
+  tags
+}
+
+query searchPages($searchTerm: String!, $before: String, $after: String) {
+  searchPages(
+    searchTerm: $searchTerm
+    pagination: { before: $before, after: $after }
+  ) {
+    hasNext
+    pages {
+      ...PageFields
+    }
+  }
+}
+
+query me {
+  user {
+    id
+    avatar
+    displayName
+  }
+}
+
+query myPages {
+  myPages {
+    ...PageFields
+  }
+}
+
+mutation pageCreate($input: PageCreateInput!) {
+  pageCreate(input: $input)
+}

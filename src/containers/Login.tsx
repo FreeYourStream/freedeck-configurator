@@ -1,13 +1,14 @@
 import React, { useContext } from "react";
+
 import { FDButton } from "../lib/components/Button";
-import { Window } from "../lib/components/Window";
+import { FDWindow } from "../lib/components/Window";
 import { AppDispatchContext, AppStateContext } from "../states/appState";
 
 export const Login: React.FC<{}> = () => {
   const { setShowLogin } = useContext(AppDispatchContext);
   const { showLogin } = useContext(AppStateContext);
   return (
-    <Window
+    <FDWindow
       visible={showLogin}
       setClose={() => setShowLogin(false)}
       title="Login"
@@ -35,6 +36,6 @@ export const Login: React.FC<{}> = () => {
           Discord
         </FDButton>
       </div>
-    </Window>
+    </FDWindow>
   );
 };

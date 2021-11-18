@@ -1,7 +1,7 @@
-import React, { Fragment } from "react";
-import c from "clsx";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/outline";
+import c from "clsx";
+import React, { Fragment } from "react";
 export interface SelectOption {
   value: any;
   text: string;

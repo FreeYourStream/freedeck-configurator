@@ -1,27 +1,30 @@
 import {
+  AdjustmentsIcon,
+  ArrowsExpandIcon,
   LightningBoltIcon,
   MoonIcon,
   RefreshIcon,
   SunIcon,
-  SwitchHorizontalIcon,
   TranslateIcon,
 } from "@heroicons/react/outline";
 import { SunIcon as SunIconAlt } from "@heroicons/react/solid";
 import c from "clsx";
 import React, { useContext } from "react";
+
 import {
   fontLarge,
   fontMedium,
   fontSmall,
   fontSmaller,
 } from "../../definitions/fonts";
+import { textPosition } from "../../interfaces";
 import { CtrlDuo } from "../../lib/components/CtrlDuo";
 import { Label, Value } from "../../lib/components/LabelValue";
 import { Row } from "../../lib/components/Row";
 import { StyledSelect } from "../../lib/components/SelectInput";
 import { FDSlider } from "../../lib/components/Slider";
 import { Switch } from "../../lib/components/Switch";
-import { TextInput } from "../../lib/components/TextInput";
+import { TextArea } from "../../lib/components/TextArea";
 import { Title } from "../../lib/components/Title";
 import {
   ConfigDispatchContext,
@@ -98,6 +101,14 @@ export const ImageSettings: React.FC<{
   };
   const setText = (text: string) => {
     display.textSettings.text = text;
+    configDispatch.setDisplaySettings({
+      displaySettings: display,
+      pageIndex,
+      buttonIndex: displayIndex,
+    });
+  };
+  const setTextPosition = (position: textPosition) => {
+    display.textSettings.position = position;
     configDispatch.setDisplaySettings({
       displaySettings: display,
       pageIndex,
@@ -225,12 +236,30 @@ export const ImageSettings: React.FC<{
       <div className="relative flex flex-col p-8 bg-gray-700 rounded-r-2xl">
         <Title className="mb-2">Text</Title>
         <Row>
-          <TextInput
+          <TextArea
             className="w-full"
             placeholder={"Enter text"}
             value={display.textSettings.text}
             onChange={(value) => setText(value)}
           />
+        </Row>
+        <Row>
+          <CtrlDuo>
+            <AdjustmentsIcon className="h-7 w-7" />
+            <Label>Position:</Label>
+          </CtrlDuo>
+          <CtrlDuo>
+            <StyledSelect
+              className="w-32"
+              value={display.textSettings.position}
+              onChange={(value) => setTextPosition(value)}
+              options={[
+                { value: textPosition.right, text: "right" },
+                { value: textPosition.bottom, text: "bottom" },
+              ]}
+            />
+            <Value>{display.textSettings.position}</Value>
+          </CtrlDuo>
         </Row>
         <Row>
           <CtrlDuo>
@@ -254,11 +283,14 @@ export const ImageSettings: React.FC<{
         </Row>
         <Row>
           <CtrlDuo>
-            <SwitchHorizontalIcon className="h-7 w-7" />
+            <ArrowsExpandIcon className="h-7 w-7" />
             <Label>Icon width:</Label>
           </CtrlDuo>
           <FDSlider
-            disabled={!display.textSettings.text.length}
+            disabled={
+              !display.textSettings.text.length ||
+              display.textSettings.position === textPosition.bottom
+            }
             min={0.1}
             max={0.9}
             step={0.01}

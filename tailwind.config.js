@@ -3,7 +3,7 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 module.exports = {
   important: true,
   purge: {
-    content: ["./src/**/*.{ts,tsx,js,jsx,}"],
+    content: ["./src/**/*.{ts,tsx,js,jsx,}", "./public/**/*"],
     safelist: [
       "grid-cols-1",
       "grid-cols-2",
@@ -119,6 +119,7 @@ module.exports = {
         "dp-settings": "600px",
       },
       width: {
+        "publish-page": "336px",
         "dp-settings": "800px",
       },
       gap: {

@@ -15,7 +15,7 @@ export const TabView: React.FC<{
               {({ selected }) => (
                 <div
                   className={c(
-                    "w-full inline-flex items-center font-normal text-lg tracking-wide rounded-lg  whitespace-nowrap  p-3  cursor-pointer select-none ",
+                    "w-56 inline-flex items-center font-normal text-lg tracking-wide rounded-lg  whitespace-nowrap  p-3  cursor-pointer select-none ",
                     selected
                       ? "text-white bg-primary-600 shadow-xl "
                       : "text-white hover:bg-gray-400"
@@ -31,7 +31,7 @@ export const TabView: React.FC<{
         </Tab.List>
         <Tab.Panels as={Fragment}>
           {tabs.map((tab, index) => (
-            <Tab.Panel key={index} className="w-full  p-4">
+            <Tab.Panel key={index} className="w-full flex p-4">
               {tab.content}
             </Tab.Panel>
           ))}

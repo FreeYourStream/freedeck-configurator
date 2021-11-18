@@ -18,6 +18,7 @@ export const createHeader = (
   width: number,
   height: number,
   brightness: number,
+  screenTimeout: number,
   numberOfPages: number
 ): Buffer => {
   // const header = new Buffer(16);
@@ -37,5 +38,6 @@ export const createHeader = (
   // we add 1 for the header row
   header.writeUInt16LE(numberOfPages * width * height + 1, 2);
   header.writeUInt8(brightness, 4);
+  header.writeUInt16LE(screenTimeout, 5);
   return header;
 };

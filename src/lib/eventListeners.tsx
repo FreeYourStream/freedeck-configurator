@@ -2,6 +2,7 @@ import { CloudDownloadIcon, XIcon } from "@heroicons/react/outline";
 import React from "react";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+
 import { IAppDispatch } from "../states/appState";
 import { FDButton } from "./components/Button";
 import { createToast } from "./createToast";
@@ -49,6 +50,7 @@ export const AddEventListeners = ({
     };
     document.addEventListener("keydown", onKeyUpDown);
     document.addEventListener("keyup", onKeyUpDown);
-    // eslint-disable-next-line
+    window.onblur = () => setCtrl(false);
+    //@ts-ignore
   }, []); // only execute on page load
 };

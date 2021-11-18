@@ -5,6 +5,7 @@ export interface MenuEntry {
   title: string;
   prefix: JSX.Element;
   onClick: () => any;
+  disabled?: boolean;
 }
 export const FDMenu: React.FC<{
   className?: string;
@@ -37,7 +38,7 @@ export const FDMenu: React.FC<{
                 <div className="mt-1 arrow-up z-50" />
                 <div className="bg-gray-500 rounded-lg gap-1px p-2">
                   {entries.map((entry, index) => (
-                    <Menu.Item key={index}>
+                    <Menu.Item key={index} disabled={!!entry.disabled}>
                       {({ active }) => (
                         <div
                           onClick={entry.onClick}
@@ -47,9 +48,20 @@ export const FDMenu: React.FC<{
                           )}
                         >
                           {!!entry.prefix && (
-                            <span className="mr-4">{entry.prefix}</span>
+                            <span
+                              className={c(
+                                "mr-4",
+                                entry.disabled && "text-gray-300"
+                              )}
+                            >
+                              {entry.prefix}
+                            </span>
                           )}
-                          {entry.title}
+                          <span
+                            className={c(entry.disabled && "text-gray-300")}
+                          >
+                            {entry.title}
+                          </span>
                         </div>
                       )}
                     </Menu.Item>

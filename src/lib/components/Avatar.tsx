@@ -1,5 +1,6 @@
 import React from "react";
-import { Maybe } from "../../generated/graphql";
+
+import { Maybe } from "../../generated/types-and-hooks";
 
 export const Avatar: React.FC<{ src: Maybe<string>; size?: number }> = ({
   src,

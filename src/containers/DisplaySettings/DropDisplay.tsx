@@ -5,11 +5,17 @@ import {
   RefreshIcon,
   TrashIcon,
 } from "@heroicons/react/outline";
+import c from "clsx";
 import React, { useContext } from "react";
 import { useDropzone } from "react-dropzone";
+
+import { iconSize } from "../../definitions/iconSizes";
 import { ImagePreview } from "../../lib/components/ImagePreview";
 import { FDMenu, MenuEntry } from "../../lib/components/Menu";
-import { ConfigDispatchContext } from "../../states/configState";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../../states/configState";
 
 export const DropDisplay = ({
   onDrop,
@@ -24,13 +30,18 @@ export const DropDisplay = ({
     onDrop,
     accept: [".jpg", ".jpeg", ".png"],
   });
+  const configState = useContext(ConfigStateContext);
+  const display =
+    pageIndex === -1
+      ? configState.defaultBackDisplay
+      : configState.pages[pageIndex][displayIndex].display;
   const configDispatch = useContext(ConfigDispatchContext);
   const entries: MenuEntry[] = [];
   if (pageIndex === -1) {
     entries.push({
       title: "Reset to default",
       onClick: () => configDispatch.resetDefaultBackButton(undefined),
-      prefix: <RefreshIcon className="h-5 w-5 text-danger-400" />,
+      prefix: <RefreshIcon className={c(iconSize, "text-danger-400")} />,
     });
   } else {
     entries.push(
@@ -42,7 +53,7 @@ export const DropDisplay = ({
             pageIndex: pageIndex,
           }),
 
-        prefix: <TrashIcon className="h-5 w-5 text-danger-400" />,
+        prefix: <TrashIcon className={c(iconSize, "text-danger-400")} />,
       },
       {
         title: "Make back button",
@@ -52,7 +63,7 @@ export const DropDisplay = ({
             pageIndex: pageIndex,
           }),
 
-        prefix: <RefreshIcon className="h-5 w-5" />,
+        prefix: <RefreshIcon className={c(iconSize)} />,
       }
     );
   }
@@ -71,7 +82,7 @@ export const DropDisplay = ({
             <PhotographIcon className="h-12 w-12 m-4" />
           </div>
         ) : (
-          <ImagePreview big pageIndex={pageIndex} displayIndex={displayIndex} />
+          <ImagePreview size={3} previewImage={display.previewImage} />
         )}
       </div>
       <FDMenu className="absolute top-0 right-0" entries={entries}>
