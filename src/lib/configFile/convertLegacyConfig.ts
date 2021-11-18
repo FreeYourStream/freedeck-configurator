@@ -2,7 +2,7 @@ import {
   createDefaultDisplay,
   createDefaultDisplayButton,
 } from "../../definitions/defaultPage";
-import { IDisplaySettings, IPage } from "../../interfaces";
+import { IDisplaySettings, IPage, textPosition } from "../../interfaces";
 import { ConfigState } from "../../states/configState";
 import { getBase64Image } from "../image/base64Encode";
 import { generateAdditionalImagery } from "./parseConfig";
@@ -62,7 +62,10 @@ export const convertLegacyConfig = async (
         ...rawConfig.defaultBackDisplay.settings,
         invert: !rawConfig.defaultBackDisplay.settings.invert,
       },
-      textSettings: rawConfig.defaultBackDisplay.textSettings,
+      textSettings: {
+        position: textPosition.right,
+        ...rawConfig.defaultBackDisplay.textSettings,
+      },
       textWithIconSettings: rawConfig.defaultBackDisplay.textWithIconSettings,
     }),
   };

@@ -1,9 +1,11 @@
 import merge from "lodash/merge";
+
 import {
   IButtonSettings,
   IDisplayButton,
   IDisplaySettings,
   IPage,
+  textPosition,
 } from "../interfaces";
 import { getBase64Image } from "../lib/image/base64Encode";
 import { createDefaultBackDisplay } from "./defaultBackImage";
@@ -46,6 +48,7 @@ export const createDefaultDisplay: (
       textSettings: {
         font: fontMedium,
         text: "",
+        position: textPosition.right,
       },
       textWithIconSettings: {
         iconWidthMultiplier: 0.35,

@@ -1,6 +1,6 @@
 import fs from "floyd-steinberg";
 
-import { IDisplaySettings } from "../../interfaces";
+import { IDisplaySettings, textPosition } from "../../interfaces";
 import { colorBitmapToMonochromeBitmap } from "./colorToMonoBitmap";
 
 export const composeImage = async (
@@ -48,26 +48,44 @@ export const composeImage = async (
   );
 
   if (textSettings.text.length) {
-    jimpImage.scaleToFit(128 * textWithIconSettings.iconWidthMultiplier, 64);
     const font = await import("jimp").then((jimp) =>
       jimp.default.loadFont(textSettings.font)
     );
     const fontSize = font.common.lineHeight - 2;
     let lines = textSettings.text.split(/\r?\n/).filter((line) => line);
+    if (textSettings.position === textPosition.right) {
+      jimpImage.scaleToFit(128 * textWithIconSettings.iconWidthMultiplier, 64);
+    } else {
+      jimpImage.scaleToFit(128, 64 - fontSize * lines.length);
+    }
     const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
     const offset = (64 - overAllLineHeight) / 2;
     await Promise.all(
       lines.map(async (line, index) => {
-        const lineOffset = offset + fontSize * index;
-        await background.print(
-          font,
-          jimpImage.getWidth() + 3,
-          lineOffset,
-          line
-        );
+        if (textSettings.position === textPosition.bottom) {
+          await background.print(
+            font,
+            (128 - (fontSize / 2) * line.length) / 2,
+            64 - fontSize * (lines.length - index),
+            line
+          );
+        } else {
+          const lineOffset = offset + fontSize * index;
+          const xOffset = jimpImage.getWidth() + 1;
+          await background.print(
+            font,
+            (128 - xOffset - (fontSize / 2) * line.length) / 2 + xOffset,
+            lineOffset,
+            line
+          );
+        }
       })
     );
-    background.composite(jimpImage, 0, 64 / 2 - jimpImage.getHeight() / 2);
+    if (textSettings.position === textPosition.bottom) {
+      background.composite(jimpImage, 128 / 2 - jimpImage.getWidth() / 2, 0);
+    } else {
+      background.composite(jimpImage, 0, 64 / 2 - jimpImage.getHeight() / 2);
+    }
   } else {
     jimpImage.scaleToFit(128, 64);
     background.composite(

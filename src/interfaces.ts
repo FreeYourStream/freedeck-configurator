@@ -10,7 +10,13 @@ export interface IButtonSettings {
   primary: IButtonSetting;
   secondary: IButtonSetting;
 }
+
+export enum textPosition {
+  right,
+  bottom,
+}
 export interface ITextSettings {
+  position: textPosition;
   text: string;
   font: string;
 }

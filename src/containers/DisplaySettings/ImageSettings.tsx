@@ -1,9 +1,10 @@
 import {
+  AdjustmentsIcon,
+  ArrowsExpandIcon,
   LightningBoltIcon,
   MoonIcon,
   RefreshIcon,
   SunIcon,
-  SwitchHorizontalIcon,
   TranslateIcon,
 } from "@heroicons/react/outline";
 import { SunIcon as SunIconAlt } from "@heroicons/react/solid";
@@ -16,6 +17,7 @@ import {
   fontSmall,
   fontSmaller,
 } from "../../definitions/fonts";
+import { textPosition } from "../../interfaces";
 import { CtrlDuo } from "../../lib/components/CtrlDuo";
 import { Label, Value } from "../../lib/components/LabelValue";
 import { Row } from "../../lib/components/Row";
@@ -99,6 +101,14 @@ export const ImageSettings: React.FC<{
   };
   const setText = (text: string) => {
     display.textSettings.text = text;
+    configDispatch.setDisplaySettings({
+      displaySettings: display,
+      pageIndex,
+      buttonIndex: displayIndex,
+    });
+  };
+  const setTextPosition = (position: textPosition) => {
+    display.textSettings.position = position;
     configDispatch.setDisplaySettings({
       displaySettings: display,
       pageIndex,
@@ -235,6 +245,24 @@ export const ImageSettings: React.FC<{
         </Row>
         <Row>
           <CtrlDuo>
+            <AdjustmentsIcon className="h-7 w-7" />
+            <Label>Position:</Label>
+          </CtrlDuo>
+          <CtrlDuo>
+            <StyledSelect
+              className="w-32"
+              value={display.textSettings.position}
+              onChange={(value) => setTextPosition(value)}
+              options={[
+                { value: textPosition.right, text: "right" },
+                { value: textPosition.bottom, text: "bottom" },
+              ]}
+            />
+            <Value>{display.textSettings.position}</Value>
+          </CtrlDuo>
+        </Row>
+        <Row>
+          <CtrlDuo>
             <TranslateIcon className="h-7 w-7" />
             <Label>Font:</Label>
           </CtrlDuo>
@@ -255,11 +283,14 @@ export const ImageSettings: React.FC<{
         </Row>
         <Row>
           <CtrlDuo>
-            <SwitchHorizontalIcon className="h-7 w-7" />
+            <ArrowsExpandIcon className="h-7 w-7" />
             <Label>Icon width:</Label>
           </CtrlDuo>
           <FDSlider
-            disabled={!display.textSettings.text.length}
+            disabled={
+              !display.textSettings.text.length ||
+              display.textSettings.position === textPosition.bottom
+            }
             min={0.1}
             max={0.9}
             step={0.01}
