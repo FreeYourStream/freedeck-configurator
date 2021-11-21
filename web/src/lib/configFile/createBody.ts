@@ -1,14 +1,16 @@
 import { Buffer } from "buffer";
+
 import { EAction } from "../../definitions/modes";
 import { IPage } from "../../interfaces";
 import { optimizeForSSD1306 } from "./ssd1306";
 
 export const createButtonBody = (pages: IPage[]) => {
-  const buttonRowCount = pages.length * pages[0].length;
+  const buttonRowCount = pages.length * pages[0].displayButtons.length;
   const buttonRows = new Buffer(16 * buttonRowCount);
   pages.forEach((page, pageIndex) => {
-    page.forEach((db, buttonIndex) => {
-      const rowOffset = page.length * 16 * pageIndex + buttonIndex * 16;
+    page.displayButtons.forEach((db, buttonIndex) => {
+      const rowOffset =
+        page.displayButtons.length * 16 * pageIndex + buttonIndex * 16;
       // add 16 if the longpress has any functionality
       const secondaryAddition = (db.button.secondary.enabled ? 1 : 0) * 16;
 
@@ -41,9 +43,10 @@ export const createButtonBody = (pages: IPage[]) => {
 
 export const createImageBody = (pages: IPage[]) => {
   let imageBuffer = new Buffer(0);
-  const bmpHeaderSize = pages[0][0].display.convertedImage.readUInt32LE(10);
+  const bmpHeaderSize =
+    pages[0].displayButtons[0].display.convertedImage.readUInt32LE(10);
   pages.forEach((page) => {
-    page.forEach((db) => {
+    page.displayButtons.forEach((db) => {
       imageBuffer = Buffer.concat([
         imageBuffer,
         optimizeForSSD1306(db.display.convertedImage.slice(bmpHeaderSize)),

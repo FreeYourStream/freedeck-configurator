@@ -2,10 +2,10 @@
   "name": "freedeck-app",
   "version": "0.0.1",
   "description": "The FreeDeck App",
-  "main": "main.js",
+  "main": "./build/App.js",
   "scripts": {
-    "dev": "nodemon --watch ./src --exec 'npm run build && electron' ./dist/App.js",
-    "start": "electron ./dist/App.js",
+    "dev": "nodemon --watch \"./src/**\" --ext \"js,ts\" --exec 'npm run build && npm run start' ./build/App.js",
+    "start": "electron ./build/App.js",
     "build": "tsc -p tsconfig.json"
   },
   "author": "Kilian Gosewisch",
@@ -19,5 +19,17 @@
   },
   "dependencies": {
     "electron-is-dev": "^2.0.0"
+  },
+  "build": {
+    "electronVersion": "16.0.1",
+    "appId": "com.freeyourstream.freedeck-app",
+    "directories": {
+      "output": "../build"
+    },
+    "files": [
+      "build/**/*",
+      "node_modules/**/*",
+      "../node_modules/**/*"
+    ]
   }
 }

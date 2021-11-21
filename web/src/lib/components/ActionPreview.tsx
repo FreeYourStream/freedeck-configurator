@@ -1,16 +1,17 @@
-import React, { useContext } from "react";
-import c from "clsx";
-import { ConfigStateContext } from "../../states/configState";
-import { EAction } from "../../definitions/modes";
 import {
   ArrowCircleRightIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/outline";
+import c from "clsx";
+import React, { useContext } from "react";
+
+import { FDSettings } from "../../definitions/fdsettings";
+import { EMediaKeys } from "../../definitions/keys";
+import { EAction } from "../../definitions/modes";
+import { IButtonSetting } from "../../interfaces";
+import { ConfigStateContext } from "../../states/configState";
 import { useTranslateKeyboardLayout } from "../localisation/keyboard";
 import { CtrlDuo } from "./CtrlDuo";
-import { IButtonSetting } from "../../interfaces";
-import { EMediaKeys } from "../../definitions/keys";
-import { FDSettings } from "../../definitions/fdsettings";
 
 const Pill: React.FC<{ className?: string; button: IButtonSetting }> = ({
   className,
@@ -69,7 +70,7 @@ export const ActionPreview: React.FC<{
   displayIndex: number;
 }> = ({ pageIndex, displayIndex, children, className }) => {
   const config = useContext(ConfigStateContext);
-  const button = config.pages[pageIndex][displayIndex].button;
+  const button = config.pages[pageIndex].displayButtons[displayIndex].button;
   return (
     <div className={c("", className)}>
       <CtrlDuo>

@@ -19,7 +19,7 @@ export const convertLegacyConfig = async (
   const pages: IPage[] = await Promise.all(
     (rawConfig.displaySettingsPages as LegacyDSP[]).map(
       async (dsp, pageIndex): Promise<IPage> => {
-        let page: IPage = [];
+        let page: IPage = { displayButtons: [] };
         for (let dpIndex = 0; dpIndex < dsp.length; dpIndex++) {
           const display = dsp[dpIndex];
 
@@ -42,7 +42,7 @@ export const convertLegacyConfig = async (
 
           displayButton.button =
             rawConfig.buttonSettingsPages[pageIndex][dpIndex];
-          page.push(displayButton);
+          page.displayButtons.push(displayButton);
         }
         return page;
       }

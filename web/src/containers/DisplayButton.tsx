@@ -23,7 +23,7 @@ export const DisplayButton: React.FC<{
   const display =
     pageIndex === -1
       ? configState.defaultBackDisplay
-      : configState.pages[pageIndex][displayIndex].display;
+      : configState.pages[pageIndex].displayButtons[displayIndex].display;
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [{ isDragging }, dragRef] = useDrag({
     item: {

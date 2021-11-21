@@ -34,10 +34,10 @@ export const PublishPage: React.FC<{
             .split(",")
             .map((t) => t.trim())
             .filter((t) => !!t),
-          previewActions: configState.pages[pageIndex].map(
+          previewActions: configState.pages[pageIndex].displayButtons.map(
             (page) => page.button
           ),
-          previewImages: configState.pages[pageIndex].map(
+          previewImages: configState.pages[pageIndex].displayButtons.map(
             (page) => page.display.previewImage
           ),
         },
@@ -49,8 +49,10 @@ export const PublishPage: React.FC<{
     height: configState.height,
     width: configState.width,
     name,
-    previewActions: configState.pages[pageIndex].map((page) => page.button),
-    previewImages: configState.pages[pageIndex].map(
+    previewActions: configState.pages[pageIndex].displayButtons.map(
+      (page) => page.button
+    ),
+    previewImages: configState.pages[pageIndex].displayButtons.map(
       (page) => page.display.previewImage
     ),
     tags: tags

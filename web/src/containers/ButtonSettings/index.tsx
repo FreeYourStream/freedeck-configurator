@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+
 import { EAction } from "../../definitions/modes";
 import { ConfigStateContext } from "../../states/configState";
 import { Action } from "./Action";
@@ -8,7 +9,7 @@ export const ButtonSettingsContainer: React.FC<{
   displayIndex: number;
 }> = ({ pageIndex, displayIndex }) => {
   const { pages } = useContext(ConfigStateContext);
-  const button = pages[pageIndex][displayIndex].button;
+  const button = pages[pageIndex].displayButtons[displayIndex].button;
   return (
     <div className="flex flex-col h-full">
       <div className="grid grid-cols-2 grid-rows-1 gap-2 h-full mb-4">

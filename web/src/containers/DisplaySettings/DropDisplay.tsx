@@ -34,7 +34,7 @@ export const DropDisplay = ({
   const display =
     pageIndex === -1
       ? configState.defaultBackDisplay
-      : configState.pages[pageIndex][displayIndex].display;
+      : configState.pages[pageIndex].displayButtons[displayIndex].display;
   const configDispatch = useContext(ConfigDispatchContext);
   const entries: MenuEntry[] = [];
   if (pageIndex === -1) {

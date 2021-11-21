@@ -10,9 +10,10 @@
     "build:web": "npm run build -w web",
     "build:app": "npm run build -w app",
     "dev:web": "npm run start -w web",
-    "dev:app": "concurrently \"npm run dev:web\" \"npm run dev -w app\"",
-    "prebuild": "npm run build:web && npm run build:app",
-    "build": ""
+    "dev:app": "npm run dev -w app",
+    "dev": "concurrently \"npm run dev:web\" \"npm run dev:app\"",
+    "prebuild": "npm run build:web && npm run build:app && cp -r web/build app/build",
+    "build": "npx electron-builder --project app"
   },
   "repository": {
     "type": "git",
@@ -26,16 +27,5 @@
   "homepage": "https://github.com/koriwi/freedeck-configurator#readme",
   "devDependencies": {
     "concurrently": "^6.4.0"
-  },
-  "build": {
-    "appId": "com.freeyourstream.freedeck-app",
-    "files": [
-      "app/build/**/*",
-      "node_modules/**/*",
-      "app/node_modules"
-    ],
-    "directories": {
-      "buildResources": "assets"
-    }
   }
 }

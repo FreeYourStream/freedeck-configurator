@@ -29,14 +29,15 @@ const convertCurrentConfig = async (
   rawConfig: ConfigState
 ): Promise<ConfigState> => {
   const pages = await Promise.all(
-    rawConfig.pages.map<Promise<IPage>>((page, pageIndex) =>
-      Promise.all(
-        page.map(async (displayButton) => ({
+    rawConfig.pages.map<Promise<IPage>>(async (page, pageIndex) => ({
+      ...page,
+      displayButtons: await Promise.all(
+        page.displayButtons.map(async (displayButton) => ({
           ...displayButton,
           display: await generateAdditionalImagery(displayButton.display),
         }))
-      )
-    )
+      ),
+    }))
   );
   return {
     ...rawConfig,

@@ -72,14 +72,16 @@ export const createDefaultPage = async (
   count: number,
   previousPage?: number
 ): Promise<IPage> => {
-  const page: IPage = [];
+  const page: IPage = { displayButtons: [] };
   for (var i = 0; i < count; i++) {
-    page.push(await createDefaultDisplayButton());
+    page.displayButtons.push(await createDefaultDisplayButton());
   }
   if (previousPage !== undefined) {
-    page[0].button.primary.mode = EAction.changePage;
-    page[0].button.primary.values = [previousPage];
-    page[0].display = await createDefaultBackDisplay(previousPage);
+    page.displayButtons[0].button.primary.mode = EAction.changePage;
+    page.displayButtons[0].button.primary.values = [previousPage];
+    page.displayButtons[0].display = await createDefaultBackDisplay(
+      previousPage
+    );
   }
   return page;
 };

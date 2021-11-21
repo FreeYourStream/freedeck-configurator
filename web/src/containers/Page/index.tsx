@@ -35,13 +35,15 @@ export const Page: React.FC<IProps> = ({ pageIndex }) => {
         )}
       >
         <DndProvider backend={Backend}>
-          {configState.pages[pageIndex].map((db, displayIndex) => (
-            <DisplayButton
-              key={displayIndex}
-              displayIndex={displayIndex}
-              pageIndex={pageIndex}
-            />
-          ))}
+          {configState.pages[pageIndex].displayButtons.map(
+            (db, displayIndex) => (
+              <DisplayButton
+                key={displayIndex}
+                displayIndex={displayIndex}
+                pageIndex={pageIndex}
+              />
+            )
+          )}
         </DndProvider>
       </div>
     </div>

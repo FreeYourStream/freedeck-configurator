@@ -1,7 +1,10 @@
+import "./tailwind.css";
+
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { RefreshIcon } from "@heroicons/react/outline";
 import React from "react";
 import ReactDOM from "react-dom";
+
 import App from "./App";
 import { FDButton } from "./lib/components/Button";
 import { createToast } from "./lib/createToast";
@@ -9,7 +12,6 @@ import reportWebVitals from "./reportWebVitals";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { defaultAppState } from "./states/appState";
 import { defaultConfigState } from "./states/configState";
-import "./tailwind.css";
 
 const main = async () => {
   if (process.env.NODE_ENV !== "development")

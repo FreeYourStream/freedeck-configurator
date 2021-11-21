@@ -54,4 +54,8 @@ export type IDisplayButton = {
   button: IButtonSettings;
 };
 
-export type IPage = IDisplayButton[];
+export type IPage = {
+  name?: string;
+  windowName?: string;
+  displayButtons: IDisplayButton[];
+};

@@ -1,6 +1,7 @@
 import { useSimpleReducer } from "@bitovi/use-simple-reducer";
 import { PlusCircleIcon } from "@heroicons/react/outline";
-import React from "react";
+import type { IpcRenderer } from "electron";
+import React, { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 
 import { ContentBody } from "./containers/ContentBody";
@@ -15,6 +16,7 @@ import { createFooter } from "./lib/configFile/createFooter";
 import { createHeader } from "./lib/configFile/createHeader";
 import { loadConfigFile } from "./lib/configFile/loadConfigFile";
 import { download } from "./lib/download";
+import { isElectron } from "./lib/electron";
 import { AddEventListeners } from "./lib/eventListeners";
 import {
   AppDispatchContext,
@@ -30,6 +32,7 @@ import {
   IConfigReducer,
   configReducer,
 } from "./states/configState";
+
 const App: React.FC<{
   defaultConfigState: ConfigState;
   defaultAppState: AppState;
@@ -43,7 +46,16 @@ const App: React.FC<{
     defaultAppState,
     appReducer
   );
-
+  useEffect(() => {
+    if (!isElectron()) return () => {};
+    const ipc = (window as any).ipcRenderer as IpcRenderer;
+    const callback: (event: Electron.IpcRendererEvent, ...args: any[]) => void =
+      () => {
+        console.log(configState.pages.length);
+      };
+    ipc.on("change_page", callback);
+    return () => ipc.off("change_page", callback);
+  }, [configState]);
   AddEventListeners({ appDispatchContext: appDispatch });
 
   const createConfigBuffer = async (): Promise<Buffer> =>
