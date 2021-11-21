@@ -142,8 +142,10 @@ export class SerialConnector {
     this.readLoop = setInterval(async () => {
       try {
         const chunkBuffer = await reader.read();
-        if (chunkBuffer.value)
+        if (chunkBuffer.value) {
           this.buffer = [...this.buffer, ...chunkBuffer.value];
+          console.log("RECEIVED");
+        }
       } catch {}
     });
   }

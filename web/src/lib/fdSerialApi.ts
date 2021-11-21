@@ -50,7 +50,6 @@ export class FDSerialAPI {
   clearOnConStatusChange(id: number) {
     delete this.connectCallbacks[id];
   }
-
   async readConfigFromSerial(
     progressCallback?: (
       received: number,
@@ -59,14 +58,18 @@ export class FDSerialAPI {
     ) => void
   ) {
     const fwVersion = await this.getFirmwareVersion();
+    console.log(fwVersion);
     if (fwVersion.split(".")[0] === "1") {
-      console.log("OLD FIRMWARE");
+      console.log("OLD FIRMWARE", fwVersion);
       await this.Serial.write([0x1]);
     } else {
+      console.log("start");
       await this.write([0x3, 0x20]);
+      console.log("DONE");
     }
 
     const fileSizeStr = await this.readAsciiLine();
+    console.log(fileSizeStr);
     if (!fileSizeStr.length) throw new Error("could not receive filesize");
     const fileSize = parseInt(fileSizeStr);
     const data: number[] = [];
