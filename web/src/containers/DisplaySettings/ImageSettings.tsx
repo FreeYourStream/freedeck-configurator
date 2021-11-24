@@ -33,13 +33,13 @@ import {
 
 export const ImageSettings: React.FC<{
   displayIndex: number;
-  pageIndex: number;
-}> = ({ displayIndex, pageIndex }) => {
+  pageId: string;
+}> = ({ displayIndex, pageId }) => {
   const configState = useContext(ConfigStateContext);
   const display =
-    pageIndex === -1
+    pageId === "dbd"
       ? configState.defaultBackDisplay
-      : configState.pages[pageIndex].displayButtons[displayIndex].display;
+      : configState.pages.byId[pageId].displayButtons[displayIndex].display;
 
   const configDispatch = useContext(ConfigDispatchContext);
 
@@ -47,7 +47,7 @@ export const ImageSettings: React.FC<{
     display.imageSettings.blackThreshold = blackThreshold;
     configDispatch.setDisplaySettings({
       displaySettings: display,
-      pageIndex,
+      pageId,
       buttonIndex: displayIndex,
     });
   };
@@ -55,7 +55,7 @@ export const ImageSettings: React.FC<{
     display.imageSettings.whiteThreshold = whiteThreshold;
     configDispatch.setDisplaySettings({
       displaySettings: display,
-      pageIndex,
+      pageId,
       buttonIndex: displayIndex,
     });
   };
@@ -63,7 +63,7 @@ export const ImageSettings: React.FC<{
     display.imageSettings.brightness = brightness;
     configDispatch.setDisplaySettings({
       displaySettings: display,
-      pageIndex,
+      pageId,
       buttonIndex: displayIndex,
     });
   };
@@ -71,7 +71,7 @@ export const ImageSettings: React.FC<{
     display.imageSettings.contrast = contrast;
     configDispatch.setDisplaySettings({
       displaySettings: display,
-      pageIndex,
+      pageId,
       buttonIndex: displayIndex,
     });
   };
@@ -79,7 +79,7 @@ export const ImageSettings: React.FC<{
     display.imageSettings.invert = invert;
     configDispatch.setDisplaySettings({
       displaySettings: display,
-      pageIndex,
+      pageId,
       buttonIndex: displayIndex,
     });
   };
@@ -87,7 +87,7 @@ export const ImageSettings: React.FC<{
     display.imageSettings.dither = dither;
     configDispatch.setDisplaySettings({
       displaySettings: display,
-      pageIndex,
+      pageId,
       buttonIndex: displayIndex,
     });
   };
@@ -95,7 +95,7 @@ export const ImageSettings: React.FC<{
     display.textSettings.font = font;
     configDispatch.setDisplaySettings({
       displaySettings: display,
-      pageIndex,
+      pageId,
       buttonIndex: displayIndex,
     });
   };
@@ -103,7 +103,7 @@ export const ImageSettings: React.FC<{
     display.textSettings.text = text;
     configDispatch.setDisplaySettings({
       displaySettings: display,
-      pageIndex,
+      pageId,
       buttonIndex: displayIndex,
     });
   };
@@ -111,7 +111,7 @@ export const ImageSettings: React.FC<{
     display.textSettings.position = position;
     configDispatch.setDisplaySettings({
       displaySettings: display,
-      pageIndex,
+      pageId,
       buttonIndex: displayIndex,
     });
   };
@@ -119,7 +119,7 @@ export const ImageSettings: React.FC<{
     display.textWithIconSettings.iconWidthMultiplier = value;
     configDispatch.setDisplaySettings({
       displaySettings: display,
-      pageIndex,
+      pageId,
       buttonIndex: displayIndex,
     });
   };

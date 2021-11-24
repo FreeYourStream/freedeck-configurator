@@ -1,4 +1,15 @@
 import { SerialConnector, SerialOptions, connectionStatus } from "./serial";
+const commands = {
+  init: 0x3,
+  getFirmwareVersion: 0x10,
+  getCurrentPage: 0x30,
+  setCurrentPage: 0x31,
+  getPageCount: 0x32,
+  oledClear: 0x40,
+  oledPower: 0x41,
+  oledWriteLine: 0x42,
+  oledWriteData: 0x43,
+};
 
 type connectCallback = (event: connectionStatus) => void;
 export class FDSerialAPI {
@@ -33,11 +44,28 @@ export class FDSerialAPI {
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
-    this.write([0x3, 0x10]);
+    this.write([commands.init, commands.getFirmwareVersion]);
     const fwVersion = await this.readAsciiLine();
     // take care about legacy FWs
     if (fwVersion === "") return "1.1.0";
     else return fwVersion;
+  }
+
+  async getCurrentPage() {
+    if (this.connected === connectionStatus.disconnect)
+      throw new Error("not connected");
+    this.Serial.flush();
+    this.write([commands.init, commands.getCurrentPage]);
+    const currentPage = await this.readAsciiLine();
+    console.log(currentPage);
+    return currentPage;
+  }
+
+  async setCurrentPage(goTo: number) {
+    if (this.connected === connectionStatus.disconnect)
+      throw new Error("not connected");
+    this.Serial.flush();
+    this.write([commands.init, commands.setCurrentPage, goTo.toString()]);
   }
 
   registerOnConStatusChange(callback: connectCallback): number {
@@ -160,6 +188,7 @@ export class FDSerialAPI {
       }
       mappedData.push(0xa);
     });
+    console.log(mappedData);
     this.Serial.write(mappedData);
   }
 

@@ -1,12 +1,16 @@
 import React, { useCallback, useContext } from "react";
+
 import { keys } from "../../definitions/keys";
 import { EAction } from "../../definitions/modes";
-import { IButtonSetting } from "../../interfaces";
+import { FDSettings, IButtonSetting, IPage } from "../../interfaces";
 import { Label } from "../../lib/components/LabelValue";
 import { Row } from "../../lib/components/Row";
 import { StyledSelect } from "../../lib/components/SelectInput";
 import { Title } from "../../lib/components/Title";
-import { ConfigDispatchContext } from "../../states/configState";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../../states/configState";
 import { ChangePage } from "./ChangePage";
 import { FreeDeckSettings } from "./FreeDeckSettings";
 import { Hotkeys } from "./Hotkeys";
@@ -14,52 +18,67 @@ import { SpecialKeys } from "./SpecialKeys";
 import { Text } from "./Text";
 
 export const Action: React.FC<{
-  pageIndex: number;
+  pageId: string;
   buttonIndex: number;
-  pageCount: number;
   action: IButtonSetting;
   loadUserInteraction: boolean;
   title: string;
   primary: boolean;
-}> = ({ action, title, pageIndex, buttonIndex, pageCount, primary }) => {
+}> = ({ action, title, pageId, buttonIndex, primary }) => {
   const configDispatch = useContext(ConfigDispatchContext);
-  const pages = [...Array(pageCount).keys()].filter(
-    (pageNumber) => pageNumber !== pageIndex
-  );
+  const configState = useContext(ConfigStateContext);
   const priOrSec = primary ? "primary" : "secondary";
   const setMode = (mode: EAction) => {
-    const keepValues =
-      [EAction.hotkeys, EAction.text].includes(action.mode) &&
-      [EAction.hotkeys, EAction.text].includes(mode);
     configDispatch.setButtonSettings({
-      pageIndex,
+      pageId,
       buttonIndex,
       priOrSec,
       buttonSettings: {
         ...action,
         mode,
         enabled: mode !== EAction.noop,
-        values: keepValues ? action.values : [],
       },
     });
   };
-  const setMultipleValues = (keys: number[]) =>
+  const setValues = (values: number[], mode: EAction) =>
     configDispatch.setButtonSettings({
-      pageIndex,
+      pageId,
       buttonIndex,
       priOrSec,
       buttonSettings: {
         ...action,
-        values: keys[0] === -1 ? [] : keys,
+        values: {
+          ...action.values,
+          [mode]: values[0] === -1 ? [] : values,
+        },
       },
     });
 
-  const setSingleValue = (goTo: number) =>
+  const setGoToValue = (goTo: string) =>
     configDispatch.setButtonSettings({
-      pageIndex,
+      pageId,
       buttonIndex,
       priOrSec,
-      buttonSettings: { ...action, values: goTo === -1 ? [] : [goTo] },
+      buttonSettings: {
+        ...action,
+        values: { ...action.values, changePage: goTo },
+      },
+    });
+  const setFDSettings = (setting: FDSettings, value?: number) =>
+    configDispatch.setButtonSettings({
+      pageId,
+      buttonIndex,
+      priOrSec,
+      buttonSettings: {
+        ...action,
+        values: {
+          ...action.values,
+          settings: {
+            setting,
+            value: value ?? 0,
+          },
+        },
+      },
     });
   const onKey = useCallback(
     (e: React.KeyboardEvent<any>, lengthLimit = 7) => {
@@ -69,12 +88,13 @@ export const Action: React.FC<{
       );
       if (!key) return;
       //ignore backspace
-      if (keys[key]!.hid === 42 && action.values.length > 0) {
-        setMultipleValues([
-          ...action.values.slice(0, action.values.length - 1),
-        ]);
-      } else if (action.values.length < lengthLimit)
-        setMultipleValues([...action.values, keys[key]!.hid]);
+      if (keys[key]!.hid === 42 && action.values.hotkeys.length > 0) {
+        setValues(
+          [...action.values.hotkeys.slice(0, action.values.hotkeys.length - 1)],
+          EAction.hotkeys
+        );
+      } else if (action.values.hotkeys.length < lengthLimit)
+        setValues([...action.values.hotkeys, keys[key]!.hid], EAction.hotkeys);
     }, // eslint-disable-next-line
     [action]
   );
@@ -98,29 +118,43 @@ export const Action: React.FC<{
         />
       </Row>
       {action.mode === EAction.hotkeys && (
-        <Hotkeys action={action} onKey={onKey} setKeys={setMultipleValues} />
+        <Hotkeys
+          action={action}
+          onKey={onKey}
+          setKeys={(values) => setValues(values, EAction.hotkeys)}
+        />
       )}
       {action.mode === EAction.changePage && (
         <ChangePage
           action={action}
           addPage={() => {
             configDispatch.addPage({
-              previousPage: pageIndex,
+              previousPage: pageId,
               previousDisplay: buttonIndex,
             });
           }}
-          pages={pages}
-          setGoTo={setSingleValue}
+          pages={configState.pages}
+          setGoTo={setGoToValue}
         />
       )}
       {action.mode === EAction.special_keys && (
-        <SpecialKeys action={action} setKeys={setMultipleValues} />
+        <SpecialKeys
+          action={action}
+          setKeys={(values) => setValues(values, EAction.special_keys)}
+        />
       )}
       {action.mode === EAction.text && (
-        <Text action={action} onKey={onKey} setKeys={setMultipleValues} />
+        <Text
+          action={action}
+          onKey={onKey}
+          setKeys={(values) => setValues(values, EAction.text)}
+        />
       )}
       {action.mode === EAction.settings && (
-        <FreeDeckSettings action={action} setSetting={setMultipleValues} />
+        <FreeDeckSettings
+          action={action}
+          setSetting={(setting, value) => setFDSettings(setting, value)}
+        />
       )}
     </div>
   );

@@ -15,8 +15,8 @@ import { HubPage } from "../FDHub/components/HubPage";
 export const PublishPage: React.FC<{
   setOpen: (val: boolean) => any;
   isOpen: boolean;
-  pageIndex: number;
-}> = ({ setOpen, isOpen, pageIndex }) => {
+  pageId: string;
+}> = ({ setOpen, isOpen, pageId }) => {
   const { data } = useMeQuery();
   const [mutate, { called }] = usePageCreateMutation();
   const configState = useContext(ConfigStateContext);
@@ -26,7 +26,7 @@ export const PublishPage: React.FC<{
     const result = await mutate({
       variables: {
         input: {
-          data: configState.pages[pageIndex],
+          data: configState.pages.byId[pageId],
           height: configState.height,
           width: configState.width,
           name,
@@ -34,10 +34,12 @@ export const PublishPage: React.FC<{
             .split(",")
             .map((t) => t.trim())
             .filter((t) => !!t),
-          previewActions: configState.pages[pageIndex].displayButtons.map(
-            (page) => page.button
-          ),
-          previewImages: configState.pages[pageIndex].displayButtons.map(
+          previewActions:
+            [] ??
+            configState.pages.byId[pageId].displayButtons.map(
+              (page) => page.button
+            ),
+          previewImages: configState.pages.byId[pageId].displayButtons.map(
             (page) => page.display.previewImage
           ),
         },
@@ -49,10 +51,10 @@ export const PublishPage: React.FC<{
     height: configState.height,
     width: configState.width,
     name,
-    previewActions: configState.pages[pageIndex].displayButtons.map(
+    previewActions: configState.pages.byId[pageId].displayButtons.map(
       (page) => page.button
     ),
-    previewImages: configState.pages[pageIndex].displayButtons.map(
+    previewImages: configState.pages.byId[pageId].displayButtons.map(
       (page) => page.display.previewImage
     ),
     tags: tags
@@ -90,7 +92,7 @@ export const PublishPage: React.FC<{
             </div>
           </Row>
         </div>
-        <HubPage page={page} />
+        {/* <HubPage page={page} /> */}
       </div>
     </FDWindow>
   );

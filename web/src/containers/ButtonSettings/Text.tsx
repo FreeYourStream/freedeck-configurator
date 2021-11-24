@@ -1,4 +1,5 @@
 import React from "react";
+
 import { keys } from "../../definitions/keys";
 import { IButtonSetting } from "../../interfaces";
 import { StyledSelect } from "../../lib/components/SelectInput";
@@ -9,15 +10,15 @@ export const Text: React.FC<{
   setKeys: (keys: number[]) => void;
   onKey: (e: React.KeyboardEvent<any>, lengthLimit?: any) => void;
 }> = ({ action, setKeys, onKey }) => {
-  const translatedKeys = useTranslateKeyboardLayout(action.values);
+  const translatedKeys = useTranslateKeyboardLayout(action.values.text);
   return (
     <>
       <StyledSelect
         className="w-full my-2"
         value={0}
         onChange={(value) => {
-          if (action.values.length < 15)
-            setKeys([...action.values, parseInt(value)]);
+          if (action.values.text.length < 15)
+            setKeys([...action.values.text, parseInt(value)]);
         }}
         options={[
           { value: 0, text: "Choose key" },
@@ -32,7 +33,7 @@ export const Text: React.FC<{
         rows={12}
         onKeyDown={(e) => {
           if (e.nativeEvent.code !== "Backspace") return onKey(e, 15);
-          const newKeys = [...action.values];
+          const newKeys = [...action.values.text];
           newKeys.splice(newKeys.length - 1, 1);
           setKeys(newKeys);
         }}

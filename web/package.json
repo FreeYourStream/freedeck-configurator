@@ -3,6 +3,7 @@
   "version": "1.6.3",
   "configFileVersion": "1.1.0",
   "private": true,
+  "homepage": "./",
   "dependencies": {
     "@apollo/client": "^3.3.15",
     "@bitovi/use-simple-reducer": "^0.0.1",
@@ -10,7 +11,6 @@
     "@heroicons/react": "^1.0.4",
     "clsx": "^1.1.1",
     "floyd-steinberg": "^1.0.6",
-    "graphql": "^15.5.0",
     "jimp": "^0.16.0",
     "lodash": "^4.17.20",
     "preval.macro": "^5.0.0",
@@ -20,13 +20,12 @@
     "react-dom": "^17.0.2",
     "react-dropzone": "^10.2.2",
     "react-hot-toast": "^2.1.1",
-    "react-query": "^3.29.0",
     "web-vitals": "^2.1.2"
   },
   "scripts": {
     "start": "TAILWIND_MODE=watch craco start",
     "build": "craco build",
-    "check:clean": "unimported; ts-unused-exports ./tsconfig.json --allowUnusedTypes --ignoreFiles=_Boilerplate*",
+    "check:clean": "unimported; ts-unused-exports ./tsconfig.json --allowUnusedTypes --ignoreFiles=\"generated/.*|_Boilerplate.*\"",
     "eject": "react-scripts eject",
     "codegen": "graphql-codegen --config codegen.yml"
   },

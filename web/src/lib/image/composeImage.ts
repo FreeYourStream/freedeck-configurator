@@ -134,10 +134,3 @@ export const composeText = async (
   const bitmapBuffer = await background.getBufferAsync("image/bmp");
   return await colorBitmapToMonochromeBitmap(bitmapBuffer, 128, 64);
 };
-
-const workaround = {
-  composeText,
-  composeImage,
-};
-
-export default workaround;

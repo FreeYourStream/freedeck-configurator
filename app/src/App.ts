@@ -1,10 +1,42 @@
 import { spawn } from "child_process";
-import { join } from "path";
+import { join, normalize } from "path";
 
-import { BrowserWindow, app, ipcMain } from "electron";
-import isDev from "electron-is-dev";
+import { BrowserWindow, Menu, Tray, app, protocol } from "electron";
 
 let globalWin: BrowserWindow;
+let tray: Tray;
+let forceQuit = false;
+const createTray = () => {
+  console.log("creating tray");
+  tray = new Tray(join(__dirname, "./assets/freedeck.png"));
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: "Show",
+      click: () => {
+        globalWin.show();
+      },
+    },
+    {
+      label: "Exit",
+      click: () => {
+        forceQuit = true;
+        app.quit();
+      },
+    },
+  ]);
+  tray.on("double-click", function (event) {
+    globalWin.show();
+  });
+  tray.setToolTip("FreeDeck App");
+  tray.setContextMenu(contextMenu);
+};
+
+function setupLocalFilesNormalizerProxy() {
+  protocol.registerHttpProtocol("file", (request, callback) => {
+    const url = request.url.substr(8);
+    callback({ path: normalize(`${__dirname}/${url}`) });
+  });
+}
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 1400,
@@ -20,7 +52,7 @@ const createWindow = () => {
   globalWin = win;
 
   win.loadURL(
-    isDev
+    !app.isPackaged
       ? "http://localhost:3000"
       : `file://${join(__dirname, "./build/index.html")}`
   );
@@ -35,7 +67,14 @@ const createWindow = () => {
       }
     }
   );
-
+  win.on("close", function (event: any) {
+    if (!forceQuit) {
+      event.preventDefault();
+      win.setSkipTaskbar(true);
+      // createTray(); // buggy on linux ATM
+      win.hide();
+    }
+  });
   win.webContents.session.on("serial-port-added", (event, port) => {
     console.log("serial-port-added FIRED WITH", port);
   });
@@ -46,7 +85,7 @@ const createWindow = () => {
 
   win.webContents.session.setPermissionCheckHandler(
     (webContents, permission, requestingOrigin, details) => {
-      if (isDev) return true;
+      if (!app.isPackaged) return true;
       if (permission === "serial" && details.securityOrigin === "file:///") {
         return true;
       }
@@ -55,19 +94,21 @@ const createWindow = () => {
   );
 
   win.webContents.session.setDevicePermissionHandler((details) => {
-    if (isDev) return true;
+    if (!app.isPackaged) return true;
     if (details.deviceType === "serial" && details.origin === "file://") {
       return true;
     }
     return false;
   });
-  if (isDev) {
+  if (!app.isPackaged) {
     win.webContents.openDevTools();
   }
 };
 
 app.whenReady().then(() => {
+  setupLocalFilesNormalizerProxy();
   createWindow();
+  createTray();
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
@@ -78,12 +119,15 @@ app.on("window-all-closed", () => {
 });
 
 setTimeout(() => {
+  if (process.platform === "win32") {
+    console.log("windows not supported yet. coming soon");
+    return;
+  }
   const proc = spawn("bash", [
     "-c",
     "while true; do xprop -id $(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2) _NET_WM_NAME 2>/dev/null | awk -F= '{print($2)}'; sleep 0.1; done",
   ]);
   proc.stdout.on("data", (data: Buffer) => {
-    console.log(data.toString());
     globalWin.webContents.send("change_page", data.toString());
   });
 });

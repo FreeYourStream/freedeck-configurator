@@ -1,39 +1,77 @@
 import { Buffer } from "buffer";
 
 import { EAction } from "../../definitions/modes";
-import { IPage } from "../../interfaces";
+import { FDSettings, IDisplayButton, IPages } from "../../interfaces";
 import { optimizeForSSD1306 } from "./ssd1306";
 
-export const createButtonBody = (pages: IPage[]) => {
-  const buttonRowCount = pages.length * pages[0].displayButtons.length;
-  const buttonRows = new Buffer(16 * buttonRowCount);
-  pages.forEach((page, pageIndex) => {
+const writeAction = (
+  buttonRows: Buffer,
+  db: IDisplayButton,
+  pages: IPages,
+  rowOffset: number,
+  isSecondary: boolean
+) => {
+  const secondaryAddition =
+    (!isSecondary && db.button.secondary.enabled ? 1 : 0) * 16;
+  const buttonAction = isSecondary ? db.button.secondary : db.button.primary;
+  const dataOffset = rowOffset + (isSecondary ? 8 : 0);
+  buttonRows.writeUInt8(buttonAction.mode + secondaryAddition, dataOffset);
+  switch (buttonAction.mode) {
+    case EAction.changePage:
+      const pageIndex = Object.entries(pages).findIndex(
+        ([id, page]) => id === buttonAction.values.changePage
+      );
+      buttonRows.writeUInt8(pageIndex, dataOffset + 1);
+      break;
+    case EAction.hotkeys:
+      buttonAction.values.hotkeys.forEach((hotkey, index) =>
+        buttonRows.writeUInt8(hotkey, dataOffset + index + 1)
+      );
+      break;
+    case EAction.special_keys:
+      buttonAction.values.special_keys.forEach((specialKey, index) =>
+        buttonRows.writeUInt8(specialKey, dataOffset + index + 1)
+      );
+      break;
+    case EAction.text:
+      buttonAction.values.text.forEach((text, index) =>
+        buttonRows.writeUInt8(text, dataOffset + index + 1)
+      );
+      break;
+    case EAction.settings:
+      buttonRows.writeUInt8(
+        buttonAction.values.settings.setting!,
+        dataOffset + 1
+      );
+      if (
+        buttonAction.values.settings.setting === FDSettings.absolute_brightness
+      )
+        buttonRows.writeUInt8(
+          buttonAction.values.settings.value!,
+          dataOffset + 2
+        );
+
+      break;
+  }
+  return buttonRows;
+};
+
+export const createButtonBody = (pages: IPages) => {
+  const pageKeys = Object.keys(pages);
+  const buttonRowCount =
+    pageKeys.length * pages.byId[pageKeys[0]].displayButtons.length;
+  let buttonRows = new Buffer(16 * buttonRowCount);
+  Object.entries(pages.byId).forEach(([pageId, page], pageIndex) => {
     page.displayButtons.forEach((db, buttonIndex) => {
       const rowOffset =
         page.displayButtons.length * 16 * pageIndex + buttonIndex * 16;
       // add 16 if the longpress has any functionality
-      const secondaryAddition = (db.button.secondary.enabled ? 1 : 0) * 16;
-
-      // first 8 primary bytes
-      if (db.button.primary.values.length !== 0) {
-        const primaryMode = db.button.primary.mode + secondaryAddition;
-        buttonRows.writeUInt8(primaryMode, rowOffset);
-        db.button.primary.values.forEach((value, index) =>
-          buttonRows.writeUInt8(value, rowOffset + index + 1)
-        );
-      } else {
-        buttonRows.writeUInt8(EAction.noop + secondaryAddition, rowOffset);
-      }
-      // 8 secondary bytes
-      if (db.button.primary.mode === EAction.text) return;
-      if (db.button.secondary.values.length !== 0) {
-        const secondaryMode = db.button.secondary.mode;
-        buttonRows.writeUInt8(secondaryMode, rowOffset + 8);
-        db.button.secondary.values.forEach((value, index) =>
-          buttonRows.writeUInt8(value, rowOffset + index + 1 + 8)
-        );
-      } else {
-        buttonRows.writeUInt8(EAction.noop + secondaryAddition, rowOffset + 8);
+      buttonRows = writeAction(buttonRows, db, pages, rowOffset, false);
+      if (
+        db.button.primary.mode !== EAction.text &&
+        db.button.secondary.enabled
+      ) {
+        buttonRows = writeAction(buttonRows, db, pages, rowOffset, true);
       }
     });
   });
@@ -41,11 +79,14 @@ export const createButtonBody = (pages: IPage[]) => {
   return buttonRows;
 };
 
-export const createImageBody = (pages: IPage[]) => {
+export const createImageBody = (pages: IPages) => {
   let imageBuffer = new Buffer(0);
+  const keys = Object.keys(pages);
   const bmpHeaderSize =
-    pages[0].displayButtons[0].display.convertedImage.readUInt32LE(10);
-  pages.forEach((page) => {
+    pages.byId[keys[0]].displayButtons[0].display.convertedImage.readUInt32LE(
+      10
+    );
+  Object.entries(pages.byId).forEach(([id, page]) => {
     page.displayButtons.forEach((db) => {
       imageBuffer = Buffer.concat([
         imageBuffer,

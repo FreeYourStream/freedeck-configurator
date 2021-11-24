@@ -1,21 +1,21 @@
 import backImage from "../definitions/back.png";
 import {
-  createDefaultDisplay,
   IDisplayOptions,
+  createDefaultDisplay,
 } from "../definitions/defaultPage";
 import { IDisplaySettings } from "../interfaces";
 import { generateAdditionalImagery } from "../lib/configFile/parseConfig";
 import { stringToImage } from "../lib/fileToImage";
 
 export const createDefaultBackDisplay = async function (
-  previousPage?: number,
+  previousPage?: string,
   previousDisplay?: number
 ): Promise<IDisplaySettings> {
   const localDefaultBackDisplay = JSON.parse(
     localStorage.getItem("defaultBackDisplay") || "{}"
   );
   let displayOptions: IDisplayOptions;
-  if (Object.keys(localDefaultBackDisplay).length && previousPage !== -1) {
+  if (Object.keys(localDefaultBackDisplay).length && previousPage !== "dbd") {
     localDefaultBackDisplay.convertedImage = Buffer.from(
       localDefaultBackDisplay.convertedImage
     );

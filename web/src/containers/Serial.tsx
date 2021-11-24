@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
+
 import { FDButton } from "../lib/components/Button";
 import { Divider } from "../lib/components/Divider";
 import { Label, Value } from "../lib/components/LabelValue";
@@ -86,7 +87,7 @@ export const Serial: React.FC<{
         <Label>Write config to FreeDeck:</Label>
         <FDButton
           className="w-24 justify-center"
-          disabled={!connected || !pages.length}
+          disabled={!connected || !pages.byId.length}
           size={1}
           onClick={async () =>
             serialApi!.writeConfigOverSerial(
@@ -96,6 +97,17 @@ export const Serial: React.FC<{
           }
         >
           Write
+        </FDButton>
+      </Row>
+      <Row>
+        <Label>Test:</Label>
+        <FDButton
+          className="w-24 justify-center"
+          size={1}
+          disabled={!connected}
+          onClick={async () => await serialApi!.setCurrentPage(4)}
+        >
+          set page
         </FDButton>
       </Row>
 

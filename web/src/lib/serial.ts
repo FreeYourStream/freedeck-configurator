@@ -144,7 +144,6 @@ export class SerialConnector {
         const chunkBuffer = await reader.read();
         if (chunkBuffer.value) {
           this.buffer = [...this.buffer, ...chunkBuffer.value];
-          console.log("RECEIVED");
         }
       } catch {}
     });

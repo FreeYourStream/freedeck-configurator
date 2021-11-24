@@ -1,4 +1,5 @@
 import React from "react";
+
 import { keys } from "../../definitions/keys";
 import { IButtonSetting } from "../../interfaces";
 import { FDButton } from "../../lib/components/Button";
@@ -44,8 +45,8 @@ export const Hotkeys: React.FC<{
           className="w-40"
           value={0}
           onChange={(value) => {
-            if (action.values.length < 7)
-              setKeys([...action.values, parseInt(value)]);
+            if (action.values.hotkeys.length < 7)
+              setKeys([...action.values.hotkeys, parseInt(value)]);
           }}
           options={[
             { text: "Choose key", value: 0 },
@@ -67,7 +68,7 @@ export const Hotkeys: React.FC<{
       </Row>
       <Row>
         <div>
-          <HotkeyKeys setKeys={setKeys} values={action.values} />
+          <HotkeyKeys setKeys={setKeys} values={action.values.hotkeys} />
         </div>
       </Row>
     </>

@@ -1,9 +1,8 @@
 import { createDefaultDisplay } from "../../definitions/defaultPage";
-import { IDisplaySettings, IPage } from "../../interfaces";
+import { IDisplaySettings } from "../../interfaces";
 import { ConfigState } from "../../states/configState";
 import { getBase64Image } from "../image/base64Encode";
 import { composeImage, composeText } from "../image/composeImage";
-import { convertLegacyConfig } from "./convertLegacyConfig";
 
 export const generateAdditionalImagery = async (
   display: IDisplaySettings
@@ -28,20 +27,19 @@ export const generateAdditionalImagery = async (
 const convertCurrentConfig = async (
   rawConfig: ConfigState
 ): Promise<ConfigState> => {
-  const pages = await Promise.all(
-    rawConfig.pages.map<Promise<IPage>>(async (page, pageIndex) => ({
-      ...page,
-      displayButtons: await Promise.all(
-        page.displayButtons.map(async (displayButton) => ({
-          ...displayButton,
-          display: await generateAdditionalImagery(displayButton.display),
-        }))
-      ),
-    }))
-  );
+  const ids = Object.keys(rawConfig.pages);
+  for (let outer = 0; outer < ids.length; outer++) {
+    const id = ids[outer];
+    const page = rawConfig.pages.byId[id];
+
+    for (let inner = 0; inner < page.displayButtons.length; inner++) {
+      page.displayButtons[inner].display = await generateAdditionalImagery(
+        page.displayButtons[inner].display
+      );
+    }
+  }
   return {
     ...rawConfig,
-    pages,
     defaultBackDisplay: await generateAdditionalImagery(
       rawConfig.defaultBackDisplay
     ),
@@ -64,7 +62,7 @@ export const parseConfig = async (
   const jsonConfigSlice = configBuffer.slice(jsonOffset);
   const rawConfig = JSON.parse(jsonConfigSlice.toString());
   if (!rawConfig.configVersion) {
-    return await convertLegacyConfig(rawConfig, configBuffer);
+    throw new Error("legacy config. not compatible");
   }
   return await convertCurrentConfig(rawConfig);
 };

@@ -1,6 +1,7 @@
 import { LogoutIcon, PlusCircleIcon } from "@heroicons/react/outline";
 import React from "react";
-import { IButtonSetting } from "../../interfaces";
+
+import { IButtonSetting, IPage, IPages } from "../../interfaces";
 import { FDButton } from "../../lib/components/Button";
 import { Label } from "../../lib/components/LabelValue";
 import { Row } from "../../lib/components/Row";
@@ -9,31 +10,31 @@ import { scrollToPage } from "../../lib/scrollToPage";
 
 export const ChangePage: React.FC<{
   action: IButtonSetting;
-  setGoTo: (page: number) => void;
+  setGoTo: (pageId: string) => void;
   addPage: () => void;
-  pages: number[];
+  pages: IPages;
 }> = ({ action, setGoTo, addPage, pages }) => {
   return (
     <>
-      {pages.length ? (
+      {pages.byId.length ? (
         <Row>
           <Label>Page</Label>
           <StyledSelect
             className="w-40"
-            value={action.values[0] ?? -1}
-            onChange={(value) => setGoTo(parseInt(value))}
+            value={action.values.changePage ?? ""}
+            onChange={(value) => setGoTo(value)}
             options={[
-              { text: "Select Page", value: -1 },
-              ...pages.map((page) => ({
+              { text: "Select Page", value: "" },
+              ...Object.entries(pages.byId).map(([id, page]) => ({
                 value: page,
-                text: `Go to ${page + 1}`,
+                text: `Go to ${page.name ?? page.id.slice(0, 4)}`,
               })),
             ]}
           />
         </Row>
       ) : null}
       <div className="flex justify-center my-2">
-        {action.values[0] === undefined ? (
+        {action.values.changePage === "" ? (
           <FDButton
             prefix={<PlusCircleIcon className="h-5 w-5" />}
             size={2}
@@ -45,9 +46,9 @@ export const ChangePage: React.FC<{
           <FDButton
             prefix={<LogoutIcon className="h-5 w-5" />}
             size={2}
-            onClick={() => scrollToPage(action.values[0])}
+            onClick={() => scrollToPage(action.values.changePage)}
           >
-            Scroll To {(action.values[0] + 1).toString()}
+            Scroll To {(action.values.changePage + 1).toString()}
           </FDButton>
         )}
       </div>

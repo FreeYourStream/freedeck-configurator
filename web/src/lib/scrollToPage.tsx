@@ -1,6 +1,6 @@
-export const scrollToPage = (page: number) => {
+export const scrollToPage = (pageId: string) => {
   const contentBodyRef = document.getElementById("contentBody");
-  const pageRef = document.getElementById(`page_${page}`);
+  const pageRef = document.getElementById(`page_${pageId}`);
   const headerRef = document.getElementById("header");
   if (pageRef && contentBodyRef) {
     contentBodyRef.scrollTo({

@@ -15,20 +15,20 @@ import { ButtonSettingsContainer } from "./ButtonSettings";
 import { DisplaySettingsContainer } from "./DisplaySettings";
 
 export const DisplayButton: React.FC<{
-  pageIndex: number;
+  pageId: string;
   displayIndex: number;
-}> = ({ pageIndex, displayIndex }) => {
+}> = ({ pageId, displayIndex }) => {
   const configState = useContext(ConfigStateContext);
   const configDispatch = useContext(ConfigDispatchContext);
   const display =
-    pageIndex === -1
+    pageId === "dbd"
       ? configState.defaultBackDisplay
-      : configState.pages[pageIndex].displayButtons[displayIndex].display;
+      : configState.pages.byId[pageId].displayButtons[displayIndex].display;
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [{ isDragging }, dragRef] = useDrag({
     item: {
       type: "display",
-      pageIndex,
+      pageId,
       displayIndex,
       brightness: configState.brightness,
     },
@@ -36,19 +36,19 @@ export const DisplayButton: React.FC<{
       isDragging: monitor.isDragging(),
     }),
   });
-  const [{ targetDisplayIndex, targetPageIndex }, drop] = useDrop({
+  const [{ targetDisplayIndex, targetPageId }, drop] = useDrop({
     options: {},
     accept: "display",
     drop: (item, monitor): void =>
       configDispatch.switchButtons({
-        pageAIndex: targetPageIndex,
+        pageAId: targetPageId,
         buttonAIndex: targetDisplayIndex,
-        pageBIndex: monitor.getItem().pageIndex,
+        pageBId: monitor.getItem().pageId,
         buttonBIndex: monitor.getItem().displayIndex,
       }),
     collect: () => ({
       targetDisplayIndex: displayIndex,
-      targetPageIndex: pageIndex,
+      targetPageId: pageId,
     }),
   });
 
@@ -65,12 +65,12 @@ export const DisplayButton: React.FC<{
         onClick={() => setShowSettings(true)}
         previewImage={display.previewImage}
       />
-      <ActionPreview pageIndex={pageIndex} displayIndex={displayIndex} />
+      <ActionPreview pageId={pageId} displayIndex={displayIndex} />
 
       {
         <FDWindow
           className="w-dp-settings"
-          title={`Page ${pageIndex + 1} Display ${displayIndex + 1}`}
+          title={`Page ${pageId + 1} Display ${displayIndex + 1}`}
           visible={showSettings}
           setClose={() => setShowSettings(false)}
         >
@@ -82,7 +82,7 @@ export const DisplayButton: React.FC<{
                 prefix: <PhotographIcon className="h-6 w-6" />,
                 content: (
                   <DisplaySettingsContainer
-                    pageIndex={pageIndex}
+                    pageId={pageId}
                     displayIndex={displayIndex}
                   />
                 ),
@@ -92,7 +92,7 @@ export const DisplayButton: React.FC<{
                 prefix: <AdjustmentsIcon className="h-6 w-6" />,
                 content: (
                   <ButtonSettingsContainer
-                    pageIndex={pageIndex}
+                    pageId={pageId}
                     displayIndex={displayIndex}
                   />
                 ),

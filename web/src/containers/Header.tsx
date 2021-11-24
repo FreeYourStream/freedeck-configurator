@@ -107,10 +107,10 @@ export const Header: React.FC<{
                     loadConfigFile(event.currentTarget.files)
                   }
                 ></input>
-                {!!pages.length && (
+                {!!Object.keys(pages).length && (
                   <FDButton
                     prefix={<DownloadIcon className={iconSize} />}
-                    disabled={!pages.length}
+                    disabled={!Object.keys(pages).length}
                     size={3}
                     onClick={() => saveConfigFile()}
                   >

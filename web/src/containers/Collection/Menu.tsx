@@ -1,6 +1,7 @@
 import {
   CollectionIcon,
   MenuIcon,
+  PencilIcon,
   ShareIcon,
   TrashIcon,
 } from "@heroicons/react/outline";
@@ -17,9 +18,12 @@ import {
   ConfigDispatchContext,
   ConfigStateContext,
 } from "../../states/configState";
-import { PublishPage } from "./Publish";
 
-export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
+// import { PublishPage } from "./Publish";
+
+export const CollectionMenu: React.FC<{ collectionId: string }> = ({
+  collectionId,
+}) => {
   const appState = useContext(AppStateContext);
   const configState = useContext(ConfigStateContext);
   const configDispatch = useContext(ConfigDispatchContext);
@@ -30,35 +34,30 @@ export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
       <Modal
         isOpen={deleteOpen}
         onAccept={() => {
-          configDispatch.deletePage(pageId);
+          // configDispatch.deleteCollection(collectionId);
           setDeleteOpen(false);
         }}
         onAbort={() => setDeleteOpen(false)}
-        title="Delete this page?"
-        text="Do you want to delete this page? It will be gone forever"
+        title="Delete this collection?"
+        text="Do you want to delete this collection? It will be gone forever"
       />
 
-      {process.env.REACT_APP_ENABLE_API === "true" && (
-        <PublishPage
+      {/* {process.env.REACT_APP_ENABLE_API === "true" && (
+        <PublishCollection
           isOpen={publishOpen}
           setOpen={(val) => setPublishOpen(val)}
-          pageId={pageId}
+          collectionId={collectionId}
         />
-      )}
+      )} */}
 
       <CtrlDuo>
         <FDMenu
           entries={[
             {
-              title: "Add to collection",
-              prefix: <CollectionIcon className={c(iconSize)} />,
-              disabled: !!configState.pages.byId[pageId].isInCollection,
+              title: "Edit",
+              prefix: <PencilIcon className={c(iconSize)} />,
               onClick: () => {
-                console.log("COLLECTION MAKER");
-                configDispatch.movePageToCollection({
-                  collectionId: "testid",
-                  pageId,
-                });
+                console.log("Open edit dialog");
               },
             },
             {
@@ -78,7 +77,7 @@ export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
         </FDMenu>
         <TrashIcon
           onClick={async () => {
-            if (appState.ctrlDown) configDispatch.deletePage(pageId);
+            if (appState.ctrlDown) configDispatch.deletePage(collectionId);
             else setDeleteOpen(true);
           }}
           className="w-9 h-9 p-1.5 rounded-full bg-danger-600 hover:bg-danger-400"

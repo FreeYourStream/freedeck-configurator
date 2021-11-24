@@ -6,7 +6,8 @@
     "**/*.spec.{js,jsx,ts,tsx}",
     "**/tests/**",
     "**/__tests__/**",
-    "**/*.d.ts"
+    "**/*.d.ts",
+    "**/generated/types-and-hooks.ts"
   ],
   "ignoreUnimported": [
     "src/containers/_Boilerplate.tsx",

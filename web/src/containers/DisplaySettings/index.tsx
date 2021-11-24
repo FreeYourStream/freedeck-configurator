@@ -1,14 +1,15 @@
 import React, { useContext, useEffect, useRef } from "react";
+
 import { fileToImage } from "../../lib/fileToImage";
 import { ConfigDispatchContext } from "../../states/configState";
 import { DropDisplay } from "./DropDisplay";
 import { ImageSettings } from "./ImageSettings";
 
 export const DisplaySettingsContainer = ({
-  pageIndex,
+  pageId,
   displayIndex,
 }: {
-  pageIndex: number;
+  pageId: string;
   displayIndex: number;
 }) => {
   const configDispatch = useContext(ConfigDispatchContext);
@@ -23,7 +24,7 @@ export const DisplaySettingsContainer = ({
   const onDrop = async (acceptedFiles: File[]) => {
     const resizedBuffer = await fileToImage(acceptedFiles[0]);
     configDispatch.setOriginalImage({
-      pageIndex,
+      pageId,
       buttonIndex: displayIndex,
       originalImage: resizedBuffer,
     });
@@ -37,7 +38,7 @@ export const DisplaySettingsContainer = ({
       onPaste={async (e) => {
         configDispatch.setOriginalImage({
           buttonIndex: displayIndex,
-          pageIndex,
+          pageId,
           originalImage: await fileToImage(e.clipboardData.files[0]),
         });
       }}
@@ -45,11 +46,11 @@ export const DisplaySettingsContainer = ({
       {
         <DropDisplay
           onDrop={onDrop}
-          pageIndex={pageIndex}
+          pageId={pageId}
           displayIndex={displayIndex}
         />
       }
-      <ImageSettings pageIndex={pageIndex} displayIndex={displayIndex} />
+      <ImageSettings pageId={pageId} displayIndex={displayIndex} />
     </div>
   );
 };

@@ -1,8 +1,22 @@
 import { EAction } from "./definitions/modes";
 
+export enum FDSettings {
+  "change_brightness" = 0,
+  "absolute_brightness",
+}
 export interface IButtonSetting {
   mode: EAction;
-  values: number[];
+  values: {
+    hotkeys: number[];
+    changePage: string;
+    noop: undefined;
+    special_keys: number[];
+    text: number[];
+    settings: {
+      setting?: FDSettings;
+      value?: number;
+    };
+  };
   enabled: boolean;
 }
 
@@ -42,20 +56,38 @@ export interface IDisplaySettings {
   textSettings: ITextSettings;
   textWithIconSettings: ITextWithIconSettings;
   isGeneratedFromDefaultBackImage: boolean;
-  previousPage?: number;
+  previousPage?: string;
   previousDisplay?: number;
   originalImage: IOriginalImage;
   convertedImage: IConvertedImage;
   previewImage: string;
 }
 
-export type IDisplayButton = {
+export interface IDisplayButton {
   display: IDisplaySettings;
   button: IButtonSettings;
+}
+
+export interface IPage {
+  id: string;
+  name: string;
+  windowName?: string;
+  isInCollection?: string;
+  displayButtons: IDisplayButton[];
+}
+
+export type IPages = {
+  byId: { [pageId: string]: IPage };
+  sorted: string[];
 };
 
-export type IPage = {
-  name?: string;
+export interface ICollection {
+  name: string;
   windowName?: string;
-  displayButtons: IDisplayButton[];
-};
+  pages: string[];
+}
+
+export interface ICollections {
+  byId: { [collectionId: string]: ICollection };
+  sorted: string[];
+}

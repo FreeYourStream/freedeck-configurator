@@ -8,13 +8,14 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import { FDButton } from "./lib/components/Button";
 import { createToast } from "./lib/createToast";
+import { isElectron } from "./lib/electron";
 import reportWebVitals from "./reportWebVitals";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { defaultAppState } from "./states/appState";
 import { defaultConfigState } from "./states/configState";
 
 const main = async () => {
-  if (process.env.NODE_ENV !== "development")
+  if (process.env.NODE_ENV !== "development" && !isElectron())
     window.onbeforeunload = function () {
       return "Data will be lost if you leave the page, are you sure?";
     };

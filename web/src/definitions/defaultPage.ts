@@ -1,6 +1,8 @@
 import merge from "lodash/merge";
+import { v4 } from "uuid";
 
 import {
+  FDSettings,
   IButtonSettings,
   IDisplayButton,
   IDisplaySettings,
@@ -20,12 +22,26 @@ export type IDisplayOptions = RecursivePartial<IDisplaySettings>;
 const createDefaultButton: () => IButtonSettings = () => ({
   primary: {
     mode: EAction.noop,
-    values: [],
+    values: {
+      changePage: "",
+      hotkeys: [],
+      settings: {},
+      special_keys: [],
+      text: [],
+      noop: undefined,
+    },
     enabled: true,
   },
   secondary: {
     mode: EAction.noop,
-    values: [],
+    values: {
+      changePage: "",
+      hotkeys: [],
+      settings: {},
+      special_keys: [],
+      text: [],
+      noop: undefined,
+    },
     enabled: false,
   },
 });
@@ -70,15 +86,19 @@ export const createDefaultDisplayButton = async (
 
 export const createDefaultPage = async (
   count: number,
-  previousPage?: number
+  previousPage?: string
 ): Promise<IPage> => {
-  const page: IPage = { displayButtons: [] };
+  const page: IPage = {
+    name: "",
+    displayButtons: [],
+    id: v4(),
+  };
   for (var i = 0; i < count; i++) {
     page.displayButtons.push(await createDefaultDisplayButton());
   }
   if (previousPage !== undefined) {
     page.displayButtons[0].button.primary.mode = EAction.changePage;
-    page.displayButtons[0].button.primary.values = [previousPage];
+    page.displayButtons[0].button.primary.values.changePage = previousPage;
     page.displayButtons[0].display = await createDefaultBackDisplay(
       previousPage
     );

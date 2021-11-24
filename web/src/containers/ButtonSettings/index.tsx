@@ -5,11 +5,11 @@ import { ConfigStateContext } from "../../states/configState";
 import { Action } from "./Action";
 
 export const ButtonSettingsContainer: React.FC<{
-  pageIndex: number;
+  pageId: string;
   displayIndex: number;
-}> = ({ pageIndex, displayIndex }) => {
+}> = ({ pageId, displayIndex }) => {
   const { pages } = useContext(ConfigStateContext);
-  const button = pages[pageIndex].displayButtons[displayIndex].button;
+  const button = pages.byId[pageId].displayButtons[displayIndex].button;
   return (
     <div className="flex flex-col h-full">
       <div className="grid grid-cols-2 grid-rows-1 gap-2 h-full mb-4">
@@ -17,9 +17,8 @@ export const ButtonSettingsContainer: React.FC<{
           <Action
             primary={true}
             title="Short press"
-            pageIndex={pageIndex}
+            pageId={pageId}
             buttonIndex={displayIndex}
-            pageCount={pages.length}
             action={button.primary}
             loadUserInteraction={false}
           />
@@ -29,9 +28,8 @@ export const ButtonSettingsContainer: React.FC<{
             <Action
               primary={false}
               title="Long press"
-              pageIndex={pageIndex}
+              pageId={pageId}
               buttonIndex={displayIndex}
-              pageCount={pages.length}
               action={button.secondary}
               loadUserInteraction={false}
             />

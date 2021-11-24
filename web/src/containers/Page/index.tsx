@@ -1,30 +1,35 @@
 import c from "clsx";
 import React, { useContext } from "react";
-import { DndProvider } from "react-dnd";
-import Backend from "react-dnd-html5-backend";
 
-import { ConfigStateContext } from "../../states/configState";
+import { TextInput } from "../../lib/components/TextInput";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../../states/configState";
 import { DisplayButton } from "../DisplayButton";
 import { PageMenu } from "./Menu";
 
 interface IProps {
-  pageIndex: number;
+  pageId: string;
+  collectionIndex?: number;
 }
-export const Page: React.FC<IProps> = ({ pageIndex }) => {
+export const Page: React.FC<IProps> = ({ pageId, collectionIndex }) => {
   const configState = useContext(ConfigStateContext);
-
+  const page = configState.pages.byId[pageId];
+  const { renamePage } = useContext(ConfigDispatchContext);
   return (
     <div
-      id={`page_${pageIndex}`}
+      id={`page_${page.id}`}
       className="relative p-2 m-6 rounded-3xl bg-gray-700 shadow-lg"
     >
-      <div className="flex justify-between">
-        <div className="flex items-center justify-center w-9 h-9 shadow-md bg-gray-400 rounded-full top-2 left-2 ">
-          <div className="text-xl font-bold text-center text-white align-middle">
-            {pageIndex + 1}
-          </div>
-        </div>
-        <PageMenu pageIndex={pageIndex} />
+      <div className="flex justify-between pl-10 py-4 pr-4">
+        <TextInput
+          className="w-full mr-6"
+          value={page.name}
+          placeholder={page.id.slice(-4) + " - Click to change name"}
+          onChange={(value) => renamePage({ pageId, name: value })}
+        />
+        <PageMenu pageId={pageId} />
       </div>
       <div
         className={c(
@@ -34,17 +39,15 @@ export const Page: React.FC<IProps> = ({ pageIndex }) => {
           `grid-rows-${configState.height}`
         )}
       >
-        <DndProvider backend={Backend}>
-          {configState.pages[pageIndex].displayButtons.map(
-            (db, displayIndex) => (
-              <DisplayButton
-                key={displayIndex}
-                displayIndex={displayIndex}
-                pageIndex={pageIndex}
-              />
-            )
-          )}
-        </DndProvider>
+        {configState.pages.byId[pageId].displayButtons.map(
+          (db, displayIndex) => (
+            <DisplayButton
+              key={displayIndex}
+              displayIndex={displayIndex}
+              pageId={pageId}
+            />
+          )
+        )}
       </div>
     </div>
   );

@@ -19,12 +19,12 @@ import {
 
 export const DropDisplay = ({
   onDrop,
-  pageIndex,
+  pageId,
   displayIndex,
 }: {
   onDrop: (acceptedFiles: File[]) => Promise<void> | void;
   displayIndex: number;
-  pageIndex: number;
+  pageId: string;
 }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -32,12 +32,12 @@ export const DropDisplay = ({
   });
   const configState = useContext(ConfigStateContext);
   const display =
-    pageIndex === -1
+    pageId === "dbd"
       ? configState.defaultBackDisplay
-      : configState.pages[pageIndex].displayButtons[displayIndex].display;
+      : configState.pages.byId[pageId].displayButtons[displayIndex].display;
   const configDispatch = useContext(ConfigDispatchContext);
   const entries: MenuEntry[] = [];
-  if (pageIndex === -1) {
+  if (pageId === "dbd") {
     entries.push({
       title: "Reset to default",
       onClick: () => configDispatch.resetDefaultBackButton(undefined),
@@ -50,7 +50,7 @@ export const DropDisplay = ({
         onClick: () =>
           configDispatch.deleteImage({
             buttonIndex: displayIndex,
-            pageIndex: pageIndex,
+            pageId: pageId,
           }),
 
         prefix: <TrashIcon className={c(iconSize, "text-danger-400")} />,
@@ -60,7 +60,7 @@ export const DropDisplay = ({
         onClick: () =>
           configDispatch.makeDefaultBackButton({
             buttonIndex: displayIndex,
-            pageIndex: pageIndex,
+            pageId: pageId,
           }),
 
         prefix: <RefreshIcon className={c(iconSize)} />,

@@ -1,4 +1,5 @@
 import React from "react";
+
 import { EMediaKeys, MediaKeys } from "../../definitions/keys";
 import { IButtonSetting } from "../../interfaces";
 import { Label } from "../../lib/components/LabelValue";
@@ -14,7 +15,7 @@ export const SpecialKeys: React.FC<{
       <Label>Key</Label>
       <StyledSelect
         className="w-40"
-        value={action.values[0] ?? 0}
+        value={action.values.special_keys[0] ?? 0}
         onChange={(value) => setKeys([parseInt(value)])}
         options={[
           { text: "Choose key", value: 0 },
