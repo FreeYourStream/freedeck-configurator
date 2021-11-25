@@ -39,12 +39,11 @@ const Pill: React.FC<{ className?: string; button: IButtonSetting }> = ({
           <span>{keys.join("+")}</span>
         </div>
       )}
-      {button.mode === EAction.special_keys &&
-        !!button.values.special_keys.length && (
-          <div className={c(pillClassName, "bg-gray-500")}>
-            <span>{EMediaKeys[button.values.special_keys[0]].toString()}</span>
-          </div>
-        )}
+      {button.mode === EAction.special_keys && !!button.values.special_keys && (
+        <div className={c(pillClassName, "bg-gray-500")}>
+          <span>{EMediaKeys[button.values.special_keys].toString()}</span>
+        </div>
+      )}
       {button.mode === EAction.settings && !!button.values.settings.setting && (
         <div className={c(pillClassName, "bg-gray-500")}>
           <span>{button.values.settings.value}</span>

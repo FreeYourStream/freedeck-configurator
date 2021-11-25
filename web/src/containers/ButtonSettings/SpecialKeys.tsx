@@ -7,16 +7,18 @@ import { Row } from "../../lib/components/Row";
 import { StyledSelect } from "../../lib/components/SelectInput";
 
 export const SpecialKeys: React.FC<{
-  action: IButtonSetting;
-  setKeys: (keys: number[]) => void;
-}> = ({ action, setKeys }) => {
+  values: IButtonSetting["values"];
+  setValues: (values: IButtonSetting["values"]) => void;
+}> = ({ values, setValues }) => {
   return (
     <Row>
       <Label>Key</Label>
       <StyledSelect
         className="w-40"
-        value={action.values.special_keys[0] ?? 0}
-        onChange={(value) => setKeys([parseInt(value)])}
+        value={values.special_keys ?? 0}
+        onChange={(value) =>
+          setValues({ ...values, special_keys: parseInt(value) })
+        }
         options={[
           { text: "Choose key", value: 0 },
           // @ts-ignore

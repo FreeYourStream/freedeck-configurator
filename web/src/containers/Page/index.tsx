@@ -19,14 +19,14 @@ export const Page: React.FC<IProps> = ({ pageId, collectionIndex }) => {
   const { renamePage } = useContext(ConfigDispatchContext);
   return (
     <div
-      id={`page_${page.id}`}
+      id={`page_${pageId}`}
       className="relative p-2 m-6 rounded-3xl bg-gray-700 shadow-lg"
     >
       <div className="flex justify-between pl-10 py-4 pr-4">
         <TextInput
           className="w-full mr-6"
           value={page.name}
-          placeholder={page.id.slice(-4) + " - Click to change name"}
+          placeholder={pageId.slice(-4) + " - Click to change name"}
           onChange={(value) => renamePage({ pageId, name: value })}
         />
         <PageMenu pageId={pageId} />

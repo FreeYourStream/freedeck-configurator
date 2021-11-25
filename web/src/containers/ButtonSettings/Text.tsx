@@ -6,20 +6,33 @@ import { StyledSelect } from "../../lib/components/SelectInput";
 import { useTranslateKeyboardLayout } from "../../lib/localisation/keyboard";
 
 export const Text: React.FC<{
-  action: IButtonSetting;
-  setKeys: (keys: number[]) => void;
-  onKey: (e: React.KeyboardEvent<any>, lengthLimit?: any) => void;
-}> = ({ action, setKeys, onKey }) => {
-  const translatedKeys = useTranslateKeyboardLayout(action.values.text);
+  values: IButtonSetting["values"];
+  setValues: (values: IButtonSetting["values"]) => void;
+}> = ({ values, setValues }) => {
+  const translatedKeys = useTranslateKeyboardLayout(values.text);
+  const setKeys = (newValues: number[]) =>
+    newValues.length < 15 &&
+    setValues({
+      ...values,
+      text: newValues,
+    });
+  const onKey = (e: React.KeyboardEvent<any>, lengthLimit = 7) => {
+    if (e.repeat) return;
+    const key = Object.keys(keys).find(
+      (key) => keys[key]?.js === e.nativeEvent.code
+    );
+    if (!key) return;
+    //ignore backspace
+    if (keys[key]!.hid === 42 && values.text.length > 0) {
+      setKeys([...values.text.slice(0, values.text.length - 1)]);
+    } else setKeys([...values.text, keys[key]!.hid]);
+  };
   return (
     <>
       <StyledSelect
         className="w-full my-2"
         value={0}
-        onChange={(value) => {
-          if (action.values.text.length < 15)
-            setKeys([...action.values.text, parseInt(value)]);
-        }}
+        onChange={(value) => setKeys([...values.hotkeys, parseInt(value)])}
         options={[
           { value: 0, text: "Choose key" },
           ...Object.keys(keys).map((keyName) => ({
@@ -32,10 +45,7 @@ export const Text: React.FC<{
         className="bg-gray-400 my-2 rounded-lg resize-none p-2 w-full h-60"
         rows={12}
         onKeyDown={(e) => {
-          if (e.nativeEvent.code !== "Backspace") return onKey(e, 15);
-          const newKeys = [...action.values.text];
-          newKeys.splice(newKeys.length - 1, 1);
-          setKeys(newKeys);
+          onKey(e, 15);
         }}
         value={translatedKeys.reduce((acc, value) => `${acc}[${value}]`, "")}
       />

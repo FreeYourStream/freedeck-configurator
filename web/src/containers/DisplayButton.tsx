@@ -20,6 +20,7 @@ export const DisplayButton: React.FC<{
 }> = ({ pageId, displayIndex }) => {
   const configState = useContext(ConfigStateContext);
   const configDispatch = useContext(ConfigDispatchContext);
+  const page = configState.pages.byId[pageId];
   const display =
     pageId === "dbd"
       ? configState.defaultBackDisplay
@@ -70,7 +71,9 @@ export const DisplayButton: React.FC<{
       {
         <FDWindow
           className="w-dp-settings"
-          title={`Page ${pageId + 1} Display ${displayIndex + 1}`}
+          title={`Page ${
+            page.name.length ? page.name : pageId.slice(-4)
+          } Display ${displayIndex + 1}`}
           visible={showSettings}
           setClose={() => setShowSettings(false)}
         >

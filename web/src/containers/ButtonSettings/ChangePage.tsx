@@ -1,5 +1,5 @@
 import { LogoutIcon, PlusCircleIcon } from "@heroicons/react/outline";
-import React from "react";
+import React, { useContext } from "react";
 
 import { IButtonSetting, IPage, IPages } from "../../interfaces";
 import { FDButton } from "../../lib/components/Button";
@@ -7,38 +7,55 @@ import { Label } from "../../lib/components/LabelValue";
 import { Row } from "../../lib/components/Row";
 import { StyledSelect } from "../../lib/components/SelectInput";
 import { scrollToPage } from "../../lib/scrollToPage";
+import { ConfigDispatchContext } from "../../states/configState";
 
 export const ChangePage: React.FC<{
-  action: IButtonSetting;
-  setGoTo: (pageId: string) => void;
-  addPage: () => void;
+  secondary: boolean;
+  values: IButtonSetting["values"];
+  previousPage: string;
   pages: IPages;
-}> = ({ action, setGoTo, addPage, pages }) => {
+  previousDisplay: number;
+  setValues: (values: IButtonSetting["values"]) => void;
+}> = ({
+  values,
+  previousPage,
+  pages,
+  previousDisplay,
+  setValues,
+  secondary,
+}) => {
+  const configDispatch = useContext(ConfigDispatchContext);
   return (
     <>
-      {pages.byId.length ? (
+      {pages.sorted.length ? (
         <Row>
           <Label>Page</Label>
           <StyledSelect
             className="w-40"
-            value={action.values.changePage ?? ""}
-            onChange={(value) => setGoTo(value)}
+            value={values.changePage ?? ""}
+            onChange={(value) => setValues({ ...values, changePage: value })}
             options={[
               { text: "Select Page", value: "" },
               ...Object.entries(pages.byId).map(([id, page]) => ({
-                value: page,
-                text: `Go to ${page.name ?? page.id.slice(0, 4)}`,
+                value: id,
+                text: `Go to ${page.name.length ? page.name : id.slice(-4)}`,
               })),
             ]}
           />
         </Row>
       ) : null}
       <div className="flex justify-center my-2">
-        {action.values.changePage === "" ? (
+        {values.changePage === "" ? (
           <FDButton
             prefix={<PlusCircleIcon className="h-5 w-5" />}
             size={2}
-            onClick={async () => await addPage()}
+            onClick={async () =>
+              await configDispatch.addPage({
+                previousPage,
+                previousDisplay,
+                secondary,
+              })
+            }
           >
             Add Page
           </FDButton>
@@ -46,9 +63,9 @@ export const ChangePage: React.FC<{
           <FDButton
             prefix={<LogoutIcon className="h-5 w-5" />}
             size={2}
-            onClick={() => scrollToPage(action.values.changePage)}
+            onClick={() => scrollToPage(values.changePage)}
           >
-            Scroll To {(action.values.changePage + 1).toString()}
+            Scroll To {values.changePage.slice(-4)}
           </FDButton>
         )}
       </div>

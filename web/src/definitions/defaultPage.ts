@@ -26,7 +26,7 @@ const createDefaultButton: () => IButtonSettings = () => ({
       changePage: "",
       hotkeys: [],
       settings: {},
-      special_keys: [],
+      special_keys: 0,
       text: [],
       noop: undefined,
     },
@@ -38,7 +38,7 @@ const createDefaultButton: () => IButtonSettings = () => ({
       changePage: "",
       hotkeys: [],
       settings: {},
-      special_keys: [],
+      special_keys: 0,
       text: [],
       noop: undefined,
     },
@@ -91,7 +91,6 @@ export const createDefaultPage = async (
   const page: IPage = {
     name: "",
     displayButtons: [],
-    id: v4(),
   };
   for (var i = 0; i < count; i++) {
     page.displayButtons.push(await createDefaultDisplayButton());

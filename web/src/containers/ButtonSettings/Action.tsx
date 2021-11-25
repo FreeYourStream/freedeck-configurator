@@ -20,84 +20,40 @@ import { Text } from "./Text";
 export const Action: React.FC<{
   pageId: string;
   buttonIndex: number;
-  action: IButtonSetting;
-  loadUserInteraction: boolean;
+  buttonSettings: IButtonSetting;
   title: string;
   primary: boolean;
-}> = ({ action, title, pageId, buttonIndex, primary }) => {
+}> = ({ buttonSettings, title, pageId, buttonIndex, primary }) => {
   const configDispatch = useContext(ConfigDispatchContext);
   const configState = useContext(ConfigStateContext);
   const priOrSec = primary ? "primary" : "secondary";
+
   const setMode = (mode: EAction) => {
     configDispatch.setButtonSettings({
       pageId,
       buttonIndex,
       priOrSec,
       buttonSettings: {
-        ...action,
+        ...buttonSettings,
         mode,
         enabled: mode !== EAction.noop,
       },
     });
   };
-  const setValues = (values: number[], mode: EAction) =>
+
+  const setValues = (values: IButtonSetting["values"]) =>
     configDispatch.setButtonSettings({
       pageId,
       buttonIndex,
       priOrSec,
       buttonSettings: {
-        ...action,
+        ...buttonSettings,
         values: {
-          ...action.values,
-          [mode]: values[0] === -1 ? [] : values,
+          ...values,
         },
       },
     });
 
-  const setGoToValue = (goTo: string) =>
-    configDispatch.setButtonSettings({
-      pageId,
-      buttonIndex,
-      priOrSec,
-      buttonSettings: {
-        ...action,
-        values: { ...action.values, changePage: goTo },
-      },
-    });
-  const setFDSettings = (setting: FDSettings, value?: number) =>
-    configDispatch.setButtonSettings({
-      pageId,
-      buttonIndex,
-      priOrSec,
-      buttonSettings: {
-        ...action,
-        values: {
-          ...action.values,
-          settings: {
-            setting,
-            value: value ?? 0,
-          },
-        },
-      },
-    });
-  const onKey = useCallback(
-    (e: React.KeyboardEvent<any>, lengthLimit = 7) => {
-      if (e.repeat) return;
-      const key = Object.keys(keys).find(
-        (key) => keys[key]?.js === e.nativeEvent.code
-      );
-      if (!key) return;
-      //ignore backspace
-      if (keys[key]!.hid === 42 && action.values.hotkeys.length > 0) {
-        setValues(
-          [...action.values.hotkeys.slice(0, action.values.hotkeys.length - 1)],
-          EAction.hotkeys
-        );
-      } else if (action.values.hotkeys.length < lengthLimit)
-        setValues([...action.values.hotkeys, keys[key]!.hid], EAction.hotkeys);
-    }, // eslint-disable-next-line
-    [action]
-  );
   return (
     <div className="flex flex-col h-full">
       <Title className="mb-2">{title}</Title>
@@ -105,7 +61,7 @@ export const Action: React.FC<{
         <Label>Mode</Label>
         <StyledSelect
           className="w-40"
-          value={action.mode}
+          value={buttonSettings.mode}
           onChange={(value) => setMode(parseInt(value))}
           options={[
             { value: 2, text: "Do nothing" },
@@ -117,43 +73,38 @@ export const Action: React.FC<{
           ]}
         />
       </Row>
-      {action.mode === EAction.hotkeys && (
+      {buttonSettings.mode === EAction.hotkeys && (
         <Hotkeys
-          action={action}
-          onKey={onKey}
-          setKeys={(values) => setValues(values, EAction.hotkeys)}
+          values={buttonSettings.values}
+          setValues={(values) => setValues(values)}
         />
       )}
-      {action.mode === EAction.changePage && (
+      {buttonSettings.mode === EAction.changePage && (
         <ChangePage
-          action={action}
-          addPage={() => {
-            configDispatch.addPage({
-              previousPage: pageId,
-              previousDisplay: buttonIndex,
-            });
-          }}
+          values={buttonSettings.values}
+          previousPage={pageId}
           pages={configState.pages}
-          setGoTo={setGoToValue}
+          previousDisplay={buttonIndex}
+          setValues={(values) => setValues(values)}
+          secondary={!primary}
         />
       )}
-      {action.mode === EAction.special_keys && (
+      {buttonSettings.mode === EAction.special_keys && (
         <SpecialKeys
-          action={action}
-          setKeys={(values) => setValues(values, EAction.special_keys)}
+          values={buttonSettings.values}
+          setValues={(values) => setValues(values)}
         />
       )}
-      {action.mode === EAction.text && (
+      {buttonSettings.mode === EAction.text && (
         <Text
-          action={action}
-          onKey={onKey}
-          setKeys={(values) => setValues(values, EAction.text)}
+          values={buttonSettings.values}
+          setValues={(values) => setValues(values)}
         />
       )}
-      {action.mode === EAction.settings && (
+      {buttonSettings.mode === EAction.settings && (
         <FreeDeckSettings
-          action={action}
-          setSetting={(setting, value) => setFDSettings(setting, value)}
+          values={buttonSettings.values}
+          setValues={(values) => setValues(values)}
         />
       )}
     </div>

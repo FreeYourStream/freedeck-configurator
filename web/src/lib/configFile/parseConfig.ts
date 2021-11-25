@@ -27,9 +27,8 @@ export const generateAdditionalImagery = async (
 const convertCurrentConfig = async (
   rawConfig: ConfigState
 ): Promise<ConfigState> => {
-  const ids = Object.keys(rawConfig.pages);
-  for (let outer = 0; outer < ids.length; outer++) {
-    const id = ids[outer];
+  for (let outer = 0; outer < rawConfig.pages.sorted.length; outer++) {
+    const id = rawConfig.pages.sorted[outer];
     const page = rawConfig.pages.byId[id];
 
     for (let inner = 0; inner < page.displayButtons.length; inner++) {

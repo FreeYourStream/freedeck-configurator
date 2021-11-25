@@ -57,7 +57,7 @@ export interface IConfigReducer extends Actions<ConfigState> {
   ): Promise<ConfigState>;
   addPage(
     state: ConfigState,
-    data?: { previousPage: string; previousDisplay: number }
+    data?: { previousPage: string; previousDisplay: number; secondary: boolean }
   ): Promise<ConfigState>;
   renamePage(
     state: ConfigState,
@@ -160,11 +160,13 @@ export const configReducer: IConfigReducer = {
     const newId = v4();
     state.pages.byId[newId] = newPage;
     state.pages.sorted.push(newId);
+    console.log(state.pages.sorted);
+    console.log(Object.keys(state.pages.byId));
     if (data) {
-      const { previousPage, previousDisplay } = data;
-      state.pages.byId[previousPage].displayButtons[
-        previousDisplay
-      ].button.primary.values.changePage = newId;
+      const { previousPage, previousDisplay, secondary = false } = data;
+      state.pages.byId[previousPage].displayButtons[previousDisplay].button[
+        secondary ? "secondary" : "primary"
+      ].values.changePage = newId;
     }
     return { ...state };
   },

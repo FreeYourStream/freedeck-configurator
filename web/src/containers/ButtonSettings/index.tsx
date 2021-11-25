@@ -19,8 +19,7 @@ export const ButtonSettingsContainer: React.FC<{
             title="Short press"
             pageId={pageId}
             buttonIndex={displayIndex}
-            action={button.primary}
-            loadUserInteraction={false}
+            buttonSettings={button.primary}
           />
         </div>
         <div className="relative flex flex-col p-4 bg-gray-700 rounded-r-2xl">
@@ -30,8 +29,7 @@ export const ButtonSettingsContainer: React.FC<{
               title="Long press"
               pageId={pageId}
               buttonIndex={displayIndex}
-              action={button.secondary}
-              loadUserInteraction={false}
+              buttonSettings={button.secondary}
             />
           )}
         </div>

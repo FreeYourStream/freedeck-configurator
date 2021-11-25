@@ -18,8 +18,8 @@ const writeAction = (
   buttonRows.writeUInt8(buttonAction.mode + secondaryAddition, dataOffset);
   switch (buttonAction.mode) {
     case EAction.changePage:
-      const pageIndex = Object.entries(pages).findIndex(
-        ([id, page]) => id === buttonAction.values.changePage
+      const pageIndex = pages.sorted.findIndex(
+        (id) => id === buttonAction.values.changePage
       );
       buttonRows.writeUInt8(pageIndex, dataOffset + 1);
       break;
@@ -29,9 +29,7 @@ const writeAction = (
       );
       break;
     case EAction.special_keys:
-      buttonAction.values.special_keys.forEach((specialKey, index) =>
-        buttonRows.writeUInt8(specialKey, dataOffset + index + 1)
-      );
+      buttonRows.writeUInt8(buttonAction.values.special_keys, dataOffset + 1);
       break;
     case EAction.text:
       buttonAction.values.text.forEach((text, index) =>

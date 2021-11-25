@@ -10,7 +10,7 @@ export interface IButtonSetting {
     hotkeys: number[];
     changePage: string;
     noop: undefined;
-    special_keys: number[];
+    special_keys: number;
     text: number[];
     settings: {
       setting?: FDSettings;
@@ -69,7 +69,6 @@ export interface IDisplayButton {
 }
 
 export interface IPage {
-  id: string;
   name: string;
   windowName?: string;
   isInCollection?: string;
