@@ -57,9 +57,8 @@ const writeAction = (
 };
 
 export const createButtonBody = (pages: IPages) => {
-  const pageKeys = Object.keys(pages);
   const buttonRowCount =
-    pageKeys.length * pages.byId[pageKeys[0]].displayButtons.length;
+    pages.sorted.length * pages.byId[pages.sorted[0]].displayButtons.length;
   let buttonRows = new Buffer(16 * buttonRowCount);
   Object.entries(pages.byId).forEach(([pageId, page], pageIndex) => {
     page.displayButtons.forEach((db, buttonIndex) => {
@@ -81,11 +80,10 @@ export const createButtonBody = (pages: IPages) => {
 
 export const createImageBody = (pages: IPages) => {
   let imageBuffer = new Buffer(0);
-  const keys = Object.keys(pages);
   const bmpHeaderSize =
-    pages.byId[keys[0]].displayButtons[0].display.convertedImage.readUInt32LE(
-      10
-    );
+    pages.byId[
+      pages.sorted[0]
+    ].displayButtons[0].display.convertedImage.readUInt32LE(10);
   Object.entries(pages.byId).forEach(([id, page]) => {
     page.displayButtons.forEach((db) => {
       imageBuffer = Buffer.concat([

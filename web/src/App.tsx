@@ -59,7 +59,7 @@ const App: React.FC<{
         configState.height,
         configState.brightness,
         configState.screenSaverTimeout,
-        Object.keys(configState.pages).length
+        configState.pages.sorted.length
       ),
       createButtonBody(configState.pages),
       createImageBody(configState.pages),
