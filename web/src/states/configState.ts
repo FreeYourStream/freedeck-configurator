@@ -57,7 +57,12 @@ export interface IConfigReducer extends Actions<ConfigState> {
   ): Promise<ConfigState>;
   addPage(
     state: ConfigState,
-    data?: { previousPage: string; previousDisplay: number; secondary: boolean }
+    data: {
+      previousPage?: string;
+      previousDisplay?: number;
+      secondary?: boolean;
+      startPage?: boolean;
+    }
   ): Promise<ConfigState>;
   renamePage(
     state: ConfigState,
@@ -168,19 +173,29 @@ export const configReducer: IConfigReducer = {
   async addPage(state, data) {
     const newPage = await createDefaultPage(
       state.width * state.height,
-      data?.previousPage
+      data.previousPage
     );
     if (state.pages.sorted.length === 0) newPage.name = "Start";
     const newId = v4();
     state.pages.byId[newId] = newPage;
     state.pages.sorted.push(newId);
-    console.log(state.pages.sorted);
-    console.log(Object.keys(state.pages.byId));
-    if (data) {
-      const { previousPage, previousDisplay, secondary = false } = data;
+    const {
+      previousPage,
+      previousDisplay,
+      secondary = false,
+      startPage,
+    } = data;
+    if (
+      previousPage !== undefined &&
+      previousDisplay !== undefined &&
+      secondary !== undefined
+    ) {
       state.pages.byId[previousPage].displayButtons[previousDisplay].button[
         secondary ? "secondary" : "primary"
       ].values[EAction.changePage] = newId;
+    } else if (startPage === true) {
+      state.pages.byId[newId].isStartPage = true;
+      state.pages.byId[newId].name = "Start";
     }
     return { ...state };
   },

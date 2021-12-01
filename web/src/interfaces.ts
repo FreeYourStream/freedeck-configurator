@@ -70,6 +70,7 @@ export interface IDisplayButton {
 
 export interface IPage {
   name?: string;
+  isStartPage: boolean;
   windowName?: string;
   isInCollection?: string;
   displayButtons: IDisplayButton[];

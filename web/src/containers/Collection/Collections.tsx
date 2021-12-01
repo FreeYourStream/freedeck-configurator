@@ -19,7 +19,7 @@ export const Collections: React.FC<{ className?: string }> = ({
         <div className="flex flex-wrap justify-evenly items-center w-full h-full pt-6 pb-16">
           {Object.entries(configState.collections.byId).map(
             ([id, collection]) => (
-              <Collection collectionId={id} />
+              <Collection key={id} collectionId={id} />
             )
           )}
         </div>

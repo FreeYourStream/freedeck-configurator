@@ -9,6 +9,8 @@ import { FirstPage } from "./containers/FirstTime";
 import { Header } from "./containers/Header";
 import { Pages } from "./containers/Page/Pages";
 import { FDButton } from "./lib/components/Button";
+import { usePageSwitcher } from "./lib/hooks/pageSwitcherHook";
+import { AppStateContext } from "./states/appState";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -16,7 +18,9 @@ import {
 
 export const Body = () => {
   const configState = useContext(ConfigStateContext);
+  const appState = useContext(AppStateContext);
   const configDispatch = useContext(ConfigDispatchContext);
+  usePageSwitcher({ appState, configState });
   return (
     <div className="flex flex-col h-full w-full">
       <Header />
@@ -45,7 +49,7 @@ export const Body = () => {
             prefix={<PlusCircleIcon className="w-6 h-6" />}
             size={3}
             type="primary"
-            onClick={() => configDispatch.addPage(undefined)}
+            onClick={() => configDispatch.addPage({})}
           >
             Add Page
           </FDButton>

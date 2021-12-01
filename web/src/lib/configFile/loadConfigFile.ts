@@ -12,5 +12,6 @@ export const loadConfigFile = async (
     ? fileList
     : Buffer.from(await handleFileSelect(fileList[0]));
   const config = await parseConfig(file);
+  console.log(setState);
   setState(config);
 };

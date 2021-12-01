@@ -36,7 +36,6 @@ const App: React.FC<{
     defaultAppState,
     appReducer
   );
-  usePageSwitcher({ appState, configState });
   AddEventListeners({ appDispatchContext: appDispatch });
 
   return (

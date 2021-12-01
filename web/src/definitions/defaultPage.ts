@@ -90,6 +90,7 @@ export const createDefaultPage = async (
 ): Promise<IPage> => {
   const page: IPage = {
     name: "",
+    isStartPage: false,
     displayButtons: [],
   };
   for (var i = 0; i < count; i++) {

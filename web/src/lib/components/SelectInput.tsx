@@ -7,6 +7,7 @@ export interface SelectOption {
   text: string;
 }
 export const FDSelect: React.FC<{
+  disabled?: boolean;
   defaultValue?: any;
   className?: string;
   title?: string;
@@ -14,6 +15,7 @@ export const FDSelect: React.FC<{
   value: any;
   options: SelectOption[];
 }> = ({
+  disabled,
   onChange,
   value,
   title,
@@ -23,7 +25,7 @@ export const FDSelect: React.FC<{
   options,
 }) => {
   return (
-    <Listbox value={value} onChange={onChange}>
+    <Listbox value={value} onChange={onChange} disabled={disabled}>
       <div className="relative">
         <Listbox.Button
           className={c(

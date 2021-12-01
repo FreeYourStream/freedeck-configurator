@@ -18,7 +18,7 @@ export const FirstPage: React.FC<{ className?: string }> = ({
         prefix={<PlusCircleIcon className="w-6 h-6" />}
         size={3}
         type="primary"
-        onClick={() => configDispatch.addPage(undefined)}
+        onClick={() => configDispatch.addPage({ startPage: true })}
       >
         Add Page
       </FDButton>
