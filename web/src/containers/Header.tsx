@@ -7,23 +7,28 @@ import {
 } from "@heroicons/react/outline";
 import c from "clsx";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import { iconSize } from "../definitions/iconSizes";
 import { FDButton } from "../lib/components/Button";
 import { Value } from "../lib/components/LabelValue";
+import { createConfigBuffer } from "../lib/configFile/createBuffer";
+import { loadConfigFile } from "../lib/configFile/loadConfigFile";
+import { download } from "../lib/download";
 import { connectionStatus } from "../lib/serial";
-import { AppDispatchContext, AppStateContext } from "../states/appState";
-import { ConfigStateContext } from "../states/configState";
+import { AppStateContext } from "../states/appState";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../states/configState";
 import { LoginLogoutButtons } from "./LoginButton";
 
-export const Header: React.FC<{
-  loadConfigFile: (filesOrBuffer: Buffer | FileList) => void;
-  saveConfigFile: () => void;
-  createConfigBuffer: () => Promise<Buffer>;
-}> = ({ loadConfigFile, saveConfigFile, createConfigBuffer }) => {
-  const { pages } = useContext(ConfigStateContext);
+export const Header: React.FC<{}> = () => {
+  const configState = useContext(ConfigStateContext);
+  const { pages } = configState;
+  const { setState } = useContext(ConfigDispatchContext);
   const { serialApi, ctrlDown } = useContext(AppStateContext);
-  const { setShowSettings, setShowLogin } = useContext(AppDispatchContext);
+  const nav = useNavigate();
   const [connected, setConnected] = useState<boolean>(!!serialApi?.connected);
   const [progress, setProgress] = useState<number>(0);
   const loadConfigRef = useRef<HTMLInputElement | null>(null);
@@ -35,6 +40,13 @@ export const Header: React.FC<{
 
     return () => serialApi.clearOnConStatusChange(id);
   }, [serialApi]);
+
+  const saveConfigFile = () => {
+    if (Object.keys(pages.byId).length === 0) return;
+    const completeBuffer = createConfigBuffer(configState);
+
+    completeBuffer && download(completeBuffer);
+  };
   return (
     <div
       id="header"
@@ -66,7 +78,7 @@ export const Header: React.FC<{
                       .readConfigFromSerial((rec, size) =>
                         setProgress(rec / size)
                       )
-                      .then(loadConfigFile)
+                      .then((data) => loadConfigFile(data, setState))
                   }
                 >
                   Load from FreeDeck
@@ -76,7 +88,7 @@ export const Header: React.FC<{
                   size={3}
                   onClick={async () =>
                     serialApi!.writeConfigOverSerial(
-                      await createConfigBuffer(),
+                      createConfigBuffer(configState),
                       (rec, size) => setProgress(rec / size)
                     )
                   }
@@ -104,7 +116,7 @@ export const Header: React.FC<{
                   ref={loadConfigRef}
                   onChange={(event) =>
                     event.currentTarget.files &&
-                    loadConfigFile(event.currentTarget.files)
+                    loadConfigFile(event.currentTarget.files, setState)
                   }
                 ></input>
                 {!!Object.keys(pages).length && (
@@ -133,17 +145,15 @@ export const Header: React.FC<{
           </div>
         </form>
         <div className={c("flex items-center space-x-4")}>
-          <FDButton
-            prefix={<CogIcon className={iconSize} />}
-            size={3}
-            onClick={() => setShowSettings(true)}
-          >
-            Settings
-          </FDButton>
+          <Link to={"/settings"}>
+            <FDButton prefix={<CogIcon className={iconSize} />} size={3}>
+              Settings
+            </FDButton>
+          </Link>
           {process.env.REACT_APP_ENABLE_API === "true" && (
             <LoginLogoutButtons
-              openLogin={() => setShowLogin(true)}
-              openFDHub={() => console.log("OPEN FD HUB")}
+              openLogin={() => nav("/login")}
+              openFDHub={() => nav("/hub/home")}
             />
           )}
         </div>

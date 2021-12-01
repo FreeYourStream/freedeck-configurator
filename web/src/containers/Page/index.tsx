@@ -1,7 +1,7 @@
 import c from "clsx";
 import React, { useContext } from "react";
 
-import { TextInput } from "../../lib/components/TextInput";
+import { Value } from "../../lib/components/LabelValue";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -16,19 +16,17 @@ interface IProps {
 export const Page: React.FC<IProps> = ({ pageId, collectionIndex }) => {
   const configState = useContext(ConfigStateContext);
   const page = configState.pages.byId[pageId];
-  const { renamePage } = useContext(ConfigDispatchContext);
   return (
     <div
       id={`page_${pageId}`}
       className="relative p-2 m-6 rounded-3xl bg-gray-700 shadow-lg"
     >
       <div className="flex justify-between pl-10 py-4 pr-4">
-        <TextInput
-          className="w-full mr-6"
-          value={page.name}
-          placeholder={pageId.slice(-4) + " - Click to change name"}
-          onChange={(value) => renamePage({ pageId, name: value })}
-        />
+        {page.name ? (
+          <Value>{page.name}</Value>
+        ) : (
+          <Value className="text-gray-300">{pageId.slice(-4)}</Value>
+        )}
         <PageMenu pageId={pageId} />
       </div>
       <div

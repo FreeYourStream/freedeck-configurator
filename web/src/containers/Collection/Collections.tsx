@@ -1,4 +1,3 @@
-import c from "clsx";
 import React, { useContext } from "react";
 
 import { Title } from "../../lib/components/Title";

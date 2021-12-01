@@ -1,11 +1,7 @@
 import c from "clsx";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 
-import {
-  useMyPagesQuery,
-  useSearchPagesLazyQuery,
-  useSearchPagesQuery,
-} from "../../generated/types-and-hooks";
+import { useSearchPagesLazyQuery } from "../../generated/types-and-hooks";
 import { FDButton } from "../../lib/components/Button";
 import { Label } from "../../lib/components/LabelValue";
 import { Row } from "../../lib/components/Row";

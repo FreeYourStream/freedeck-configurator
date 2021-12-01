@@ -1,13 +1,13 @@
 import { LogoutIcon, PlusCircleIcon } from "@heroicons/react/outline";
 import React, { useContext } from "react";
 
-import { IButtonSetting, IPage, IPages } from "../../interfaces";
-import { FDButton } from "../../lib/components/Button";
-import { Label } from "../../lib/components/LabelValue";
-import { Row } from "../../lib/components/Row";
-import { StyledSelect } from "../../lib/components/SelectInput";
-import { scrollToPage } from "../../lib/scrollToPage";
-import { ConfigDispatchContext } from "../../states/configState";
+import { IButtonSetting, IPages } from "../../../interfaces";
+import { FDButton } from "../../../lib/components/Button";
+import { Label } from "../../../lib/components/LabelValue";
+import { Row } from "../../../lib/components/Row";
+import { StyledSelect } from "../../../lib/components/SelectInput";
+import { scrollToPage } from "../../../lib/scrollToPage";
+import { ConfigDispatchContext } from "../../../states/configState";
 
 export const ChangePage: React.FC<{
   secondary: boolean;

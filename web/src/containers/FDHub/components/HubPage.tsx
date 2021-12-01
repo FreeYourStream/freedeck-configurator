@@ -7,7 +7,6 @@ import { MyPagesQuery } from "../../../generated/types-and-hooks";
 import { Avatar } from "../../../lib/components/Avatar";
 import { ImagePreview } from "../../../lib/components/ImagePreview";
 import { Value } from "../../../lib/components/LabelValue";
-import { Title } from "../../../lib/components/Title";
 
 export const HubPage: React.FC<{
   className?: string;

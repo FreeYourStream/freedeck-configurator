@@ -42,8 +42,8 @@ export const defaultConfigState = async (): Promise<ConfigState> => ({
     sorted: [],
   },
   collections: {
-    byId: { testid: { name: "testcollection", pages: [] } },
-    sorted: ["testid"],
+    byId: {},
+    sorted: [],
   },
   defaultBackDisplay: await createDefaultBackDisplay(),
 });
@@ -62,6 +62,10 @@ export interface IConfigReducer extends Actions<ConfigState> {
   renamePage(
     state: ConfigState,
     data: { pageId: string; name: string }
+  ): Promise<ConfigState>;
+  changePageWindowName(
+    state: ConfigState,
+    data: { pageId: string; windowName: string }
   ): Promise<ConfigState>;
   movePageToCollection(
     state: ConfigState,
@@ -157,6 +161,7 @@ export const configReducer: IConfigReducer = {
       state.width * state.height,
       data?.previousPage
     );
+    if (state.pages.sorted.length === 0) newPage.name = "Start";
     const newId = v4();
     state.pages.byId[newId] = newPage;
     state.pages.sorted.push(newId);
@@ -173,6 +178,10 @@ export const configReducer: IConfigReducer = {
   async renamePage(state: ConfigState, { pageId, name }) {
     state.pages.byId[pageId].name = name;
     console.log("renamed", pageId, name);
+    return { ...state };
+  },
+  async changePageWindowName(state: ConfigState, { pageId, windowName }) {
+    state.pages.byId[pageId].windowName = windowName;
     return { ...state };
   },
   async deletePage(state, pageId) {

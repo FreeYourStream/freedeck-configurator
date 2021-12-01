@@ -1,5 +1,4 @@
 import {
-  CollectionIcon,
   MenuIcon,
   PencilIcon,
   ShareIcon,
@@ -9,7 +8,6 @@ import c from "clsx";
 import React, { useContext, useState } from "react";
 
 import { iconSize } from "../../definitions/iconSizes";
-import { usePageCreateMutation } from "../../generated/types-and-hooks";
 import { CtrlDuo } from "../../lib/components/CtrlDuo";
 import { FDMenu } from "../../lib/components/Menu";
 import { Modal } from "../../lib/components/Modal";
@@ -25,7 +23,6 @@ export const CollectionMenu: React.FC<{ collectionId: string }> = ({
   collectionId,
 }) => {
   const appState = useContext(AppStateContext);
-  const configState = useContext(ConfigStateContext);
   const configDispatch = useContext(ConfigDispatchContext);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);

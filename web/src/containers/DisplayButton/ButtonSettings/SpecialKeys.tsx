@@ -1,10 +1,10 @@
 import React from "react";
 
-import { EMediaKeys, MediaKeys } from "../../definitions/keys";
-import { IButtonSetting } from "../../interfaces";
-import { Label } from "../../lib/components/LabelValue";
-import { Row } from "../../lib/components/Row";
-import { StyledSelect } from "../../lib/components/SelectInput";
+import { EMediaKeys, MediaKeys } from "../../../definitions/keys";
+import { IButtonSetting } from "../../../interfaces";
+import { Label } from "../../../lib/components/LabelValue";
+import { Row } from "../../../lib/components/Row";
+import { StyledSelect } from "../../../lib/components/SelectInput";
 
 export const SpecialKeys: React.FC<{
   values: IButtonSetting["values"];

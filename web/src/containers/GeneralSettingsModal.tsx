@@ -6,10 +6,10 @@ import {
   SwitchVerticalIcon,
 } from "@heroicons/react/outline";
 import React, { useContext } from "react";
+import { useNavigate } from "react-router";
 
 import { TabView } from "../lib/components/TabView";
 import { FDWindow } from "../lib/components/Window";
-import { AppDispatchContext, AppStateContext } from "../states/appState";
 import { ConfigDispatchContext } from "../states/configState";
 import { About } from "./About";
 import { DefaultBackButtonSettings } from "./DefaultBackButtonSettings";
@@ -17,13 +17,9 @@ import { Device } from "./Device";
 import { Displays } from "./Displays";
 import { Serial } from "./Serial";
 
-export const GlobalSettings: React.FC<{
-  loadConfigFile: (buffer: Buffer) => void;
-  getConfigBuffer: () => Promise<Buffer>;
-}> = ({ loadConfigFile, getConfigBuffer }) => {
-  const { showSettings } = useContext(AppStateContext);
-  const { setShowSettings } = useContext(AppDispatchContext);
+export const GlobalSettings: React.FC<{}> = () => {
   const configDispatch = useContext(ConfigDispatchContext);
+  const nav = useNavigate();
   const tabs = [
     {
       title: "Default back button",
@@ -50,19 +46,14 @@ export const GlobalSettings: React.FC<{
     tabs.splice(2, 0, {
       title: "Serial",
       prefix: <SwitchVerticalIcon className="h-6 w-6" />,
-      content: (
-        <Serial
-          getConfigBuffer={getConfigBuffer}
-          loadConfigFile={loadConfigFile}
-        />
-      ),
+      content: <Serial />,
     });
   return (
     <FDWindow
       className="w-dp-settings"
-      visible={showSettings}
+      visible={true}
       setClose={() => {
-        setShowSettings(false);
+        nav("/");
         configDispatch.updateAllDefaultBackImages(undefined);
       }}
       title="General settings"

@@ -1,12 +1,12 @@
 import React from "react";
 
-import { keys } from "../../definitions/keys";
-import { IButtonSetting } from "../../interfaces";
-import { FDButton } from "../../lib/components/Button";
-import { Label } from "../../lib/components/LabelValue";
-import { Row } from "../../lib/components/Row";
-import { StyledSelect } from "../../lib/components/SelectInput";
-import { useTranslateKeyboardLayout } from "../../lib/localisation/keyboard";
+import { keys } from "../../../definitions/keys";
+import { IButtonSetting } from "../../../interfaces";
+import { FDButton } from "../../../lib/components/Button";
+import { Label } from "../../../lib/components/LabelValue";
+import { Row } from "../../../lib/components/Row";
+import { StyledSelect } from "../../../lib/components/SelectInput";
+import { useTranslateKeyboardLayout } from "../../../lib/localisation/keyboard";
 
 const HotkeyKeys: React.FC<{
   values: number[];

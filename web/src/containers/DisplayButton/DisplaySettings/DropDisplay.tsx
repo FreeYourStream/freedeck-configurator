@@ -9,13 +9,13 @@ import c from "clsx";
 import React, { useContext } from "react";
 import { useDropzone } from "react-dropzone";
 
-import { iconSize } from "../../definitions/iconSizes";
-import { ImagePreview } from "../../lib/components/ImagePreview";
-import { FDMenu, MenuEntry } from "../../lib/components/Menu";
+import { iconSize } from "../../../definitions/iconSizes";
+import { ImagePreview } from "../../../lib/components/ImagePreview";
+import { FDMenu, MenuEntry } from "../../../lib/components/Menu";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
-} from "../../states/configState";
+} from "../../../states/configState";
 
 export const DropDisplay = ({
   onDrop,

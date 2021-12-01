@@ -1,6 +1,8 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 
 import {
+  MyPagesQuery,
   useMeQuery,
   usePageCreateMutation,
 } from "../../generated/types-and-hooks";
@@ -12,16 +14,16 @@ import { FDWindow } from "../../lib/components/Window";
 import { ConfigStateContext } from "../../states/configState";
 import { HubPage } from "../FDHub/components/HubPage";
 
-export const PublishPage: React.FC<{
-  setOpen: (val: boolean) => any;
-  isOpen: boolean;
-  pageId: string;
-}> = ({ setOpen, isOpen, pageId }) => {
+export const PublishPage: React.FC<{}> = () => {
+  const nav = useNavigate();
+  const params = useParams();
   const { data } = useMeQuery();
   const [mutate, { called }] = usePageCreateMutation();
   const configState = useContext(ConfigStateContext);
   const [name, setName] = useState("");
   const [tags, setTags] = useState("");
+  if (!params.pageid) return <></>;
+  const pageId = params.pageid;
   const publishPage = async () => {
     const result = await mutate({
       variables: {
@@ -45,31 +47,31 @@ export const PublishPage: React.FC<{
         },
       },
     });
-    if (!result.errors) setOpen(false);
+    if (!result.errors) nav(`/hub/pages/${pageId}`);
   };
-  const page = {
-    height: configState.height,
-    width: configState.width,
-    name,
-    previewActions: configState.pages.byId[pageId].displayButtons.map(
-      (page) => page.button
-    ),
-    previewImages: configState.pages.byId[pageId].displayButtons.map(
-      (page) => page.display.previewImage
-    ),
-    tags: tags
-      .split(",")
-      .map((t) => t.trim())
-      .filter((t) => !!t),
-    upvotes: -1,
-    createdBy: data!.user,
-  };
+  // const page:MyPagesQuery["myPages"][0] = {
+  //   height: configState.height,
+  //   width: configState.width,
+  //   name,
+  //   previewActions: configState.pages.byId[pageId].displayButtons.map(
+  //     (page) => page.button
+  //   ),
+  //   previewImages: configState.pages.byId[pageId].displayButtons.map(
+  //     (page) => page.display.previewImage
+  //   ),
+  //   tags: tags
+  //     .split(",")
+  //     .map((t) => t.trim())
+  //     .filter((t) => !!t),
+  //   upvotes: -1,
+  //   createdBy: data!.user,
+  // };
 
   return (
     <FDWindow
       title="Publish this page"
-      visible={isOpen}
-      setClose={() => setOpen(false)}
+      visible={true}
+      setClose={() => nav("/")}
     >
       <div className="p-10">
         <div className="mb-4 flex flex-col">

@@ -1,18 +1,13 @@
-import React, { useContext } from "react";
+import React from "react";
+import { useNavigate } from "react-router";
 
 import { FDButton } from "../lib/components/Button";
 import { FDWindow } from "../lib/components/Window";
-import { AppDispatchContext, AppStateContext } from "../states/appState";
 
-export const Login: React.FC<{}> = () => {
-  const { setShowLogin } = useContext(AppDispatchContext);
-  const { showLogin } = useContext(AppStateContext);
+export const LoginModal: React.FC<{}> = () => {
+  const nav = useNavigate();
   return (
-    <FDWindow
-      visible={showLogin}
-      setClose={() => setShowLogin(false)}
-      title="Login"
-    >
+    <FDWindow visible={true} setClose={() => nav("/")} title="Login">
       <div className="p-8 flex justify-between gap-4">
         <FDButton
           onClick={() =>

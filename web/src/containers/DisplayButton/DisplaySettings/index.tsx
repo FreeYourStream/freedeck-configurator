@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from "react";
 
-import { fileToImage } from "../../lib/fileToImage";
-import { ConfigDispatchContext } from "../../states/configState";
+import { fileToImage } from "../../../lib/fileToImage";
+import { ConfigDispatchContext } from "../../../states/configState";
 import { DropDisplay } from "./DropDisplay";
 import { ImageSettings } from "./ImageSettings";
 

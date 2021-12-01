@@ -47,14 +47,6 @@ export const LoginLogoutButtons: React.FC<{
             {data.user.displayName}
           </FDButton>
         </FDMenu>
-        <FDWindow
-          className="h-full w-full"
-          title="FreeDeck Hub"
-          visible={showHub}
-          setClose={() => setShowHub(false)}
-        >
-          <FDHub />
-        </FDWindow>
       </>
     );
   }

@@ -1,9 +1,9 @@
 import React from "react";
 
-import { keys } from "../../definitions/keys";
-import { IButtonSetting } from "../../interfaces";
-import { StyledSelect } from "../../lib/components/SelectInput";
-import { useTranslateKeyboardLayout } from "../../lib/localisation/keyboard";
+import { keys } from "../../../definitions/keys";
+import { IButtonSetting } from "../../../interfaces";
+import { StyledSelect } from "../../../lib/components/SelectInput";
+import { useTranslateKeyboardLayout } from "../../../lib/localisation/keyboard";
 
 export const Text: React.FC<{
   values: IButtonSetting["values"];

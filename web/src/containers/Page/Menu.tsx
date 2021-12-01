@@ -1,4 +1,5 @@
 import {
+  CogIcon,
   CollectionIcon,
   MenuIcon,
   ShareIcon,
@@ -6,9 +7,9 @@ import {
 } from "@heroicons/react/outline";
 import c from "clsx";
 import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router";
 
 import { iconSize } from "../../definitions/iconSizes";
-import { usePageCreateMutation } from "../../generated/types-and-hooks";
 import { CtrlDuo } from "../../lib/components/CtrlDuo";
 import { FDMenu } from "../../lib/components/Menu";
 import { Modal } from "../../lib/components/Modal";
@@ -17,9 +18,9 @@ import {
   ConfigDispatchContext,
   ConfigStateContext,
 } from "../../states/configState";
-import { PublishPage } from "./Publish";
 
 export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
+  const nav = useNavigate();
   const appState = useContext(AppStateContext);
   const configState = useContext(ConfigStateContext);
   const configDispatch = useContext(ConfigDispatchContext);
@@ -37,18 +38,14 @@ export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
         title="Delete this page?"
         text="Do you want to delete this page? It will be gone forever"
       />
-
-      {process.env.REACT_APP_ENABLE_API === "true" && (
-        <PublishPage
-          isOpen={publishOpen}
-          setOpen={(val) => setPublishOpen(val)}
-          pageId={pageId}
-        />
-      )}
-
       <CtrlDuo>
         <FDMenu
           entries={[
+            {
+              title: "Settings",
+              prefix: <CogIcon className={c(iconSize)} />,
+              onClick: () => nav(`/page/${pageId}`),
+            },
             {
               title: "Add to collection",
               prefix: <CollectionIcon className={c(iconSize)} />,

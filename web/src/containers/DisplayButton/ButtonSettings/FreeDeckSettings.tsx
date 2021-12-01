@@ -1,10 +1,10 @@
 import React from "react";
 
-import { FDSettings, IButtonSetting } from "../../interfaces";
-import { Label, Value } from "../../lib/components/LabelValue";
-import { Row } from "../../lib/components/Row";
-import { StyledSelect } from "../../lib/components/SelectInput";
-import { FDSlider } from "../../lib/components/Slider";
+import { FDSettings, IButtonSetting } from "../../../interfaces";
+import { Label, Value } from "../../../lib/components/LabelValue";
+import { Row } from "../../../lib/components/Row";
+import { StyledSelect } from "../../../lib/components/SelectInput";
+import { FDSlider } from "../../../lib/components/Slider";
 
 export const FreeDeckSettings: React.FC<{
   values: IButtonSetting["values"];

@@ -1,16 +1,15 @@
-import React, { useCallback, useContext } from "react";
+import React, { useContext } from "react";
 
-import { keys } from "../../definitions/keys";
-import { EAction } from "../../definitions/modes";
-import { FDSettings, IButtonSetting, IPage } from "../../interfaces";
-import { Label } from "../../lib/components/LabelValue";
-import { Row } from "../../lib/components/Row";
-import { StyledSelect } from "../../lib/components/SelectInput";
-import { Title } from "../../lib/components/Title";
+import { EAction } from "../../../definitions/modes";
+import { IButtonSetting } from "../../../interfaces";
+import { Label } from "../../../lib/components/LabelValue";
+import { Row } from "../../../lib/components/Row";
+import { StyledSelect } from "../../../lib/components/SelectInput";
+import { Title } from "../../../lib/components/Title";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
-} from "../../states/configState";
+} from "../../../states/configState";
 import { ChangePage } from "./ChangePage";
 import { FreeDeckSettings } from "./FreeDeckSettings";
 import { Hotkeys } from "./Hotkeys";

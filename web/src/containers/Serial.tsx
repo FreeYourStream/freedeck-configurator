@@ -5,16 +5,19 @@ import { Divider } from "../lib/components/Divider";
 import { Label, Value } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
 import { Title } from "../lib/components/Title";
+import { createConfigBuffer } from "../lib/configFile/createBuffer";
+import { loadConfigFile } from "../lib/configFile/loadConfigFile";
 import { connectionStatus } from "../lib/serial";
 import { AppStateContext } from "../states/appState";
-import { ConfigStateContext } from "../states/configState";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../states/configState";
 
-export const Serial: React.FC<{
-  loadConfigFile: (buffer: Buffer) => void;
-  getConfigBuffer: () => Promise<Buffer>;
-}> = ({ loadConfigFile, getConfigBuffer }) => {
+export const Serial: React.FC<{}> = () => {
   const { serialApi } = useContext(AppStateContext);
-  const { pages } = useContext(ConfigStateContext);
+  const configState = useContext(ConfigStateContext);
+  const { setState } = useContext(ConfigDispatchContext);
   const [progress, setProgress] = useState<number | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
   const [fileSize, setFileSize] = useState<number | null>(null);
@@ -76,7 +79,8 @@ export const Serial: React.FC<{
           disabled={!connected}
           onClick={async () =>
             loadConfigFile(
-              await serialApi!.readConfigFromSerial(progressCallback)
+              await serialApi!.readConfigFromSerial(progressCallback),
+              setState
             )
           }
         >
@@ -87,11 +91,11 @@ export const Serial: React.FC<{
         <Label>Write config to FreeDeck:</Label>
         <FDButton
           className="w-24 justify-center"
-          disabled={!connected || !pages.byId.length}
+          disabled={!connected || !configState.pages.byId.length}
           size={1}
           onClick={async () =>
             serialApi!.writeConfigOverSerial(
-              await getConfigBuffer(),
+              createConfigBuffer(configState),
               progressCallback
             )
           }

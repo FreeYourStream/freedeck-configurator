@@ -16,20 +16,20 @@ import {
   fontMedium,
   fontSmall,
   fontSmaller,
-} from "../../definitions/fonts";
-import { textPosition } from "../../interfaces";
-import { CtrlDuo } from "../../lib/components/CtrlDuo";
-import { Label, Value } from "../../lib/components/LabelValue";
-import { Row } from "../../lib/components/Row";
-import { StyledSelect } from "../../lib/components/SelectInput";
-import { FDSlider } from "../../lib/components/Slider";
-import { Switch } from "../../lib/components/Switch";
-import { TextArea } from "../../lib/components/TextArea";
-import { Title } from "../../lib/components/Title";
+} from "../../../definitions/fonts";
+import { textPosition } from "../../../interfaces";
+import { CtrlDuo } from "../../../lib/components/CtrlDuo";
+import { Label, Value } from "../../../lib/components/LabelValue";
+import { Row } from "../../../lib/components/Row";
+import { StyledSelect } from "../../../lib/components/SelectInput";
+import { FDSlider } from "../../../lib/components/Slider";
+import { Switch } from "../../../lib/components/Switch";
+import { TextArea } from "../../../lib/components/TextArea";
+import { Title } from "../../../lib/components/Title";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
-} from "../../states/configState";
+} from "../../../states/configState";
 
 export const ImageSettings: React.FC<{
   displayIndex: number;
