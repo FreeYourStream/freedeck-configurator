@@ -68,16 +68,12 @@ export const Header: React.FC<{}> = () => {
           }}
         >
           <input
-            onInput={(e) =>
-              console.log("CCCCCCCCCCCCCCC", e.currentTarget.files)
-            }
             title="loadConfig"
             className={c("hidden")}
             type="file"
             id="loadConfig"
             ref={loadConfigRef}
             onChange={(event) => {
-              console.log("AAAAAAAAAAA");
               event.currentTarget.files &&
                 loadConfigFile(event.currentTarget.files, setState);
             }}
@@ -120,9 +116,6 @@ export const Header: React.FC<{}> = () => {
                   prefix={<UploadIcon className={iconSize} />}
                   size={3}
                   onClick={() => {
-                    console.log("BBBBBBBBBBBBBBB", loadConfigRef.current);
-                    // // @ts-ignore
-                    // loadConfigRef.current.value = null;
                     loadConfigRef.current?.click();
                   }}
                 >

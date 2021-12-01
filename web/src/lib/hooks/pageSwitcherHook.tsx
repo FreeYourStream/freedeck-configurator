@@ -26,10 +26,8 @@ export const usePageSwitcher = (props: {
         if (!page.windowName || page.isInCollection) return false;
         return name.toLowerCase().indexOf(page.windowName.toLowerCase()) !== -1;
       });
-      console.log("page", page);
       // if no, look if we have a collection
       if (page === -1) {
-        console.log("NO");
         const collectionIndex = props.configState.collections.sorted.findIndex(
           (id) => {
             const collection = props.configState.collections.byId[id];
@@ -42,7 +40,6 @@ export const usePageSwitcher = (props: {
           }
         );
         // if we found a collection, check if a page of this collection is currently active
-        console.log("collection", collectionIndex);
         if (collectionIndex !== -1) {
           const collectionId =
             props.configState.collections.sorted[collectionIndex];
@@ -57,10 +54,8 @@ export const usePageSwitcher = (props: {
             );
         }
       }
-      console.log(page, lastPageIndex);
       if (page >= 0 && page !== lastPageIndex) {
         lastPageIndex = page;
-        console.log("FOUND", page);
         props.appState.serialApi?.setCurrentPage(page);
       }
     };
