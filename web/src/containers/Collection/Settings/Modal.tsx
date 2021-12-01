@@ -5,26 +5,26 @@ import { useNavigate, useParams } from "react-router-dom";
 import { iconSize } from "../../../definitions/iconSizes";
 import { TabView } from "../../../lib/components/TabView";
 import { FDWindow } from "../../../lib/components/Window";
-import { getPageName } from "../../../lib/util";
+import { getCollectionName, getPageName } from "../../../lib/util";
 import { ConfigStateContext } from "../../../states/configState";
 import { AutoPageSwitcherSettings } from "./AutoPageSwitcher";
-import { PageGeneralSettings } from "./General";
+import { CollectionGeneralSettings } from "./General";
 
-export const PageSettingsModal: React.FC = () => {
+export const CollectionSettingsModal: React.FC = () => {
   const params = useParams();
   const nav = useNavigate();
   const configState = useContext(ConfigStateContext);
-  const { pageId } = params;
+  const { collectionId } = params;
 
-  if (pageId === undefined) return <></>;
+  if (collectionId === undefined) return <></>;
 
-  const page = configState.pages.byId[pageId];
+  const collection = configState.collections.byId[collectionId];
 
-  if (page === undefined) return <></>;
+  if (collection === undefined) return <></>;
   return (
     <FDWindow
       className="w-dp-settings"
-      title={`Page ${getPageName(pageId, page)}`}
+      title={`Collection ${getCollectionName(collectionId, collection)}`}
       visible={true}
       setClose={() => nav("/")}
     >
@@ -33,12 +33,12 @@ export const PageSettingsModal: React.FC = () => {
         tabs={[
           {
             title: "General",
-            content: <PageGeneralSettings pageId={pageId} />,
+            content: <CollectionGeneralSettings collectionId={collectionId} />,
             prefix: <CogIcon className={iconSize} />,
           },
           {
             title: "Auto Page Switcher",
-            content: <AutoPageSwitcherSettings pageId={pageId} />,
+            content: <AutoPageSwitcherSettings collectionId={collectionId} />,
             prefix: <CollectionIcon className={iconSize} />,
           },
         ]}

@@ -1,11 +1,12 @@
 import React from "react";
 
 import { keys } from "../../../definitions/keys";
+import { EAction } from "../../../definitions/modes";
 import { IButtonSetting } from "../../../interfaces";
 import { FDButton } from "../../../lib/components/Button";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
-import { StyledSelect } from "../../../lib/components/SelectInput";
+import { FDSelect } from "../../../lib/components/SelectInput";
 import { useTranslateKeyboardLayout } from "../../../lib/localisation/keyboard";
 
 const HotkeyKeys: React.FC<{
@@ -40,7 +41,7 @@ export const Hotkeys: React.FC<{
     newValues.length < 7 &&
     setValues({
       ...values,
-      hotkeys: newValues,
+      [EAction.hotkeys]: newValues,
     });
   const onHotKey = (e: React.KeyboardEvent<any>, lengthLimit = 7) => {
     if (e.repeat) return;
@@ -49,20 +50,22 @@ export const Hotkeys: React.FC<{
     );
     if (!key) return;
     //ignore backspace
-    if (keys[key]!.hid === 42 && values.hotkeys.length > 0) {
-      setKeys([...values.hotkeys.slice(0, values.hotkeys.length - 1)]);
-    } else setKeys([...values.hotkeys, keys[key]!.hid]);
+    if (keys[key]!.hid === 42 && values[EAction.hotkeys].length > 0) {
+      setKeys([
+        ...values[EAction.hotkeys].slice(0, values[EAction.hotkeys].length - 1),
+      ]);
+    } else setKeys([...values[EAction.hotkeys], keys[key]!.hid]);
   };
 
   return (
     <>
       <Row>
         <Label>Key</Label>
-        <StyledSelect
-          className="w-40"
+        <FDSelect
+          className="w-48"
           value={0}
           onChange={(value) => {
-            setKeys([...values.hotkeys, parseInt(value)]);
+            setKeys([...values[EAction.hotkeys], parseInt(value)]);
           }}
           options={[
             { text: "Choose key", value: 0 },
@@ -84,7 +87,7 @@ export const Hotkeys: React.FC<{
       </Row>
       <Row>
         <div>
-          <HotkeyKeys setKeys={setKeys} values={values.hotkeys} />
+          <HotkeyKeys setKeys={setKeys} values={values[EAction.hotkeys]} />
         </div>
       </Row>
     </>

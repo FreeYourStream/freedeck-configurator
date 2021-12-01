@@ -23,24 +23,24 @@ const createDefaultButton: () => IButtonSettings = () => ({
   primary: {
     mode: EAction.noop,
     values: {
-      changePage: "",
-      hotkeys: [],
-      settings: {},
-      special_keys: 0,
-      text: [],
-      noop: undefined,
+      [EAction.changePage]: "",
+      [EAction.hotkeys]: [],
+      [EAction.settings]: {},
+      [EAction.special_keys]: 0,
+      [EAction.text]: [],
+      [EAction.noop]: undefined,
     },
     enabled: true,
   },
   secondary: {
     mode: EAction.noop,
     values: {
-      changePage: "",
-      hotkeys: [],
-      settings: {},
-      special_keys: 0,
-      text: [],
-      noop: undefined,
+      [EAction.changePage]: "",
+      [EAction.hotkeys]: [],
+      [EAction.settings]: {},
+      [EAction.special_keys]: 0,
+      [EAction.text]: [],
+      [EAction.noop]: undefined,
     },
     enabled: false,
   },
@@ -97,7 +97,8 @@ export const createDefaultPage = async (
   }
   if (previousPage !== undefined) {
     page.displayButtons[0].button.primary.mode = EAction.changePage;
-    page.displayButtons[0].button.primary.values.changePage = previousPage;
+    page.displayButtons[0].button.primary.values[EAction.changePage] =
+      previousPage;
     page.displayButtons[0].display = await createDefaultBackDisplay(
       previousPage
     );

@@ -1,9 +1,10 @@
 import { XIcon } from "@heroicons/react/outline";
 import React, { useContext, useEffect, useState } from "react";
+
 import { Divider } from "../lib/components/Divider";
 import { Label, Value } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
-import { StyledSelect } from "../lib/components/SelectInput";
+import { FDSelect } from "../lib/components/SelectInput";
 import { Title } from "../lib/components/Title";
 import { connectionStatus } from "../lib/serial";
 import { AppStateContext } from "../states/appState";
@@ -19,7 +20,7 @@ const DisplayCountDropDown: React.FC<{
   options: number[];
   onChange: (newValue: number) => void;
 }> = ({ onChange, options, value }) => (
-  <StyledSelect
+  <FDSelect
     className="w-16"
     value={value}
     onChange={(value) => onChange(parseInt(value, 10))}

@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
+import { CollectionSettingsModal } from "./containers/Collection/Settings/Modal";
 import { DBSettingsModal } from "./containers/DisplayButton/DisplayButtonSettingsModal";
 import { FDHub } from "./containers/FDHub";
 import { GlobalSettings } from "./containers/GeneralSettingsModal";
@@ -17,7 +18,10 @@ export const ModalBody = () => {
         element={<DBSettingsModal />}
       />
       <Route path="/page/:pageId" element={<PageSettingsModal />} />
-      <Route path="/collection/:collectionId" element={<DBSettingsModal />} />
+      <Route
+        path="/collection/:collectionId"
+        element={<CollectionSettingsModal />}
+      />
       <Route path="/settings" element={<GlobalSettings />} />
       {process.env.REACT_APP_ENABLE_API === "true" && (
         <>

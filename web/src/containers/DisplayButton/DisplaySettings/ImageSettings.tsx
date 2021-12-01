@@ -21,7 +21,7 @@ import { textPosition } from "../../../interfaces";
 import { CtrlDuo } from "../../../lib/components/CtrlDuo";
 import { Label, Value } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
-import { StyledSelect } from "../../../lib/components/SelectInput";
+import { FDSelect } from "../../../lib/components/SelectInput";
 import { FDSlider } from "../../../lib/components/Slider";
 import { Switch } from "../../../lib/components/Switch";
 import { TextArea } from "../../../lib/components/TextArea";
@@ -144,7 +144,7 @@ export const ImageSettings: React.FC<{
               </CtrlDuo>
               <FDSlider
                 disabled={!display.originalImage}
-                className="w-32"
+                className="w-44"
                 min={0}
                 max={128}
                 step={1}
@@ -161,7 +161,7 @@ export const ImageSettings: React.FC<{
               </CtrlDuo>
               <FDSlider
                 disabled={!display.originalImage}
-                className="w-32"
+                className="w-44"
                 min={128}
                 max={255}
                 step={1}
@@ -249,8 +249,8 @@ export const ImageSettings: React.FC<{
             <Label>Position:</Label>
           </CtrlDuo>
           <CtrlDuo>
-            <StyledSelect
-              className="w-32"
+            <FDSelect
+              className="w-44"
               value={display.textSettings.position}
               onChange={(value) => setTextPosition(value)}
               options={[
@@ -267,8 +267,8 @@ export const ImageSettings: React.FC<{
             <Label>Font:</Label>
           </CtrlDuo>
           <CtrlDuo>
-            <StyledSelect
-              className="w-32"
+            <FDSelect
+              className="w-44"
               value={display.textSettings.font}
               onChange={(value) => setfontName(value)}
               options={[

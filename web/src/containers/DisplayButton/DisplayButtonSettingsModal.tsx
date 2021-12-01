@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { TabView } from "../../lib/components/TabView";
 import { FDWindow } from "../../lib/components/Window";
+import { getPageName } from "../../lib/util";
 import { ConfigStateContext } from "../../states/configState";
 import { ButtonSettingsContainer } from "./ButtonSettings";
 import { DisplaySettingsContainer } from "./DisplaySettings";
@@ -23,9 +24,7 @@ export const DBSettingsModal: React.FC = () => {
   return (
     <FDWindow
       className="w-dp-settings"
-      title={`Page ${page.name.length ? page.name : pageId.slice(-4)} Display ${
-        displayIndex + 1
-      }`}
+      title={`Page ${getPageName(pageId, page)} Display ${displayIndex + 1}`}
       visible={true}
       setClose={() => nav("/")}
     >

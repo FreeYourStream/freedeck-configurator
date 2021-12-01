@@ -19,33 +19,37 @@ const writeAction = (
   switch (buttonAction.mode) {
     case EAction.changePage:
       const pageIndex = pages.sorted.findIndex(
-        (id) => id === buttonAction.values.changePage
+        (id) => id === buttonAction.values[EAction.changePage]
       );
       buttonRows.writeUInt8(pageIndex, dataOffset + 1);
       break;
     case EAction.hotkeys:
-      buttonAction.values.hotkeys.forEach((hotkey, index) =>
+      buttonAction.values[EAction.hotkeys].forEach((hotkey, index) =>
         buttonRows.writeUInt8(hotkey, dataOffset + index + 1)
       );
       break;
     case EAction.special_keys:
-      buttonRows.writeUInt8(buttonAction.values.special_keys, dataOffset + 1);
+      buttonRows.writeUInt8(
+        buttonAction.values[EAction.special_keys],
+        dataOffset + 1
+      );
       break;
     case EAction.text:
-      buttonAction.values.text.forEach((text, index) =>
+      buttonAction.values[EAction.text].forEach((text, index) =>
         buttonRows.writeUInt8(text, dataOffset + index + 1)
       );
       break;
     case EAction.settings:
       buttonRows.writeUInt8(
-        buttonAction.values.settings.setting!,
+        buttonAction.values[EAction.settings].setting!,
         dataOffset + 1
       );
       if (
-        buttonAction.values.settings.setting === FDSettings.absolute_brightness
+        buttonAction.values[EAction.settings].setting ===
+        FDSettings.absolute_brightness
       )
         buttonRows.writeUInt8(
-          buttonAction.values.settings.value!,
+          buttonAction.values[EAction.settings].value!,
           dataOffset + 2
         );
 

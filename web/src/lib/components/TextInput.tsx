@@ -5,7 +5,7 @@ export const TextInput: React.FC<{
   className?: string;
   onChange: (value: string) => any;
   onEnter?: () => any;
-  value: string;
+  value?: string;
   placeholder?: string;
 }> = ({ className, children, onChange, onEnter, value, placeholder }) => {
   return (

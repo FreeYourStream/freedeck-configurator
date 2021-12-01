@@ -4,7 +4,7 @@ import { EAction } from "../../../definitions/modes";
 import { IButtonSetting } from "../../../interfaces";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
-import { StyledSelect } from "../../../lib/components/SelectInput";
+import { FDSelect } from "../../../lib/components/SelectInput";
 import { Title } from "../../../lib/components/Title";
 import {
   ConfigDispatchContext,
@@ -58,17 +58,17 @@ export const Action: React.FC<{
       <Title className="mb-2">{title}</Title>
       <Row>
         <Label>Mode</Label>
-        <StyledSelect
-          className="w-40"
+        <FDSelect
+          className="w-48"
           value={buttonSettings.mode}
-          onChange={(value) => setMode(parseInt(value))}
+          onChange={(value) => setMode(value)}
           options={[
-            { value: 2, text: "Do nothing" },
-            { value: 1, text: "Change Page" },
-            { value: 0, text: "Hot Key" },
-            { value: 3, text: "Special Keys" },
-            { value: 4, text: "Text (Beta)" },
-            { value: 5, text: "Settings (Beta)" },
+            { value: EAction.noop, text: "Do nothing" },
+            { value: EAction.changePage, text: "Change Page" },
+            { value: EAction.hotkeys, text: "Hot Key" },
+            { value: EAction.special_keys, text: "Special Keys" },
+            { value: EAction.text, text: "Text (Beta)" },
+            { value: EAction.settings, text: "Settings (Beta)" },
           ]}
         />
       </Row>

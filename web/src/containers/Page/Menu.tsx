@@ -1,6 +1,5 @@
 import {
   CogIcon,
-  CollectionIcon,
   MenuIcon,
   ShareIcon,
   TrashIcon,
@@ -45,18 +44,6 @@ export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
               title: "Settings",
               prefix: <CogIcon className={c(iconSize)} />,
               onClick: () => nav(`/page/${pageId}`),
-            },
-            {
-              title: "Add to collection",
-              prefix: <CollectionIcon className={c(iconSize)} />,
-              disabled: !!configState.pages.byId[pageId].isInCollection,
-              onClick: () => {
-                console.log("COLLECTION MAKER");
-                configDispatch.movePageToCollection({
-                  collectionId: "testid",
-                  pageId,
-                });
-              },
             },
             {
               title: "Delete",

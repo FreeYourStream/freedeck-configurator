@@ -6,7 +6,7 @@ export interface SelectOption {
   value: any;
   text: string;
 }
-export const StyledSelect: React.FC<{
+export const FDSelect: React.FC<{
   defaultValue?: any;
   className?: string;
   title?: string;

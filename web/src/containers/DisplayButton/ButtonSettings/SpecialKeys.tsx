@@ -1,10 +1,11 @@
 import React from "react";
 
 import { EMediaKeys, MediaKeys } from "../../../definitions/keys";
+import { EAction } from "../../../definitions/modes";
 import { IButtonSetting } from "../../../interfaces";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
-import { StyledSelect } from "../../../lib/components/SelectInput";
+import { FDSelect } from "../../../lib/components/SelectInput";
 
 export const SpecialKeys: React.FC<{
   values: IButtonSetting["values"];
@@ -13,11 +14,11 @@ export const SpecialKeys: React.FC<{
   return (
     <Row>
       <Label>Key</Label>
-      <StyledSelect
-        className="w-40"
-        value={values.special_keys ?? 0}
+      <FDSelect
+        className="w-48"
+        value={values[EAction.special_keys] ?? 0}
         onChange={(value) =>
-          setValues({ ...values, special_keys: parseInt(value) })
+          setValues({ ...values, [EAction.special_keys]: parseInt(value) })
         }
         options={[
           { text: "Choose key", value: 0 },

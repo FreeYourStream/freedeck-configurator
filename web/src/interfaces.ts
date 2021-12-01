@@ -7,12 +7,12 @@ export enum FDSettings {
 export interface IButtonSetting {
   mode: EAction;
   values: {
-    hotkeys: number[];
-    changePage: string;
-    noop: undefined;
-    special_keys: number;
-    text: number[];
-    settings: {
+    [EAction.hotkeys]: number[];
+    [EAction.changePage]: string;
+    [EAction.noop]: undefined;
+    [EAction.special_keys]: number;
+    [EAction.text]: number[];
+    [EAction.settings]: {
       setting?: FDSettings;
       value?: number;
     };
@@ -69,7 +69,7 @@ export interface IDisplayButton {
 }
 
 export interface IPage {
-  name: string;
+  name?: string;
   windowName?: string;
   isInCollection?: string;
   displayButtons: IDisplayButton[];
@@ -81,7 +81,7 @@ export type IPages = {
 };
 
 export interface ICollection {
-  name: string;
+  name?: string;
   windowName?: string;
   pages: string[];
 }

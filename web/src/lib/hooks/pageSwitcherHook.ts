@@ -19,7 +19,7 @@ export const usePageSwitcher = (props: {
     ) => {
       const page = Object.entries(props.configState.pages.byId).findIndex(
         ([id, page]) => {
-          if (page.name === "") return false;
+          if (!page.name) return false;
           return name.toLowerCase().indexOf(page.name.toLowerCase()) !== -1;
         }
       );

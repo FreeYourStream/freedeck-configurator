@@ -8,27 +8,24 @@ import {
   ConfigStateContext,
 } from "../../../states/configState";
 
-export const AutoPageSwitcherSettings: React.FC<{ pageId: string }> = ({
-  pageId,
+export const CollectionGeneralSettings: React.FC<{ collectionId: string }> = ({
+  collectionId,
 }) => {
   const configState = useContext(ConfigStateContext);
-  const { changePageWindowName } = useContext(ConfigDispatchContext);
-  const page = configState.pages.byId[pageId];
+  const { renameCollection } = useContext(ConfigDispatchContext);
+  const collection = configState.collections.byId[collectionId];
 
   return (
     <div className="p-8 w-full">
       <Row>
-        <Label>Window Name</Label>
+        <Label>Name</Label>
         <TextInput
           className="w-44"
-          placeholder="Enter window name..."
-          value={page.windowName ?? ""}
-          onChange={(windowName) =>
-            changePageWindowName({ pageId, windowName })
-          }
+          placeholder="Enter page name"
+          value={collection.name}
+          onChange={(name) => renameCollection({ collectionId, name })}
         />
       </Row>
-      This will be ignored if this page is in a collection
     </div>
   );
 };

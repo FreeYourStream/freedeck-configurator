@@ -63,18 +63,27 @@ export interface IConfigReducer extends Actions<ConfigState> {
     state: ConfigState,
     data: { pageId: string; name: string }
   ): Promise<ConfigState>;
+  deletePage(state: ConfigState, pageId: string): Promise<ConfigState>;
   changePageWindowName(
     state: ConfigState,
     data: { pageId: string; windowName: string }
   ): Promise<ConfigState>;
-  movePageToCollection(
+  setPageCollection(
     state: ConfigState,
     data: { pageId: string; collectionId: string }
   ): Promise<ConfigState>;
-  deletePage(state: ConfigState, pageId: string): Promise<ConfigState>;
-  createCollection(
+  renameCollection(
     state: ConfigState,
-    data: { name: string; pageId: string }
+    data: { collectionId: string; name: string }
+  ): Promise<ConfigState>;
+  changeCollectionWindowName(
+    state: ConfigState,
+    data: { collectionId: string; windowName: string }
+  ): Promise<ConfigState>;
+  createCollection(state: ConfigState, data: {}): Promise<ConfigState>;
+  deleteCollection(
+    state: ConfigState,
+    data: { collectionId: string }
   ): Promise<ConfigState>;
   setButtonSettings(
     state: ConfigState,
@@ -171,7 +180,7 @@ export const configReducer: IConfigReducer = {
       const { previousPage, previousDisplay, secondary = false } = data;
       state.pages.byId[previousPage].displayButtons[previousDisplay].button[
         secondary ? "secondary" : "primary"
-      ].values.changePage = newId;
+      ].values[EAction.changePage] = newId;
     }
     return { ...state };
   },
@@ -200,32 +209,59 @@ export const configReducer: IConfigReducer = {
 
     Object.entries(state.pages.byId).forEach(([id, page]) => {
       page.displayButtons.forEach((db, index) => {
-        if (db.button.primary.values.changePage === pageId)
-          state.pages.byId[id].displayButtons[
-            index
-          ].button.primary.values.changePage = "";
-        if (db.button.secondary.values.changePage === pageId)
-          state.pages.byId[id].displayButtons[
-            index
-          ].button.secondary.values.changePage = "";
+        if (db.button.primary.values[EAction.changePage] === pageId)
+          state.pages.byId[id].displayButtons[index].button.primary.values[
+            EAction.changePage
+          ] = "";
+        if (db.button.secondary.values[EAction.changePage] === pageId)
+          state.pages.byId[id].displayButtons[index].button.secondary.values[
+            EAction.changePage
+          ] = "";
       });
     });
     return { ...state };
   },
-  async movePageToCollection(state, { pageId, collectionId }) {
-    state.collections.byId[collectionId].pages.push(pageId);
-    state.pages.byId[pageId].isInCollection = collectionId;
+  async setPageCollection(state, { pageId, collectionId }) {
+    console.log({ collectionId });
+    if (collectionId !== undefined) {
+      state.collections.byId[collectionId].pages.push(pageId);
+      state.pages.byId[pageId].isInCollection = collectionId;
+    } else {
+      const colId = state.pages.byId[pageId].isInCollection!;
+      state.collections.byId[colId].pages = [
+        ...state.collections.byId[colId].pages.filter((pid) => pid !== pageId),
+      ];
+      state.pages.byId[pageId].isInCollection = undefined;
+    }
     return { ...state };
   },
-  async createCollection(state: ConfigState, { name, pageId }) {
+  async createCollection(state: ConfigState) {
     const newId = v4();
-    state.collections.byId[newId] = { name, pages: [] };
+    state.collections.byId[newId] = { pages: [] };
+    state.collections.sorted.push(newId);
     return {
-      ...(await configReducer.movePageToCollection(state, {
-        pageId,
-        collectionId: newId,
-      })),
+      ...state,
     };
+  },
+  async deleteCollection(state: ConfigState, { collectionId }) {
+    state.collections.byId[collectionId].pages.forEach(
+      (pageId) => (state.pages.byId[pageId].isInCollection = undefined)
+    );
+    delete state.collections.byId[collectionId];
+    state.collections.sorted = [
+      ...state.collections.sorted.filter((cid) => cid !== collectionId),
+    ];
+    return {
+      ...state,
+    };
+  },
+  async renameCollection(state, { collectionId, name }) {
+    state.collections.byId[collectionId].name = name;
+    return { ...state };
+  },
+  async changeCollectionWindowName(state, { collectionId, windowName }) {
+    state.collections.byId[collectionId].windowName = windowName;
+    return { ...state };
   },
   async setButtonSettings(state, data) {
     const { pageId, buttonIndex, priOrSec, buttonSettings } = data;

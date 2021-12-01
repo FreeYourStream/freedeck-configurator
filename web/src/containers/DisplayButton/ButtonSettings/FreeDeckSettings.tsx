@@ -1,9 +1,10 @@
 import React from "react";
 
+import { EAction } from "../../../definitions/modes";
 import { FDSettings, IButtonSetting } from "../../../interfaces";
 import { Label, Value } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
-import { StyledSelect } from "../../../lib/components/SelectInput";
+import { FDSelect } from "../../../lib/components/SelectInput";
 import { FDSlider } from "../../../lib/components/Slider";
 
 export const FreeDeckSettings: React.FC<{
@@ -14,13 +15,16 @@ export const FreeDeckSettings: React.FC<{
     <>
       <Row>
         <Label>Setting</Label>
-        <StyledSelect
-          className="w-40"
-          value={values.settings.setting}
+        <FDSelect
+          className="w-48"
+          value={values[EAction.settings].setting}
           onChange={(value) =>
             setValues({
               ...values,
-              settings: { ...values.settings, setting: value },
+              [EAction.settings]: {
+                ...values[EAction.settings],
+                setting: value,
+              },
             })
           }
           options={[
@@ -37,21 +41,25 @@ export const FreeDeckSettings: React.FC<{
           ]}
         />
       </Row>
-      {values.settings.setting === FDSettings.absolute_brightness && (
+      {values[EAction.settings].setting === FDSettings.absolute_brightness && (
         <Row>
           <FDSlider
-            value={values.settings.value || 128}
+            value={values[EAction.settings].value || 128}
             min={1}
             max={255}
             onChange={(e) =>
               setValues({
                 ...values,
-                settings: { ...values.settings, value: e.target.valueAsNumber },
+                [EAction.settings]: {
+                  ...values[EAction.settings],
+                  value: e.target.valueAsNumber,
+                },
               })
             }
           />
           <Value>
-            {(((values.settings.value || 128) / 255) * 100).toFixed(0)}%
+            {(((values[EAction.settings].value || 128) / 255) * 100).toFixed(0)}
+            %
           </Value>
         </Row>
       )}

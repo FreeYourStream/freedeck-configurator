@@ -6,6 +6,7 @@ import {
 } from "@heroicons/react/outline";
 import c from "clsx";
 import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router";
 
 import { iconSize } from "../../definitions/iconSizes";
 import { CtrlDuo } from "../../lib/components/CtrlDuo";
@@ -22,7 +23,7 @@ import {
 export const CollectionMenu: React.FC<{ collectionId: string }> = ({
   collectionId,
 }) => {
-  const appState = useContext(AppStateContext);
+  const nav = useNavigate();
   const configDispatch = useContext(ConfigDispatchContext);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
@@ -31,7 +32,7 @@ export const CollectionMenu: React.FC<{ collectionId: string }> = ({
       <Modal
         isOpen={deleteOpen}
         onAccept={() => {
-          // configDispatch.deleteCollection(collectionId);
+          configDispatch.deleteCollection({ collectionId });
           setDeleteOpen(false);
         }}
         onAbort={() => setDeleteOpen(false)}
@@ -54,7 +55,7 @@ export const CollectionMenu: React.FC<{ collectionId: string }> = ({
               title: "Edit",
               prefix: <PencilIcon className={c(iconSize)} />,
               onClick: () => {
-                console.log("Open edit dialog");
+                nav(`/collection/${collectionId}`);
               },
             },
             {
@@ -74,8 +75,7 @@ export const CollectionMenu: React.FC<{ collectionId: string }> = ({
         </FDMenu>
         <TrashIcon
           onClick={async () => {
-            if (appState.ctrlDown) configDispatch.deletePage(collectionId);
-            else setDeleteOpen(true);
+            configDispatch.deleteCollection({ collectionId });
           }}
           className="w-9 h-9 p-1.5 rounded-full bg-danger-600 hover:bg-danger-400"
         />

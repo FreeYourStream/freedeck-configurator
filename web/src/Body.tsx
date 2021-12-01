@@ -1,6 +1,7 @@
 import { PlusCircleIcon } from "@heroicons/react/outline";
 import React, { useContext } from "react";
 import { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 import { Collections } from "./containers/Collection/Collections";
 import { ContentBody } from "./containers/ContentBody";
@@ -29,8 +30,17 @@ export const Body = () => {
         )}
       </ContentBody>
       <Toaster />
-      {!!Object.keys(configState.pages).length && (
-        <div className="fixed bottom-5 right-6">
+      {!!Object.keys(configState.pages.sorted).length && (
+        <div className="fixed bottom-5 right-6 ">
+          <FDButton
+            prefix={<PlusCircleIcon className="w-6 h-6" />}
+            className="mr-4"
+            size={3}
+            type="primary"
+            onClick={() => configDispatch.createCollection({})}
+          >
+            Add Collection
+          </FDButton>
           <FDButton
             prefix={<PlusCircleIcon className="w-6 h-6" />}
             size={3}

@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 
 import { Label } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
-import { StyledSelect } from "../lib/components/SelectInput";
+import { FDSelect } from "../lib/components/SelectInput";
 import { FDSlider } from "../lib/components/Slider";
 import { Title } from "../lib/components/Title";
 import {
@@ -29,8 +29,8 @@ export const Displays: React.FC<{}> = () => {
       </Row>
       <Row>
         <Label>Screen saver timeout:</Label>
-        <StyledSelect
-          className="w-32"
+        <FDSelect
+          className="w-44"
           onChange={(value) => configDispatch.setScreenSaver(value)}
           value={configState.screenSaverTimeout}
           defaultValue={0}
