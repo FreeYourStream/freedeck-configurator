@@ -28,22 +28,16 @@ export const usePageSwitcher = (props: {
       });
       // if no, look if we have a collection
       if (page === -1) {
-        const collectionIndex = props.configState.collections.sorted.findIndex(
-          (id) => {
-            const collection = props.configState.collections.byId[id];
-            if (!collection.windowName) return false;
-            return (
-              name
-                .toLowerCase()
-                .indexOf(collection.windowName.toLowerCase()) !== -1
-            );
-          }
-        );
+        const collection = Object.values(
+          props.configState.collections.byId
+        ).find((col) => {
+          if (!col.windowName) return false;
+          return (
+            name.toLowerCase().indexOf(col.windowName.toLowerCase()) !== -1
+          );
+        });
         // if we found a collection, check if a page of this collection is currently active
-        if (collectionIndex !== -1) {
-          const collectionId =
-            props.configState.collections.sorted[collectionIndex];
-          const collection = props.configState.collections.byId[collectionId];
+        if (collection !== undefined) {
           if (
             collection.pages.indexOf(
               props.configState.pages.sorted[lastPageIndex]

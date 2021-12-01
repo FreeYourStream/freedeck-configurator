@@ -14,6 +14,7 @@ const createTray = () => {
       label: "Show",
       click: () => {
         globalWin.show();
+        globalWin.setSkipTaskbar(false);
       },
     },
     {

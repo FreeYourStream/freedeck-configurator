@@ -12,7 +12,7 @@ export const Collection: React.FC<{ collectionId: string }> = ({
   const configState = useContext(ConfigStateContext);
   const collection = configState.collections.byId[collectionId];
   return (
-    <div className="flex items-center flex-col bg-gray-500 p-6 rounded-3xl m-16">
+    <div className="flex items-center flex-col bg-gray-500 p-6 rounded-3xl m-8">
       <div className="flex items-center justify-between w-full">
         <Title>
           {getCollectionName(

@@ -209,6 +209,14 @@ export const configReducer: IConfigReducer = {
     return { ...state };
   },
   async deletePage(state, pageId) {
+    if (state.pages.byId[pageId].isStartPage) {
+      state.pages.byId[pageId] = await createDefaultPage(
+        state.width * state.height
+      );
+      state.pages.byId[pageId].isStartPage = true;
+      state.pages.byId[pageId].name = "Start";
+      return { ...state };
+    }
     const collectionId = state.pages.byId[pageId].isInCollection;
 
     state.pages.sorted = [...state.pages.sorted.filter((id) => id !== pageId)];
