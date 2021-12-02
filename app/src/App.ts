@@ -111,6 +111,7 @@ app.whenReady().then(() => {
   setupLocalFilesNormalizerProxy();
   createWindow();
   createTray();
+  createWindowSearcher();
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
@@ -120,7 +121,7 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
 
-setTimeout(async () => {
+const createWindowSearcher = async () => {
   if (process.platform === "win32") {
     let script: string;
     if (!app.isPackaged) {
@@ -153,4 +154,4 @@ setTimeout(async () => {
     proc.stdout.on("error", (data) => console.log(data.toString()));
     proc.stderr.on("data", (data) => console.log(data.toString()));
   }
-});
+};

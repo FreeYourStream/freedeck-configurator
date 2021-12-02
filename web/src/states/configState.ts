@@ -139,6 +139,13 @@ export interface IConfigReducer extends Actions<ConfigState> {
       buttonBIndex: number;
     }
   ): Promise<ConfigState>;
+  switchPages(
+    state: ConfigState,
+    data: {
+      pageAId: string;
+      pageBId: string;
+    }
+  ): Promise<ConfigState>;
   updateAllDefaultBackImages(state: ConfigState): Promise<ConfigState>;
   makeDefaultBackButton(
     state: ConfigState,
@@ -220,6 +227,32 @@ export const configReducer: IConfigReducer = {
     state.pages.byId[pageId].usePageNameAsWindowName = value;
     return { ...state };
   },
+  async switchPages(state, data) {
+    const { pageAId, pageBId } = data;
+    const aIndex = state.pages.sorted.findIndex((pId) => pId === pageAId);
+    const bIndex = state.pages.sorted.findIndex((pId) => pId === pageBId);
+    if (
+      state.pages.byId[pageAId].isInCollection ===
+        state.pages.byId[pageBId].isInCollection &&
+      !!state.pages.byId[pageAId].isInCollection
+    ) {
+      const colId = state.pages.byId[pageAId].isInCollection!;
+      const aIndex = state.collections.byId[colId].pages.findIndex(
+        (pId) => pId === pageAId
+      );
+      const bIndex = state.collections.byId[colId].pages.findIndex(
+        (pId) => pId === pageBId
+      );
+      state.collections.byId[colId].pages[aIndex] = pageBId;
+      state.collections.byId[colId].pages[bIndex] = pageAId;
+    }
+    state.pages.sorted[aIndex] = pageBId;
+    state.pages.sorted[bIndex] = pageAId;
+    const tempA = state.pages.byId[pageAId];
+    state.pages.byId[pageAId] = cloneDeep(state.pages.byId[pageBId]);
+    state.pages.byId[pageBId] = cloneDeep(tempA);
+    return { ...state };
+  },
   async deletePage(state, pageId) {
     if (state.pages.byId[pageId].isStartPage) {
       state.pages.byId[pageId] = await createDefaultPage(
@@ -257,7 +290,8 @@ export const configReducer: IConfigReducer = {
     return { ...state };
   },
   async setPageCollection(state, { pageId, collectionId }) {
-    if (collectionId !== undefined) {
+    console.log(state.pages.byId[pageId].isInCollection);
+    if (!state.pages.byId[pageId].isInCollection) {
       if (
         state.collections.byId[collectionId].pages.length === 0 &&
         !state.collections.byId[collectionId].windowName

@@ -12,7 +12,7 @@ import { PageSettingsModal } from "./containers/Page/Settings/Modal";
 export const ModalBody = () => {
   return (
     <Routes>
-      <Route path="/" />
+      <Route path="/" element={<></>} />
       <Route
         path="/displaybutton/:pageId/:displayIndex"
         element={<DBSettingsModal />}

@@ -1,5 +1,6 @@
 import { PlusCircleIcon } from "@heroicons/react/outline";
 import React, { useContext } from "react";
+import { useDrop } from "react-dnd";
 import { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router";
 
@@ -19,10 +20,25 @@ import {
 export const Body = () => {
   const configState = useContext(ConfigStateContext);
   const appState = useContext(AppStateContext);
-  const configDispatch = useContext(ConfigDispatchContext);
+  const { createCollection, addPage, setPageCollection } = useContext(
+    ConfigDispatchContext
+  );
   usePageSwitcher({ appState, configState });
+  const [{}, drop] = useDrop({
+    options: {},
+    accept: "page",
+    drop: (item, monitor) => {
+      if (!!monitor.getItem().collectionId && monitor.isOver()) {
+        console.log(monitor.getItem().collectionId);
+        setPageCollection({
+          pageId: monitor.getItem().pageId,
+          collectionId: monitor.getItem().collectionId,
+        });
+      }
+    },
+  });
   return (
-    <div className="flex flex-col h-full w-full">
+    <div ref={drop} className="flex flex-col h-full w-full">
       <Header />
       <ContentBody>
         {!!Object.values(configState.pages.byId).filter(
@@ -41,7 +57,7 @@ export const Body = () => {
             className="mr-4"
             size={3}
             type="primary"
-            onClick={() => configDispatch.createCollection({})}
+            onClick={() => createCollection({})}
           >
             Add Collection
           </FDButton>
@@ -49,7 +65,7 @@ export const Body = () => {
             prefix={<PlusCircleIcon className="w-6 h-6" />}
             size={3}
             type="primary"
-            onClick={() => configDispatch.addPage({})}
+            onClick={() => addPage({})}
           >
             Add Page
           </FDButton>

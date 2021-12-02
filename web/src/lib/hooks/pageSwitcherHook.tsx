@@ -23,18 +23,32 @@ export const usePageSwitcher = (props: {
       // check if we have a page that looks for this window name
       let page = props.configState.pages.sorted.findIndex((id) => {
         const page = props.configState.pages.byId[id];
-        if (!page.windowName || page.isInCollection) return false;
-        return name.toLowerCase().indexOf(page.windowName.toLowerCase()) !== -1;
+        if (page.isInCollection) return false;
+        if (page.usePageNameAsWindowName) {
+          if (!page.name) return false;
+          return name.toLowerCase().indexOf(page.name.toLowerCase()) !== -1;
+        } else {
+          if (!page.windowName) return false;
+          return (
+            name.toLowerCase().indexOf(page.windowName.toLowerCase()) !== -1
+          );
+        }
       });
+      console.log(page);
       // if no, look if we have a collection
       if (page === -1) {
         const collection = Object.values(
           props.configState.collections.byId
         ).find((col) => {
-          if (!col.windowName) return false;
-          return (
-            name.toLowerCase().indexOf(col.windowName.toLowerCase()) !== -1
-          );
+          if (col.usePageNameAsWindowName) {
+            if (!col.name) return false;
+            return name.toLowerCase().indexOf(col.name.toLowerCase()) !== -1;
+          } else {
+            if (!col.windowName) return false;
+            return (
+              name.toLowerCase().indexOf(col.windowName.toLowerCase()) !== -1
+            );
+          }
         });
         // if we found a collection, check if a page of this collection is currently active
         if (collection !== undefined) {

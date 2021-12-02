@@ -23,7 +23,7 @@ export const TitleInput: React.FC<{
       disabled={disabled}
       placeholder={placeholder}
       className={c(
-        "text-base appearance-none py-1 px-2 placeholder-gray-100 resize-none rounded-md",
+        "text-xl appearance-none py-1 px-2 placeholder-gray-100 resize-none rounded-md",
         "bg-gray-50 bg-opacity-0 focus:bg-gray-700 focus:bg-opacity-100",
         disabled ? "text-gray-50" : "text-white",
         className

@@ -188,7 +188,7 @@ export class FDSerialAPI {
       }
       mappedData.push(0xa);
     });
-    console.log(mappedData);
+    console.log("sending to freedeck", mappedData);
     this.Serial.write(mappedData);
   }
 

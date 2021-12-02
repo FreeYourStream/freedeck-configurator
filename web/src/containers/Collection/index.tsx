@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { useDrop } from "react-dnd";
 
 import { Title } from "../../lib/components/Title";
 import { TitleInput } from "../../lib/components/TitleInput";
@@ -14,15 +15,34 @@ export const Collection: React.FC<{ collectionId: string }> = ({
   collectionId,
 }) => {
   const configState = useContext(ConfigStateContext);
-  const { renameCollection } = useContext(ConfigDispatchContext);
+  const { renameCollection, setPageCollection } = useContext(
+    ConfigDispatchContext
+  );
   const collection = configState.collections.byId[collectionId];
+  const [{ targetCollectionId }, drop] = useDrop({
+    options: {},
+    accept: "page",
+    drop: (item, monitor): void => {
+      if (!collection.pages.find((p) => p === monitor.getItem().pageId))
+        setPageCollection({
+          pageId: monitor.getItem().pageId,
+          collectionId: targetCollectionId,
+        });
+    },
+    collect: () => ({
+      targetCollectionId: collectionId,
+    }),
+  });
   return (
-    <div className="flex items-center flex-col bg-gray-500 p-6 rounded-3xl m-8">
+    <div
+      ref={drop}
+      className="flex items-center flex-col bg-gray-500 p-6 rounded-3xl m-8"
+    >
       <div className="flex items-center justify-between w-full">
         <TitleInput
           onChange={(name) => renameCollection({ collectionId, name })}
           value={collection.name}
-          placeholder={collectionId.slice(-4)}
+          placeholder={`${collectionId.slice(-4)} - Click to edit`}
         />
         <CollectionMenu collectionId={collectionId} />
       </div>

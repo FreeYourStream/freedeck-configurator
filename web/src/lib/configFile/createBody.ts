@@ -62,7 +62,8 @@ export const createButtonBody = (pages: IPages) => {
   const buttonRowCount =
     pages.sorted.length * pages.byId[pages.sorted[0]].displayButtons.length;
   let buttonRows = new Buffer(16 * buttonRowCount);
-  Object.entries(pages.byId).forEach(([pageId, page], pageIndex) => {
+  pages.sorted.forEach((pageId, pageIndex) => {
+    const page = pages.byId[pageId];
     page.displayButtons.forEach((db, buttonIndex) => {
       const rowOffset =
         page.displayButtons.length * 16 * pageIndex + buttonIndex * 16;
@@ -86,7 +87,8 @@ export const createImageBody = (pages: IPages) => {
     pages.byId[
       pages.sorted[0]
     ].displayButtons[0].display.convertedImage.readUInt32LE(10);
-  Object.entries(pages.byId).forEach(([id, page]) => {
+  pages.sorted.forEach((id) => {
+    const page = pages.byId[id];
     page.displayButtons.forEach((db) => {
       imageBuffer = Buffer.concat([
         imageBuffer,
