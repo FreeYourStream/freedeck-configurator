@@ -153,7 +153,7 @@ export const configReducer: IConfigReducer = {
     if (width * height > state.width * state.height) {
       const diff = width * height - state.width * state.height;
       for (let i = 0; i < diff; i++) {
-        Object.entries(state.pages.byId.byId).forEach(async ([id, page]) =>
+        Object.entries(state.pages.byId).forEach(async ([id, page]) =>
           page.displayButtons.push(await createDefaultDisplayButton())
         );
       }
