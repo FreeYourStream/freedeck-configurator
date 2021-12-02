@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0
-          node-version: 12 # optional, default is 10.x
+          node-version: 16 # optional, default is 10.x
 
       - name: npm i
         # You may pin to the exact commit or the version.
