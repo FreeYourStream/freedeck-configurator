@@ -1,8 +1,12 @@
 import React, { useContext } from "react";
 
 import { Title } from "../../lib/components/Title";
+import { TitleInput } from "../../lib/components/TitleInput";
 import { getCollectionName } from "../../lib/util";
-import { ConfigStateContext } from "../../states/configState";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../../states/configState";
 import { Page } from "../Page";
 import { CollectionMenu } from "./Menu";
 
@@ -10,16 +14,16 @@ export const Collection: React.FC<{ collectionId: string }> = ({
   collectionId,
 }) => {
   const configState = useContext(ConfigStateContext);
+  const { renameCollection } = useContext(ConfigDispatchContext);
   const collection = configState.collections.byId[collectionId];
   return (
     <div className="flex items-center flex-col bg-gray-500 p-6 rounded-3xl m-8">
       <div className="flex items-center justify-between w-full">
-        <Title>
-          {getCollectionName(
-            collectionId,
-            configState.collections.byId[collectionId]
-          )}
-        </Title>
+        <TitleInput
+          onChange={(name) => renameCollection({ collectionId, name })}
+          value={collection.name}
+          placeholder={collectionId.slice(-4)}
+        />
         <CollectionMenu collectionId={collectionId} />
       </div>
       <div className="flex flex-wrap justify-evenly items-center">

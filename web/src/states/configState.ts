@@ -77,6 +77,10 @@ export interface IConfigReducer extends Actions<ConfigState> {
     state: ConfigState,
     data: { pageId: string; collectionId: string }
   ): Promise<ConfigState>;
+  setUsePageName(
+    state: ConfigState,
+    data: { pageId: string; value: boolean }
+  ): Promise<ConfigState>;
   renameCollection(
     state: ConfigState,
     data: { collectionId: string; name: string }
@@ -89,6 +93,10 @@ export interface IConfigReducer extends Actions<ConfigState> {
   deleteCollection(
     state: ConfigState,
     data: { collectionId: string }
+  ): Promise<ConfigState>;
+  setUseCollectionName(
+    state: ConfigState,
+    data: { collectionId: string; value: boolean }
   ): Promise<ConfigState>;
   setButtonSettings(
     state: ConfigState,
@@ -208,6 +216,10 @@ export const configReducer: IConfigReducer = {
     state.pages.byId[pageId].windowName = windowName;
     return { ...state };
   },
+  async setUsePageName(state, { pageId, value }) {
+    state.pages.byId[pageId].usePageNameAsWindowName = value;
+    return { ...state };
+  },
   async deletePage(state, pageId) {
     if (state.pages.byId[pageId].isStartPage) {
       state.pages.byId[pageId] = await createDefaultPage(
@@ -245,8 +257,19 @@ export const configReducer: IConfigReducer = {
     return { ...state };
   },
   async setPageCollection(state, { pageId, collectionId }) {
-    console.log({ collectionId });
     if (collectionId !== undefined) {
+      if (
+        state.collections.byId[collectionId].pages.length === 0 &&
+        !state.collections.byId[collectionId].windowName
+      )
+        state.collections.byId[collectionId].windowName =
+          state.pages.byId[pageId].windowName;
+      if (
+        state.collections.byId[collectionId].pages.length === 0 &&
+        !state.collections.byId[collectionId].name
+      )
+        state.collections.byId[collectionId].name =
+          state.pages.byId[pageId].name;
       state.collections.byId[collectionId].pages.push(pageId);
       state.pages.byId[pageId].isInCollection = collectionId;
     } else {
@@ -260,7 +283,10 @@ export const configReducer: IConfigReducer = {
   },
   async createCollection(state: ConfigState) {
     const newId = v4();
-    state.collections.byId[newId] = { pages: [] };
+    state.collections.byId[newId] = {
+      pages: [],
+      usePageNameAsWindowName: true,
+    };
     state.collections.sorted.push(newId);
     return {
       ...state,
@@ -277,6 +303,10 @@ export const configReducer: IConfigReducer = {
     return {
       ...state,
     };
+  },
+  async setUseCollectionName(state, { collectionId, value }) {
+    state.collections.byId[collectionId].usePageNameAsWindowName = value;
+    return { ...state };
   },
   async renameCollection(state, { collectionId, name }) {
     state.collections.byId[collectionId].name = name;

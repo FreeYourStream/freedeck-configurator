@@ -90,6 +90,7 @@ export const createDefaultPage = async (
 ): Promise<IPage> => {
   const page: IPage = {
     name: "",
+    usePageNameAsWindowName: true,
     isStartPage: false,
     displayButtons: [],
   };

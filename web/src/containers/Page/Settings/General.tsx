@@ -48,8 +48,11 @@ export const PageGeneralSettings: React.FC<{ pageId: string }> = ({
           ]}
         />
       </Row>
-      {!!page.isStartPage &&
-        "You can't change the name and collection of the start page"}
+      {!!page.isStartPage && (
+        <div className="mt-4">
+          You can't change the name and collection of the start page
+        </div>
+      )}
     </div>
   );
 };

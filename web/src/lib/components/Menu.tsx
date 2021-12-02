@@ -17,7 +17,7 @@ export const FDMenu: React.FC<{
     <Menu>
       <div
         className={c(
-          "flex justify-center z-20",
+          "flex justify-center",
           !className?.includes("absolute") && "relative",
           className
         )}
@@ -36,7 +36,7 @@ export const FDMenu: React.FC<{
             <Menu.Items>
               <div className="flex flex-col justify-center items-center">
                 <div className="mt-1 arrow-up z-50" />
-                <div className="bg-gray-500 rounded-lg gap-1px p-2">
+                <div className="bg-gray-500 rounded-lg gap-1px p-2 z-50 border-2 border-primary-500">
                   {entries.map((entry, index) => (
                     <Menu.Item key={index} disabled={!!entry.disabled}>
                       {({ active }) => (

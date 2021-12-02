@@ -17,7 +17,7 @@ export const CollectionGeneralSettings: React.FC<{ collectionId: string }> = ({
 
   return (
     <div className="p-8 w-full">
-      <Row>
+      <Row className="h-8">
         <Label>Name</Label>
         <TextInput
           className="w-44"

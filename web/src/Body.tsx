@@ -35,7 +35,7 @@ export const Body = () => {
       </ContentBody>
       <Toaster />
       {!!Object.keys(configState.pages.sorted).length && (
-        <div className="fixed bottom-5 right-6 ">
+        <div className="fixed bottom-5 right-6 z-30">
           <FDButton
             prefix={<PlusCircleIcon className="w-6 h-6" />}
             className="mr-4"

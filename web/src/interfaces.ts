@@ -72,6 +72,7 @@ export interface IPage {
   name?: string;
   isStartPage: boolean;
   windowName?: string;
+  usePageNameAsWindowName: boolean;
   isInCollection?: string;
   displayButtons: IDisplayButton[];
 }
@@ -84,6 +85,7 @@ export type IPages = {
 export interface ICollection {
   name?: string;
   windowName?: string;
+  usePageNameAsWindowName: boolean;
   pages: string[];
 }
 

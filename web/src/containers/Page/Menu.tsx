@@ -39,6 +39,7 @@ export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
       />
       <CtrlDuo>
         <FDMenu
+          className="z-20"
           entries={[
             {
               title: "Settings",

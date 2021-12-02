@@ -1,7 +1,7 @@
 import c from "clsx";
 import React from "react";
 
-export const TextInput: React.FC<{
+export const TitleInput: React.FC<{
   className?: string;
   disabled?: boolean;
   onChange: (value: string) => any;
@@ -23,7 +23,8 @@ export const TextInput: React.FC<{
       disabled={disabled}
       placeholder={placeholder}
       className={c(
-        "text-base appearance-none py-1 px-2 bg-gray-500 placeholder-gray-100 resize-none rounded-md",
+        "text-base appearance-none py-1 px-2 placeholder-gray-100 resize-none rounded-md",
+        "bg-gray-50 bg-opacity-0 focus:bg-gray-700 focus:bg-opacity-100",
         disabled ? "text-gray-50" : "text-white",
         className
       )}

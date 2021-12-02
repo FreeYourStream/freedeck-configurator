@@ -1,4 +1,5 @@
 import {
+  CogIcon,
   MenuIcon,
   PencilIcon,
   ShareIcon,
@@ -50,10 +51,11 @@ export const CollectionMenu: React.FC<{ collectionId: string }> = ({
 
       <CtrlDuo>
         <FDMenu
+          className="z-30"
           entries={[
             {
-              title: "Edit",
-              prefix: <PencilIcon className={c(iconSize)} />,
+              title: "Settings",
+              prefix: <CogIcon className={c(iconSize)} />,
               onClick: () => {
                 nav(`/collection/${collectionId}`);
               },
