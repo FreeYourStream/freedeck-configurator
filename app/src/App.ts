@@ -1,4 +1,5 @@
 import { spawn } from "child_process";
+import { readFileSync } from "fs";
 import { join, normalize } from "path";
 
 import { BrowserWindow, Menu, Tray, app, protocol } from "electron";
@@ -119,16 +120,37 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
 
-setTimeout(() => {
+setTimeout(async () => {
   if (process.platform === "win32") {
-    console.log("windows not supported yet. coming soon");
-    return;
+    let script: string;
+    if (!app.isPackaged) {
+      script = join(__dirname, "extraResources", "windows.ps1");
+    } else {
+      script = join(__dirname, "../../", "extraResources", "windows.ps1");
+    }
+    const proc = spawn("powershell.exe", [
+      "-ExecutionPolicy",
+      "ByPass",
+      "-File",
+      script,
+    ]);
+    proc.stdout.on("data", (data: Buffer) => {
+      globalWin.webContents.send("change_page", data.toString());
+    });
+    proc.stdout.on("error", (data) => console.log(data.toString()));
+    proc.stderr.on("data", (data) => console.log(data.toString()));
+  } else if (process.platform === "linux") {
+    let script: string;
+    if (!app.isPackaged) {
+      script = join(__dirname, "extraResources", "linux.sh");
+    } else {
+      script = join(__dirname, "../../", "extraResources", "linux.sh");
+    }
+    const proc = spawn("/bin/bash", [script]);
+    proc.stdout.on("data", (data: Buffer) => {
+      globalWin.webContents.send("change_page", data.toString());
+    });
+    proc.stdout.on("error", (data) => console.log(data.toString()));
+    proc.stderr.on("data", (data) => console.log(data.toString()));
   }
-  const proc = spawn("bash", [
-    "-c",
-    "while true; do xprop -id $(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2) _NET_WM_NAME 2>/dev/null | awk -F= '{print($2)}'; sleep 0.1; done",
-  ]);
-  proc.stdout.on("data", (data: Buffer) => {
-    globalWin.webContents.send("change_page", data.toString());
-  });
 });

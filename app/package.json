@@ -3,12 +3,16 @@
   "version": "0.0.1",
   "description": "The FreeDeck App",
   "main": "./build/App.js",
+  "homepage": "https://freeyourstream.com",
   "scripts": {
     "dev": "nodemon --watch \"./src/**\" --ext \"js,ts\" --exec 'npm run build && npm run start' ./build/App.js",
     "start": "electron ./build/App.js",
-    "build": "tsc -p tsconfig.json && cp -r src/assets build/assets"
+    "build": "tsc -p tsconfig.json && cp -r src/assets build && cp -r src/extraResources build"
   },
-  "author": "Kilian Gosewisch",
+  "author": {
+    "name": "Kilian Gosewisch",
+    "email": "kilian@fys.rocks"
+  },
   "license": "ISC",
   "devDependencies": {
     "@types/electron": "^1.6.10",
@@ -27,10 +31,29 @@
     "directories": {
       "output": "../build"
     },
+    "extraResources": {
+      "from": "./src/extraResources/",
+      "to": "extraResources",
+      "filter": [
+        "**/*"
+      ]
+    },
     "files": [
       "build/**/*",
       "node_modules/**/*",
       "../node_modules/**/*"
-    ]
+    ],
+    "linux": {
+      "target": [
+        "snap",
+        "deb",
+        "rpm",
+        "pacman",
+        "tar.gz"
+      ]
+    },
+    "win": {
+      "target": "nsis"
+    }
   }
 }
