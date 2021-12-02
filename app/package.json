@@ -49,7 +49,6 @@
         "snap",
         "deb",
         "rpm",
-        "pacman",
         "tar.gz"
       ]
     },
