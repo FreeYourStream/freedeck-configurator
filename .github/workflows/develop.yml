@@ -79,7 +79,7 @@ jobs:
         run: npm i
 
       - name: install build requirements
-        run: sudo dpkg --add-architecture i386 && sudo apt update && sudo apt install -y wine wine32 mono-complete rpm
+        run: sudo apt-add-repository "ppa:ondrej/php" -y && sudo dpkg --add-architecture i386 && sudo apt update && sudo apt install -y wine wine32 mono-complete rpm
 
       - name: install mono
         run: wget https://dl.winehq.org/wine/wine-mono/6.4.0/wine-mono-6.4.0-x86.msi && wine msiexec /i ./wine-mono-6.4.0-x86.msi
