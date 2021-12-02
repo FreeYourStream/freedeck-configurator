@@ -1,5 +1,5 @@
 {
-  "name": "freedeck-app",
+  "name": "freedeck_app",
   "version": "0.0.1",
   "description": "The FreeDeck App",
   "main": "./build/App.js",
@@ -27,7 +27,8 @@
   },
   "build": {
     "electronVersion": "16.0.1",
-    "appId": "com.freeyourstream.freedeck-app",
+    "appId": "com.freeyourstream.freedeck_app",
+    "productName": "FreeDeck App",
     "directories": {
       "output": "../build"
     },
@@ -53,7 +54,8 @@
       ]
     },
     "win": {
-      "target": "nsis"
+      "target": "msi",
+      "icon": "assets/freedeck.ico"
     }
   }
 }
