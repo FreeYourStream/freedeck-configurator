@@ -248,9 +248,6 @@ export const configReducer: IConfigReducer = {
     }
     state.pages.sorted[aIndex] = pageBId;
     state.pages.sorted[bIndex] = pageAId;
-    const tempA = state.pages.byId[pageAId];
-    state.pages.byId[pageAId] = cloneDeep(state.pages.byId[pageBId]);
-    state.pages.byId[pageBId] = cloneDeep(tempA);
     return { ...state };
   },
   async deletePage(state, pageId) {
