@@ -1,10 +1,12 @@
 overwrite: true
-schema: "../freedeck-backend/schema.gql"
+schema: "http://localhost:5000/graphql"
 documents: "./src/graphql/**/*.gql"
 generates:
   src/generated/types-and-hooks.ts:
     config:
-      avoidOptionals: true
+      maybeValue: T | null | undefined
+      inputMaybeValue: T | null | undefined
+      avoidOptionals: false
     plugins:
       - typescript
       - typescript-operations

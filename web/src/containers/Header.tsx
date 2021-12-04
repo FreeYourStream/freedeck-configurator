@@ -78,7 +78,9 @@ export const Header: React.FC<{}> = () => {
                 loadConfigFile(event.currentTarget.files, setState);
             }}
           ></input>
-          <div className={c("flex items-center space-x-4 h-auto")}>
+          <div
+            className={c("flex items-center space-x-4 h-auto overflow-hidden")}
+          >
             {connected && !ctrlDown ? (
               <>
                 <FDButton
@@ -148,11 +150,14 @@ export const Header: React.FC<{}> = () => {
           </div>
         </form>
         <div className={c("flex items-center space-x-4")}>
-          <Link to={"/settings"}>
-            <FDButton prefix={<CogIcon className={iconSize} />} size={3}>
-              Settings
-            </FDButton>
-          </Link>
+          <FDButton
+            prefix={<CogIcon className={iconSize} />}
+            onClick={() => nav("/settings")}
+            size={3}
+          >
+            Settings
+          </FDButton>
+
           {process.env.REACT_APP_ENABLE_API === "true" && (
             <LoginLogoutButtons
               openLogin={() => nav("/login")}

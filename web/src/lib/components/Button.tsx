@@ -52,10 +52,12 @@ export const FDButton = ({
     <div
       onClick={onClick}
       title={title}
-      className={`inline-flex items-center text-lg font-normal tracking-wider rounded-md select-none ${sizeClasses} ${typeClasses} ${className}`}
+      className={`inline-flex items-center text-lg font-normal tracking-wider rounded-md select-none min-w-0 ${sizeClasses} ${typeClasses} ${className}`}
     >
       {!!prefix && <span>{prefix}</span>}
-      <span>{children}</span>
+      <span className="overflow-hidden overflow-ellipsis whitespace-nowrap">
+        {children}
+      </span>
       {!!suffix && <span>{suffix}</span>}
     </div>
   );

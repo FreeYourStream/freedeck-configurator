@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 
-import { EAction } from "../../definitions/modes";
+import { ActionValue, EAction } from "../../definitions/modes";
 import { FDSettings, IDisplayButton, IPages } from "../../interfaces";
 import { optimizeForSSD1306 } from "./ssd1306";
 
@@ -15,7 +15,10 @@ const writeAction = (
     (!isSecondary && db.button.secondary.enabled ? 1 : 0) * 16;
   const buttonAction = isSecondary ? db.button.secondary : db.button.primary;
   const dataOffset = rowOffset + (isSecondary ? 8 : 0);
-  buttonRows.writeUInt8(buttonAction.mode + secondaryAddition, dataOffset);
+  buttonRows.writeUInt8(
+    ActionValue[buttonAction.mode] + secondaryAddition,
+    dataOffset
+  );
   switch (buttonAction.mode) {
     case EAction.changePage:
       const pageIndex = pages.sorted.findIndex(

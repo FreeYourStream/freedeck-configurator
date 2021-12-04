@@ -1,10 +1,7 @@
 import React, { useContext } from "react";
 
 import { Title } from "../../lib/components/Title";
-import { getCollectionName } from "../../lib/util";
 import { ConfigStateContext } from "../../states/configState";
-import { Page } from "../Page";
-import { CollectionMenu } from "./Menu";
 import { Collection } from ".";
 
 export const Collections: React.FC<{ className?: string }> = ({

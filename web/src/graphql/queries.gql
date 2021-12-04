@@ -1,17 +1,37 @@
 fragment PageFields on Page {
+  id
+  data
   width
   height
   previewImages
   previewActions {
     primary {
       mode
-      values
       enabled
+      values {
+        hotkeys
+        changePage
+        special_keys
+        text
+        settings {
+          value
+          setting
+        }
+      }
     }
     secondary {
       enabled
       mode
-      values
+      values {
+        hotkeys
+        changePage
+        special_keys
+        text
+        settings {
+          value
+          setting
+        }
+      }
     }
   }
   createdBy {
@@ -45,6 +65,12 @@ query me {
 
 query myPages {
   myPages {
+    ...PageFields
+  }
+}
+
+query page($id: String!) {
+  page(id: $id) {
     ...PageFields
   }
 }

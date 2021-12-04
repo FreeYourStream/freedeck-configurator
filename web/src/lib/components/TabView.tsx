@@ -5,9 +5,16 @@ import React, { Fragment } from "react";
 export const TabView: React.FC<{
   className?: string;
   tabs: { title: string; prefix: JSX.Element; content: JSX.Element }[];
-}> = ({ tabs, className }) => {
+  onChange?: (currentIndex: number) => any;
+  activeIndex?: number;
+}> = ({ tabs, className, activeIndex = 0, onChange }) => {
   return (
-    <Tab.Group vertical defaultIndex={0}>
+    <Tab.Group
+      vertical
+      defaultIndex={activeIndex}
+      key={activeIndex}
+      onChange={(index) => onChange?.(index)}
+    >
       <div className={c("flex", className)}>
         <Tab.List className="flex flex-col gap-1 bg-gray-800 p-2">
           {tabs.map((tab, index) => (

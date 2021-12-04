@@ -37,6 +37,10 @@ const convertCurrentConfig = async (
       );
     }
   }
+  console.log(
+    rawConfig.pages.byId[rawConfig.pages.sorted[0]].displayButtons[0].button
+      .primary.values
+  );
   return {
     ...rawConfig,
     defaultBackDisplay: await generateAdditionalImagery(

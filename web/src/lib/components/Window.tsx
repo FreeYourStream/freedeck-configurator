@@ -12,6 +12,7 @@ export const FDWindow: React.FC<{
   return (
     <Transition show={visible} as={Fragment} appear={true}>
       <Dialog
+        open={visible}
         className="flex justify-center items-center fixed z-40 inset-0 m-24"
         onClose={() => setClose()}
       >

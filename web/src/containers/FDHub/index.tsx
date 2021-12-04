@@ -1,15 +1,23 @@
 import { HomeIcon, SearchIcon } from "@heroicons/react/outline";
-import React from "react";
-import { useNavigate } from "react-router";
+import React, { useState } from "react";
+import {
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router";
 
 import { iconSize } from "../../definitions/iconSizes";
 import { TabView } from "../../lib/components/TabView";
 import { FDWindow } from "../../lib/components/Window";
 import { Home } from "./Home";
+import { HubPageDetails } from "./PageDetails";
 import { FDSearch } from "./Search";
 
 export const FDHub = () => {
   const nav = useNavigate();
+
   return (
     <FDWindow
       className="h-full w-full"
@@ -32,6 +40,9 @@ export const FDHub = () => {
           },
         ]}
       />
+      <Routes>
+        <Route path="page/:pageId" element={<HubPageDetails />} />
+      </Routes>
     </FDWindow>
   );
 };

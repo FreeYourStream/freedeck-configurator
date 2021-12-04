@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
-export type Maybe<T> = T | null;
+export type Maybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -16,37 +16,65 @@ export type Scalars = {
   JSON: any;
 };
 
+export type ActionValues = {
+  __typename?: 'ActionValues';
+  hotkeys: Array<Scalars['Int']>;
+  changePage: Scalars['String'];
+  special_keys: Scalars['Int'];
+  text: Array<Scalars['Int']>;
+  settings: FreeDeckSettings;
+};
+
+export type ActionValuesInput = {
+  hotkeys: Array<Scalars['Int']>;
+  changePage: Scalars['String'];
+  special_keys: Scalars['Int'];
+  text: Array<Scalars['Int']>;
+  settings: FreeDeckSettingsInput;
+};
+
 export type Collection = {
   __typename?: 'Collection';
+  name: Scalars['String'];
+  tags: Array<Scalars['String']>;
+  pages: Array<Page>;
   createdBy: User;
   id: Scalars['String'];
-  name: Scalars['String'];
-  pages: Array<Page>;
-  tags: Array<Scalars['String']>;
   upvotes: Scalars['String'];
 };
 
 export type CollectionCreateInput = {
   name: Scalars['String'];
-  pageIds: Maybe<Array<Scalars['String']>>;
   tags: Array<Scalars['String']>;
+  pageIds?: Maybe<Array<Scalars['String']>>;
 };
 
 export type CollectionUpdateInput = {
-  name: Maybe<Scalars['String']>;
-  pageIds: Maybe<Array<Scalars['String']>>;
-  tags: Maybe<Array<Scalars['String']>>;
+  name?: Maybe<Scalars['String']>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  pageIds?: Maybe<Array<Scalars['String']>>;
+};
+
+export type FreeDeckSettings = {
+  __typename?: 'FreeDeckSettings';
+  setting?: Maybe<Scalars['Int']>;
+  value?: Maybe<Scalars['Int']>;
+};
+
+export type FreeDeckSettingsInput = {
+  setting?: Maybe<Scalars['Int']>;
+  value?: Maybe<Scalars['Int']>;
 };
 
 
 export type Mutation = {
   __typename?: 'Mutation';
   collectionCreate: Scalars['String'];
-  collectionToggleUpvote: Scalars['Boolean'];
   collectionUpdate: Scalars['Boolean'];
+  collectionToggleUpvote: Scalars['Boolean'];
   pageCreate: Scalars['String'];
-  pageToggleUpvote: Scalars['Boolean'];
   pageUpdate: Page;
+  pageToggleUpvote: Scalars['Boolean'];
 };
 
 
@@ -55,14 +83,14 @@ export type MutationCollectionCreateArgs = {
 };
 
 
-export type MutationCollectionToggleUpvoteArgs = {
+export type MutationCollectionUpdateArgs = {
+  input: CollectionUpdateInput;
   id: Scalars['String'];
 };
 
 
-export type MutationCollectionUpdateArgs = {
+export type MutationCollectionToggleUpvoteArgs = {
   id: Scalars['String'];
-  input: CollectionUpdateInput;
 };
 
 
@@ -71,48 +99,50 @@ export type MutationPageCreateArgs = {
 };
 
 
+export type MutationPageUpdateArgs = {
+  input: PageUpdateInput;
+  id: Scalars['String'];
+};
+
+
 export type MutationPageToggleUpvoteArgs = {
   id: Scalars['String'];
 };
 
-
-export type MutationPageUpdateArgs = {
-  id: Scalars['String'];
-  input: PageUpdateInput;
-};
-
 export type Page = {
   __typename?: 'Page';
-  createdBy: User;
-  data: Scalars['JSON'];
-  height: Scalars['Int'];
   id: Scalars['String'];
   name: Scalars['String'];
-  previewActions: Array<PreviewActions>;
-  previewImages: Array<Scalars['String']>;
   tags: Array<Scalars['String']>;
-  upvotes: Scalars['Float'];
   width: Scalars['Int'];
+  height: Scalars['Int'];
+  previewImages: Array<Scalars['String']>;
+  previewActions: Array<PreviewActions>;
+  data: Scalars['JSON'];
+  createdBy: User;
+  upvotes: Scalars['Float'];
 };
 
 export type PageCreateInput = {
-  data: Scalars['JSON'];
-  height: Scalars['Int'];
+  id: Scalars['String'];
   name: Scalars['String'];
-  previewActions: Array<PreviewActionsInput>;
-  previewImages: Array<Scalars['String']>;
   tags: Array<Scalars['String']>;
   width: Scalars['Int'];
+  height: Scalars['Int'];
+  previewImages: Array<Scalars['String']>;
+  previewActions: Array<PreviewActionsInput>;
+  data: Scalars['JSON'];
 };
 
 export type PageUpdateInput = {
-  data: Maybe<Scalars['JSON']>;
-  height: Maybe<Scalars['Int']>;
-  name: Maybe<Scalars['String']>;
-  previewActions: Maybe<Array<PreviewActionsInput>>;
-  previewImages: Maybe<Array<Scalars['String']>>;
-  tags: Maybe<Array<Scalars['String']>>;
-  width: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  width?: Maybe<Scalars['Int']>;
+  height?: Maybe<Scalars['Int']>;
+  previewImages?: Maybe<Array<Scalars['String']>>;
+  previewActions?: Maybe<Array<PreviewActionsInput>>;
+  data?: Maybe<Scalars['JSON']>;
 };
 
 export type PaginatedPages = {
@@ -122,21 +152,21 @@ export type PaginatedPages = {
 };
 
 export type Pagination = {
-  after: Maybe<Scalars['String']>;
-  before: Maybe<Scalars['String']>;
+  after?: Maybe<Scalars['String']>;
+  before?: Maybe<Scalars['String']>;
 };
 
 export type PreviewAction = {
   __typename?: 'PreviewAction';
   enabled: Scalars['Boolean'];
-  mode: Scalars['Int'];
-  values: Array<Scalars['Int']>;
+  mode: Scalars['String'];
+  values: ActionValues;
 };
 
 export type PreviewActionInput = {
   enabled: Scalars['Boolean'];
-  mode: Scalars['Int'];
-  values: Array<Scalars['Int']>;
+  mode: Scalars['String'];
+  values: ActionValuesInput;
 };
 
 export type PreviewActions = {
@@ -152,23 +182,13 @@ export type PreviewActionsInput = {
 
 export type Query = {
   __typename?: 'Query';
-  collection: Collection;
   myCollections: Array<Collection>;
-  myPages: Array<Page>;
-  page: Page;
   searchCollections: Array<Collection>;
+  collection: Collection;
+  page: Page;
+  myPages: Array<Page>;
   searchPages: PaginatedPages;
   user: User;
-};
-
-
-export type QueryCollectionArgs = {
-  id: Maybe<Scalars['String']>;
-};
-
-
-export type QueryPageArgs = {
-  id: Scalars['String'];
 };
 
 
@@ -177,34 +197,60 @@ export type QuerySearchCollectionsArgs = {
 };
 
 
+export type QueryCollectionArgs = {
+  id?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryPageArgs = {
+  id: Scalars['String'];
+};
+
+
 export type QuerySearchPagesArgs = {
-  pagination: Maybe<Pagination>;
+  pagination?: Maybe<Pagination>;
   searchTerm: Scalars['String'];
 };
 
 
 export type QueryUserArgs = {
-  id: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
 };
 
 export type User = {
   __typename?: 'User';
-  avatar: Scalars['String'];
   displayName: Scalars['String'];
+  avatar: Scalars['String'];
   id: Scalars['String'];
 };
 
 export type PageFieldsFragment = (
   { __typename?: 'Page' }
-  & Pick<Page, 'width' | 'height' | 'previewImages' | 'name' | 'upvotes' | 'tags'>
+  & Pick<Page, 'id' | 'data' | 'width' | 'height' | 'previewImages' | 'name' | 'upvotes' | 'tags'>
   & { previewActions: Array<(
     { __typename?: 'PreviewActions' }
     & { primary: (
       { __typename?: 'PreviewAction' }
-      & Pick<PreviewAction, 'mode' | 'values' | 'enabled'>
+      & Pick<PreviewAction, 'mode' | 'enabled'>
+      & { values: (
+        { __typename?: 'ActionValues' }
+        & Pick<ActionValues, 'hotkeys' | 'changePage' | 'special_keys' | 'text'>
+        & { settings: (
+          { __typename?: 'FreeDeckSettings' }
+          & Pick<FreeDeckSettings, 'value' | 'setting'>
+        ) }
+      ) }
     ), secondary: (
       { __typename?: 'PreviewAction' }
-      & Pick<PreviewAction, 'enabled' | 'mode' | 'values'>
+      & Pick<PreviewAction, 'enabled' | 'mode'>
+      & { values: (
+        { __typename?: 'ActionValues' }
+        & Pick<ActionValues, 'hotkeys' | 'changePage' | 'special_keys' | 'text'>
+        & { settings: (
+          { __typename?: 'FreeDeckSettings' }
+          & Pick<FreeDeckSettings, 'value' | 'setting'>
+        ) }
+      ) }
     ) }
   )>, createdBy: (
     { __typename?: 'User' }
@@ -214,8 +260,8 @@ export type PageFieldsFragment = (
 
 export type SearchPagesQueryVariables = Exact<{
   searchTerm: Scalars['String'];
-  before: Maybe<Scalars['String']>;
-  after: Maybe<Scalars['String']>;
+  before?: Maybe<Scalars['String']>;
+  after?: Maybe<Scalars['String']>;
 }>;
 
 
@@ -253,6 +299,19 @@ export type MyPagesQuery = (
   )> }
 );
 
+export type PageQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type PageQuery = (
+  { __typename?: 'Query' }
+  & { page: (
+    { __typename?: 'Page' }
+    & PageFieldsFragment
+  ) }
+);
+
 export type PageCreateMutationVariables = Exact<{
   input: PageCreateInput;
 }>;
@@ -265,19 +324,39 @@ export type PageCreateMutation = (
 
 export const PageFieldsFragmentDoc = gql`
     fragment PageFields on Page {
+  id
+  data
   width
   height
   previewImages
   previewActions {
     primary {
       mode
-      values
       enabled
+      values {
+        hotkeys
+        changePage
+        special_keys
+        text
+        settings {
+          value
+          setting
+        }
+      }
     }
     secondary {
       enabled
       mode
-      values
+      values {
+        hotkeys
+        changePage
+        special_keys
+        text
+        settings {
+          value
+          setting
+        }
+      }
     }
   }
   createdBy {
@@ -402,6 +481,41 @@ export function useMyPagesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<My
 export type MyPagesQueryHookResult = ReturnType<typeof useMyPagesQuery>;
 export type MyPagesLazyQueryHookResult = ReturnType<typeof useMyPagesLazyQuery>;
 export type MyPagesQueryResult = Apollo.QueryResult<MyPagesQuery, MyPagesQueryVariables>;
+export const PageDocument = gql`
+    query page($id: String!) {
+  page(id: $id) {
+    ...PageFields
+  }
+}
+    ${PageFieldsFragmentDoc}`;
+
+/**
+ * __usePageQuery__
+ *
+ * To run a query within a React component, call `usePageQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePageQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function usePageQuery(baseOptions: Apollo.QueryHookOptions<PageQuery, PageQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PageQuery, PageQueryVariables>(PageDocument, options);
+      }
+export function usePageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PageQuery, PageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PageQuery, PageQueryVariables>(PageDocument, options);
+        }
+export type PageQueryHookResult = ReturnType<typeof usePageQuery>;
+export type PageLazyQueryHookResult = ReturnType<typeof usePageLazyQuery>;
+export type PageQueryResult = Apollo.QueryResult<PageQuery, PageQueryVariables>;
 export const PageCreateDocument = gql`
     mutation pageCreate($input: PageCreateInput!) {
   pageCreate(input: $input)

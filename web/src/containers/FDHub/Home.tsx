@@ -1,11 +1,13 @@
 import c from "clsx";
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router";
 
 import { useMyPagesQuery } from "../../generated/types-and-hooks";
 import { Title } from "../../lib/components/Title";
 import { HubPage } from "./components/HubPage";
 
 export const Home: React.FC<{ className?: string }> = ({ className }) => {
+  const nav = useNavigate();
   const { data, loading, refetch } = useMyPagesQuery({
     nextFetchPolicy: "network-only",
   });
@@ -18,7 +20,14 @@ export const Home: React.FC<{ className?: string }> = ({ className }) => {
       {!loading && data ? (
         <div className="flex flex-wrap gap-4 p-4">
           {data.myPages.map((page, key) => (
-            <div key={key}>
+            <div
+              className="cursor-pointer"
+              key={key}
+              onClick={() => {
+                console.log("OPEN HUB PAGE");
+                nav(`/hub/page/${page.id}`);
+              }}
+            >
               <HubPage page={page} />
             </div>
           ))}

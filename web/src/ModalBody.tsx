@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 
 import { CollectionSettingsModal } from "./containers/Collection/Settings/Modal";
 import { DBSettingsModal } from "./containers/DisplayButton/DisplayButtonSettingsModal";
 import { FDHub } from "./containers/FDHub";
+import { HubPageDetails } from "./containers/FDHub/PageDetails";
 import { GlobalSettings } from "./containers/GeneralSettingsModal";
 import { LoginModal } from "./containers/Login";
 import { PublishPage } from "./containers/Page/Publish";
@@ -27,7 +28,7 @@ export const ModalBody = () => {
         <>
           <Route path="/login" element={<LoginModal />} />
           <Route path="/hub/*" element={<FDHub />} />
-          <Route path="/publish/page/:pageId" element={<PublishPage />} />
+          <Route path="/publishpage/:pageId" element={<PublishPage />} />
         </>
       )}
     </Routes>

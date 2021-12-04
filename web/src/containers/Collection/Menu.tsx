@@ -1,7 +1,6 @@
 import {
   CogIcon,
   MenuIcon,
-  PencilIcon,
   ShareIcon,
   TrashIcon,
 } from "@heroicons/react/outline";
@@ -13,11 +12,7 @@ import { iconSize } from "../../definitions/iconSizes";
 import { CtrlDuo } from "../../lib/components/CtrlDuo";
 import { FDMenu } from "../../lib/components/Menu";
 import { Modal } from "../../lib/components/Modal";
-import { AppStateContext } from "../../states/appState";
-import {
-  ConfigDispatchContext,
-  ConfigStateContext,
-} from "../../states/configState";
+import { ConfigDispatchContext } from "../../states/configState";
 
 // import { PublishPage } from "./Publish";
 

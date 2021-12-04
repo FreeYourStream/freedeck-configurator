@@ -11,7 +11,6 @@ import {
 import { EAction } from "../definitions/modes";
 import {
   IButtonSetting,
-  ICollection,
   ICollections,
   IDisplaySettings,
   IOriginalImage,
@@ -62,6 +61,13 @@ export interface IConfigReducer extends Actions<ConfigState> {
       previousDisplay?: number;
       secondary?: boolean;
       startPage?: boolean;
+    }
+  ): Promise<ConfigState>;
+  downloadPage(
+    state: ConfigState,
+    data: {
+      page: IPage;
+      id: string;
     }
   ): Promise<ConfigState>;
   renamePage(
@@ -214,9 +220,14 @@ export const configReducer: IConfigReducer = {
     }
     return { ...state };
   },
+  async downloadPage(state: ConfigState, { page, id }) {
+    state.pages.byId[id] = cloneDeep(page);
+    const alreadyDownloaded = !!state.pages.sorted.find((pid) => pid === id);
+    if (!alreadyDownloaded) state.pages.sorted.push(id);
+    return { ...state };
+  },
   async renamePage(state: ConfigState, { pageId, name }) {
     state.pages.byId[pageId].name = name;
-    console.log("renamed", pageId, name);
     return { ...state };
   },
   async changePageWindowName(state: ConfigState, { pageId, windowName }) {
@@ -287,21 +298,13 @@ export const configReducer: IConfigReducer = {
     return { ...state };
   },
   async setPageCollection(state, { pageId, collectionId }) {
-    console.log(state.pages.byId[pageId].isInCollection);
+    const collection = state.collections.byId[collectionId];
     if (!state.pages.byId[pageId].isInCollection) {
-      if (
-        state.collections.byId[collectionId].pages.length === 0 &&
-        !state.collections.byId[collectionId].windowName
-      )
-        state.collections.byId[collectionId].windowName =
-          state.pages.byId[pageId].windowName;
-      if (
-        state.collections.byId[collectionId].pages.length === 0 &&
-        !state.collections.byId[collectionId].name
-      )
-        state.collections.byId[collectionId].name =
-          state.pages.byId[pageId].name;
-      state.collections.byId[collectionId].pages.push(pageId);
+      if (collection.pages.length === 0 && !collection.windowName)
+        collection.windowName = state.pages.byId[pageId].windowName;
+      if (collection.pages.length === 0 && !collection.name)
+        collection.name = state.pages.byId[pageId].name;
+      collection.pages.push(pageId);
       state.pages.byId[pageId].isInCollection = collectionId;
     } else {
       const colId = state.pages.byId[pageId].isInCollection!;

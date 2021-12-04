@@ -6,7 +6,6 @@ import { HashRouter } from "react-router-dom";
 
 import { Body } from "./Body";
 import { AddEventListeners } from "./lib/eventListeners";
-import { usePageSwitcher } from "./lib/hooks/pageSwitcherHook";
 import { ModalBody } from "./ModalBody";
 import {
   AppDispatchContext,

@@ -2,7 +2,6 @@ import { PlusCircleIcon } from "@heroicons/react/outline";
 import React, { useContext } from "react";
 import { useDrop } from "react-dnd";
 import { Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router";
 
 import { Collections } from "./containers/Collection/Collections";
 import { ContentBody } from "./containers/ContentBody";
@@ -24,7 +23,7 @@ export const Body = () => {
     ConfigDispatchContext
   );
   usePageSwitcher({ appState, configState });
-  const [{}, drop] = useDrop({
+  const [, drop] = useDrop({
     options: {},
     accept: "page",
     drop: (item, monitor) => {

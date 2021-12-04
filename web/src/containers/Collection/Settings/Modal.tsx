@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { iconSize } from "../../../definitions/iconSizes";
 import { TabView } from "../../../lib/components/TabView";
 import { FDWindow } from "../../../lib/components/Window";
-import { getCollectionName, getPageName } from "../../../lib/util";
+import { getCollectionName } from "../../../lib/util";
 import { ConfigStateContext } from "../../../states/configState";
 import { AutoPageSwitcherSettings } from "./AutoPageSwitcher";
 import { CollectionGeneralSettings } from "./General";

@@ -1,8 +1,13 @@
+import { userInfo } from "os";
+import { config } from "process";
+
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
 import {
   MyPagesQuery,
+  Page,
+  PageCreateMutationVariables,
   useMeQuery,
   usePageCreateMutation,
 } from "../../generated/types-and-hooks";
@@ -20,14 +25,17 @@ export const PublishPage: React.FC<{}> = () => {
   const { data } = useMeQuery();
   const [mutate, { called }] = usePageCreateMutation();
   const configState = useContext(ConfigStateContext);
-  const [name, setName] = useState("");
+  const [name, setName] = useState(
+    configState.pages.byId[params.pageId!].name ?? ""
+  );
   const [tags, setTags] = useState("");
-  if (!params.pageid) return <></>;
-  const pageId = params.pageid;
+  if (!params.pageId) return <></>;
+  const pageId = params.pageId;
   const publishPage = async () => {
     const result = await mutate({
       variables: {
         input: {
+          id: pageId,
           data: configState.pages.byId[pageId],
           height: configState.height,
           width: configState.width,
@@ -47,25 +55,27 @@ export const PublishPage: React.FC<{}> = () => {
         },
       },
     });
-    if (!result.errors) nav(`/hub/pages/${pageId}`);
+    if (!result.errors) nav(`/hubpage/${pageId}`);
   };
-  // const page:MyPagesQuery["myPages"][0] = {
-  //   height: configState.height,
-  //   width: configState.width,
-  //   name,
-  //   previewActions: configState.pages.byId[pageId].displayButtons.map(
-  //     (page) => page.button
-  //   ),
-  //   previewImages: configState.pages.byId[pageId].displayButtons.map(
-  //     (page) => page.display.previewImage
-  //   ),
-  //   tags: tags
-  //     .split(",")
-  //     .map((t) => t.trim())
-  //     .filter((t) => !!t),
-  //   upvotes: -1,
-  //   createdBy: data!.user,
-  // };
+  const page: Page = {
+    id: pageId,
+    upvotes: -1,
+    createdBy: data?.user!,
+    height: configState.height,
+    width: configState.width,
+    name,
+    data: configState,
+    previewActions: configState.pages.byId[pageId].displayButtons.map(
+      (page) => page.button
+    ),
+    previewImages: configState.pages.byId[pageId].displayButtons.map(
+      (page) => page.display.previewImage
+    ),
+    tags: tags
+      .split(",")
+      .map((t) => t.trim())
+      .filter((t) => !!t),
+  };
 
   return (
     <FDWindow
@@ -94,7 +104,7 @@ export const PublishPage: React.FC<{}> = () => {
             </div>
           </Row>
         </div>
-        {/* <HubPage page={page} /> */}
+        <HubPage page={page} />
       </div>
     </FDWindow>
   );

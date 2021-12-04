@@ -3,7 +3,6 @@ import { useDrop } from "react-dnd";
 
 import { Title } from "../../lib/components/Title";
 import { TitleInput } from "../../lib/components/TitleInput";
-import { getCollectionName } from "../../lib/util";
 import {
   ConfigDispatchContext,
   ConfigStateContext,

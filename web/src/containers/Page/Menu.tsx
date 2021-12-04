@@ -13,18 +13,13 @@ import { CtrlDuo } from "../../lib/components/CtrlDuo";
 import { FDMenu } from "../../lib/components/Menu";
 import { Modal } from "../../lib/components/Modal";
 import { AppStateContext } from "../../states/appState";
-import {
-  ConfigDispatchContext,
-  ConfigStateContext,
-} from "../../states/configState";
+import { ConfigDispatchContext } from "../../states/configState";
 
 export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
   const nav = useNavigate();
   const appState = useContext(AppStateContext);
-  const configState = useContext(ConfigStateContext);
   const configDispatch = useContext(ConfigDispatchContext);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [publishOpen, setPublishOpen] = useState(false);
   return (
     <div className="flex items-center justify-center w-8 h-8  cursor-pointer shadow-lg">
       <Modal
@@ -55,7 +50,7 @@ export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
               title: "Publish",
               prefix: <ShareIcon className={iconSize} />,
               disabled: process.env.REACT_APP_ENABLE_API !== "true",
-              onClick: () => setPublishOpen(true),
+              onClick: () => nav(`/publishpage/${pageId}`),
             },
           ]}
         >
