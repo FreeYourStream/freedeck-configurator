@@ -32,7 +32,7 @@
     "check:clean": "unimported; ts-unused-exports ./tsconfig.json --allowUnusedTypes --ignoreFiles=\"generated/.*|_Boilerplate.*\"",
     "eject": "react-scripts eject",
     "codegen": "graphql-codegen --config codegen.yml",
-    "typegen": "pwd; ts-node src/scripts/joiTypes.ts"
+    "typegen": "pwd; ts-node -P tsconfig.common.json src/scripts/joiTypes.ts"
   },
   "eslintConfig": {
     "extends": "react-app"
