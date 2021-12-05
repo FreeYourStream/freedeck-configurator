@@ -70,7 +70,6 @@ export const createDefaultDisplay: (
         iconWidthMultiplier: 0.35,
       },
       isGeneratedFromDefaultBackImage: false,
-      previousDisplay: undefined,
       previousPage: undefined,
     },
     options

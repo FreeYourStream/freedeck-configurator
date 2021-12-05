@@ -12,7 +12,7 @@ const writeAction = (
   isSecondary: boolean
 ) => {
   const secondaryAddition =
-    (!isSecondary && db.button.secondary.enabled ? 1 : 0) * 16;
+    (!isSecondary && db.button.secondary.mode !== EAction.noop ? 1 : 0) * 16;
   const buttonAction = isSecondary ? db.button.secondary : db.button.primary;
   const dataOffset = rowOffset + (isSecondary ? 8 : 0);
   buttonRows.writeUInt8(
@@ -74,7 +74,7 @@ export const createButtonBody = (pages: IPages) => {
       buttonRows = writeAction(buttonRows, db, pages, rowOffset, false);
       if (
         db.button.primary.mode !== EAction.text &&
-        db.button.secondary.enabled
+        db.button.secondary.mode !== EAction.noop
       ) {
         buttonRows = writeAction(buttonRows, db, pages, rowOffset, true);
       }

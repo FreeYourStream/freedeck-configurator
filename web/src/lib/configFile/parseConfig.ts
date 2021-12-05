@@ -12,8 +12,6 @@ export const generateAdditionalImagery = async (
     isGeneratedFromDefaultBackImage: display.isGeneratedFromDefaultBackImage,
     textSettings: display.textSettings,
     textWithIconSettings: display.textWithIconSettings,
-    previousDisplay: display.previousDisplay,
-    previousPage: display.previousPage,
     originalImage:
       display.originalImage && Buffer.from(display.originalImage as any),
   });

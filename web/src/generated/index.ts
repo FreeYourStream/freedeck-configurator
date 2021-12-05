@@ -3,24 +3,6 @@
  * Do not modify this file manually
  */
 
-export interface Config {
-  brightness?: number;
-  configVersion: string;
-  height?: number;
-  pages: Pages;
-  width?: number;
-}
-
-export interface Page {
-  name?: string;
-}
-
-export interface Pages {
-  byId?: {
-    /**
-     * Page Property
-     */
-    [x: string]: Page;
-  };
-  sorted?: string[];
-}
+export * from './button';
+export * from './config';
+export * from './display';

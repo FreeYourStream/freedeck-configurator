@@ -20,7 +20,6 @@ export interface IButtonSetting {
       value?: number;
     };
   };
-  enabled: boolean;
 }
 
 export interface IButtonSettings {
