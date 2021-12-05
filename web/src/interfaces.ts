@@ -1,4 +1,7 @@
+import Joi from "joi";
+
 import { EAction } from "./definitions/modes";
+import { ConfigState } from "./states/configState";
 
 export enum FDSettings {
   "change_brightness" = 0,

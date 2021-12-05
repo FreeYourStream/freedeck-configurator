@@ -35,7 +35,7 @@ export const Serial: React.FC<{}> = () => {
     if (!serialApi) return;
     try {
       await serialApi.connect();
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       if (e.message === "No port selected by the user") return;
     }
