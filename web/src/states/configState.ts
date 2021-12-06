@@ -1,3 +1,4 @@
+import { ApolloClient } from "@apollo/client";
 import cloneDeep from "lodash/cloneDeep";
 import { createContext } from "react";
 import { v4 } from "uuid";
@@ -10,8 +11,16 @@ import {
 } from "../definitions/defaultPage";
 import { EAction } from "../definitions/modes";
 import { ButtonSetting, Collections, Display, Page, Pages } from "../generated";
+import { PageQuery as HubPage } from "../generated/types-and-hooks";
+import {
+  PageDocument,
+  PageQuery,
+  PageQueryVariables,
+} from "../generated/types-and-hooks";
 import { generateAdditionalImagery } from "../lib/configFile/parseConfig";
+import { PageSchema } from "../schemas/config";
 import { Actions, FunctionForFirstParamType } from "./interfaces";
+import { client } from "..";
 
 export interface ConfigState {
   configVersion: string;
@@ -59,7 +68,7 @@ export interface IConfigReducer extends Actions<ConfigState> {
   downloadPage(
     state: ConfigState,
     data: {
-      page: Page;
+      page: HubPage["page"];
       id: string;
     }
   ): Promise<ConfigState>;
@@ -68,6 +77,10 @@ export interface IConfigReducer extends Actions<ConfigState> {
     data: { pageId: string; name: string }
   ): Promise<ConfigState>;
   deletePage(state: ConfigState, pageId: string): Promise<ConfigState>;
+  setPagePublished(
+    state: ConfigState,
+    data: { pageId: string }
+  ): Promise<ConfigState>;
   changePageWindowName(
     state: ConfigState,
     data: { pageId: string; windowName: string }
@@ -214,7 +227,21 @@ export const configReducer: IConfigReducer = {
     return { ...state };
   },
   async downloadPage(state: ConfigState, { page, id }) {
-    state.pages.byId[id] = cloneDeep(page);
+    const validatedPage = PageSchema.validate(page.data);
+    if (validatedPage.error) {
+      window.advancedAlert(
+        "This page is not compatible",
+        validatedPage.error.message
+      );
+      return { ...state };
+    }
+    state.pages.byId[id] = {
+      ...(page.data as Page),
+      publishData: {
+        createdBy: page.createdBy.id,
+        forkedFrom: page.forkedFrom?.id,
+      },
+    };
     const alreadyDownloaded = !!state.pages.sorted.find((pid) => pid === id);
     if (!alreadyDownloaded) state.pages.sorted.push(id);
     return { ...state };
@@ -288,6 +315,24 @@ export const configReducer: IConfigReducer = {
           ] = "";
       });
     });
+    return { ...state };
+  },
+  async setPagePublished(state, { pageId }) {
+    if (!client) {
+      window.advancedAlert(
+        "Problem with connection to server",
+        "We could not reach the FreeDeck Hub server"
+      );
+      return { ...state };
+    }
+    const response = await client.query<PageQuery, PageQueryVariables>({
+      query: PageDocument,
+      variables: { id: pageId },
+    });
+    state.pages.byId[pageId].publishData = {
+      createdBy: response.data.page.createdBy.id,
+      forkedFrom: response.data.page.forkedFrom?.id,
+    };
     return { ...state };
   },
   async setPageCollection(state, { pageId, collectionId }) {

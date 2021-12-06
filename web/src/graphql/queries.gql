@@ -3,38 +3,13 @@ fragment PageFields on Page {
   data
   width
   height
-  previewImages
-  previewActions {
-    primary {
-      mode
-      values {
-        hotkeys
-        changePage
-        special_keys
-        text
-        settings {
-          value
-          setting
-        }
-      }
-    }
-    secondary {
-      mode
-      values {
-        hotkeys
-        changePage
-        special_keys
-        text
-        settings {
-          value
-          setting
-        }
-      }
-    }
-  }
   createdBy {
+    id
     avatar
     displayName
+  }
+  forkedFrom {
+    id
   }
   name
   upvotes

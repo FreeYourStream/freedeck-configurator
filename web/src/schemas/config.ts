@@ -8,10 +8,16 @@ export const DisplayButtonSchema = Joi.object({
   display: DisplaySchema.required(),
 }).meta({ className: "DisplayButton" });
 
+export const PublishData = Joi.object({
+  createdBy: Joi.string().required(),
+  forkedFrom: Joi.string(),
+});
+
 export const PageSchema = Joi.object({
   name: Joi.string(),
   windowName: Joi.string(),
   isStartPage: Joi.bool().default(false).required(),
+  publishData: PublishData,
   isInCollection: Joi.string(),
   usePageNameAsWindowName: Joi.bool().default(true).required(),
   displayButtons: Joi.array().items(DisplayButtonSchema).required(),

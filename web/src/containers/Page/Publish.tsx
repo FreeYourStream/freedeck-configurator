@@ -11,7 +11,10 @@ import { Label } from "../../lib/components/LabelValue";
 import { Row } from "../../lib/components/Row";
 import { TextInput } from "../../lib/components/TextInput";
 import { FDWindow } from "../../lib/components/Window";
-import { ConfigStateContext } from "../../states/configState";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../../states/configState";
 import { HubPage } from "../FDHub/components/HubPage";
 
 export const PublishPage: React.FC<{}> = () => {
@@ -20,6 +23,7 @@ export const PublishPage: React.FC<{}> = () => {
   const { data } = useMeQuery();
   const [mutate, { called }] = usePageCreateMutation();
   const configState = useContext(ConfigStateContext);
+  const { setPagePublished } = useContext(ConfigDispatchContext);
   const [name, setName] = useState(
     configState.pages.byId[params.pageId!].name ?? ""
   );
@@ -39,18 +43,13 @@ export const PublishPage: React.FC<{}> = () => {
             .split(",")
             .map((t) => t.trim())
             .filter((t) => !!t),
-          previewActions:
-            [] ??
-            configState.pages.byId[pageId].displayButtons.map(
-              (page) => page.button
-            ),
-          previewImages: configState.pages.byId[pageId].displayButtons.map(
-            (page) => page.display.previewImage
-          ),
         },
       },
     });
-    if (!result.errors) nav(`/hubpage/${pageId}`);
+    if (!result.errors) {
+      setPagePublished({ pageId });
+      nav(`/hubpage/${pageId}`);
+    }
   };
   const page: Page = {
     id: pageId,
@@ -59,13 +58,7 @@ export const PublishPage: React.FC<{}> = () => {
     height: configState.height,
     width: configState.width,
     name,
-    data: configState,
-    previewActions: configState.pages.byId[pageId].displayButtons.map(
-      (db: any) => db.button
-    ),
-    previewImages: configState.pages.byId[pageId].displayButtons.map(
-      (db: any) => db.display.previewImage
-    ),
+    data: configState.pages.byId[pageId],
     tags: tags
       .split(",")
       .map((t) => t.trim())

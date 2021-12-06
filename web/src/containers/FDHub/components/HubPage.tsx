@@ -3,6 +3,7 @@ import c from "clsx";
 import React from "react";
 
 import { iconSize } from "../../../definitions/iconSizes";
+import { Page } from "../../../generated";
 import { MyPagesQuery } from "../../../generated/types-and-hooks";
 import { Avatar } from "../../../lib/components/Avatar";
 import { ImagePreview } from "../../../lib/components/ImagePreview";
@@ -57,12 +58,12 @@ export const HubPage: React.FC<{
             `grid-rows-${page.height}`
           )}
         >
-          {page.previewImages.map((image, key) => (
+          {(page.data as Page).displayButtons.map((db, key) => (
             <ImagePreview
               clickable={false}
               key={key}
               size={1}
-              previewImage={image}
+              previewImage={db.display.previewImage}
             />
           ))}
         </div>

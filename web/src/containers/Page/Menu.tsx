@@ -9,16 +9,22 @@ import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router";
 
 import { iconSize } from "../../definitions/iconSizes";
+import { useMeQuery } from "../../generated/types-and-hooks";
 import { CtrlDuo } from "../../lib/components/CtrlDuo";
 import { FDMenu } from "../../lib/components/Menu";
 import { Modal } from "../../lib/components/Modal";
 import { AppStateContext } from "../../states/appState";
-import { ConfigDispatchContext } from "../../states/configState";
+import {
+  ConfigDispatchContext,
+  ConfigStateContext,
+} from "../../states/configState";
 
 export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
   const nav = useNavigate();
   const appState = useContext(AppStateContext);
   const configDispatch = useContext(ConfigDispatchContext);
+  const configState = useContext(ConfigStateContext);
+  const { data } = useMeQuery();
   const [deleteOpen, setDeleteOpen] = useState(false);
   return (
     <div className="flex items-center justify-center w-8 h-8  cursor-pointer shadow-lg">
@@ -47,7 +53,12 @@ export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
               onClick: () => setDeleteOpen(true),
             },
             {
-              title: "Publish",
+              title: configState.pages.byId[pageId].publishData
+                ? configState.pages.byId[pageId].publishData?.createdBy ===
+                  data?.user.id
+                  ? "Update"
+                  : "Fork"
+                : "Publish",
               prefix: <ShareIcon className={iconSize} />,
               disabled: process.env.REACT_APP_ENABLE_API !== "true",
               onClick: () => nav(`/publishpage/${pageId}`),

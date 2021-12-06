@@ -43,6 +43,10 @@ export interface Page {
   isInCollection?: string;
   isStartPage: boolean;
   name?: string;
+  publishData?: {
+    createdBy: string;
+    forkedFrom?: string;
+  };
   usePageNameAsWindowName: boolean;
   windowName?: string;
 }
@@ -50,4 +54,9 @@ export interface Page {
 export interface Pages {
   byId: Record<string,Page>;
   sorted: string[];
+}
+
+export interface PublishData {
+  createdBy: string;
+  forkedFrom?: string;
 }

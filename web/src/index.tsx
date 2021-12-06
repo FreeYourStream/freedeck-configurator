@@ -1,6 +1,11 @@
 import "./tailwind.css";
 
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloProvider,
+  InMemoryCache,
+  NormalizedCacheObject,
+} from "@apollo/client";
 import { RefreshIcon } from "@heroicons/react/outline";
 import React from "react";
 import ReactDOM from "react-dom";
@@ -14,6 +19,7 @@ import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { defaultAppState } from "./states/appState";
 import { defaultConfigState } from "./states/configState";
 
+export let client: ApolloClient<NormalizedCacheObject> | undefined;
 const main = async () => {
   if (process.env.NODE_ENV !== "development" && !isElectron())
     window.onbeforeunload = function () {
@@ -23,7 +29,7 @@ const main = async () => {
   const awaitedDefaultConfigState = await defaultConfigState();
   const awaitedDefaultAppState = await defaultAppState();
   if (process.env.REACT_APP_ENABLE_API === "true") {
-    const client = new ApolloClient({
+    client = new ApolloClient({
       cache: new InMemoryCache(),
       uri: process.env.REACT_APP_API_URL + "/graphql",
       credentials: "include",

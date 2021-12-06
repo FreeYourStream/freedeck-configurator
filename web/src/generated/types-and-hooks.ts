@@ -16,23 +16,6 @@ export type Scalars = {
   JSON: any;
 };
 
-export type ActionValues = {
-  __typename?: 'ActionValues';
-  hotkeys: Array<Scalars['Int']>;
-  changePage: Scalars['String'];
-  special_keys: Scalars['Int'];
-  text: Array<Scalars['Int']>;
-  settings: FreeDeckSettings;
-};
-
-export type ActionValuesInput = {
-  hotkeys: Array<Scalars['Int']>;
-  changePage: Scalars['String'];
-  special_keys: Scalars['Int'];
-  text: Array<Scalars['Int']>;
-  settings: FreeDeckSettingsInput;
-};
-
 export type Collection = {
   __typename?: 'Collection';
   name: Scalars['String'];
@@ -53,17 +36,6 @@ export type CollectionUpdateInput = {
   name?: Maybe<Scalars['String']>;
   tags?: Maybe<Array<Scalars['String']>>;
   pageIds?: Maybe<Array<Scalars['String']>>;
-};
-
-export type FreeDeckSettings = {
-  __typename?: 'FreeDeckSettings';
-  setting?: Maybe<Scalars['Int']>;
-  value?: Maybe<Scalars['Int']>;
-};
-
-export type FreeDeckSettingsInput = {
-  setting?: Maybe<Scalars['Int']>;
-  value?: Maybe<Scalars['Int']>;
 };
 
 
@@ -116,10 +88,9 @@ export type Page = {
   tags: Array<Scalars['String']>;
   width: Scalars['Int'];
   height: Scalars['Int'];
-  previewImages: Array<Scalars['String']>;
-  previewActions: Array<PreviewActions>;
   data: Scalars['JSON'];
   createdBy: User;
+  forkedFrom?: Maybe<Page>;
   upvotes: Scalars['Float'];
 };
 
@@ -129,9 +100,8 @@ export type PageCreateInput = {
   tags: Array<Scalars['String']>;
   width: Scalars['Int'];
   height: Scalars['Int'];
-  previewImages: Array<Scalars['String']>;
-  previewActions: Array<PreviewActionsInput>;
   data: Scalars['JSON'];
+  forkedFromId?: Maybe<Scalars['String']>;
 };
 
 export type PageUpdateInput = {
@@ -140,8 +110,6 @@ export type PageUpdateInput = {
   tags?: Maybe<Array<Scalars['String']>>;
   width?: Maybe<Scalars['Int']>;
   height?: Maybe<Scalars['Int']>;
-  previewImages?: Maybe<Array<Scalars['String']>>;
-  previewActions?: Maybe<Array<PreviewActionsInput>>;
   data?: Maybe<Scalars['JSON']>;
 };
 
@@ -154,28 +122,6 @@ export type PaginatedPages = {
 export type Pagination = {
   after?: Maybe<Scalars['String']>;
   before?: Maybe<Scalars['String']>;
-};
-
-export type PreviewAction = {
-  __typename?: 'PreviewAction';
-  mode: Scalars['String'];
-  values: ActionValues;
-};
-
-export type PreviewActionInput = {
-  mode: Scalars['String'];
-  values: ActionValuesInput;
-};
-
-export type PreviewActions = {
-  __typename?: 'PreviewActions';
-  primary: PreviewAction;
-  secondary: PreviewAction;
-};
-
-export type PreviewActionsInput = {
-  primary: PreviewActionInput;
-  secondary: PreviewActionInput;
 };
 
 export type Query = {
@@ -224,36 +170,14 @@ export type User = {
 
 export type PageFieldsFragment = (
   { __typename?: 'Page' }
-  & Pick<Page, 'id' | 'data' | 'width' | 'height' | 'previewImages' | 'name' | 'upvotes' | 'tags'>
-  & { previewActions: Array<(
-    { __typename?: 'PreviewActions' }
-    & { primary: (
-      { __typename?: 'PreviewAction' }
-      & Pick<PreviewAction, 'mode'>
-      & { values: (
-        { __typename?: 'ActionValues' }
-        & Pick<ActionValues, 'hotkeys' | 'changePage' | 'special_keys' | 'text'>
-        & { settings: (
-          { __typename?: 'FreeDeckSettings' }
-          & Pick<FreeDeckSettings, 'value' | 'setting'>
-        ) }
-      ) }
-    ), secondary: (
-      { __typename?: 'PreviewAction' }
-      & Pick<PreviewAction, 'mode'>
-      & { values: (
-        { __typename?: 'ActionValues' }
-        & Pick<ActionValues, 'hotkeys' | 'changePage' | 'special_keys' | 'text'>
-        & { settings: (
-          { __typename?: 'FreeDeckSettings' }
-          & Pick<FreeDeckSettings, 'value' | 'setting'>
-        ) }
-      ) }
-    ) }
-  )>, createdBy: (
+  & Pick<Page, 'id' | 'data' | 'width' | 'height' | 'name' | 'upvotes' | 'tags'>
+  & { createdBy: (
     { __typename?: 'User' }
-    & Pick<User, 'avatar' | 'displayName'>
-  ) }
+    & Pick<User, 'id' | 'avatar' | 'displayName'>
+  ), forkedFrom?: Maybe<(
+    { __typename?: 'Page' }
+    & Pick<Page, 'id'>
+  )> }
 );
 
 export type SearchPagesQueryVariables = Exact<{
@@ -326,38 +250,13 @@ export const PageFieldsFragmentDoc = gql`
   data
   width
   height
-  previewImages
-  previewActions {
-    primary {
-      mode
-      values {
-        hotkeys
-        changePage
-        special_keys
-        text
-        settings {
-          value
-          setting
-        }
-      }
-    }
-    secondary {
-      mode
-      values {
-        hotkeys
-        changePage
-        special_keys
-        text
-        settings {
-          value
-          setting
-        }
-      }
-    }
-  }
   createdBy {
+    id
     avatar
     displayName
+  }
+  forkedFrom {
+    id
   }
   name
   upvotes

@@ -33,7 +33,7 @@ export const HubPageDetails = () => {
         <div className="flex mt-8">
           <FDButton
             onClick={() => {
-              downloadPage({ page: data.page.data, id: params.pageId! });
+              downloadPage({ page: data.page, id: params.pageId! });
               nav("/hub");
             }}
             className="ml-auto"
