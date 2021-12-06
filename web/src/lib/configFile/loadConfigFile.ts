@@ -11,7 +11,11 @@ export const loadConfigFile = async (
   const file = isBuffer(fileList)
     ? fileList
     : Buffer.from(await handleFileSelect(fileList[0]));
-  const config = await parseConfig(file);
-  console.log(setState);
-  setState(config);
+
+  try {
+    const config = await parseConfig(file);
+    setState(config);
+  } catch (e: any) {
+    window.advancedAlert("Invalid config File", (e as Error).message);
+  }
 };

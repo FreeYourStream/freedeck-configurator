@@ -2,7 +2,7 @@ import { LogoutIcon, PlusCircleIcon } from "@heroicons/react/outline";
 import React, { useContext } from "react";
 
 import { EAction } from "../../../definitions/modes";
-import { IButtonSetting, IPages } from "../../../interfaces";
+import { ButtonSetting, Pages } from "../../../generated";
 import { FDButton } from "../../../lib/components/Button";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
@@ -13,11 +13,11 @@ import { ConfigDispatchContext } from "../../../states/configState";
 
 export const ChangePage: React.FC<{
   secondary: boolean;
-  values: IButtonSetting["values"];
+  values: ButtonSetting["values"];
   previousPage: string;
-  pages: IPages;
+  pages: Pages;
   previousDisplay: number;
-  setValues: (values: IButtonSetting["values"]) => void;
+  setValues: (values: ButtonSetting["values"]) => void;
 }> = ({
   values,
   previousPage,

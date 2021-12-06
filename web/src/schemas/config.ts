@@ -1,66 +1,71 @@
 import Joi from "joi";
 
-import { EAction } from "../definitions/modes";
-import {
-  FDSettings,
-  IButtonSetting,
-  IButtonSettings,
-  ICollection,
-  ICollections,
-  IDisplayButton,
-  IDisplaySettings,
-  IPage,
-  IPages,
-} from "../interfaces";
-import { ConfigState } from "../states/configState";
 import { ButtonSchema } from "./button";
 import { DisplaySchema } from "./display";
 
-export const DisplayButtonSchema = Joi.object<IDisplayButton>({
-  button: ButtonSchema,
-  display: DisplaySchema,
+export const DisplayButtonSchema = Joi.object({
+  button: ButtonSchema.required(),
+  display: DisplaySchema.required(),
 }).meta({ className: "DisplayButton" });
 
-export const DisplayButtonsSchema = Joi.array()
-  .items(DisplayButtonSchema)
-  .meta({ className: "DisplayButtons" });
-
-export const PageSchema = Joi.object<IPage>({
+export const PageSchema = Joi.object({
   name: Joi.string(),
   windowName: Joi.string(),
-  isStartPage: Joi.bool().default(false),
+  isStartPage: Joi.bool().default(false).required(),
   isInCollection: Joi.string(),
-  usePageNameAsWindowName: Joi.bool().default(true),
-  displayButtons: DisplayButtonsSchema.required(),
+  usePageNameAsWindowName: Joi.bool().default(true).required(),
+  displayButtons: Joi.array().items(DisplayButtonSchema).required(),
 }).meta({ className: "Page" });
 
-export const PagesSchema = Joi.object<IPages>({
-  byId: Joi.object().unknown(true).meta({ unknownType: "Page" }).default({}),
-  sorted: Joi.array().items(Joi.string()).default([]),
+export interface PagesById {
+  // @ts-ignore
+  [x: string]: Page;
+}
+
+export const PagesSchema = Joi.object({
+  byId: Joi.object()
+    .custom((valueeee, helper) => {
+      let validated: any = {};
+      let error: any;
+      Object.entries(valueeee).forEach(([key, value]) => {
+        const result = PageSchema.validate(value);
+        validated[key] = result.value;
+        if (result.error) throw new Error(result.error.message);
+      });
+      if (error) {
+      }
+      return validated;
+    })
+    .meta({ className: "Record<string,Page>" })
+    .required(),
+  sorted: Joi.array().items(Joi.string()).default([]).required(),
 }).meta({ className: "Pages" });
 
-export const CollectionSchema = Joi.object<ICollection>({
+export const CollectionSchema = Joi.object({
   name: Joi.string(),
-  pages: Joi.array().items(Joi.string()).default([]),
+  pages: Joi.array().items(Joi.string()).default([]).required(),
   windowName: Joi.string(),
-  usePageNameAsWindowName: Joi.bool().default(true),
+  usePageNameAsWindowName: Joi.bool().default(true).required(),
 }).meta({ className: "Collection" });
 
-export const CollectionsSchema = Joi.object<ICollections>({
+export const CollectionsSchema = Joi.object({
   byId: Joi.object()
     .unknown(true)
     .meta({ unknownType: "Collection" })
-    .default({}),
-  sorted: Joi.array().items(Joi.string()).default([]),
+    .default({})
+    .required(),
+  sorted: Joi.array().items(Joi.string()).default([]).required(),
 }).meta({ className: "Collections" });
 
-export const ConfigSchema = Joi.object<ConfigState>({
+export const ConfigSchema = Joi.object({
   pages: PagesSchema.required(),
-  brightness: Joi.number().default(128),
-  height: Joi.number().max(16).min(1).default(2),
-  width: Joi.number().max(16).min(1).default(3),
+  brightness: Joi.number().default(128).required(),
+  height: Joi.number().max(16).min(1).default(2).required(),
+  width: Joi.number().max(16).min(1).default(3).required(),
   configVersion: Joi.string().default("1.1.0").required(),
-  screenSaverTimeout: Joi.number().min(0).default(0),
+  screenSaverTimeout: Joi.number().min(0).default(0).required(),
   collections: CollectionsSchema.required(),
-  defaultBackDisplay: DisplaySchema,
-}).meta({ className: "Config" });
+  defaultBackDisplay: DisplaySchema.required(),
+})
+  .meta({ className: "Config" })
+  .strict(true);

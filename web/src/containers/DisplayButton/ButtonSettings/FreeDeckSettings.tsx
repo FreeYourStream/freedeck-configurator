@@ -1,15 +1,15 @@
 import React from "react";
 
-import { EAction } from "../../../definitions/modes";
-import { FDSettings, IButtonSetting } from "../../../interfaces";
+import { EAction, FDSettings } from "../../../definitions/modes";
+import { ButtonSetting } from "../../../generated";
 import { Label, Value } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
 import { FDSelect } from "../../../lib/components/SelectInput";
 import { FDSlider } from "../../../lib/components/Slider";
 
 export const FreeDeckSettings: React.FC<{
-  values: IButtonSetting["values"];
-  setValues: (values: IButtonSetting["values"]) => void;
+  values: ButtonSetting["values"];
+  setValues: (values: ButtonSetting["values"]) => void;
 }> = ({ values, setValues }) => {
   return (
     <>

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 
 import { EAction } from "../../../definitions/modes";
-import { IButtonSetting } from "../../../interfaces";
+import { ButtonSetting } from "../../../generated";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
 import { FDSelect } from "../../../lib/components/SelectInput";
@@ -19,7 +19,7 @@ import { Text } from "./Text";
 export const Action: React.FC<{
   pageId: string;
   buttonIndex: number;
-  buttonSettings: IButtonSetting;
+  buttonSettings: ButtonSetting;
   title: string;
   primary: boolean;
 }> = ({ buttonSettings, title, pageId, buttonIndex, primary }) => {
@@ -35,12 +35,11 @@ export const Action: React.FC<{
       buttonSettings: {
         ...buttonSettings,
         mode,
-        enabled: mode !== EAction.noop,
       },
     });
   };
 
-  const setValues = (values: IButtonSetting["values"]) =>
+  const setValues = (values: ButtonSetting["values"]) =>
     configDispatch.setButtonSettings({
       pageId,
       buttonIndex,

@@ -1,5 +1,4 @@
 import { CloudDownloadIcon, XIcon } from "@heroicons/react/outline";
-import React from "react";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
@@ -51,6 +50,6 @@ export const AddEventListeners = ({
     document.addEventListener("keydown", onKeyUpDown);
     document.addEventListener("keyup", onKeyUpDown);
     window.onblur = () => setCtrl(false);
-    //@ts-ignore
+    // eslint-disable-next-line
   }, []); // only execute on page load
 };

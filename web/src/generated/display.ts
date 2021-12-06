@@ -4,30 +4,30 @@
  */
 
 export interface Display {
-  convertedImage: Buffer;
+  convertedImage?: any;
   imageSettings: ImageSettings;
   isGeneratedFromDefaultBackImage: boolean;
-  originalImage?: Buffer;
+  originalImage?: any;
   previewImage: string;
   textSettings: TextSettings;
   textWithIconSettings: TextWithIconSettings;
 }
 
 export interface ImageSettings {
-  blackThreshold?: number;
-  brightness?: number;
-  contrast?: number;
-  dither?: boolean;
-  invert?: boolean;
-  whiteThreshold?: number;
+  blackThreshold: number;
+  brightness: number;
+  contrast: number;
+  dither: boolean;
+  invert: boolean;
+  whiteThreshold: number;
 }
 
 export interface TextSettings {
-  font?: 'fonts/smaller.fnt' | 'fonts/small.fnt' | 'fonts/medium.fnt' | 'fonts/large.fnt';
-  position?: 1 | 0;
+  font: 'fonts/smaller.fnt' | 'fonts/small.fnt' | 'fonts/medium.fnt' | 'fonts/large.fnt';
+  position: 1 | 0;
   text?: string;
 }
 
 export interface TextWithIconSettings {
-  iconWidthMultiplier?: number;
+  iconWidthMultiplier: number;
 }

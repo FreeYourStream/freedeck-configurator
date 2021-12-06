@@ -31,7 +31,6 @@ const findCollectionPage = (configState: ConfigState, name: string) => {
   });
 };
 
-let lastPageIndex = -1;
 export const usePageSwitcher = (props: {
   configState: ConfigState;
   appState: AppState;

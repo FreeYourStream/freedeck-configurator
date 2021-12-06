@@ -1,13 +1,13 @@
 import { Buffer } from "buffer";
 
-import { ActionValue, EAction } from "../../definitions/modes";
-import { FDSettings, IDisplayButton, IPages } from "../../interfaces";
+import { ActionValue, EAction, FDSettings } from "../../definitions/modes";
+import { DisplayButton, Pages } from "../../generated";
 import { optimizeForSSD1306 } from "./ssd1306";
 
 const writeAction = (
   buttonRows: Buffer,
-  db: IDisplayButton,
-  pages: IPages,
+  db: DisplayButton,
+  pages: Pages,
   rowOffset: number,
   isSecondary: boolean
 ) => {
@@ -16,6 +16,7 @@ const writeAction = (
   const buttonAction = isSecondary ? db.button.secondary : db.button.primary;
   const dataOffset = rowOffset + (isSecondary ? 8 : 0);
   buttonRows.writeUInt8(
+    //@ts-ignore
     ActionValue[buttonAction.mode] + secondaryAddition,
     dataOffset
   );
@@ -61,7 +62,7 @@ const writeAction = (
   return buttonRows;
 };
 
-export const createButtonBody = (pages: IPages) => {
+export const createButtonBody = (pages: Pages) => {
   const buttonRowCount =
     pages.sorted.length * pages.byId[pages.sorted[0]].displayButtons.length;
   let buttonRows = new Buffer(16 * buttonRowCount);
@@ -84,7 +85,7 @@ export const createButtonBody = (pages: IPages) => {
   return buttonRows;
 };
 
-export const createImageBody = (pages: IPages) => {
+export const createImageBody = (pages: Pages) => {
   let imageBuffer = new Buffer(0);
   const bmpHeaderSize =
     pages.byId[

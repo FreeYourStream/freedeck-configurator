@@ -1,11 +1,10 @@
 import fs from "floyd-steinberg";
 
-import { IDisplaySettings, textPosition } from "../../interfaces";
+import { textPosition } from "../../definitions/modes";
+import { Display } from "../../generated";
 import { colorBitmapToMonochromeBitmap } from "./colorToMonoBitmap";
 
-export const composeImage = async (
-  display: IDisplaySettings
-): Promise<Buffer> => {
+export const composeImage = async (display: Display): Promise<Buffer> => {
   const { imageSettings, textWithIconSettings, textSettings, originalImage } =
     display;
   if (!originalImage) throw new Error("no original image");
@@ -47,7 +46,7 @@ export const composeImage = async (
     (jimp) => new jimp.default(128, 64, "black")
   );
 
-  if (textSettings.text.length) {
+  if (textSettings.text?.length) {
     const font = await import("jimp").then((jimp) =>
       jimp.default.loadFont(textSettings.font)
     );
@@ -98,9 +97,7 @@ export const composeImage = async (
   return await colorBitmapToMonochromeBitmap(bitmapBuffer, 128, 64);
 };
 
-export const composeText = async (
-  settings: IDisplaySettings
-): Promise<Buffer> => {
+export const composeText = async (settings: Display): Promise<Buffer> => {
   const { textSettings } = settings;
   const image = await import("jimp").then((jimp) =>
     jimp.default.create(128, 64, "black")
@@ -109,7 +106,7 @@ export const composeText = async (
     jimp.default.loadFont(textSettings.font)
   );
   const fontSize = font.common.lineHeight - 2;
-  let lines = textSettings.text.split(/\r?\n/).filter((line) => line);
+  let lines = textSettings.text?.split(/\r?\n/).filter((line) => line) ?? [];
   const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
   const offset = (64 - overAllLineHeight) / 2;
   await Promise.all(

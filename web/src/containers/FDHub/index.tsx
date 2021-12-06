@@ -1,12 +1,6 @@
 import { HomeIcon, SearchIcon } from "@heroicons/react/outline";
-import React, { useState } from "react";
-import {
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router";
+import React from "react";
+import { Route, Routes, useNavigate } from "react-router";
 
 import { iconSize } from "../../definitions/iconSizes";
 import { TabView } from "../../lib/components/TabView";

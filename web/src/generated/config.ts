@@ -7,54 +7,47 @@ import { Display, Button } from '.';
 
 export interface Collection {
   name?: string;
-  pages?: string[];
-  usePageNameAsWindowName?: boolean;
+  pages: string[];
+  usePageNameAsWindowName: boolean;
   windowName?: string;
 }
 
 export interface Collections {
-  byId?: {
+  byId: {
     /**
      * Collection Property
      */
     [x: string]: Collection;
   };
-  sorted?: string[];
+  sorted: string[];
 }
 
 export interface Config {
-  brightness?: number;
+  brightness: number;
   collections: Collections;
   configVersion: string;
-  defaultBackDisplay?: Display;
-  height?: number;
+  defaultBackDisplay: Display;
+  height: number;
   pages: Pages;
-  screenSaverTimeout?: number;
-  width?: number;
+  screenSaverTimeout: number;
+  width: number;
 }
 
 export interface DisplayButton {
-  button?: Button;
-  display?: Display;
+  button: Button;
+  display: Display;
 }
 
-export type DisplayButtons = DisplayButton[];
-
 export interface Page {
-  displayButtons: DisplayButtons;
+  displayButtons: DisplayButton[];
   isInCollection?: string;
-  isStartPage?: boolean;
+  isStartPage: boolean;
   name?: string;
-  usePageNameAsWindowName?: boolean;
+  usePageNameAsWindowName: boolean;
   windowName?: string;
 }
 
 export interface Pages {
-  byId?: {
-    /**
-     * Page Property
-     */
-    [x: string]: Page;
-  };
-  sorted?: string[];
+  byId: Record<string,Page>;
+  sorted: string[];
 }

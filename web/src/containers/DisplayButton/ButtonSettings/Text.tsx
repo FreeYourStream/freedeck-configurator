@@ -2,13 +2,13 @@ import React from "react";
 
 import { keys } from "../../../definitions/keys";
 import { EAction } from "../../../definitions/modes";
-import { IButtonSetting } from "../../../interfaces";
+import { ButtonSetting } from "../../../generated/button";
 import { FDSelect } from "../../../lib/components/SelectInput";
 import { useTranslateKeyboardLayout } from "../../../lib/localisation/keyboard";
 
 export const Text: React.FC<{
-  values: IButtonSetting["values"];
-  setValues: (values: IButtonSetting["values"]) => void;
+  values: ButtonSetting["values"];
+  setValues: (values: ButtonSetting["values"]) => void;
 }> = ({ values, setValues }) => {
   const translatedKeys = useTranslateKeyboardLayout(values[EAction.text]);
   const setKeys = (newValues: number[]) =>

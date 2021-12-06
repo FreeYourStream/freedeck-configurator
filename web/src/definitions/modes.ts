@@ -15,3 +15,13 @@ export const ActionValue = {
   [EAction.text]: 4,
   [EAction.settings]: 5,
 };
+
+export enum FDSettings {
+  absolute_brightness,
+  change_brightness,
+}
+
+export enum textPosition {
+  right,
+  bottom,
+}

@@ -2,7 +2,6 @@ import c from "clsx";
 import React, { useContext } from "react";
 import { useDrag, useDrop } from "react-dnd";
 
-import { Value } from "../../lib/components/LabelValue";
 import { TitleInput } from "../../lib/components/TitleInput";
 import {
   ConfigDispatchContext,
@@ -19,7 +18,7 @@ export const Page: React.FC<IProps> = ({ pageId }) => {
   const configState = useContext(ConfigStateContext);
   const { renamePage, switchPages } = useContext(ConfigDispatchContext);
   const page = configState.pages.byId[pageId];
-  const [{ isDragging }, dragRef] = useDrag({
+  const [, dragRef] = useDrag({
     item: {
       type: "page",
       pageId,

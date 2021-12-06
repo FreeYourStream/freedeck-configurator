@@ -1,13 +1,8 @@
-import { userInfo } from "os";
-import { config } from "process";
-
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
 import {
-  MyPagesQuery,
   Page,
-  PageCreateMutationVariables,
   useMeQuery,
   usePageCreateMutation,
 } from "../../generated/types-and-hooks";
@@ -66,10 +61,10 @@ export const PublishPage: React.FC<{}> = () => {
     name,
     data: configState,
     previewActions: configState.pages.byId[pageId].displayButtons.map(
-      (page) => page.button
+      (db: any) => db.button
     ),
     previewImages: configState.pages.byId[pageId].displayButtons.map(
-      (page) => page.display.previewImage
+      (db: any) => db.display.previewImage
     ),
     tags: tags
       .split(",")

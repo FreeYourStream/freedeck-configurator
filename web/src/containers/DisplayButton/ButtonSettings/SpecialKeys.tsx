@@ -2,14 +2,14 @@ import React from "react";
 
 import { EMediaKeys, MediaKeys } from "../../../definitions/keys";
 import { EAction } from "../../../definitions/modes";
-import { IButtonSetting } from "../../../interfaces";
+import { ButtonSetting } from "../../../generated/button";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
 import { FDSelect } from "../../../lib/components/SelectInput";
 
 export const SpecialKeys: React.FC<{
-  values: IButtonSetting["values"];
-  setValues: (values: IButtonSetting["values"]) => void;
+  values: ButtonSetting["values"];
+  setValues: (values: ButtonSetting["values"]) => void;
 }> = ({ values, setValues }) => {
   return (
     <Row>

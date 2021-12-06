@@ -7,7 +7,6 @@ fragment PageFields on Page {
   previewActions {
     primary {
       mode
-      enabled
       values {
         hotkeys
         changePage
@@ -20,7 +19,6 @@ fragment PageFields on Page {
       }
     }
     secondary {
-      enabled
       mode
       values {
         hotkeys

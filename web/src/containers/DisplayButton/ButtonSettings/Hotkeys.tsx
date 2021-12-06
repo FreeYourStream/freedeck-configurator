@@ -2,7 +2,7 @@ import React from "react";
 
 import { keys } from "../../../definitions/keys";
 import { EAction } from "../../../definitions/modes";
-import { IButtonSetting } from "../../../interfaces";
+import { ButtonSetting } from "../../../generated/button";
 import { FDButton } from "../../../lib/components/Button";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
@@ -34,8 +34,8 @@ const HotkeyKeys: React.FC<{
 };
 
 export const Hotkeys: React.FC<{
-  values: IButtonSetting["values"];
-  setValues: (values: IButtonSetting["values"]) => void;
+  values: ButtonSetting["values"];
+  setValues: (values: ButtonSetting["values"]) => void;
 }> = ({ setValues, values }) => {
   const setKeys = (newValues: number[]) =>
     newValues.length < 7 &&

@@ -6,14 +6,14 @@ import c from "clsx";
 import React, { useContext } from "react";
 
 import { EMediaKeys } from "../../definitions/keys";
-import { EAction } from "../../definitions/modes";
-import { FDSettings, IButtonSetting } from "../../interfaces";
+import { EAction, FDSettings } from "../../definitions/modes";
+import { ButtonSetting } from "../../generated";
 import { ConfigStateContext } from "../../states/configState";
 import { useTranslateKeyboardLayout } from "../localisation/keyboard";
 import { getPageName } from "../util";
 import { CtrlDuo } from "./CtrlDuo";
 
-const Pill: React.FC<{ className?: string; button: IButtonSetting }> = ({
+const Pill: React.FC<{ className?: string; button: ButtonSetting }> = ({
   className,
   button,
 }) => {
@@ -76,6 +76,7 @@ const Pill: React.FC<{ className?: string; button: IButtonSetting }> = ({
               )}
           </div>
         )}
+      {/* @ts-ignore*/}
       {button.mode !== EAction.noop && !button.values[button.mode] && (
         <div className={c(pillClassName, "bg-danger-500")}>
           <ExclamationCircleIcon className="w-4 h-4" />

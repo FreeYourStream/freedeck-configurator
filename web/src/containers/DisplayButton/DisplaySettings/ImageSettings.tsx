@@ -17,7 +17,8 @@ import {
   fontSmall,
   fontSmaller,
 } from "../../../definitions/fonts";
-import { textPosition } from "../../../interfaces";
+import { textPosition } from "../../../definitions/modes";
+import { TextSettings } from "../../../generated";
 import { CtrlDuo } from "../../../lib/components/CtrlDuo";
 import { Label, Value } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
@@ -91,7 +92,7 @@ export const ImageSettings: React.FC<{
       buttonIndex: displayIndex,
     });
   };
-  const setfontName = (font: string) => {
+  const setfontName = (font: TextSettings["font"]) => {
     display.textSettings.font = font;
     configDispatch.setDisplaySettings({
       displaySettings: display,
@@ -239,7 +240,7 @@ export const ImageSettings: React.FC<{
           <TextArea
             className="w-full"
             placeholder={"Enter text"}
-            value={display.textSettings.text}
+            value={display.textSettings.text ?? ""}
             onChange={(value) => setText(value)}
           />
         </Row>
@@ -288,7 +289,7 @@ export const ImageSettings: React.FC<{
           </CtrlDuo>
           <FDSlider
             disabled={
-              !display.textSettings.text.length ||
+              !display.textSettings.text?.length ||
               display.textSettings.position === textPosition.bottom
             }
             min={0.1}

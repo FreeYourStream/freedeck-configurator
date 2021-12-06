@@ -158,13 +158,11 @@ export type Pagination = {
 
 export type PreviewAction = {
   __typename?: 'PreviewAction';
-  enabled: Scalars['Boolean'];
   mode: Scalars['String'];
   values: ActionValues;
 };
 
 export type PreviewActionInput = {
-  enabled: Scalars['Boolean'];
   mode: Scalars['String'];
   values: ActionValuesInput;
 };
@@ -231,7 +229,7 @@ export type PageFieldsFragment = (
     { __typename?: 'PreviewActions' }
     & { primary: (
       { __typename?: 'PreviewAction' }
-      & Pick<PreviewAction, 'mode' | 'enabled'>
+      & Pick<PreviewAction, 'mode'>
       & { values: (
         { __typename?: 'ActionValues' }
         & Pick<ActionValues, 'hotkeys' | 'changePage' | 'special_keys' | 'text'>
@@ -242,7 +240,7 @@ export type PageFieldsFragment = (
       ) }
     ), secondary: (
       { __typename?: 'PreviewAction' }
-      & Pick<PreviewAction, 'enabled' | 'mode'>
+      & Pick<PreviewAction, 'mode'>
       & { values: (
         { __typename?: 'ActionValues' }
         & Pick<ActionValues, 'hotkeys' | 'changePage' | 'special_keys' | 'text'>
@@ -332,7 +330,6 @@ export const PageFieldsFragmentDoc = gql`
   previewActions {
     primary {
       mode
-      enabled
       values {
         hotkeys
         changePage
@@ -345,7 +342,6 @@ export const PageFieldsFragmentDoc = gql`
       }
     }
     secondary {
-      enabled
       mode
       values {
         hotkeys

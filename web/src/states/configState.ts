@@ -9,14 +9,7 @@ import {
   createDefaultPage,
 } from "../definitions/defaultPage";
 import { EAction } from "../definitions/modes";
-import {
-  IButtonSetting,
-  ICollections,
-  IDisplaySettings,
-  IOriginalImage,
-  IPage,
-  IPages,
-} from "../interfaces";
+import { ButtonSetting, Collections, Display, Page, Pages } from "../generated";
 import { generateAdditionalImagery } from "../lib/configFile/parseConfig";
 import { Actions, FunctionForFirstParamType } from "./interfaces";
 
@@ -26,9 +19,9 @@ export interface ConfigState {
   screenSaverTimeout: number;
   width: number;
   height: number;
-  pages: IPages;
-  collections: ICollections;
-  defaultBackDisplay: IDisplaySettings;
+  pages: Pages;
+  collections: Collections;
+  defaultBackDisplay: Display;
 }
 export const defaultConfigState = async (): Promise<ConfigState> => ({
   configVersion: (await import("../../package.json")).configFileVersion,
@@ -66,7 +59,7 @@ export interface IConfigReducer extends Actions<ConfigState> {
   downloadPage(
     state: ConfigState,
     data: {
-      page: IPage;
+      page: Page;
       id: string;
     }
   ): Promise<ConfigState>;
@@ -107,7 +100,7 @@ export interface IConfigReducer extends Actions<ConfigState> {
   setButtonSettings(
     state: ConfigState,
     data: {
-      buttonSettings: IButtonSetting;
+      buttonSettings: ButtonSetting;
       priOrSec: "primary" | "secondary";
       pageId: string;
       buttonIndex: number;
@@ -116,7 +109,7 @@ export interface IConfigReducer extends Actions<ConfigState> {
   setDisplaySettings(
     state: ConfigState,
     data: {
-      displaySettings: IDisplaySettings;
+      displaySettings: Display;
       pageId: string;
       buttonIndex: number;
     }
@@ -126,7 +119,7 @@ export interface IConfigReducer extends Actions<ConfigState> {
     data: {
       pageId: string;
       buttonIndex: number;
-      originalImage: IOriginalImage;
+      originalImage: Buffer;
     }
   ): Promise<ConfigState>;
   deleteImage(

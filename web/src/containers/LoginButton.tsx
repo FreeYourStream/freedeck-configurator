@@ -1,5 +1,5 @@
 import { LogoutIcon, ShareIcon, UserIcon } from "@heroicons/react/outline";
-import React, { useState } from "react";
+import React from "react";
 
 import { iconSize } from "../definitions/iconSizes";
 import { useMeQuery } from "../generated/types-and-hooks";

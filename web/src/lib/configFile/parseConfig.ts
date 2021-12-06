@@ -1,25 +1,28 @@
 import { createDefaultDisplay } from "../../definitions/defaultPage";
-import { IDisplaySettings } from "../../interfaces";
+import { Display } from "../../generated";
+import { ConfigSchema } from "../../schemas/config";
 import { ConfigState } from "../../states/configState";
 import { getBase64Image } from "../image/base64Encode";
 import { composeImage, composeText } from "../image/composeImage";
 
 export const generateAdditionalImagery = async (
-  display: IDisplaySettings
-): Promise<IDisplaySettings> => {
-  display = createDefaultDisplay({
+  display: Display
+): Promise<Display> => {
+  const newDisplay = {
+    ...createDefaultDisplay(),
     imageSettings: display.imageSettings,
     isGeneratedFromDefaultBackImage: display.isGeneratedFromDefaultBackImage,
     textSettings: display.textSettings,
     textWithIconSettings: display.textWithIconSettings,
     originalImage:
       display.originalImage && Buffer.from(display.originalImage as any),
-  });
-  display.convertedImage = display.originalImage
-    ? await composeImage(display)
-    : await composeText(display);
-  display.previewImage = getBase64Image(display.convertedImage);
-  return display;
+  };
+
+  newDisplay.convertedImage = newDisplay.originalImage
+    ? await composeImage(newDisplay)
+    : await composeText(newDisplay);
+  newDisplay.previewImage = getBase64Image(newDisplay.convertedImage);
+  return newDisplay;
 };
 
 const convertCurrentConfig = async (
@@ -35,16 +38,15 @@ const convertCurrentConfig = async (
       );
     }
   }
-  console.log(
-    rawConfig.pages.byId[rawConfig.pages.sorted[0]].displayButtons[0].button
-      .primary.values
-  );
-  return {
+  const validated = ConfigSchema.validate({
     ...rawConfig,
     defaultBackDisplay: await generateAdditionalImagery(
       rawConfig.defaultBackDisplay
     ),
-  };
+  });
+  console.log(rawConfig.defaultBackDisplay);
+  if (validated.error) throw new Error(validated.error.message);
+  return validated.value;
 };
 
 export const parseConfig = async (

@@ -9,17 +9,17 @@ export interface Button {
 }
 
 export interface ButtonSetting {
-  mode?: 'changePage' | 'hotkeys' | 'noop' | 'settings' | 'special_keys' | 'text';
+  mode?: any;
   values: ButtonValues;
 }
 
 export interface ButtonValues {
-  changePage?: string;
-  hotkeys?: number[];
-  settings?: {
-    setting?: 1 | 0;
-    value?: number;
+  changePage: string;
+  hotkeys: number[];
+  settings: {
+    setting: 0 | 1;
+    value: number;
   };
-  special_keys?: number;
-  text?: number[];
+  special_keys: number;
+  text: number[];
 }

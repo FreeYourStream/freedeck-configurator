@@ -7,7 +7,7 @@ import {
 } from "@heroicons/react/outline";
 import c from "clsx";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { iconSize } from "../definitions/iconSizes";
 import { FDButton } from "../lib/components/Button";
