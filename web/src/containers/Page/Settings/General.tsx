@@ -23,7 +23,6 @@ export const PageGeneralSettings: React.FC<{ pageId: string }> = ({
       <Row>
         <Label>Name</Label>
         <TextInput
-          disabled={page.isStartPage}
           className="w-44"
           placeholder="Enter page name"
           value={page.name}
@@ -33,7 +32,6 @@ export const PageGeneralSettings: React.FC<{ pageId: string }> = ({
       <Row>
         <Label>Collection</Label>
         <FDSelect
-          disabled={page.isStartPage}
           className="w-44"
           value={page.isInCollection}
           onChange={(collectionId) =>
@@ -48,11 +46,6 @@ export const PageGeneralSettings: React.FC<{ pageId: string }> = ({
           ]}
         />
       </Row>
-      {!!page.isStartPage && (
-        <div className="mt-4">
-          You can't change the name and collection of the start page
-        </div>
-      )}
     </div>
   );
 };

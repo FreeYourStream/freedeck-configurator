@@ -38,9 +38,9 @@ export const HubPage: React.FC<{
       </div>
       <div className="px-4 py-4">
         <div className="flex h-12">
-          {page.name ? (
+          {page.data.name ? (
             <div className="text-lg overflow-ellipsis overflow-hidden whitespace-nowrap">
-              {page.name}
+              {page.data.name}
             </div>
           ) : (
             <div

@@ -73,7 +73,6 @@ export type MutationPageCreateArgs = {
 
 export type MutationPageUpdateArgs = {
   input: PageUpdateInput;
-  id: Scalars['String'];
 };
 
 
@@ -84,7 +83,6 @@ export type MutationPageToggleUpvoteArgs = {
 export type Page = {
   __typename?: 'Page';
   id: Scalars['String'];
-  name: Scalars['String'];
   tags: Array<Scalars['String']>;
   width: Scalars['Int'];
   height: Scalars['Int'];
@@ -96,7 +94,6 @@ export type Page = {
 
 export type PageCreateInput = {
   id: Scalars['String'];
-  name: Scalars['String'];
   tags: Array<Scalars['String']>;
   width: Scalars['Int'];
   height: Scalars['Int'];
@@ -106,7 +103,6 @@ export type PageCreateInput = {
 
 export type PageUpdateInput = {
   id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
   tags?: Maybe<Array<Scalars['String']>>;
   width?: Maybe<Scalars['Int']>;
   height?: Maybe<Scalars['Int']>;
@@ -170,7 +166,7 @@ export type User = {
 
 export type PageFieldsFragment = (
   { __typename?: 'Page' }
-  & Pick<Page, 'id' | 'data' | 'width' | 'height' | 'name' | 'upvotes' | 'tags'>
+  & Pick<Page, 'id' | 'data' | 'width' | 'height' | 'upvotes' | 'tags'>
   & { createdBy: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'avatar' | 'displayName'>
@@ -244,6 +240,19 @@ export type PageCreateMutation = (
   & Pick<Mutation, 'pageCreate'>
 );
 
+export type PageUpdateMutationVariables = Exact<{
+  input: PageUpdateInput;
+}>;
+
+
+export type PageUpdateMutation = (
+  { __typename?: 'Mutation' }
+  & { pageUpdate: (
+    { __typename?: 'Page' }
+    & Pick<Page, 'id'>
+  ) }
+);
+
 export const PageFieldsFragmentDoc = gql`
     fragment PageFields on Page {
   id
@@ -258,7 +267,6 @@ export const PageFieldsFragmentDoc = gql`
   forkedFrom {
     id
   }
-  name
   upvotes
   tags
 }
@@ -442,3 +450,36 @@ export function usePageCreateMutation(baseOptions?: Apollo.MutationHookOptions<P
 export type PageCreateMutationHookResult = ReturnType<typeof usePageCreateMutation>;
 export type PageCreateMutationResult = Apollo.MutationResult<PageCreateMutation>;
 export type PageCreateMutationOptions = Apollo.BaseMutationOptions<PageCreateMutation, PageCreateMutationVariables>;
+export const PageUpdateDocument = gql`
+    mutation pageUpdate($input: PageUpdateInput!) {
+  pageUpdate(input: $input) {
+    id
+  }
+}
+    `;
+export type PageUpdateMutationFn = Apollo.MutationFunction<PageUpdateMutation, PageUpdateMutationVariables>;
+
+/**
+ * __usePageUpdateMutation__
+ *
+ * To run a mutation, you first call `usePageUpdateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePageUpdateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [pageUpdateMutation, { data, loading, error }] = usePageUpdateMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function usePageUpdateMutation(baseOptions?: Apollo.MutationHookOptions<PageUpdateMutation, PageUpdateMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<PageUpdateMutation, PageUpdateMutationVariables>(PageUpdateDocument, options);
+      }
+export type PageUpdateMutationHookResult = ReturnType<typeof usePageUpdateMutation>;
+export type PageUpdateMutationResult = Apollo.MutationResult<PageUpdateMutation>;
+export type PageUpdateMutationOptions = Apollo.BaseMutationOptions<PageUpdateMutation, PageUpdateMutationVariables>;

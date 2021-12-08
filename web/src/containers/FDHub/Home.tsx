@@ -24,7 +24,6 @@ export const Home: React.FC<{ className?: string }> = ({ className }) => {
               className="cursor-pointer"
               key={key}
               onClick={() => {
-                console.log("OPEN HUB PAGE");
                 nav(`/hub/page/${page.id}`);
               }}
             >

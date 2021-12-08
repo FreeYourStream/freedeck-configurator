@@ -8,7 +8,6 @@ let globalWin: BrowserWindow;
 let tray: Tray;
 let forceQuit = false;
 const createTray = () => {
-  console.log("creating tray");
   tray = new Tray(join(__dirname, "./assets/freedeck.png"));
   const contextMenu = Menu.buildFromTemplate([
     {
@@ -76,13 +75,6 @@ const createWindow = () => {
       // createTray(); // buggy on linux ATM
       win.hide();
     }
-  });
-  win.webContents.session.on("serial-port-added", (event, port) => {
-    console.log("serial-port-added FIRED WITH", port);
-  });
-
-  win.webContents.session.on("serial-port-removed", (event, port) => {
-    console.log("serial-port-removed FIRED WITH", port);
   });
 
   win.webContents.session.setPermissionCheckHandler(

@@ -15,16 +15,13 @@ export const HubPageDetails = () => {
     variables: { id: params.pageId! },
     fetchPolicy: "cache-first",
   });
-  console.log("a", error);
   if (!params.pageId || error || !data) return <></>;
-  console.log("b");
   return (
     <FDWindow
       className=""
-      title={`FreeDeck Hub Page ${data.page.name}`}
+      title={`FreeDeck Hub Page ${data.page.data.name}`}
       visible={true}
       setClose={() => {
-        console.log("closing");
         nav("/");
       }}
     >
@@ -33,7 +30,7 @@ export const HubPageDetails = () => {
         <div className="flex mt-8">
           <FDButton
             onClick={() => {
-              downloadPage({ page: data.page, id: params.pageId! });
+              downloadPage({ id: params.pageId! });
               nav("/hub");
             }}
             className="ml-auto"

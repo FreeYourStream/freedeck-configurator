@@ -1,4 +1,4 @@
-import { ApolloClient } from "@apollo/client";
+import Joi from "joi";
 import cloneDeep from "lodash/cloneDeep";
 import { createContext } from "react";
 import { v4 } from "uuid";
@@ -11,7 +11,6 @@ import {
 } from "../definitions/defaultPage";
 import { EAction } from "../definitions/modes";
 import { ButtonSetting, Collections, Display, Page, Pages } from "../generated";
-import { PageQuery as HubPage } from "../generated/types-and-hooks";
 import {
   PageDocument,
   PageQuery,
@@ -65,10 +64,13 @@ export interface IConfigReducer extends Actions<ConfigState> {
       startPage?: boolean;
     }
   ): Promise<ConfigState>;
+  setStartPage(
+    state: ConfigState,
+    data: { pageId: string }
+  ): Promise<ConfigState>;
   downloadPage(
     state: ConfigState,
     data: {
-      page: HubPage["page"];
       id: string;
     }
   ): Promise<ConfigState>;
@@ -79,7 +81,7 @@ export interface IConfigReducer extends Actions<ConfigState> {
   deletePage(state: ConfigState, pageId: string): Promise<ConfigState>;
   setPagePublished(
     state: ConfigState,
-    data: { pageId: string }
+    data: { pageId: string; forkedId?: string }
   ): Promise<ConfigState>;
   changePageWindowName(
     state: ConfigState,
@@ -202,16 +204,10 @@ export const configReducer: IConfigReducer = {
       state.width * state.height,
       data.previousPage
     );
-    if (state.pages.sorted.length === 0) newPage.name = "Start";
     const newId = v4();
     state.pages.byId[newId] = newPage;
     state.pages.sorted.push(newId);
-    const {
-      previousPage,
-      previousDisplay,
-      secondary = false,
-      startPage,
-    } = data;
+    const { previousPage, previousDisplay, secondary = false } = data;
     if (
       previousPage !== undefined &&
       previousDisplay !== undefined &&
@@ -220,14 +216,33 @@ export const configReducer: IConfigReducer = {
       state.pages.byId[previousPage].displayButtons[previousDisplay].button[
         secondary ? "secondary" : "primary"
       ].values[EAction.changePage] = newId;
-    } else if (startPage === true) {
-      state.pages.byId[newId].isStartPage = true;
+    } else if (state.pages.sorted.length === 1) {
       state.pages.byId[newId].name = "Start";
+      state.pages.byId[newId].isStartPage = true;
     }
     return { ...state };
   },
-  async downloadPage(state: ConfigState, { page, id }) {
-    const validatedPage = PageSchema.validate(page.data);
+  async setStartPage(state, { pageId }) {
+    const oldStartPageId = state.pages.sorted.find(
+      (pid) => state.pages.byId[pid].isStartPage
+    );
+    if (!oldStartPageId) return { ...state };
+    state.pages.byId[oldStartPageId].isStartPage = false;
+    state.pages.byId[pageId].isStartPage = true;
+    return { ...state };
+  },
+  async downloadPage(state: ConfigState, { id }) {
+    const response = await client?.query<PageQuery>({
+      query: PageDocument,
+      variables: { id },
+    });
+    if (!response) {
+      window.advancedAlert("Error", "There was an error receiving this page");
+      return { ...state };
+    }
+    const validatedPage: Joi.ValidationResult<Page> = PageSchema.validate(
+      response?.data.page?.data
+    );
     if (validatedPage.error) {
       window.advancedAlert(
         "This page is not compatible",
@@ -235,15 +250,17 @@ export const configReducer: IConfigReducer = {
       );
       return { ...state };
     }
+    const page = validatedPage.value;
     state.pages.byId[id] = {
-      ...(page.data as Page),
+      ...cloneDeep(page),
       publishData: {
-        createdBy: page.createdBy.id,
-        forkedFrom: page.forkedFrom?.id,
+        createdBy: response.data.page.createdBy.id,
+        forkedFrom: response.data.page.forkedFrom?.id,
       },
     };
     const alreadyDownloaded = !!state.pages.sorted.find((pid) => pid === id);
     if (!alreadyDownloaded) state.pages.sorted.push(id);
+    state.pages.byId[id].isStartPage = state.pages.sorted.length === 1;
     return { ...state };
   },
   async renamePage(state: ConfigState, { pageId, name }) {
@@ -282,17 +299,13 @@ export const configReducer: IConfigReducer = {
     return { ...state };
   },
   async deletePage(state, pageId) {
-    if (state.pages.byId[pageId].isStartPage) {
-      state.pages.byId[pageId] = await createDefaultPage(
-        state.width * state.height
-      );
-      state.pages.byId[pageId].isStartPage = true;
-      state.pages.byId[pageId].name = "Start";
-      return { ...state };
-    }
     const collectionId = state.pages.byId[pageId].isInCollection;
 
     state.pages.sorted = [...state.pages.sorted.filter((id) => id !== pageId)];
+    if (state.pages.byId[pageId].isStartPage) {
+      const nextPage = state.pages.sorted[0];
+      if (nextPage) state.pages.byId[nextPage].isStartPage = true;
+    }
     delete state.pages.byId[pageId];
 
     // remove page from collection
@@ -317,7 +330,7 @@ export const configReducer: IConfigReducer = {
     });
     return { ...state };
   },
-  async setPagePublished(state, { pageId }) {
+  async setPagePublished(state, { pageId, forkedId }) {
     if (!client) {
       window.advancedAlert(
         "Problem with connection to server",
@@ -325,15 +338,30 @@ export const configReducer: IConfigReducer = {
       );
       return { ...state };
     }
-    const response = await client.query<PageQuery, PageQueryVariables>({
-      query: PageDocument,
-      variables: { id: pageId },
-    });
-    state.pages.byId[pageId].publishData = {
-      createdBy: response.data.page.createdBy.id,
-      forkedFrom: response.data.page.forkedFrom?.id,
-    };
-    return { ...state };
+    if (forkedId) {
+      const newState = cloneDeep(state);
+      newState.pages.sorted = [
+        ...state.pages.sorted.map((pid) => (pid === forkedId ? pageId : pid)),
+      ];
+      delete newState.pages.byId[forkedId];
+      return {
+        ...(await configReducer.downloadPage({ ...newState }, { id: pageId })),
+      };
+    } else {
+      const response = await client.query<PageQuery, PageQueryVariables>({
+        query: PageDocument,
+        variables: { id: pageId },
+        fetchPolicy: "network-only",
+      });
+      state.pages.byId[pageId] = {
+        ...cloneDeep(response.data.page.data as Page),
+        publishData: {
+          createdBy: response.data.page.createdBy.id,
+          forkedFrom: response.data.page.forkedFrom?.id,
+        },
+      };
+      return { ...state };
+    }
   },
   async setPageCollection(state, { pageId, collectionId }) {
     const collection = state.collections.byId[collectionId];

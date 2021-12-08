@@ -57,7 +57,6 @@ export class FDSerialAPI {
     this.Serial.flush();
     this.write([commands.init, commands.getCurrentPage]);
     const currentPage = await this.readAsciiLine();
-    console.log(currentPage);
     return currentPage;
   }
 

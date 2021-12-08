@@ -9,7 +9,7 @@ export interface Button {
 }
 
 export interface ButtonSetting {
-  mode?: any;
+  mode: 'changePage' | 'hotkeys' | 'noop' | 'settings' | 'special_keys' | 'text';
   values: ButtonValues;
 }
 

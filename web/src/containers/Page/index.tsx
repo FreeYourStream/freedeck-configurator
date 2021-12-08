@@ -49,7 +49,10 @@ export const Page: React.FC<IProps> = ({ pageId }) => {
     <div
       ref={dragRef}
       id={`page_${pageId}`}
-      className="relative p-2 m-6 rounded-3xl bg-gray-700 shadow-lg"
+      className={c(
+        "relative p-2 m-6 rounded-3xl bg-gray-700 shadow-lg",
+        page.isStartPage && "border-2 border-primary-400"
+      )}
     >
       <div ref={drop}>
         <div className="flex justify-between items-center pl-10 py-4 pr-4 h-16">
@@ -57,10 +60,10 @@ export const Page: React.FC<IProps> = ({ pageId }) => {
             <TitleInput
               onChange={(name) => renamePage({ pageId, name })}
               value={page.name}
-              disabled={page.isStartPage}
               placeholder={`${pageId.slice(-4)} - Click to edit`}
             />
             <Value className="italic">
+              {!!page.isStartPage && "Start page | "}
               {page.publishData ? "published" : "local page"}
             </Value>
           </CtrlDuo>

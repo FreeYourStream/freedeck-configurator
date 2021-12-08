@@ -1,6 +1,7 @@
 import {
   CogIcon,
   MenuIcon,
+  PlayIcon,
   ShareIcon,
   TrashIcon,
 } from "@heroicons/react/outline";
@@ -51,6 +52,11 @@ export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
               title: "Delete",
               prefix: <TrashIcon className={c(iconSize, "text-danger-400")} />,
               onClick: () => setDeleteOpen(true),
+            },
+            {
+              title: "Make start page",
+              prefix: <PlayIcon className={c(iconSize)} />,
+              onClick: () => configDispatch.setStartPage({ pageId }),
             },
             {
               title: configState.pages.byId[pageId].publishData

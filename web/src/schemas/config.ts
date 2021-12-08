@@ -16,8 +16,8 @@ export const PublishData = Joi.object({
 export const PageSchema = Joi.object({
   name: Joi.string(),
   windowName: Joi.string(),
-  isStartPage: Joi.bool().default(false).required(),
   publishData: PublishData,
+  isStartPage: Joi.bool().required(),
   isInCollection: Joi.string(),
   usePageNameAsWindowName: Joi.bool().default(true).required(),
   displayButtons: Joi.array().items(DisplayButtonSchema).required(),

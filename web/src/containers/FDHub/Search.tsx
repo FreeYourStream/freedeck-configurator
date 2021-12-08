@@ -1,5 +1,6 @@
 import c from "clsx";
 import React, { useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useSearchPagesLazyQuery } from "../../generated/types-and-hooks";
 import { FDButton } from "../../lib/components/Button";
@@ -10,6 +11,7 @@ import { Title } from "../../lib/components/Title";
 import { HubPage } from "./components/HubPage";
 
 export const FDSearch: React.FC<{ className?: string }> = ({ className }) => {
+  const nav = useNavigate();
   const [searchTerm, setTerm] = useState("");
   const [lastSearchTerm, setLastSearchTerm] = useState("");
   const [load, { called, loading, data }] = useSearchPagesLazyQuery({
@@ -40,7 +42,12 @@ export const FDSearch: React.FC<{ className?: string }> = ({ className }) => {
         {!loading && data ? (
           <div className="flex flex-wrap gap-4 mt-4 w-full">
             {data.searchPages.pages.map((page, key) => (
-              <div key={key}>
+              <div
+                key={key}
+                onClick={() => {
+                  nav(`/hub/page/${page.id}`);
+                }}
+              >
                 <HubPage page={page} />
               </div>
             ))}

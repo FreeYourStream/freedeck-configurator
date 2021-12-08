@@ -11,7 +11,6 @@ fragment PageFields on Page {
   forkedFrom {
     id
   }
-  name
   upvotes
   tags
 }
@@ -50,4 +49,10 @@ query page($id: String!) {
 
 mutation pageCreate($input: PageCreateInput!) {
   pageCreate(input: $input)
+}
+
+mutation pageUpdate($input: PageUpdateInput!) {
+  pageUpdate(input: $input) {
+    id
+  }
 }

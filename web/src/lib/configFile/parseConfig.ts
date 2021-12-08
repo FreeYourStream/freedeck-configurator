@@ -44,7 +44,6 @@ const convertCurrentConfig = async (
       rawConfig.defaultBackDisplay
     ),
   });
-  console.log(rawConfig.defaultBackDisplay);
   if (validated.error) throw new Error(validated.error.message);
   return validated.value;
 };

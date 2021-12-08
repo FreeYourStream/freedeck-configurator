@@ -29,7 +29,6 @@ export const Body = () => {
     accept: "page",
     drop: (item, monitor) => {
       if (!!monitor.getItem().collectionId && monitor.isOver()) {
-        console.log(monitor.getItem().collectionId);
         setPageCollection({
           pageId: monitor.getItem().pageId,
           collectionId: monitor.getItem().collectionId,

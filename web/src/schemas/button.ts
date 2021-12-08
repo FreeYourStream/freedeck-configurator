@@ -21,22 +21,18 @@ export const ButtonValuesSchema = Joi.object({
 });
 
 export const ButtonSettingSchema = Joi.object({
-  // mode: Joi.string()
-  //   .valid(
-  //     EAction.changePage,
-  //     EAction.hotkeys,
-  //     EAction.noop,
-  //     EAction.settings,
-  //     EAction.special_keys,
-  //     EAction.text
-  //   )
-  //   .default(EAction.noop)
-  //   .strict()
-  //   .required(),
-  mode: Joi.custom((value) => {
-    console.log(value);
-    return value;
-  }),
+  mode: Joi.string()
+    .valid(
+      EAction.changePage,
+      EAction.hotkeys,
+      EAction.noop,
+      EAction.settings,
+      EAction.special_keys,
+      EAction.text
+    )
+    .default(EAction.noop)
+    .strict()
+    .required(),
   values: ButtonValuesSchema.required(),
 }).meta({
   className: "ButtonSetting",

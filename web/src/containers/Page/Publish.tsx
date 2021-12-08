@@ -1,10 +1,14 @@
 import React, { useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { v4 } from "uuid";
 
 import {
   Page,
+  PageCreateInput,
   useMeQuery,
   usePageCreateMutation,
+  usePageQuery,
+  usePageUpdateMutation,
 } from "../../generated/types-and-hooks";
 import { FDButton } from "../../lib/components/Button";
 import { Label } from "../../lib/components/LabelValue";
@@ -20,45 +24,73 @@ import { HubPage } from "../FDHub/components/HubPage";
 export const PublishPage: React.FC<{}> = () => {
   const nav = useNavigate();
   const params = useParams();
-  const { data } = useMeQuery();
-  const [mutate, { called }] = usePageCreateMutation();
+  const pageId = params.pageId;
+  const { data: me } = useMeQuery();
+  const { data: hubPage } = usePageQuery({ variables: { id: pageId! } });
+
+  const [publish] = usePageCreateMutation();
+  const [update] = usePageUpdateMutation();
+
   const configState = useContext(ConfigStateContext);
   const { setPagePublished } = useContext(ConfigDispatchContext);
-  const [name, setName] = useState(
-    configState.pages.byId[params.pageId!].name ?? ""
-  );
-  const [tags, setTags] = useState("");
-  if (!params.pageId) return <></>;
-  const pageId = params.pageId;
-  const publishPage = async () => {
-    const result = await mutate({
-      variables: {
-        input: {
-          id: pageId,
-          data: configState.pages.byId[pageId],
-          height: configState.height,
-          width: configState.width,
-          name,
-          tags: tags
-            .split(",")
-            .map((t) => t.trim())
-            .filter((t) => !!t),
+
+  const [name, setName] = useState(configState.pages.byId[pageId!].name ?? "");
+  const [tags, setTags] = useState(hubPage?.page.tags.join(", ") ?? "");
+
+  if (!pageId || !me) return <></>;
+  const page = configState.pages.byId[pageId];
+
+  const mutate = async () => {
+    const createdBy = hubPage?.page.createdBy.id;
+    const forkedFromId = createdBy === me?.user.id ? undefined : pageId;
+    console.log("WAT", createdBy === me?.user.id, forkedFromId);
+    const id = forkedFromId && createdBy ? v4() : pageId;
+    const payload: PageCreateInput = {
+      forkedFromId,
+      id,
+      data: { ...configState.pages.byId[pageId], name },
+      height: configState.height,
+      width: configState.width,
+      tags: tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => !!t),
+    };
+    let result;
+    console.log(hubPage?.page.createdBy.id, me.user.id);
+    if (hubPage?.page.createdBy.id !== me.user.id) {
+      console.log("create");
+      result = await publish({
+        variables: {
+          input: payload,
         },
-      },
-    });
+      });
+    } else {
+      delete payload.forkedFromId;
+      console.log("update");
+      result = await update({
+        variables: {
+          input: payload,
+        },
+      });
+    }
+    console.log(result.errors);
     if (!result.errors) {
-      setPagePublished({ pageId });
+      console.log("set it published");
+      setPagePublished({
+        pageId: id,
+        forkedId: forkedFromId,
+      });
       nav(`/hubpage/${pageId}`);
     }
   };
-  const page: Page = {
+  const pageData: Page = {
     id: pageId,
     upvotes: -1,
-    createdBy: data?.user!,
+    createdBy: me.user!,
     height: configState.height,
     width: configState.width,
-    name,
-    data: configState.pages.byId[pageId],
+    data: { ...page, name },
     tags: tags
       .split(",")
       .map((t) => t.trim())
@@ -82,17 +114,16 @@ export const PublishPage: React.FC<{}> = () => {
             <TextInput onChange={(val) => setTags(val)} value={tags} />
           </Row>
           <Row>
+            <HubPage page={pageData} />
+          </Row>
+          <Row>
             <div className="flex justify-end w-full">
-              <FDButton
-                disabled={!name || !tags.length || called}
-                onClick={publishPage}
-              >
+              <FDButton disabled={!name || !tags.length} onClick={mutate}>
                 Publish
               </FDButton>
             </div>
           </Row>
         </div>
-        <HubPage page={page} />
       </div>
     </FDWindow>
   );

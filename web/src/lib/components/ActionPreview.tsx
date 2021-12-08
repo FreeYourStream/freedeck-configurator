@@ -19,7 +19,6 @@ const Pill: React.FC<{ className?: string; button: ButtonSetting }> = ({
 }) => {
   const configState = useContext(ConfigStateContext);
   const { pages } = configState;
-  console.log("pill", button.mode);
   const keys = useTranslateKeyboardLayout(
     button.mode === EAction.hotkeys
       ? button.values[EAction.hotkeys]
