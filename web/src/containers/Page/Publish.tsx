@@ -34,7 +34,7 @@ export const PublishPage: React.FC<{}> = () => {
   const configState = useContext(ConfigStateContext);
   const { setPagePublished } = useContext(ConfigDispatchContext);
 
-  const [name, setName] = useState(configState.pages.byId[pageId!].name ?? "");
+  const [name, setName] = useState(configState.pages.byId[pageId!]?.name ?? "");
   const [tags, setTags] = useState(hubPage?.page.tags.join(", ") ?? "");
 
   if (!pageId || !me) return <></>;

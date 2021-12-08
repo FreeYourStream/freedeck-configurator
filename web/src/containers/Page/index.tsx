@@ -20,6 +20,8 @@ export const Page: React.FC<IProps> = ({ pageId }) => {
   const configState = useContext(ConfigStateContext);
   const { renamePage, switchPages } = useContext(ConfigDispatchContext);
   const page = configState.pages.byId[pageId];
+  const isStartPage =
+    configState.pages.sorted.findIndex((pid) => pid === pageId) === 0;
   const [, dragRef] = useDrag({
     item: {
       type: "page",
@@ -51,7 +53,7 @@ export const Page: React.FC<IProps> = ({ pageId }) => {
       id={`page_${pageId}`}
       className={c(
         "relative p-2 m-6 rounded-3xl bg-gray-700 shadow-lg",
-        page.isStartPage && "border-2 border-primary-400"
+        isStartPage && "border-2 border-primary-400"
       )}
     >
       <div ref={drop}>
@@ -63,7 +65,7 @@ export const Page: React.FC<IProps> = ({ pageId }) => {
               placeholder={`${pageId.slice(-4)} - Click to edit`}
             />
             <Value className="italic">
-              {!!page.isStartPage && "Start page | "}
+              {!!isStartPage && "Start page | "}
               {page.publishData ? "published" : "local page"}
             </Value>
           </CtrlDuo>

@@ -21,6 +21,11 @@ import { PageSchema } from "../schemas/config";
 import { Actions, FunctionForFirstParamType } from "./interfaces";
 import { client } from "..";
 
+const saveConfigToLocalStorage = (state: ConfigState) => {
+  setTimeout(() => localStorage.setItem("config", JSON.stringify(state)));
+  return { ...state };
+};
+
 export interface ConfigState {
   configVersion: string;
   brightness: number;
@@ -171,10 +176,12 @@ export interface IConfigReducer extends Actions<ConfigState> {
 
 export const configReducer: IConfigReducer = {
   async setBrightness(state, brightness) {
-    return { ...state, brightness };
+    state.brightness = brightness;
+    return saveConfigToLocalStorage(state);
   },
   async setScreenSaver(state, timeout) {
-    return { ...state, screenSaverTimeout: timeout };
+    state.screenSaverTimeout = timeout;
+    return saveConfigToLocalStorage(state);
   },
   async setDimensions(state, data) {
     const width = data.width ?? state.width;
@@ -197,7 +204,7 @@ export const configReducer: IConfigReducer = {
     }
     state.width = width;
     state.height = height;
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async addPage(state, data) {
     const newPage = await createDefaultPage(
@@ -218,18 +225,15 @@ export const configReducer: IConfigReducer = {
       ].values[EAction.changePage] = newId;
     } else if (state.pages.sorted.length === 1) {
       state.pages.byId[newId].name = "Start";
-      state.pages.byId[newId].isStartPage = true;
     }
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async setStartPage(state, { pageId }) {
-    const oldStartPageId = state.pages.sorted.find(
-      (pid) => state.pages.byId[pid].isStartPage
-    );
-    if (!oldStartPageId) return { ...state };
-    state.pages.byId[oldStartPageId].isStartPage = false;
-    state.pages.byId[pageId].isStartPage = true;
-    return { ...state };
+    state.pages.sorted = [
+      ...state.pages.sorted.filter((pid) => pid !== pageId),
+    ];
+    state.pages.sorted.unshift(pageId);
+    return saveConfigToLocalStorage(state);
   },
   async downloadPage(state: ConfigState, { id }) {
     const response = await client?.query<PageQuery>({
@@ -258,22 +262,27 @@ export const configReducer: IConfigReducer = {
         forkedFrom: response.data.page.forkedFrom?.id,
       },
     };
+    for (let i = 0; i < state.pages.byId[id].displayButtons.length; i++) {
+      state.pages.byId[id].displayButtons[i].display =
+        await generateAdditionalImagery(
+          state.pages.byId[id].displayButtons[i].display
+        );
+    }
     const alreadyDownloaded = !!state.pages.sorted.find((pid) => pid === id);
     if (!alreadyDownloaded) state.pages.sorted.push(id);
-    state.pages.byId[id].isStartPage = state.pages.sorted.length === 1;
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async renamePage(state: ConfigState, { pageId, name }) {
     state.pages.byId[pageId].name = name;
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async changePageWindowName(state: ConfigState, { pageId, windowName }) {
     state.pages.byId[pageId].windowName = windowName;
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async setUsePageName(state, { pageId, value }) {
     state.pages.byId[pageId].usePageNameAsWindowName = value;
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async switchPages(state, data) {
     const { pageAId, pageBId } = data;
@@ -296,16 +305,12 @@ export const configReducer: IConfigReducer = {
     }
     state.pages.sorted[aIndex] = pageBId;
     state.pages.sorted[bIndex] = pageAId;
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async deletePage(state, pageId) {
     const collectionId = state.pages.byId[pageId].isInCollection;
 
     state.pages.sorted = [...state.pages.sorted.filter((id) => id !== pageId)];
-    if (state.pages.byId[pageId].isStartPage) {
-      const nextPage = state.pages.sorted[0];
-      if (nextPage) state.pages.byId[nextPage].isStartPage = true;
-    }
     delete state.pages.byId[pageId];
 
     // remove page from collection
@@ -328,7 +333,7 @@ export const configReducer: IConfigReducer = {
           ] = "";
       });
     });
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async setPagePublished(state, { pageId, forkedId }) {
     if (!client) {
@@ -344,9 +349,9 @@ export const configReducer: IConfigReducer = {
         ...state.pages.sorted.map((pid) => (pid === forkedId ? pageId : pid)),
       ];
       delete newState.pages.byId[forkedId];
-      return {
-        ...(await configReducer.downloadPage({ ...newState }, { id: pageId })),
-      };
+      return saveConfigToLocalStorage(
+        await configReducer.downloadPage({ ...newState }, { id: pageId })
+      );
     } else {
       const response = await client.query<PageQuery, PageQueryVariables>({
         query: PageDocument,
@@ -360,7 +365,7 @@ export const configReducer: IConfigReducer = {
           forkedFrom: response.data.page.forkedFrom?.id,
         },
       };
-      return { ...state };
+      return saveConfigToLocalStorage(state);
     }
   },
   async setPageCollection(state, { pageId, collectionId }) {
@@ -379,7 +384,7 @@ export const configReducer: IConfigReducer = {
       ];
       state.pages.byId[pageId].isInCollection = undefined;
     }
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async createCollection(state: ConfigState) {
     const newId = v4();
@@ -388,9 +393,7 @@ export const configReducer: IConfigReducer = {
       usePageNameAsWindowName: true,
     };
     state.collections.sorted.push(newId);
-    return {
-      ...state,
-    };
+    return saveConfigToLocalStorage(state);
   },
   async deleteCollection(state: ConfigState, { collectionId }) {
     state.collections.byId[collectionId].pages.forEach(
@@ -400,27 +403,25 @@ export const configReducer: IConfigReducer = {
     state.collections.sorted = [
       ...state.collections.sorted.filter((cid) => cid !== collectionId),
     ];
-    return {
-      ...state,
-    };
+    return saveConfigToLocalStorage(state);
   },
   async setUseCollectionName(state, { collectionId, value }) {
     state.collections.byId[collectionId].usePageNameAsWindowName = value;
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async renameCollection(state, { collectionId, name }) {
     state.collections.byId[collectionId].name = name;
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async changeCollectionWindowName(state, { collectionId, windowName }) {
     state.collections.byId[collectionId].windowName = windowName;
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async setButtonSettings(state, data) {
     const { pageId, buttonIndex, priOrSec, buttonSettings } = data;
     state.pages.byId[pageId].displayButtons[buttonIndex].button[priOrSec] =
       buttonSettings;
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async setDisplaySettings(state, data) {
     const { pageId, buttonIndex, displaySettings } = data;
@@ -434,7 +435,9 @@ export const configReducer: IConfigReducer = {
         "defaultBackDisplay",
         JSON.stringify(state.defaultBackDisplay)
       );
-      return cloneDeep(await configReducer.updateAllDefaultBackImages(state));
+      return saveConfigToLocalStorage(
+        await configReducer.updateAllDefaultBackImages(state)
+      );
     } else {
       state.pages.byId[pageId].displayButtons[buttonIndex].display = {
         ...displaySettings,
@@ -445,7 +448,7 @@ export const configReducer: IConfigReducer = {
           state.pages.byId[pageId].displayButtons[buttonIndex].display
         );
     }
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async setOriginalImage(state, data) {
     const { buttonIndex, pageId, originalImage } = data;
@@ -465,15 +468,17 @@ export const configReducer: IConfigReducer = {
         );
     }
     if (pageId === "dbd") {
-      return cloneDeep(await configReducer.updateAllDefaultBackImages(state));
+      return saveConfigToLocalStorage(
+        cloneDeep(await configReducer.updateAllDefaultBackImages(state))
+      );
     }
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async deleteImage(state, data) {
     const { buttonIndex, pageId } = data;
     state.pages.byId[pageId].displayButtons[buttonIndex].display =
       createDefaultDisplay();
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async switchButtons(state, data) {
     const { pageAId, pageBId, buttonAIndex, buttonBIndex } = data;
@@ -482,7 +487,7 @@ export const configReducer: IConfigReducer = {
       state.pages.byId[pageBId].displayButtons[buttonBIndex]
     );
     state.pages.byId[pageBId].displayButtons[buttonBIndex] = cloneDeep(tempA);
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async updateAllDefaultBackImages(state) {
     Object.entries(state.pages.byId).forEach(([pageId, page]) => {
@@ -492,22 +497,21 @@ export const configReducer: IConfigReducer = {
             cloneDeep(state.defaultBackDisplay);
       });
     });
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async makeDefaultBackButton(state, data) {
     const { buttonIndex, pageId } = data;
     state.pages.byId[pageId].displayButtons[buttonIndex].display =
       await state.defaultBackDisplay;
-    return { ...state };
+    return saveConfigToLocalStorage(state);
   },
   async resetDefaultBackButton(state) {
-    return {
-      ...state,
-      defaultBackDisplay: await createDefaultBackDisplay("dbd"),
-    };
+    state.defaultBackDisplay = await createDefaultBackDisplay("dbd");
+    return saveConfigToLocalStorage(state);
   },
   async setState(state, newState) {
-    return { ...newState };
+    console.log("NEWSTATE", newState);
+    return saveConfigToLocalStorage(newState);
   },
 };
 

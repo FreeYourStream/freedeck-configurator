@@ -25,7 +25,7 @@ export const generateAdditionalImagery = async (
   return newDisplay;
 };
 
-const convertCurrentConfig = async (
+export const convertCurrentConfig = async (
   rawConfig: ConfigState
 ): Promise<ConfigState> => {
   for (let outer = 0; outer < rawConfig.pages.sorted.length; outer++) {

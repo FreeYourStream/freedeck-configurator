@@ -41,7 +41,6 @@ export interface DisplayButton {
 export interface Page {
   displayButtons: DisplayButton[];
   isInCollection?: string;
-  isStartPage: boolean;
   name?: string;
   publishData?: {
     createdBy: string;

@@ -69,7 +69,6 @@ export const createDefaultPage = async (
 ): Promise<Page> => {
   const page: Page = {
     name: "",
-    isStartPage: false,
     usePageNameAsWindowName: true,
     displayButtons: [],
   };

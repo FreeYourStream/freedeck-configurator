@@ -1,10 +1,11 @@
 import { useSimpleReducer } from "@bitovi/use-simple-reducer";
-import React from "react";
+import React, { useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
 import { HashRouter } from "react-router-dom";
 
 import { Body } from "./Body";
+import { convertCurrentConfig } from "./lib/configFile/parseConfig";
 import { AddEventListeners } from "./lib/eventListeners";
 import { ModalBody } from "./ModalBody";
 import {
@@ -35,6 +36,16 @@ const App: React.FC<{
     defaultAppState,
     appReducer
   );
+  useEffect(() => {
+    (async () => {
+      const config = localStorage.getItem("config");
+      if (config) {
+        const converted = await convertCurrentConfig(JSON.parse(config));
+        console.log(converted);
+        configDispatch.setState(converted);
+      }
+    })();
+  }, []);
   AddEventListeners({ appDispatchContext: appDispatch });
 
   return (
