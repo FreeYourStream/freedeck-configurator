@@ -353,7 +353,7 @@ export const configReducer: IConfigReducer = {
         await configReducer.downloadPage({ ...newState }, { id: pageId })
       );
     } else {
-      const response = await client.query<PageQuery, PageQueryVariables>({
+      const response = await client?.query<PageQuery, PageQueryVariables>({
         query: PageDocument,
         variables: { id: pageId },
         fetchPolicy: "network-only",

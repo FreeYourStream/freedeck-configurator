@@ -28,32 +28,21 @@ const main = async () => {
 
   const awaitedDefaultConfigState = await defaultConfigState();
   const awaitedDefaultAppState = await defaultAppState();
-  if (process.env.REACT_APP_ENABLE_API === "true") {
-    client = new ApolloClient({
-      cache: new InMemoryCache(),
-      uri: process.env.REACT_APP_API_URL + "/graphql",
-      credentials: "include",
-    });
-    console.log("API ENABLED :)");
-    // todo remove duplicate code
-    ReactDOM.render(
-      <ApolloProvider client={client}>
-        <App
-          defaultConfigState={awaitedDefaultConfigState}
-          defaultAppState={awaitedDefaultAppState}
-        />
-      </ApolloProvider>,
-      document.getElementById("root")
-    );
-  } else {
-    ReactDOM.render(
+  client = new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: process.env.REACT_APP_API_URL + "/graphql",
+    credentials: "include",
+  });
+
+  ReactDOM.render(
+    <ApolloProvider client={client}>
       <App
         defaultConfigState={awaitedDefaultConfigState}
         defaultAppState={awaitedDefaultAppState}
-      />,
-      document.getElementById("root")
-    );
-  }
+      />
+    </ApolloProvider>,
+    document.getElementById("root")
+  );
 };
 main();
 
