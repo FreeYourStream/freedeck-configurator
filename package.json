@@ -1,67 +1,35 @@
 {
   "name": "freedeck-configurator",
-  "version": "1.6.3",
-  "configFileVersion": "1.1.0",
-  "private": true,
-  "dependencies": {
-    "@apollo/client": "^3.3.15",
-    "@bitovi/use-simple-reducer": "^0.0.1",
-    "@headlessui/react": "^1.4.1",
-    "@heroicons/react": "^1.0.4",
-    "clsx": "^1.1.1",
-    "floyd-steinberg": "^1.0.6",
-    "graphql": "^15.5.0",
-    "jimp": "^0.16.0",
-    "lodash": "^4.17.20",
-    "preval.macro": "^5.0.0",
-    "react": "^17.0.2",
-    "react-dnd": "^10.0.2",
-    "react-dnd-html5-backend": "^10.0.2",
-    "react-dom": "^17.0.2",
-    "react-dropzone": "^10.2.2",
-    "react-hot-toast": "^2.1.1",
-    "web-vitals": "^2.1.2"
-  },
+  "version": "1.0.0",
+  "description": "",
+  "workspaces": [
+    "web",
+    "app"
+  ],
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "check:clean": "unimported; ts-unused-exports ./tsconfig.json --allowUnusedTypes --ignoreFiles=_Boilerplate*",
-    "eject": "react-scripts eject",
-    "codegen": "graphql-codegen --config codegen.yml"
+    "build:web": "npm run build -w web",
+    "build:app": "npm run build -w app",
+    "dev:web": "npm run start -w web",
+    "dev:app": "npm run dev -w app",
+    "dev": "concurrently \"npm run dev:web\" \"npm run dev:app\"",
+    "prebuild": "npm run build:web && npm run build:app && cp -r web/build app/build",
+    "build": "npx electron-builder -wl --project app"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/koriwi/freedeck-configurator.git"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/koriwi/freedeck-configurator/issues"
   },
+  "homepage": "https://github.com/koriwi/freedeck-configurator#readme",
   "devDependencies": {
-    "@craco/craco": "^6.3.0",
-    "@graphql-codegen/cli": "1.21.4",
-    "@graphql-codegen/introspection": "1.18.2",
-    "@graphql-codegen/typescript": "1.22.0",
-    "@graphql-codegen/typescript-operations": "1.17.16",
-    "@graphql-codegen/typescript-react-apollo": "2.2.4",
-    "@types/lodash": "^4.14.160",
-    "@types/node": "^12.12.29",
-    "@types/preval.macro": "^3.0.0",
-    "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.2",
-    "autoprefixer": "^9.8.8",
-    "postcss": "^7.0.39",
-    "react-scripts": "4.0.0",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.16",
-    "ts-unused-exports": "^7.0.3",
-    "typescript": "^3.7.5",
-    "unimported": "^1.19.1"
+    "@types/uuid": "^8.3.3",
+    "concurrently": "^6.4.0"
+  },
+  "dependencies": {
+    "uuid": "^8.3.2"
   }
 }

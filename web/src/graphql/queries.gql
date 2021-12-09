@@ -1,0 +1,58 @@
+fragment PageFields on Page {
+  id
+  data
+  width
+  height
+  createdBy {
+    id
+    avatar
+    displayName
+  }
+  forkedFrom {
+    id
+  }
+  upvotes
+  tags
+}
+
+query searchPages($searchTerm: String!, $before: String, $after: String) {
+  searchPages(
+    searchTerm: $searchTerm
+    pagination: { before: $before, after: $after }
+  ) {
+    hasNext
+    pages {
+      ...PageFields
+    }
+  }
+}
+
+query me {
+  user {
+    id
+    avatar
+    displayName
+  }
+}
+
+query myPages {
+  myPages {
+    ...PageFields
+  }
+}
+
+query page($id: String!) {
+  page(id: $id) {
+    ...PageFields
+  }
+}
+
+mutation pageCreate($input: PageCreateInput!) {
+  pageCreate(input: $input)
+}
+
+mutation pageUpdate($input: PageUpdateInput!) {
+  pageUpdate(input: $input) {
+    id
+  }
+}

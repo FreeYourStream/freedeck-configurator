@@ -1,0 +1,18 @@
+{
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/*.tests.{js,jsx,ts,tsx}",
+    "**/*.test.{js,jsx,ts,tsx}",
+    "**/*.spec.{js,jsx,ts,tsx}",
+    "**/tests/**",
+    "**/__tests__/**",
+    "**/*.d.ts",
+    "**/generated/types-and-hooks.ts"
+  ],
+  "ignoreUnimported": [
+    "src/containers/_Boilerplate.tsx",
+    "src/service-worker.ts"
+  ],
+  "ignoreUnused": [],
+  "ignoreUnresolved": []
+}
