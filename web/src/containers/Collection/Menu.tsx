@@ -62,7 +62,7 @@ export const CollectionMenu: React.FC<{ collectionId: string }> = ({
             {
               title: "Publish",
               prefix: <ShareIcon className={iconSize} />,
-              disabled: process.env.REACT_APP_ENABLE_API !== "true",
+              disabled: true || process.env.REACT_APP_ENABLE_API !== "true",
               onClick: () => nav(`/publishCollection/${collectionId}`),
             },
           ]}

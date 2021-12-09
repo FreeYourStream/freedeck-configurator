@@ -3,6 +3,8 @@ import { XCircleIcon } from "@heroicons/react/solid";
 import c from "clsx";
 import React, { Fragment } from "react";
 
+import { CustomAlert } from "../../CustomAlert";
+
 export const FDWindow: React.FC<{
   className?: string;
   visible?: boolean;
@@ -62,6 +64,7 @@ export const FDWindow: React.FC<{
               </div>
             </div>
             {children}
+            <CustomAlert />
           </div>
         </Transition.Child>
       </Dialog>

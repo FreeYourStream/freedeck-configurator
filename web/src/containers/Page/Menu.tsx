@@ -66,7 +66,7 @@ export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
                   : "Fork"
                 : "Publish",
               prefix: <ShareIcon className={iconSize} />,
-              disabled: process.env.REACT_APP_ENABLE_API !== "true",
+              disabled: process.env.REACT_APP_ENABLE_API !== "true" || !data,
               onClick: () => nav(`/publishpage/${pageId}`),
             },
           ]}

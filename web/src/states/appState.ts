@@ -11,11 +11,23 @@ export interface AppState {
     text: string;
     title: string;
   };
+  confirm: {
+    isOpen: boolean;
+    text: string;
+    title: string;
+    onAccept?: () => any;
+    onAbort?: () => any;
+  };
 }
 export const defaultAppState: () => Promise<AppState> = async () => ({
   ctrlDown: false,
   serialApi: (navigator as any).serial ? new FDSerialAPI() : undefined,
   alert: {
+    isOpen: false,
+    text: "",
+    title: "",
+  },
+  confirm: {
     isOpen: false,
     text: "",
     title: "",
@@ -29,6 +41,16 @@ export interface IAppReducer extends Actions<AppState> {
     state: AppState,
     data: { text: string; title: string }
   ): Promise<AppState>;
+  closeConfirm(state: AppState, data: { value: boolean }): Promise<AppState>;
+  openConfirm(
+    state: AppState,
+    data: {
+      text: string;
+      title: string;
+      onAccept?: () => any;
+      onAbort?: () => any;
+    }
+  ): Promise<AppState>;
 }
 
 export const appReducer: IAppReducer = {
@@ -40,6 +62,19 @@ export const appReducer: IAppReducer = {
   },
   async openAlert(state, data) {
     return { ...state, alert: { ...data, isOpen: true } };
+  },
+  async closeConfirm(state, data) {
+    if (data.value && state.confirm.onAccept) {
+      await state.confirm.onAccept();
+    } else if (!data.value && state.confirm.onAbort) {
+      await state.confirm.onAbort();
+    }
+    state.confirm.onAccept = undefined;
+    state.confirm.onAbort = undefined;
+    return { ...state, confirm: { ...state.confirm, isOpen: false } };
+  },
+  async openConfirm(state, data) {
+    return { ...state, confirm: { ...data, isOpen: true } };
   },
 };
 

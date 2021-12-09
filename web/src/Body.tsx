@@ -8,7 +8,6 @@ import { ContentBody } from "./containers/ContentBody";
 import { FirstPage } from "./containers/FirstTime";
 import { Header } from "./containers/Header";
 import { Pages } from "./containers/Page/Pages";
-import { CustomAlert } from "./CustomAlert";
 import { FDButton } from "./lib/components/Button";
 import { usePageSwitcher } from "./lib/hooks/pageSwitcherHook";
 import { AppStateContext } from "./states/appState";
@@ -38,7 +37,6 @@ export const Body = () => {
   });
   return (
     <div ref={drop} className="flex flex-col h-full w-full">
-      <CustomAlert />
       <Header />
       <ContentBody>
         {!!Object.values(configState.pages.byId).filter(

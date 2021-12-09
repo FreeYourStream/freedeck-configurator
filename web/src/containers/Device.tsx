@@ -1,6 +1,7 @@
 import { XIcon } from "@heroicons/react/outline";
 import React, { useContext, useEffect, useState } from "react";
 
+import { CustomAlert } from "../CustomAlert";
 import { Divider } from "../lib/components/Divider";
 import { Label, Value } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
@@ -75,7 +76,15 @@ export const Device: React.FC<{}> = () => {
         <Label>FreeDeck Layout:</Label>
         <div className="flex items-center">
           <DisplayCountDropDown
-            onChange={(width) => configDispatch.setDimensions({ width })}
+            onChange={(width) => {
+              if (width < configState.width)
+                window.advancedConfirm(
+                  "Warning",
+                  "If you accept, we will delete all displays that won't fit into the lesser amount of screens",
+                  () => configDispatch.setDimensions({ width })
+                );
+              else configDispatch.setDimensions({ width });
+            }}
             value={configState.width}
             options={widthOptions}
           />

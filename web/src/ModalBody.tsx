@@ -7,11 +7,12 @@ import { GlobalSettings } from "./containers/GeneralSettingsModal";
 import { LoginModal } from "./containers/Login";
 import { PublishPage } from "./containers/Page/Publish";
 import { PageSettingsModal } from "./containers/Page/Settings/Modal";
+import { CustomAlert } from "./CustomAlert";
 
 export const ModalBody = () => {
   return (
     <Routes>
-      <Route path="/" element={<></>} />
+      <Route path="/" element={<CustomAlert />} />
       <Route
         path="/displaybutton/:pageId/:displayIndex"
         element={<DBSettingsModal />}
