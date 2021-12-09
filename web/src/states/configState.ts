@@ -26,6 +26,22 @@ const saveConfigToLocalStorage = (state: ConfigState) => {
   return { ...state };
 };
 
+const changePageDimension = async (
+  page: Page,
+  oldCount: number,
+  newCount: number
+) => {
+  if (newCount > oldCount) {
+    const diff = newCount - oldCount;
+    for (let i = 0; i < diff; i++) {
+      page.displayButtons.push(await createDefaultDisplayButton());
+    }
+  } else if (newCount < oldCount) {
+    page.displayButtons = page.displayButtons.slice(0, newCount);
+  }
+  return { ...page };
+};
+
 export interface ConfigState {
   configVersion: string;
   brightness: number;
@@ -186,22 +202,16 @@ export const configReducer: IConfigReducer = {
   async setDimensions(state, data) {
     const width = data.width ?? state.width;
     const height = data.height ?? state.height;
-    if (width * height > state.width * state.height) {
-      const diff = width * height - state.width * state.height;
-      for (let i = 0; i < diff; i++) {
-        Object.entries(state.pages.byId).forEach(async ([id, page]) =>
-          page.displayButtons.push(await createDefaultDisplayButton())
-        );
-      }
-    } else if (width * height < state.width * state.height) {
-      Object.entries(state.pages.byId).map(
-        ([id, page]) =>
-          (state.pages.byId[id].displayButtons = page.displayButtons.slice(
-            0,
-            width * height
-          ))
+    for (let i = 0; i < state.pages.sorted.length; i++) {
+      const pageId = state.pages.sorted[i];
+      const page = state.pages.byId[pageId];
+      state.pages.byId[pageId] = await changePageDimension(
+        page,
+        state.width * state.height,
+        width * height
       );
     }
+
     state.width = width;
     state.height = height;
     return saveConfigToLocalStorage(state);
@@ -255,13 +265,17 @@ export const configReducer: IConfigReducer = {
       return { ...state };
     }
     const page = validatedPage.value;
-    state.pages.byId[id] = {
-      ...cloneDeep(page),
-      publishData: {
-        createdBy: response.data.page.createdBy.id,
-        forkedFrom: response.data.page.forkedFrom?.id,
+    state.pages.byId[id] = await changePageDimension(
+      {
+        ...cloneDeep(page),
+        publishData: {
+          createdBy: response.data.page.createdBy.id,
+          forkedFrom: response.data.page.forkedFrom?.id,
+        },
       },
-    };
+      page.displayButtons.length,
+      state.width * state.height
+    );
     for (let i = 0; i < state.pages.byId[id].displayButtons.length; i++) {
       state.pages.byId[id].displayButtons[i].display =
         await generateAdditionalImagery(

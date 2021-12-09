@@ -14,7 +14,7 @@ export const Confirm: React.FC<{
     <Transition show={isOpen} as={Fragment}>
       <Dialog
         className="flex justify-center items-center fixed z-40 inset-0"
-        onClose={() => onClose(false)}
+        onClose={() => {}}
       >
         <Transition.Child
           as={Fragment}
@@ -45,8 +45,10 @@ export const Confirm: React.FC<{
               {text}
             </Dialog.Description>
             <div className="flex w-full justify-end gap-2">
-              <FDButton onClick={() => onClose(false)}>No</FDButton>
-              <FDButton onClick={() => onClose(true)}>Ok</FDButton>
+              <FDButton onClick={() => onClose(false)}>Cancel</FDButton>
+              <FDButton type="danger" onClick={() => onClose(true)}>
+                OK
+              </FDButton>
             </div>
           </div>
         </Transition.Child>
