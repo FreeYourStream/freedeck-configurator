@@ -44,8 +44,13 @@ export const AddEventListeners = ({
           ),
         });
     });
+    const isMacOs = navigator.userAgent.indexOf("Mac OS X") !== -1;
     const onKeyUpDown = (event: KeyboardEvent) => {
-      setCtrl(event.ctrlKey);
+      if (isMacOs) {
+        setCtrl(event.metaKey);
+      } else {
+        setCtrl(event.ctrlKey);
+      }
     };
     document.addEventListener("keydown", onKeyUpDown);
     document.addEventListener("keyup", onKeyUpDown);
