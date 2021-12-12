@@ -25,6 +25,9 @@
     "electron-is-dev": "^2.0.0",
     "tslib": "^2.3.1"
   },
+  "optionalDependencies": {
+    "dmg-license": "^1.0.10"
+  },
   "build": {
     "electronVersion": "16.0.1",
     "appId": "com.freeyourstream.freedeck_app",

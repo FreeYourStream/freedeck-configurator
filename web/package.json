@@ -24,6 +24,7 @@
     "react-dropzone": "^10.2.2",
     "react-hot-toast": "^2.1.1",
     "react-router-dom": "^6.0.2",
+    "uuid": "^8.3.2",
     "web-vitals": "^2.1.2"
   },
   "scripts": {
@@ -62,6 +63,7 @@
     "@types/preval.macro": "^3.0.0",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.2",
+    "@types/uuid": "^8.3.3",
     "autoprefixer": "^9.8.8",
     "postcss": "^7.0.39",
     "react-scripts": "4.0.1",
