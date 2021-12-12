@@ -1,7 +1,6 @@
 import { XIcon } from "@heroicons/react/outline";
 import React, { useContext, useEffect, useState } from "react";
 
-import { CustomAlert } from "../CustomAlert";
 import { Divider } from "../lib/components/Divider";
 import { Label, Value } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";

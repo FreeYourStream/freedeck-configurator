@@ -1,10 +1,11 @@
 import fs from "floyd-steinberg";
+import debounce from "lodash/debounce";
 
 import { textPosition } from "../../definitions/modes";
 import { Display } from "../../generated";
 import { colorBitmapToMonochromeBitmap } from "./colorToMonoBitmap";
 
-export const composeImage = async (display: Display): Promise<Buffer> => {
+export const _composeImage = async (display: Display): Promise<Buffer> => {
   const { imageSettings, textWithIconSettings, textSettings, originalImage } =
     display;
   if (!originalImage) throw new Error("no original image");
@@ -97,7 +98,7 @@ export const composeImage = async (display: Display): Promise<Buffer> => {
   return await colorBitmapToMonochromeBitmap(bitmapBuffer, 128, 64);
 };
 
-export const composeText = async (settings: Display): Promise<Buffer> => {
+export const _composeText = async (settings: Display): Promise<Buffer> => {
   const { textSettings } = settings;
   const image = await import("jimp").then((jimp) =>
     jimp.default.create(128, 64, "black")
@@ -131,3 +132,12 @@ export const composeText = async (settings: Display): Promise<Buffer> => {
   const bitmapBuffer = await background.getBufferAsync("image/bmp");
   return await colorBitmapToMonochromeBitmap(bitmapBuffer, 128, 64);
 };
+
+export const composeImage = debounce(_composeImage, 1, {
+  leading: true,
+  maxWait: 16,
+});
+export const composeText = debounce(_composeText, 1, {
+  leading: true,
+  maxWait: 16,
+});

@@ -43,7 +43,7 @@ export const createDefaultDisplay = (): Display => ({
     whiteThreshold: 64,
     blackThreshold: 192,
     dither: false,
-    invert: false,
+    invert: true,
   },
   textSettings: {
     font: fontMedium,

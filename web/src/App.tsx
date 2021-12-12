@@ -45,6 +45,7 @@ const App: React.FC<{
         configDispatch.setState(converted);
       }
     })();
+    // eslint-disable-next-line
   }, []);
   AddEventListeners({ appDispatchContext: appDispatch });
 
