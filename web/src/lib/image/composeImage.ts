@@ -1,7 +1,7 @@
 import fs from "floyd-steinberg";
 import debounce from "lodash/debounce";
 
-import { textPosition } from "../../definitions/modes";
+import { ETextPosition } from "../../definitions/modes";
 import { Display } from "../../generated";
 import { colorBitmapToMonochromeBitmap } from "./colorToMonoBitmap";
 
@@ -53,7 +53,7 @@ export const _composeImage = async (display: Display): Promise<Buffer> => {
     );
     const fontSize = font.common.lineHeight - 2;
     let lines = textSettings.text.split(/\r?\n/).filter((line) => line);
-    if (textSettings.position === textPosition.right) {
+    if (textSettings.position === ETextPosition.right) {
       jimpImage.scaleToFit(128 * textWithIconSettings.iconWidthMultiplier, 64);
     } else {
       jimpImage.scaleToFit(128, 64 - fontSize * lines.length);
@@ -62,7 +62,7 @@ export const _composeImage = async (display: Display): Promise<Buffer> => {
     const offset = (64 - overAllLineHeight) / 2;
     await Promise.all(
       lines.map(async (line, index) => {
-        if (textSettings.position === textPosition.bottom) {
+        if (textSettings.position === ETextPosition.bottom) {
           await background.print(
             font,
             (128 - (fontSize / 2) * line.length) / 2,
@@ -81,7 +81,7 @@ export const _composeImage = async (display: Display): Promise<Buffer> => {
         }
       })
     );
-    if (textSettings.position === textPosition.bottom) {
+    if (textSettings.position === ETextPosition.bottom) {
       background.composite(jimpImage, 128 / 2 - jimpImage.getWidth() / 2, 0);
     } else {
       background.composite(jimpImage, 0, 64 / 2 - jimpImage.getHeight() / 2);

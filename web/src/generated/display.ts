@@ -24,7 +24,7 @@ export interface ImageSettings {
 
 export interface TextSettings {
   font: 'fonts/smaller.fnt' | 'fonts/small.fnt' | 'fonts/medium.fnt' | 'fonts/large.fnt';
-  position: 1 | 0;
+  position: 'bottom' | 'right';
   text?: string;
 }
 

@@ -18,7 +18,7 @@ export const PageSchema = Joi.object({
   windowName: Joi.string().allow(""),
   publishData: PublishData,
   isInCollection: Joi.string(),
-  usePageNameAsWindowName: Joi.bool().default(true).required(),
+  usePageNameAsWindowName: Joi.bool().failover(true).required(),
   displayButtons: Joi.array().items(DisplayButtonSchema).required(),
 }).meta({ className: "Page" });
 
@@ -43,32 +43,32 @@ export const PagesSchema = Joi.object({
     })
     .meta({ className: "Record<string,Page>" })
     .required(),
-  sorted: Joi.array().items(Joi.string()).default([]).required(),
+  sorted: Joi.array().items(Joi.string()).failover([]).required(),
 }).meta({ className: "Pages" });
 
 export const CollectionSchema = Joi.object({
   name: Joi.string(),
-  pages: Joi.array().items(Joi.string()).default([]).required(),
+  pages: Joi.array().items(Joi.string()).failover([]).required(),
   windowName: Joi.string(),
-  usePageNameAsWindowName: Joi.bool().default(true).required(),
+  usePageNameAsWindowName: Joi.bool().failover(true).required(),
 }).meta({ className: "Collection" });
 
 export const CollectionsSchema = Joi.object({
   byId: Joi.object()
     .unknown(true)
     .meta({ unknownType: "Collection" })
-    .default({})
+    .failover({})
     .required(),
-  sorted: Joi.array().items(Joi.string()).default([]).required(),
+  sorted: Joi.array().items(Joi.string()).failover([]).required(),
 }).meta({ className: "Collections" });
 
 export const ConfigSchema = Joi.object({
   pages: PagesSchema.required(),
-  brightness: Joi.number().default(128).required(),
-  height: Joi.number().max(16).min(1).default(2).required(),
-  width: Joi.number().max(16).min(1).default(3).required(),
-  configVersion: Joi.string().default("1.1.0").required(),
-  screenSaverTimeout: Joi.number().min(0).default(0).required(),
+  brightness: Joi.number().failover(128).required(),
+  height: Joi.number().max(16).min(1).failover(2).required(),
+  width: Joi.number().max(16).min(1).failover(3).required(),
+  configVersion: Joi.string().failover("1.1.0").required(),
+  screenSaverTimeout: Joi.number().min(0).failover(0).required(),
   collections: CollectionsSchema.required(),
   defaultBackDisplay: DisplaySchema.required(),
 })

@@ -21,7 +21,11 @@ export enum FDSettings {
   change_brightness,
 }
 
-export enum textPosition {
-  right,
-  bottom,
+export enum ETextPosition {
+  right = "right",
+  bottom = "bottom",
 }
+export const TextPositionValue = {
+  [ETextPosition.right]: 0,
+  [ETextPosition.bottom]: 1,
+};

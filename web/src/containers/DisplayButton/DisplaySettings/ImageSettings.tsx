@@ -17,7 +17,7 @@ import {
   fontSmall,
   fontSmaller,
 } from "../../../definitions/fonts";
-import { textPosition } from "../../../definitions/modes";
+import { ETextPosition } from "../../../definitions/modes";
 import { TextSettings } from "../../../generated";
 import { CtrlDuo } from "../../../lib/components/CtrlDuo";
 import { Label, Value } from "../../../lib/components/LabelValue";
@@ -108,7 +108,7 @@ export const ImageSettings: React.FC<{
       buttonIndex: displayIndex,
     });
   };
-  const setTextPosition = (position: textPosition) => {
+  const setTextPosition = (position: ETextPosition) => {
     display.textSettings.position = position;
     configDispatch.setDisplaySettings({
       displaySettings: display,
@@ -255,8 +255,8 @@ export const ImageSettings: React.FC<{
               value={display.textSettings.position}
               onChange={(value) => setTextPosition(value)}
               options={[
-                { value: textPosition.right, text: "right" },
-                { value: textPosition.bottom, text: "bottom" },
+                { value: ETextPosition.right, text: "right" },
+                { value: ETextPosition.bottom, text: "bottom" },
               ]}
             />
             <Value>{display.textSettings.position}</Value>
@@ -290,7 +290,7 @@ export const ImageSettings: React.FC<{
           <FDSlider
             disabled={
               !display.textSettings.text?.length ||
-              display.textSettings.position === textPosition.bottom
+              display.textSettings.position === ETextPosition.bottom
             }
             min={0.1}
             max={0.9}

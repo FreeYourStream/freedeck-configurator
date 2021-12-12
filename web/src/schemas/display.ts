@@ -6,7 +6,7 @@ import {
   fontSmall,
   fontSmaller,
 } from "../definitions/fonts";
-import { textPosition } from "../definitions/modes";
+import { ETextPosition } from "../definitions/modes";
 
 export const TextWithIconSettingsSchema = Joi.object({
   iconWidthMultiplier: Joi.number().min(0).max(1).default(0.35).required(),
@@ -17,24 +17,24 @@ export const TextWithIconSettingsSchema = Joi.object({
 export const TextSettingsSchema = Joi.object({
   font: Joi.string()
     .valid(fontSmaller, fontSmall, fontMedium, fontLarge)
-    .default(fontMedium)
+    .failover(fontMedium)
     .required(),
-  text: Joi.string().allow("").default(""),
+  text: Joi.string().allow("").failover(""),
   position: Joi.number()
-    .valid(textPosition.bottom, textPosition.right)
-    .default(textPosition.right)
+    .valid(ETextPosition.bottom, ETextPosition.right)
+    .failover(ETextPosition.bottom)
     .required(),
 }).meta({
   className: "TextSettings",
 });
 
 export const ImageSettingsSchema = Joi.object({
-  blackThreshold: Joi.number().default(192).required(),
-  whiteThreshold: Joi.number().default(64).required(),
-  brightness: Joi.number().default(0).required(),
-  contrast: Joi.number().default(0).required(),
-  dither: Joi.bool().default(false).required(),
-  invert: Joi.bool().default(false).required(),
+  blackThreshold: Joi.number().failover(192).required(),
+  whiteThreshold: Joi.number().failover(64).required(),
+  brightness: Joi.number().failover(0).required(),
+  contrast: Joi.number().failover(0).required(),
+  dither: Joi.bool().failover(false).required(),
+  invert: Joi.bool().failover(false).required(),
 }).meta({
   className: "ImageSettings",
 });
