@@ -43,12 +43,11 @@ export const PublishPage: React.FC<{}> = () => {
   const mutate = async () => {
     const createdBy = hubPage?.page.createdBy.id;
     const forkedFromId = createdBy === me?.user.id ? undefined : pageId;
-    console.log("WAT", createdBy === me?.user.id, forkedFromId);
     const id = forkedFromId && createdBy ? v4() : pageId;
     const payload: PageCreateInput = {
       forkedFromId,
       id,
-      data: { ...configState.pages.byId[pageId], name },
+      data: { ...page, name },
       height: configState.height,
       width: configState.width,
       tags: tags
@@ -57,9 +56,7 @@ export const PublishPage: React.FC<{}> = () => {
         .filter((t) => !!t),
     };
     let result;
-    console.log(hubPage?.page.createdBy.id, me.user.id);
     if (hubPage?.page.createdBy.id !== me.user.id) {
-      console.log("create");
       result = await publish({
         variables: {
           input: payload,
@@ -67,22 +64,19 @@ export const PublishPage: React.FC<{}> = () => {
       });
     } else {
       delete payload.forkedFromId;
-      console.log("update");
       result = await update({
         variables: {
           input: payload,
         },
       });
     }
-    console.log(result.errors);
     if (!result.errors) {
-      console.log("set it published");
       setPagePublished({
         pageId: id,
         forkedId: forkedFromId,
       });
       nav(`/hubpage/${pageId}`);
-    }
+    } else console.log(result.errors);
   };
   const pageData: Page = {
     id: pageId,

@@ -7,16 +7,17 @@ import React, { useContext } from "react";
 
 import { EMediaKeys } from "../../definitions/keys";
 import { EAction, FDSettings } from "../../definitions/modes";
-import { ButtonSetting } from "../../generated";
+import { ButtonSetting, Page } from "../../generated";
 import { ConfigStateContext } from "../../states/configState";
 import { useTranslateKeyboardLayout } from "../localisation/keyboard";
 import { getPageName } from "../util";
 import { CtrlDuo } from "./CtrlDuo";
 
-const Pill: React.FC<{ className?: string; button: ButtonSetting }> = ({
-  className,
-  button,
-}) => {
+const Pill: React.FC<{
+  className?: string;
+  button: ButtonSetting;
+  hideChangePage?: boolean;
+}> = ({ className, button, hideChangePage: genericBackButton = false }) => {
   const configState = useContext(ConfigStateContext);
   const { pages } = configState;
   const keys = useTranslateKeyboardLayout(
@@ -27,8 +28,9 @@ const Pill: React.FC<{ className?: string; button: ButtonSetting }> = ({
   const pillClassName =
     "flex px-2 justify-center items-center gap-1 align-middle h-6 text-base shadow-lg rounded-md overflow-hidden";
   return (
-    <div className={c("flex justify-center whitespace-nowrap w-36", className)}>
+    <div className={c("flex justify-center whitespace-nowrap", className)}>
       {button.mode === EAction.changePage &&
+        !genericBackButton &&
         !!button.values[EAction.changePage] && (
           <div className={c(pillClassName, "bg-gray-500")}>
             <ArrowCircleRightIcon className="w-4 h-4" />
@@ -79,7 +81,7 @@ const Pill: React.FC<{ className?: string; button: ButtonSetting }> = ({
       {button.mode !== EAction.noop && !button.values[button.mode] && (
         <div className={c(pillClassName, "bg-danger-500")}>
           <ExclamationCircleIcon className="w-4 h-4" />
-          <span>Error</span>
+          <span title="check the button settings for completeness">Error</span>
         </div>
       )}
     </div>
@@ -88,16 +90,17 @@ const Pill: React.FC<{ className?: string; button: ButtonSetting }> = ({
 
 export const ActionPreview: React.FC<{
   className?: string;
-  pageId: string;
+  page: Page;
   displayIndex: number;
-}> = ({ pageId, displayIndex, children, className }) => {
-  const config = useContext(ConfigStateContext);
-  const button = config.pages.byId[pageId].displayButtons[displayIndex].button;
+  hideChangePage?: boolean;
+}> = ({ page, displayIndex, children, className, hideChangePage = false }) => {
+  const button = page.displayButtons[displayIndex].button;
+
   return (
-    <div className={c("absolute -bottom-4", className)}>
+    <div className={c(className)}>
       <CtrlDuo>
-        <Pill button={button.primary} />
-        <Pill button={button.secondary} />
+        <Pill button={button.primary} hideChangePage={hideChangePage} />
+        <Pill button={button.secondary} hideChangePage={hideChangePage} />
       </CtrlDuo>
     </div>
   );

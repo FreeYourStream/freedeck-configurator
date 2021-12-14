@@ -75,7 +75,7 @@ export const Page: React.FC<IProps> = ({ pageId }) => {
       <div
         className={c(
           "p-10 pt-2",
-          "grid gap-8",
+          "grid gap-x-8 gap-y-6",
           `grid-cols-${configState.width}`,
           `grid-rows-${configState.height}`
         )}

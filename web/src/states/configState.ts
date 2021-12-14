@@ -277,10 +277,19 @@ export const configReducer: IConfigReducer = {
       state.width * state.height
     );
     for (let i = 0; i < state.pages.byId[id].displayButtons.length; i++) {
-      state.pages.byId[id].displayButtons[i].display =
-        await generateAdditionalImagery(
-          state.pages.byId[id].displayButtons[i].display
+      if (
+        state.pages.byId[id].displayButtons[i].display
+          .isGeneratedFromDefaultBackImage
+      ) {
+        state.pages.byId[id].displayButtons[i].display = cloneDeep(
+          state.defaultBackDisplay
         );
+      } else {
+        state.pages.byId[id].displayButtons[i].display =
+          await generateAdditionalImagery(
+            state.pages.byId[id].displayButtons[i].display
+          );
+      }
     }
     const alreadyDownloaded = !!state.pages.sorted.find((pid) => pid === id);
     if (!alreadyDownloaded) state.pages.sorted.push(id);
@@ -516,7 +525,7 @@ export const configReducer: IConfigReducer = {
   async makeDefaultBackButton(state, data) {
     const { buttonIndex, pageId } = data;
     state.pages.byId[pageId].displayButtons[buttonIndex].display =
-      await state.defaultBackDisplay;
+      state.defaultBackDisplay;
     return saveConfigToLocalStorage(state);
   },
   async resetDefaultBackButton(state) {

@@ -16,6 +16,7 @@ export const DisplayButton: React.FC<{
 }> = ({ pageId, displayIndex }) => {
   const configState = useContext(ConfigStateContext);
   const configDispatch = useContext(ConfigDispatchContext);
+  const page = configState.pages.byId[pageId];
   const display =
     pageId === "dbd"
       ? configState.defaultBackDisplay
@@ -52,12 +53,17 @@ export const DisplayButton: React.FC<{
       to={`/displaybutton/${pageId}/${displayIndex}`}
       ref={dragRef}
       className={c(
-        "flex items-center flex-col relative shadow-xl",
+        "bg-opacity-0",
+        "flex items-center flex-col relative",
         isDragging && "opacity-40"
       )}
     >
-      <ImagePreview $ref={drop} previewImage={display.previewImage} />
-      <ActionPreview pageId={pageId} displayIndex={displayIndex} />
+      <ImagePreview
+        className="shadow-xl mb-2"
+        $ref={drop}
+        previewImage={display.previewImage}
+      />
+      <ActionPreview page={page} displayIndex={displayIndex} />
     </Link>
   );
 };

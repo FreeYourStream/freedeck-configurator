@@ -1,22 +1,25 @@
 import { ThumbUpIcon } from "@heroicons/react/solid";
 import c from "clsx";
-import React from "react";
+import React, { useContext } from "react";
 
 import { iconSize } from "../../../definitions/iconSizes";
 import { Page } from "../../../generated";
 import { MyPagesQuery } from "../../../generated/types-and-hooks";
+import { ActionPreview } from "../../../lib/components/ActionPreview";
 import { Avatar } from "../../../lib/components/Avatar";
 import { ImagePreview } from "../../../lib/components/ImagePreview";
 import { Value } from "../../../lib/components/LabelValue";
+import { ConfigStateContext } from "../../../states/configState";
 
 export const HubPage: React.FC<{
   className?: string;
   page: MyPagesQuery["myPages"][0];
 }> = ({ className, page }) => {
+  const { defaultBackDisplay } = useContext(ConfigStateContext);
   return (
     <div
       className={c(
-        "flex flex-col w-publish-page justify-center rounded-md bg-gray-600 ",
+        "flex flex-col  justify-center rounded-md bg-gray-600 ",
         className
       )}
     >
@@ -53,18 +56,29 @@ export const HubPage: React.FC<{
         </div>
         <div
           className={c(
-            "grid gap-2 min-w-max",
+            "grid gap-4 min-w-max",
             `grid-cols-${page.width}`,
             `grid-rows-${page.height}`
           )}
         >
           {(page.data as Page).displayButtons.map((db, key) => (
-            <ImagePreview
-              clickable={false}
-              key={key}
-              size={1}
-              previewImage={db.display.previewImage}
-            />
+            <div className="relative w-24">
+              <ImagePreview
+                clickable={false}
+                key={key}
+                size={1}
+                previewImage={
+                  db.display.isGeneratedFromDefaultBackImage
+                    ? defaultBackDisplay.previewImage
+                    : db.display.previewImage
+                }
+              />
+              <ActionPreview
+                page={page.data}
+                displayIndex={key}
+                hideChangePage
+              />
+            </div>
           ))}
         </div>
         <div className="gap-1 flex justify-end items-center mt-4 w-full overflow-hidden flex-wrap h-16">
