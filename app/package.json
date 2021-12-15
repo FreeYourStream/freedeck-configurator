@@ -49,10 +49,10 @@
     ],
     "linux": {
       "target": [
-        "snap",
         "deb",
         "rpm",
-        "tar.gz"
+        "tar.gz",
+        "AppImage"
       ]
     },
     "win": {
