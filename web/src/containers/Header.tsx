@@ -161,7 +161,7 @@ export const Header: React.FC<{}> = () => {
           {process.env.REACT_APP_ENABLE_API === "true" && (
             <LoginLogoutButtons
               openLogin={() => nav("/login")}
-              openFDHub={() => nav("/hub/home")}
+              openFDHub={() => nav("/hub")}
             />
           )}
         </div>

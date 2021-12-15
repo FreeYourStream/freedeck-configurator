@@ -56,7 +56,7 @@ export const HubPage: React.FC<{
         </div>
         <div
           className={c(
-            "grid gap-4 min-w-max",
+            "grid gap-2 min-w-max",
             `grid-cols-${page.width}`,
             `grid-rows-${page.height}`
           )}

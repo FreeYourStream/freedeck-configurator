@@ -26,7 +26,7 @@ export const HubPageDetails = () => {
       title={`FreeDeck Hub Page ${data.page.data.name}`}
       visible={true}
       setClose={() => {
-        nav("/");
+        nav("/hub");
       }}
     >
       <div className="flex flex-col p-8">
