@@ -6,7 +6,10 @@ export const useTranslateKeyboardLayout = (values: number[]) => {
   const translatable = !(navigator as any).keyboard;
   const [translatedKeys, setTranslatedKeys] = useState<string[]>([]);
   useEffect(() => {
-    if (!values || !values.length) return;
+    if (!values || !values.length) {
+      setTranslatedKeys([]);
+      return;
+    }
     if (translatable) {
       setTranslatedKeys(
         values.map(
