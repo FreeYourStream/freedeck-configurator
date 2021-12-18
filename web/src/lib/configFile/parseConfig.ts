@@ -38,12 +38,15 @@ export const convertCurrentConfig = async (
       );
     }
   }
-  const validated = ConfigSchema.validate({
-    ...rawConfig,
-    defaultBackDisplay: await generateAdditionalImagery(
-      rawConfig.defaultBackDisplay
-    ),
-  });
+  const validated = ConfigSchema.validate(
+    {
+      ...rawConfig,
+      defaultBackDisplay: await generateAdditionalImagery(
+        rawConfig.defaultBackDisplay
+      ),
+    },
+    { stripUnknown: true }
+  );
   if (validated.error) throw new Error(validated.error.message);
   return validated.value;
 };

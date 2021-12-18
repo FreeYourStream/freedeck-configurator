@@ -33,7 +33,7 @@ export const PagesSchema = Joi.object({
       let validated: any = {};
       let error: any;
       Object.entries(valueeee).forEach(([key, value]) => {
-        const result = PageSchema.validate(value);
+        const result = PageSchema.validate(value, { stripUnknown: true });
         validated[key] = result.value;
         if (result.error) throw new Error(result.error.message);
       });
@@ -42,6 +42,7 @@ export const PagesSchema = Joi.object({
       return validated;
     })
     .meta({ className: "Record<string,Page>" })
+    .failover({})
     .required(),
   sorted: Joi.array().items(Joi.string()).failover([]).required(),
 }).meta({ className: "Pages" });

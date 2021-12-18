@@ -255,7 +255,8 @@ export const configReducer: IConfigReducer = {
       return { ...state };
     }
     const validatedPage: Joi.ValidationResult<Page> = PageSchema.validate(
-      response?.data.page?.data
+      response?.data.page?.data,
+      { stripUnknown: true }
     );
     if (validatedPage.error) {
       window.advancedAlert(
