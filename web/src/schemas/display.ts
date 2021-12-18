@@ -6,7 +6,7 @@ import {
   fontSmall,
   fontSmaller,
 } from "../definitions/fonts";
-import { ETextPosition } from "../definitions/modes";
+import { EImageMode, ETextPosition } from "../definitions/modes";
 
 export const TextWithIconSettingsSchema = Joi.object({
   iconWidthMultiplier: Joi.number().min(0).max(1).default(0.35).required(),
@@ -19,7 +19,7 @@ export const TextSettingsSchema = Joi.object({
     .valid(fontSmaller, fontSmall, fontMedium, fontLarge)
     .failover(fontMedium)
     .required(),
-  text: Joi.string().allow("").failover(""),
+  text: Joi.string().allow(""),
   position: Joi.number()
     .valid(ETextPosition.bottom, ETextPosition.right)
     .failover(ETextPosition.bottom)
@@ -33,7 +33,9 @@ export const ImageSettingsSchema = Joi.object({
   whiteThreshold: Joi.number().failover(64).required(),
   brightness: Joi.number().failover(0).required(),
   contrast: Joi.number().failover(0).required(),
-  dither: Joi.bool().failover(false).required(),
+  imageMode: Joi.valid(EImageMode.dither, EImageMode.normal, EImageMode.hybrid)
+    .failover(EImageMode.normal)
+    .required(),
   invert: Joi.bool().failover(false).required(),
 }).meta({
   className: "ImageSettings",

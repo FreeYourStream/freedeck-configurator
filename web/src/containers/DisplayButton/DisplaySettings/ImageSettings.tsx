@@ -17,7 +17,7 @@ import {
   fontSmall,
   fontSmaller,
 } from "../../../definitions/fonts";
-import { ETextPosition } from "../../../definitions/modes";
+import { EImageMode, ETextPosition } from "../../../definitions/modes";
 import { TextSettings } from "../../../generated";
 import { CtrlDuo } from "../../../lib/components/CtrlDuo";
 import { Label, Value } from "../../../lib/components/LabelValue";
@@ -84,8 +84,8 @@ export const ImageSettings: React.FC<{
       buttonIndex: displayIndex,
     });
   };
-  const setDither = (dither: any) => {
-    display.imageSettings.dither = dither;
+  const setImageMode = (imageMode: EImageMode) => {
+    display.imageSettings.imageMode = imageMode;
     configDispatch.setDisplaySettings({
       displaySettings: display,
       pageId,
@@ -136,9 +136,32 @@ export const ImageSettings: React.FC<{
           title="These options are disabled. Load an image by clicking on the black box or just enter some text"
         />
         <Title className="mb-2">Image</Title>
-        {!display.imageSettings.dither ? (
+        <Row className="h-8">
+          <CtrlDuo>
+            <LightningBoltIcon className="h-7 w-7" />
+            <Label>Image mode</Label>
+          </CtrlDuo>
+          <CtrlDuo>
+            <FDSelect
+              className="w-56"
+              value={display.imageSettings.imageMode}
+              disabled={!display.originalImage}
+              onChange={(value) => setImageMode(value)}
+              options={[
+                { text: "Normal (simple icons)", value: EImageMode.normal },
+                { text: "Dither (Pictures)", value: EImageMode.dither },
+                {
+                  text: "Hybrid (complex icons)",
+                  value: EImageMode.hybrid,
+                },
+              ]}
+            />
+            <Value>{display.imageSettings.imageMode}</Value>
+          </CtrlDuo>
+        </Row>
+        {!!(display.imageSettings.imageMode === EImageMode.normal) && (
           <>
-            <Row className="h-7">
+            <Row className="h-8">
               <CtrlDuo>
                 <SunIconAlt className="h-7 w-7" />
                 <Label>White Threshold</Label>
@@ -155,7 +178,7 @@ export const ImageSettings: React.FC<{
                 }
               />
             </Row>
-            <Row className="h-7">
+            <Row className="h-8">
               <CtrlDuo>
                 <SunIcon className="h-7 w-7" />
                 <Label>Black Threshold</Label>
@@ -173,9 +196,13 @@ export const ImageSettings: React.FC<{
               />
             </Row>
           </>
-        ) : (
+        )}
+        {!!(
+          display.imageSettings.imageMode === EImageMode.dither ||
+          display.imageSettings.imageMode === EImageMode.hybrid
+        ) && (
           <>
-            <Row className="h-7">
+            <Row className="h-8">
               <CtrlDuo>
                 <SunIconAlt className="h-7 w-7" />
                 <Label>Brightness:</Label>
@@ -191,7 +218,7 @@ export const ImageSettings: React.FC<{
                 }
               />
             </Row>
-            <Row className="h-7">
+            <Row className="h-8">
               <CtrlDuo>
                 <MoonIcon className="h-7 w-7" />
                 <Label>Contrast:</Label>
@@ -209,28 +236,19 @@ export const ImageSettings: React.FC<{
             </Row>
           </>
         )}
-
-        <Row className="h-7">
+        <Row className="h-8">
           <CtrlDuo>
             <RefreshIcon className="h-7 w-7" />
             <Label>Invert</Label>
           </CtrlDuo>
-          <Switch
-            disabled={!display.originalImage}
-            onChange={(value) => setInvert(value)}
-            value={display.imageSettings.invert}
-          />
-        </Row>
-        <Row className="h-7">
           <CtrlDuo>
-            <LightningBoltIcon className="h-7 w-7" />
-            <Label>Dither</Label>
+            <Switch
+              disabled={!display.originalImage}
+              onChange={(value) => setInvert(value)}
+              value={display.imageSettings.invert}
+            />
+            <Value>{!!display.imageSettings.invert ? "on" : "off"}</Value>
           </CtrlDuo>
-          <Switch
-            disabled={!display.originalImage}
-            onChange={(value) => setDither(value)}
-            value={display.imageSettings.dither}
-          />
         </Row>
       </div>
 
@@ -244,7 +262,7 @@ export const ImageSettings: React.FC<{
             onChange={(value) => setText(value)}
           />
         </Row>
-        <Row>
+        <Row className="h-8">
           <CtrlDuo>
             <AdjustmentsIcon className="h-7 w-7" />
             <Label>Position:</Label>
@@ -262,7 +280,7 @@ export const ImageSettings: React.FC<{
             <Value>{display.textSettings.position}</Value>
           </CtrlDuo>
         </Row>
-        <Row>
+        <Row className="h-8">
           <CtrlDuo>
             <TranslateIcon className="h-7 w-7" />
             <Label>Font:</Label>
@@ -282,7 +300,7 @@ export const ImageSettings: React.FC<{
             <Value>{display.textSettings.font}</Value>
           </CtrlDuo>
         </Row>
-        <Row>
+        <Row className="h-8">
           <CtrlDuo>
             <ArrowsExpandIcon className="h-7 w-7" />
             <Label>Icon width:</Label>

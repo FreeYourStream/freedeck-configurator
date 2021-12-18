@@ -97,7 +97,7 @@ export const ActionPreview: React.FC<{
   const button = page.displayButtons[displayIndex].button;
 
   return (
-    <div className={c("h-6", className)}>
+    <div className={c("h-6 overflow-hidden w-32", className)}>
       <CtrlDuo>
         <Pill button={button.primary} hideChangePage={hideChangePage} />
         <Pill button={button.secondary} hideChangePage={hideChangePage} />

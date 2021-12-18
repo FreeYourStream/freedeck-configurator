@@ -1,15 +1,17 @@
 import fs from "floyd-steinberg";
+import type Jimp from "jimp";
 import debounce from "lodash/debounce";
 
-import { ETextPosition } from "../../definitions/modes";
+import { EImageMode, ETextPosition } from "../../definitions/modes";
 import { Display } from "../../generated";
 import { colorBitmapToMonochromeBitmap } from "./colorToMonoBitmap";
 
 export const _composeImage = async (display: Display): Promise<Buffer> => {
+  const jimp = (await import("jimp")).default;
   const { imageSettings, textWithIconSettings, textSettings, originalImage } =
     display;
   if (!originalImage) throw new Error("no original image");
-  let jimpImage: any;
+  let jimpImage: Jimp;
   try {
     jimpImage = await import("jimp").then((jimp) =>
       jimp.default.read(originalImage)
@@ -20,27 +22,80 @@ export const _composeImage = async (display: Display): Promise<Buffer> => {
       jimp.default.create(128, 64, "black")
     );
   }
-  const ditherBackground = await import("jimp").then((jimp) =>
-    jimp.default.create(jimpImage.getWidth(), jimpImage.getHeight(), "black")
-  );
-  if (imageSettings.invert) ditherBackground.invert();
-  jimpImage = await ditherBackground.composite(jimpImage, 0, 0);
-  if (imageSettings.dither) {
+
+  if (imageSettings.imageMode === EImageMode.dither) {
     const brightnessMultiplier = imageSettings.invert ? -0.4 : 0.4;
     await jimpImage.contrast(
       imageSettings.contrast * brightnessMultiplier * -1
     );
     await jimpImage.brightness(imageSettings.brightness * brightnessMultiplier);
+    jimpImage.scaleToFit(128, 64);
     jimpImage.bitmap = fs(jimpImage.bitmap);
-  } else {
-    // @ts-ignore
+    if (imageSettings.invert) jimpImage.invert();
+  } else if (imageSettings.imageMode === EImageMode.hybrid) {
+    // dither part
+    const brightnessMultiplier = imageSettings.invert ? -0.4 : 0.4;
+    const ditherImage = await jimp.create(jimpImage);
+    await ditherImage.contrast(
+      imageSettings.contrast * brightnessMultiplier * -2.5
+    );
+    await ditherImage.brightness(
+      imageSettings.brightness * brightnessMultiplier
+    );
+    ditherImage.scaleToFit(128, 64);
+    ditherImage.bitmap = fs(ditherImage.bitmap);
+    if (imageSettings.invert) ditherImage.invert();
+    // end dither part
+
+    await jimpImage.grayscale();
+    await jimpImage.scaleToFit(128, 64);
+    await jimpImage.contrast(imageSettings.contrast);
+    await jimpImage.brightness(imageSettings.brightness);
+    const factor = 50; // imageSettings.edgeSensitivity;
+    const background = await jimp.create(
+      128 + 3,
+      64 + 3,
+      imageSettings.invert ? "white" : "black"
+    );
+    jimpImage = background.composite(
+      jimpImage,
+      (128 - jimpImage.getWidth()) / 2 + 3,
+      (64 - jimpImage.getHeight()) / 2 + 3
+    );
+    // makes thicker edges
+    // await jimpImage.convolute([
+    //   [0, 0, factor, 0, 0],
+    //   [0, 0, factor, 0, 0],
+    //   [factor, factor, factor * 8 * -1, factor, factor],
+    //   [0, 0, factor, 0, 0],
+    //   [0, 0, factor, 0, 0],
+    // ]);
+    await jimpImage.convolute([
+      [0, factor, 0],
+      [factor, factor * 4 * -1, factor],
+      [0, factor, 0],
+    ]);
+    jimpImage.crop(3, 3, jimpImage.getWidth() - 3, jimpImage.getHeight() - 3);
+    // dither part
+    jimpImage.composite(
+      ditherImage,
+      (128 - ditherImage.getWidth()) / 2,
+      (64 - ditherImage.getHeight()) / 2,
+      {
+        mode: jimp.BLEND_ADD,
+        opacityDest: 1,
+        opacitySource: 1,
+      }
+    );
+    // dither part end
+  } else if (imageSettings.imageMode === EImageMode.normal) {
     await jimpImage.threshold({
       max: imageSettings.whiteThreshold,
       replace: imageSettings.blackThreshold,
       autoGreyscale: false,
     });
+    if (imageSettings.invert) jimpImage.invert();
   }
-  if (imageSettings.invert) jimpImage.invert();
   await jimpImage.autocrop();
 
   const background = await import("jimp").then(
@@ -48,9 +103,8 @@ export const _composeImage = async (display: Display): Promise<Buffer> => {
   );
 
   if (textSettings.text?.length) {
-    const font = await import("jimp").then((jimp) =>
-      jimp.default.loadFont(textSettings.font)
-    );
+    const font = await jimp.loadFont(textSettings.font);
+
     const fontSize = font.common.lineHeight - 2;
     let lines = textSettings.text.split(/\r?\n/).filter((line) => line);
     if (textSettings.position === ETextPosition.right) {

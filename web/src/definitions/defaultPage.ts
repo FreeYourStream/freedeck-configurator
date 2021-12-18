@@ -3,7 +3,7 @@ import { getBase64Image } from "../lib/image/base64Encode";
 import { createDefaultBackDisplay } from "./defaultBackImage";
 import { getEmptyConvertedImage } from "./emptyConvertedImage";
 import { fontMedium } from "./fonts";
-import { EAction, ETextPosition } from "./modes";
+import { EAction, EImageMode, ETextPosition } from "./modes";
 
 const createDefaultButton: () => Button = () => {
   const button: Button = {
@@ -42,7 +42,7 @@ export const createDefaultDisplay = (): Display => ({
     contrast: 0,
     whiteThreshold: 64,
     blackThreshold: 192,
-    dither: false,
+    imageMode: EImageMode.normal,
     invert: true,
   },
   textSettings: {

@@ -25,7 +25,8 @@ export enum ETextPosition {
   right = "right",
   bottom = "bottom",
 }
-export const TextPositionValue = {
-  [ETextPosition.right]: 0,
-  [ETextPosition.bottom]: 1,
-};
+export enum EImageMode {
+  normal = "normal",
+  dither = "dither",
+  hybrid = "hybrid", // a mix of edge detect and dither
+}

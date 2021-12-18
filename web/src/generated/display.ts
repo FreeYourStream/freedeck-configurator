@@ -17,7 +17,7 @@ export interface ImageSettings {
   blackThreshold: number;
   brightness: number;
   contrast: number;
-  dither: boolean;
+  imageMode: 'dither' | 'normal' | 'hybrid';
   invert: boolean;
   whiteThreshold: number;
 }
