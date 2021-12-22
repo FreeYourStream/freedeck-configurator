@@ -27,7 +27,7 @@ export class FDSerialAPI {
             usbVendorId: 0x2341,
           },
         ],
-        chunksize: 230, // this is a magic number -> https://github.com/arduino/ArduinoCore-avr/issues/53
+        chunksize: 62, // this is a magic number -> https://github.com/arduino/ArduinoCore-avr/issues/53
         ...options,
       },
       this.onConnectionChange
