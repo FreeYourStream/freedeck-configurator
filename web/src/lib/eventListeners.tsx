@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { IAppDispatch } from "../states/appState";
 import { FDButton } from "./components/Button";
 import { createToast } from "./createToast";
+import { isMacOS } from "./util";
 
 export const AddEventListeners = ({
   appDispatchContext,
@@ -44,9 +45,8 @@ export const AddEventListeners = ({
           ),
         });
     });
-    const isMacOs = navigator.userAgent.indexOf("Mac OS X") !== -1;
     const onKeyUpDown = (event: KeyboardEvent) => {
-      if (isMacOs) {
+      if (isMacOS) {
         setCtrl(event.metaKey);
       } else {
         setCtrl(event.ctrlKey);

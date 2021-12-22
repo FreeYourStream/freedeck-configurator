@@ -1,4 +1,5 @@
 import { SerialConnector, SerialOptions, connectionStatus } from "./serial";
+import { isMacOS } from "./util";
 const commands = {
   init: 0x3,
   getFirmwareVersion: 0x10,
@@ -27,6 +28,7 @@ export class FDSerialAPI {
             usbVendorId: 0x2341,
           },
         ],
+        chunksize: isMacOS ? 62 : 256,
         ...options,
       },
       this.onConnectionChange
@@ -47,7 +49,7 @@ export class FDSerialAPI {
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
-    this.write([commands.init, commands.getFirmwareVersion]);
+    await this.write([commands.init, commands.getFirmwareVersion]);
     const fwVersion = await this.readAsciiLine();
     // take care about legacy FWs
     if (fwVersion === "") return "1.1.0";
@@ -58,7 +60,7 @@ export class FDSerialAPI {
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
-    this.write([commands.init, commands.getCurrentPage]);
+    await this.write([commands.init, commands.getCurrentPage]);
     const currentPage = await this.readAsciiLine();
     return currentPage;
   }
@@ -67,7 +69,7 @@ export class FDSerialAPI {
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
-    this.write([commands.init, commands.setCurrentPage, goTo.toString()]);
+    await this.write([commands.init, commands.setCurrentPage, goTo.toString()]);
   }
 
   registerOnConStatusChange(callback: connectCallback): number {
@@ -175,7 +177,7 @@ export class FDSerialAPI {
     return this.Serial.read(1000);
   }
 
-  private write(data: Array<number | string>) {
+  private async write(data: Array<number | string>) {
     let mappedData: number[] = [];
     data.forEach((date) => {
       if (typeof date === "string") {
@@ -188,7 +190,7 @@ export class FDSerialAPI {
       mappedData.push(0xa);
     });
     console.log("sending to freedeck", mappedData);
-    this.Serial.write(mappedData);
+    await this.Serial.write(mappedData);
   }
 
   private onConnectionChange = async (status: connectionStatus) => {

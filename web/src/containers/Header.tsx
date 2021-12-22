@@ -159,10 +159,7 @@ export const Header: React.FC<{}> = () => {
           </FDButton>
 
           {process.env.REACT_APP_ENABLE_API === "true" && (
-            <LoginLogoutButtons
-              openLogin={() => nav("/login")}
-              openFDHub={() => nav("/hub")}
-            />
+            <LoginLogoutButtons />
           )}
         </div>
       </div>

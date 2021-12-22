@@ -1,5 +1,6 @@
 import { LogoutIcon, ShareIcon, UserIcon } from "@heroicons/react/outline";
 import React from "react";
+import { useNavigate } from "react-router";
 
 import { iconSize } from "../definitions/iconSizes";
 import { useMeQuery } from "../generated/types-and-hooks";
@@ -7,16 +8,14 @@ import { Avatar } from "../lib/components/Avatar";
 import { FDButton } from "../lib/components/Button";
 import { FDMenu } from "../lib/components/Menu";
 
-export const LoginLogoutButtons: React.FC<{
-  openLogin: () => void;
-  openFDHub: () => void;
-}> = ({ openLogin, openFDHub }) => {
+export const LoginLogoutButtons: React.FC = () => {
   const { data } = useMeQuery();
+  const nav = useNavigate();
   const entries = [
     {
       title: "Open",
       prefix: <ShareIcon className={iconSize} />,
-      onClick: () => openFDHub(),
+      onClick: () => nav("/hub"),
     },
   ];
   if (data?.user) {
@@ -30,7 +29,7 @@ export const LoginLogoutButtons: React.FC<{
     entries.push({
       title: "Login",
       prefix: <UserIcon className={iconSize} />,
-      onClick: () => openLogin(),
+      onClick: () => nav("/login"),
     });
   }
   return (

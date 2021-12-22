@@ -1,6 +1,7 @@
 import c from "clsx";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 import { useMeQuery, useMyPagesQuery } from "../../generated/types-and-hooks";
 import { Title } from "../../lib/components/Title";
@@ -37,7 +38,7 @@ export const Home: React.FC<{ className?: string }> = ({ className }) => {
         <p>You have no pages yet :(</p>
       )}
       {!!loading && !!me && <p>loading</p>}
-      {!loading && !me && <p>Please login</p>}
+      {!loading && !me && <Link to="/login">Please login</Link>}
     </div>
   );
 };

@@ -10,3 +10,5 @@ export const getCollectionName = (
 ) => {
   return collection?.name ? collection.name : collectionId.slice(-4);
 };
+
+export const isMacOS = navigator.userAgent.indexOf("Mac OS X") !== -1;
