@@ -28,7 +28,7 @@ export class FDSerialAPI {
             usbVendorId: 0x2341,
           },
         ],
-        chunksize: isMacOS ? 62 : 256,
+        chunksize: 230, // this is a magic number -> https://github.com/arduino/ArduinoCore-avr/issues/53
         ...options,
       },
       this.onConnectionChange
