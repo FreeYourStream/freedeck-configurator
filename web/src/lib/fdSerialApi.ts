@@ -1,5 +1,4 @@
 import { SerialConnector, SerialOptions, connectionStatus } from "./serial";
-import { isMacOS } from "./util";
 const commands = {
   init: 0x3,
   getFirmwareVersion: 0x10,

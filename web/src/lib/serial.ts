@@ -94,7 +94,7 @@ export class SerialConnector {
 
       const arrBuff = Buffer.from([...data]);
       await this.writer.write(arrBuff.buffer);
-      await this.sleep(1);
+      await this.sleep(2);
     } else {
       const arrBuff = new Buffer([...data]);
       return this.writer.write(arrBuff.buffer);
