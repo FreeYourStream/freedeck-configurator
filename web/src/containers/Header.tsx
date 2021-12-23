@@ -1,4 +1,5 @@
 import {
+  CheckIcon,
   CogIcon,
   DownloadIcon,
   LightningBoltIcon,
@@ -16,6 +17,7 @@ import { createConfigBuffer } from "../lib/configFile/createBuffer";
 import { loadConfigFile } from "../lib/configFile/loadConfigFile";
 import { download } from "../lib/download";
 import { connectionStatus } from "../lib/serial";
+import { isMacOS } from "../lib/util";
 import { AppStateContext } from "../states/appState";
 import {
   ConfigDispatchContext,
@@ -109,7 +111,26 @@ export const Header: React.FC<{}> = () => {
                   Save to FreeDeck
                 </FDButton>
                 <Value className="ml-4">
-                  {progress ? `${(progress * 100).toFixed(0)}%` : ""}
+                  {progress > 0 && progress < 1 && (
+                    <div
+                      className="w-24 flex justify-between items-center"
+                      title={`${
+                        isMacOS ? "Sorry, very slow on mac :(" : "working"
+                      }`}
+                    >
+                      <div className="h-8 w-8 rounded-full animate-spin bg-primary-500">
+                        <div className="h-4 w-4  rounded-tl-full bg-primary-200 relative">
+                          <div className="absolute h-5 w-5 -bottom-2.5 -right-2.5 bg-primary-500 rounded-full" />
+                        </div>
+                      </div>
+                      <div>{`${(progress * 100).toFixed(0)}%`}</div>
+                    </div>
+                  )}
+                  {progress === 1 && (
+                    <div className="bg-success-700 h-8 w-8 rounded-full flex justify-center items-center">
+                      <CheckIcon className="h-6 w-6 text-gray-600" />
+                    </div>
+                  )}
                 </Value>
               </>
             ) : (
