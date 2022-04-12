@@ -17,14 +17,15 @@
     }
   }
 
-  ::-webkit-scrollbar {
-    @apply w-2;
-  }
-  ::-webkit-scrollbar-track {
-    @apply bg-gray-200;
-  }
 
-  ::-webkit-scrollbar-thumb {
-    @apply bg-primary-500;
-  }
+}
+::-webkit-scrollbar {
+  @apply w-2;
+}
+::-webkit-scrollbar-track {
+  @apply bg-gray-200;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-500;
 }
