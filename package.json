@@ -51,7 +51,7 @@
     ]
   },
   "devDependencies": {
-    "@craco/craco": "^6.3.0",
+    "@craco/craco": "^6.4.3",
     "@graphql-codegen/cli": "1.21.4",
     "@graphql-codegen/introspection": "1.18.2",
     "@graphql-codegen/typescript": "1.22.0",
@@ -66,7 +66,7 @@
     "@types/uuid": "^8.3.3",
     "autoprefixer": "^9.8.8",
     "postcss": "^7.0.39",
-    "react-scripts": "4.0.1",
+    "react-scripts": "^4.0.3",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.16",
     "ts-node": "^10.4.0",
     "ts-unused-exports": "^7.0.3",
