@@ -1,6 +1,7 @@
 import {
   ArrowCircleLeftIcon,
   ChipIcon,
+  CodeIcon,
   InformationCircleIcon,
   SunIcon,
   SwitchVerticalIcon,
@@ -13,6 +14,7 @@ import { FDWindow } from "../lib/components/Window";
 import { ConfigDispatchContext } from "../states/configState";
 import { About } from "./About";
 import { DefaultBackButtonSettings } from "./DefaultBackButtonSettings";
+import { DeveloperSettings } from "./DeveloperSettings";
 import { Device } from "./Device";
 import { Displays } from "./Displays";
 import { Serial } from "./Serial";
@@ -35,6 +37,11 @@ export const GlobalSettings: React.FC<{}> = () => {
       title: "Device",
       prefix: <ChipIcon className="h-6 w-6" />,
       content: <Device />,
+    },
+    {
+      title: "Developer settings",
+      prefix: <CodeIcon className="h-6 w-6" />,
+      content: <DeveloperSettings />,
     },
     {
       title: "About",

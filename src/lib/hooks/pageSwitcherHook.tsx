@@ -1,10 +1,7 @@
-import type { IpcRenderer } from "electron";
 import { useEffect } from "react";
-import { useLocation } from "react-router";
 
 import { AppState } from "../../states/appState";
 import { ConfigState } from "../../states/configState";
-import { isElectron } from "../electron";
 
 const findPage = (configState: ConfigState, name: string) => {
   return configState.pages.sorted.findIndex((id) => {
@@ -36,17 +33,14 @@ export const usePageSwitcher = (props: {
   appState: AppState;
 }) => {
   const { configState, appState } = props;
-  const location = useLocation();
   useEffect(() => {
-    if (!isElectron()) return () => {};
-    if (location.pathname !== "/") return () => {};
-    const ipc = (window as any).ipcRenderer as IpcRenderer;
-    const callback: (event: Electron.IpcRendererEvent, name: string) => void = (
-      event,
-      name
-    ) => {
-      (async () => {
-        // check if we have a page that looks for this window name
+
+    if (!(navigator as any).serial) return () => {};
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch("http://localhost:8080/window");
+        if (!res.ok) return false;
+        let name = await res.text();
         let page = findPage(configState, name);
         // if no, look if we have a collection
         const collection =
@@ -56,8 +50,7 @@ export const usePageSwitcher = (props: {
           if (currentPageString === undefined) return;
           const currentPageIndex = parseInt(currentPageString);
           if (page + 1) {
-            if (currentPageIndex !== page)
-              appState.serialApi?.setCurrentPage(page);
+            if (currentPageIndex !== page) appState.serialApi?.setCurrentPage(page);
           } else if (collection) {
             const currentId = configState.pages.sorted[currentPageIndex];
             if (!collection.pages.includes(currentId)) {
@@ -68,9 +61,11 @@ export const usePageSwitcher = (props: {
             }
           }
         }
-      })();
-    };
-    ipc.on("change_page", callback);
-    return () => ipc.off("change_page", callback);
-  }, [configState, appState, location]);
+      } catch {
+        console.log("error, companion probably not running")
+      }
+      
+    }, 300);
+    return () => {console.log("clearing interval", interval); clearInterval(interval)};
+  }, [configState, appState.serialApi])
 };

@@ -32,7 +32,7 @@ jobs:
         run: npm i
 
       - name: build
-        run: CI=false npm run build:web
+        run: CI=false npm run build
 
       - name: Deploy
         # You may pin to the exact commit or the version.
@@ -44,7 +44,7 @@ jobs:
           TARGET: "/var/www/fddev.gosewis.ch/"
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           # The local folder to copy, defaults to root project folder
-          SOURCE: "web/build/"
+          SOURCE: "build/"
 
       - name: Actions for Discord
         uses: Ilshidur/action-discord@0.0.2
@@ -58,40 +58,3 @@ jobs:
         env:
           CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-
-  build-binaries:
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v1
-        with:
-          # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0
-          node-version: 16 # optional, default is 10.x
-
-      - run: ls
-
-      - name: npm i
-        # You may pin to the exact commit or the version.
-        # uses: EgorDm/gha-yarn-node-cache@5e3a518810b21a8e0e1d236a3db83a18cfc1be9e
-        run: npm i
-
-      - name: install build requirements
-        run: sudo apt-add-repository "ppa:ondrej/php" -y && sudo dpkg --add-architecture i386 && sudo apt update && sudo apt install -y wine wine32 mono-complete rpm
-
-      - name: install mono
-        run: wget https://dl.winehq.org/wine/wine-mono/6.4.0/wine-mono-6.4.0-x86.msi && wine msiexec /i ./wine-mono-6.4.0-x86.msi
-
-      - name: build
-        run: CI=false npm run build
-
-      - uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          artifacts: "build/freedeck_*,build/FreeDeck*"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: always up-to-date. maybe unstable
-          tag: "dev"
-          commit: develop

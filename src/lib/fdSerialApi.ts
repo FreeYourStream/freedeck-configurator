@@ -36,12 +36,12 @@ export class FDSerialAPI {
 
   async connect() {
     if (!this.connected)
-      return this.Serial.request().then(() => {
-        this.connected = connectionStatus.connect;
-        Object.values(this.connectCallbacks).forEach((cb) =>
-          cb(connectionStatus.connect)
-        );
-      });
+    return this.Serial.request().then(() => {
+      this.connected = connectionStatus.connect;
+      Object.values(this.connectCallbacks).forEach((cb) => 
+        cb(connectionStatus.connect)
+      );
+    });
   }
 
   async getFirmwareVersion() {
@@ -69,6 +69,14 @@ export class FDSerialAPI {
       throw new Error("not connected");
     this.Serial.flush();
     await this.write([commands.init, commands.setCurrentPage, goTo.toString()]);
+  }
+
+  async writeToScreen(text: string, screen = 0, size = 1) {
+    if (this.connected === connectionStatus.disconnect)
+      throw new Error("not connected");
+    this.Serial.flush();
+    await this.write([commands.init, commands.oledClear, screen]);
+    await this.write([commands.init, commands.oledWriteLine, screen, 0, size, text]);
   }
 
   registerOnConStatusChange(callback: connectCallback): number {
@@ -188,12 +196,13 @@ export class FDSerialAPI {
       }
       mappedData.push(0xa);
     });
-    console.log("sending to freedeck", mappedData);
+    // console.log("sending to freedeck", mappedData);
     await this.Serial.write(mappedData);
   }
 
   private onConnectionChange = async (status: connectionStatus) => {
     this.connected = status;
+    console.log({status})
     Object.values(this.connectCallbacks).forEach((cb) => cb(status));
   };
 }
