@@ -16,6 +16,7 @@ export class FDSerialAPI {
   Serial: SerialConnector;
   connected: connectionStatus = connectionStatus.disconnect;
   connectCallbacks: { [x: number]: connectCallback } = {};
+  blockCommunication: boolean = false;
   constructor(options: SerialOptions = {}) {
     this.Serial = new SerialConnector(
       {
@@ -36,15 +37,16 @@ export class FDSerialAPI {
 
   async connect() {
     if (!this.connected)
-    return this.Serial.request().then(() => {
-      this.connected = connectionStatus.connect;
-      Object.values(this.connectCallbacks).forEach((cb) => 
-        cb(connectionStatus.connect)
-      );
-    });
+      return this.Serial.request().then(() => {
+        this.connected = connectionStatus.connect;
+        Object.values(this.connectCallbacks).forEach((cb) =>
+          cb(connectionStatus.connect)
+        );
+      });
   }
 
   async getFirmwareVersion() {
+    if(this.blockCommunication) throw new Error("reading is blocked")
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
@@ -56,6 +58,7 @@ export class FDSerialAPI {
   }
 
   async getCurrentPage() {
+    if(this.blockCommunication) throw new Error("reading is blocked")
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
@@ -65,6 +68,7 @@ export class FDSerialAPI {
   }
 
   async setCurrentPage(goTo: number) {
+    if(this.blockCommunication) throw new Error("writing is blocked")
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
@@ -72,11 +76,19 @@ export class FDSerialAPI {
   }
 
   async writeToScreen(text: string, screen = 0, size = 1) {
+    if(this.blockCommunication) throw new Error("reading is blocked")
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
     await this.write([commands.init, commands.oledClear, screen]);
-    await this.write([commands.init, commands.oledWriteLine, screen, 0, size, text]);
+    await this.write([
+      commands.init,
+      commands.oledWriteLine,
+      screen,
+      0,
+      size,
+      text,
+    ]);
   }
 
   registerOnConStatusChange(callback: connectCallback): number {
@@ -98,6 +110,8 @@ export class FDSerialAPI {
   ) {
     const fwVersion = await this.getFirmwareVersion();
     console.log(fwVersion);
+
+    this.blockCommunication = true;
     if (fwVersion.split(".")[0] === "1") {
       console.log("OLD FIRMWARE", fwVersion);
       await this.Serial.write([0x1]);
@@ -106,7 +120,10 @@ export class FDSerialAPI {
     }
 
     const fileSizeStr = await this.readAsciiLine();
-    if (!fileSizeStr.length) throw new Error("could not receive filesize");
+    if (!fileSizeStr.length) {
+      this.blockCommunication = false;
+      throw new Error("could not receive filesize");
+    }
     const fileSize = parseInt(fileSizeStr);
     const data: number[] = [];
     const transferStartedTime = new Date().getTime();
@@ -121,6 +138,7 @@ export class FDSerialAPI {
       data.push(...received);
     }
     progressCallback?.(data.length, fileSize, transferStartedTime);
+    this.blockCommunication = false;
     return Buffer.from(data.slice(0, fileSize));
   }
 
@@ -133,6 +151,8 @@ export class FDSerialAPI {
     ) => void
   ) {
     const fwVersion = await this.getFirmwareVersion();
+
+    this.blockCommunication = true;
     const fileSize = config.length.toString();
     if (fwVersion.split(".")[0] === "1") {
       console.log(
@@ -164,6 +184,7 @@ export class FDSerialAPI {
       } while (lastLine !== fileSize);
     });
     await this.Serial.write(config);
+    this.blockCommunication = false;
   }
 
   private async readAsciiLine() {
@@ -202,7 +223,7 @@ export class FDSerialAPI {
 
   private onConnectionChange = async (status: connectionStatus) => {
     this.connected = status;
-    console.log({status})
+    console.log({ status });
     Object.values(this.connectCallbacks).forEach((cb) => cb(status));
   };
 }
