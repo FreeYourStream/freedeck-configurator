@@ -25,7 +25,8 @@
     "react-hot-toast": "^2.1.1",
     "react-router-dom": "^6.0.2",
     "uuid": "^8.3.2",
-    "web-vitals": "^2.1.2"
+    "web-vitals": "^2.1.2",
+    "worker-interval": "^1.0.6"
   },
   "scripts": {
     "start": "TAILWIND_MODE=watch craco start",

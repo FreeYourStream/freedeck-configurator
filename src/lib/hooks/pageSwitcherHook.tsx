@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import * as workerInterval from "worker-interval";
 
 import { AppState } from "../../states/appState";
 import { ConfigState } from "../../states/configState";
@@ -38,9 +39,7 @@ const run = async (configState: ConfigState, appState: AppState) => {
     const collection =
       page !== -1 ? findCollectionPage(configState, name) : undefined;
     if (page + 1 || collection) {
-      console.time("page")
       const currentPageString = await appState.serialApi?.getCurrentPage();
-      console.timeEnd("page")
       if (currentPageString === undefined) return;
       const currentPageIndex = parseInt(currentPageString);
       if (page + 1) {
@@ -56,9 +55,9 @@ const run = async (configState: ConfigState, appState: AppState) => {
       }
     }
   } catch {
-    console.log("error, companion probably not running")
+    console.log("error, companion probably not running");
   }
-}
+};
 
 export const usePageSwitcher = (props: {
   configState: ConfigState;
@@ -68,16 +67,16 @@ export const usePageSwitcher = (props: {
   useEffect(() => {
     if (!(navigator as any).serial) return () => {};
     let running = false;
-    const interval = setInterval(async () => {
-      console.log(interval);
-      if(!running){
-        console.time("a");
+    const interval = workerInterval.setInterval(async () => {
+      if (!running) {
         running = true;
         await run(configState, appState);
         running = false;
-        console.timeEnd("a");
       }
     }, 300);
-    return () => {console.log("clearing interval", interval); clearInterval(interval)};
-  }, [configState, appState.serialApi])
+    return () => {
+      console.log("clearing interval", interval);
+      if (interval) workerInterval.clearInterval(interval);
+    };
+  }, [configState, appState.serialApi]);
 };

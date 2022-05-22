@@ -1,3 +1,5 @@
+import * as workerInterval from "worker-interval";
+
 import { isMacOS } from "./util";
 
 export type SerialFilter = { usbVendorId: number }[];
@@ -166,7 +168,10 @@ export class SerialConnector {
 
   private async sleep(ms: number) {
     return new Promise((res, rej) => {
-      setTimeout(() => res(true), ms);
+      const interval = workerInterval.setInterval(() => {
+        if (interval) workerInterval.clearInterval(interval);
+        res(true);
+      }, ms);
     });
   }
 }

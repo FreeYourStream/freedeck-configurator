@@ -7,7 +7,6 @@ import {
   NormalizedCacheObject,
 } from "@apollo/client";
 import { RefreshIcon } from "@heroicons/react/outline";
-import React from "react";
 import ReactDOM from "react-dom";
 
 import App from "./App";
@@ -24,7 +23,6 @@ const main = async () => {
   //   window.onbeforeunload = function () {
   //     return "Data will be lost if you leave the page, are you sure?";
   //   };
-
   const awaitedDefaultConfigState = await defaultConfigState();
   const awaitedDefaultAppState = await defaultAppState();
   client = new ApolloClient({

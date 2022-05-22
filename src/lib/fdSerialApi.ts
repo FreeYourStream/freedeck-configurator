@@ -46,7 +46,7 @@ export class FDSerialAPI {
   }
 
   async getFirmwareVersion() {
-    if(this.blockCommunication) throw new Error("reading is blocked")
+    if (this.blockCommunication) throw new Error("reading is blocked");
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
@@ -58,7 +58,7 @@ export class FDSerialAPI {
   }
 
   async getCurrentPage() {
-    if(this.blockCommunication) throw new Error("reading is blocked")
+    if (this.blockCommunication) throw new Error("reading is blocked");
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
@@ -68,15 +68,16 @@ export class FDSerialAPI {
   }
 
   async setCurrentPage(goTo: number) {
-    if(this.blockCommunication) throw new Error("writing is blocked")
+    if (this.blockCommunication) throw new Error("writing is blocked");
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
+    console.log("goto ", goTo);
     await this.write([commands.init, commands.setCurrentPage, goTo.toString()]);
   }
 
   async writeToScreen(text: string, screen = 0, size = 1) {
-    if(this.blockCommunication) throw new Error("reading is blocked")
+    if (this.blockCommunication) throw new Error("reading is blocked");
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
