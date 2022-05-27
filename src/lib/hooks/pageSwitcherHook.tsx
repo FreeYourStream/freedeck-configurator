@@ -4,6 +4,8 @@ import * as workerInterval from "worker-interval";
 import { AppState } from "../../states/appState";
 import { ConfigState } from "../../states/configState";
 
+let lastPageSent = -1;
+
 const findPage = (configState: ConfigState, name: string) => {
   return configState.pages.sorted.findIndex((id) => {
     const page = configState.pages.byId[id];
@@ -31,7 +33,7 @@ const findCollectionPage = (configState: ConfigState, name: string) => {
 
 const run = async (configState: ConfigState, appState: AppState) => {
   try {
-    const res = await fetch("http://localhost:8080/window");
+    const res = await fetch("http://localhost:8000/current_window");
     if (!res.ok) return false;
     let name = await res.text();
     let page = findPage(configState, name);
@@ -43,14 +45,20 @@ const run = async (configState: ConfigState, appState: AppState) => {
       if (currentPageString === undefined) return;
       const currentPageIndex = parseInt(currentPageString);
       if (page + 1) {
-        if (currentPageIndex !== page) appState.serialApi?.setCurrentPage(page);
+        if (currentPageIndex !== page && page !== lastPageSent) {
+          appState.serialApi?.setCurrentPage(page);
+          lastPageSent = page;
+        }
       } else if (collection) {
         const currentId = configState.pages.sorted[currentPageIndex];
         if (!collection.pages.includes(currentId)) {
           const firstCollectionPage = configState.pages.sorted.findIndex(
             (pid) => pid === collection.pages[0]
           );
-          appState.serialApi?.setCurrentPage(firstCollectionPage);
+          if (firstCollectionPage !== lastPageSent) {
+            appState.serialApi?.setCurrentPage(firstCollectionPage);
+            lastPageSent = firstCollectionPage;
+          }
         }
       }
     }
