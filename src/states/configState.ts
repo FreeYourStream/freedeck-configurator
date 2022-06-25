@@ -174,6 +174,15 @@ export interface IConfigReducer extends Actions<ConfigState> {
       buttonBIndex: number;
     }
   ): Promise<ConfigState>;
+  copyButton(
+    state: ConfigState,
+    data: {
+      pageSrcId: string;
+      pageDestId: string;
+      buttonSrcIndex: number;
+      buttonDestIndex: number;
+    }
+  ): Promise<ConfigState>;
   switchPages(
     state: ConfigState,
     data: {
@@ -511,6 +520,13 @@ export const configReducer: IConfigReducer = {
       state.pages.byId[pageBId].displayButtons[buttonBIndex]
     );
     state.pages.byId[pageBId].displayButtons[buttonBIndex] = cloneDeep(tempA);
+    return saveConfigToLocalStorage(state);
+  },
+  async copyButton(state, data) {
+    const { pageSrcId, pageDestId, buttonSrcIndex, buttonDestIndex } = data;
+    state.pages.byId[pageDestId].displayButtons[buttonDestIndex] = cloneDeep(
+      state.pages.byId[pageSrcId].displayButtons[buttonSrcIndex]
+    );
     return saveConfigToLocalStorage(state);
   },
   async updateAllDefaultBackImages(state) {

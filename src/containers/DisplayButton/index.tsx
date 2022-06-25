@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 import { ActionPreview } from "../../lib/components/ActionPreview";
 import { ImagePreview } from "../../lib/components/ImagePreview";
+import { AppStateContext } from "../../states/appState";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -15,6 +16,7 @@ export const DisplayButton: React.FC<{
   displayIndex: number;
 }> = ({ pageId, displayIndex }) => {
   const configState = useContext(ConfigStateContext);
+  const appState = useContext(AppStateContext);
   const configDispatch = useContext(ConfigDispatchContext);
   const page = configState.pages.byId[pageId];
   const display =
@@ -36,12 +38,19 @@ export const DisplayButton: React.FC<{
     options: {},
     accept: "display",
     drop: (item, monitor): void =>
-      configDispatch.switchButtons({
-        pageAId: targetPageId,
-        buttonAIndex: targetDisplayIndex,
-        pageBId: monitor.getItem().pageId,
-        buttonBIndex: monitor.getItem().displayIndex,
-      }),
+      appState.ctrlDown
+        ? configDispatch.copyButton({
+            pageDestId: targetPageId,
+            buttonDestIndex: targetDisplayIndex,
+            pageSrcId: monitor.getItem().pageId,
+            buttonSrcIndex: monitor.getItem().displayIndex,
+          })
+        : configDispatch.switchButtons({
+            pageAId: targetPageId,
+            buttonAIndex: targetDisplayIndex,
+            pageBId: monitor.getItem().pageId,
+            buttonBIndex: monitor.getItem().displayIndex,
+          }),
     collect: () => ({
       targetDisplayIndex: displayIndex,
       targetPageId: pageId,
