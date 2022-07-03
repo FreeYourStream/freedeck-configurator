@@ -100,6 +100,10 @@ export interface IConfigReducer extends Actions<ConfigState> {
     data: { pageId: string; name: string }
   ): Promise<ConfigState>;
   deletePage(state: ConfigState, pageId: string): Promise<ConfigState>;
+  deleteDisplayButton(
+    state: ConfigState,
+    data: { pageId: string; buttonIndex: number }
+  ): Promise<ConfigState>;
   setPagePublished(
     state: ConfigState,
     data: { pageId: string; forkedId?: string }
@@ -338,6 +342,11 @@ export const configReducer: IConfigReducer = {
     }
     state.pages.sorted[aIndex] = pageBId;
     state.pages.sorted[bIndex] = pageAId;
+    return saveConfigToLocalStorage(state);
+  },
+  async deleteDisplayButton(state, { pageId, buttonIndex }) {
+    state.pages.byId[pageId].displayButtons[buttonIndex] =
+      await createDefaultDisplayButton();
     return saveConfigToLocalStorage(state);
   },
   async deletePage(state, pageId) {

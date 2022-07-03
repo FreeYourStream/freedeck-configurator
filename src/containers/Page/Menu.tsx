@@ -28,7 +28,7 @@ export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
   const { data } = useMeQuery();
   const [deleteOpen, setDeleteOpen] = useState(false);
   return (
-    <div className="flex items-center justify-center w-8 h-8  cursor-pointer shadow-lg">
+    <div className="flex items-center justify-center w-9 h-9  cursor-pointer shadow-lg">
       <Modal
         isOpen={deleteOpen}
         onAccept={() => {
