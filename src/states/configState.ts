@@ -54,8 +54,8 @@ export interface ConfigState {
 }
 export const defaultConfigState = async (): Promise<ConfigState> => ({
   configVersion: (await import("../../package.json")).configFileVersion,
-  brightness: 200,
-  screenSaverTimeout: 0 * 60 * 1000, // in milliseconds
+  brightness: 100,
+  screenSaverTimeout: 1 * 60 * 1000, // in milliseconds
   width: 3,
   height: 2,
   pages: {
