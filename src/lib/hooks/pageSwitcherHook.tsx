@@ -16,8 +16,11 @@ const findPage = (configState: ConfigState, name: string): number => {
       }
     } else {
       if (!page.windowName) continue;
-      if (name.toLowerCase().indexOf(page.windowName.toLowerCase()) !== -1) {
-        return i;
+      const windowNames = page.windowName
+        .split(",")
+        .map((s) => s.trim().toLowerCase());
+      for (const windowName of windowNames) {
+        if (name.toLowerCase().indexOf(windowName) !== -1) return i;
       }
     }
   }
@@ -33,8 +36,11 @@ const findCollectionPage = (configState: ConfigState, name: string): number => {
       }
     } else {
       if (!col.windowName) continue;
-      if (name.toLowerCase().indexOf(col.windowName.toLowerCase())) {
-        return i;
+      const windowNames = col.windowName
+        .split(",")
+        .map((s) => s.trim().toLowerCase());
+      for (const windowName of windowNames) {
+        if (name.toLowerCase().indexOf(windowName) !== -1) return i;
       }
     }
   }
