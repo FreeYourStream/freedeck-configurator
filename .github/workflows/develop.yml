@@ -49,7 +49,7 @@ jobs:
       - name: Actions for Discord
         uses: Ilshidur/action-discord@0.0.2
         env:
-          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
+          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL_CONF_DEV }}
         with:
           args: "A new develop version has been deployed! https://fddev.gosewis.ch"
 

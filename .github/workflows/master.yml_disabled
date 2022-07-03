@@ -53,7 +53,7 @@ jobs:
       - name: Actions for Discord
         uses: Ilshidur/action-discord@0.0.2
         env:
-          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL_STABLE }}
+          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL_CONF_STABLE }}
         with:
           args: "🎉🎉🎉 A new stable Configurator version has been released and published! ${{ steps.previoustag.outputs.tag }} 🎉🎉🎉 https://freedeck.gosewis.ch"
 
