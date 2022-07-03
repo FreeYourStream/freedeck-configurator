@@ -2,6 +2,7 @@ import {
   ArrowCircleLeftIcon,
   ChipIcon,
   CodeIcon,
+  CollectionIcon,
   InformationCircleIcon,
   SunIcon,
   SwitchVerticalIcon,
@@ -17,7 +18,6 @@ import { DefaultBackButtonSettings } from "./DefaultBackButtonSettings";
 import { DeveloperSettings } from "./DeveloperSettings";
 import { Device } from "./Device";
 import { Displays } from "./Displays";
-import { Serial } from "./Serial";
 
 export const GlobalSettings: React.FC<{}> = () => {
   const configDispatch = useContext(ConfigDispatchContext);
@@ -49,12 +49,6 @@ export const GlobalSettings: React.FC<{}> = () => {
       content: <About />,
     },
   ];
-  if ((window as any).Serial)
-    tabs.splice(2, 0, {
-      title: "Serial",
-      prefix: <SwitchVerticalIcon className="h-6 w-6" />,
-      content: <Serial />,
-    });
   return (
     <FDWindow
       className="w-dp-settings"

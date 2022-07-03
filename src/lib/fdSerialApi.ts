@@ -57,14 +57,14 @@ export class FDSerialAPI {
     else return fwVersion;
   }
 
-  async getCurrentPage() {
+  async getCurrentPage(): Promise<number> {
     if (this.blockCommunication) throw new Error("reading is blocked");
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
     await this.write([commands.init, commands.getCurrentPage]);
     const currentPage = await this.readAsciiLine();
-    return currentPage;
+    return parseInt(currentPage);
   }
 
   async setCurrentPage(goTo: number) {
