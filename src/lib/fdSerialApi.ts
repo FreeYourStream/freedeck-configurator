@@ -72,7 +72,6 @@ export class FDSerialAPI {
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
-    console.log("goto ", goTo);
     await this.write([commands.init, commands.setCurrentPage, goTo.toString()]);
   }
 

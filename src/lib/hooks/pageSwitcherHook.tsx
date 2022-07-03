@@ -48,61 +48,29 @@ const run = async (configState: ConfigState, appState: AppState) => {
     let windowName = await res.text();
     if (windowName === lastWindowName) return;
     lastWindowName = windowName;
-    console.log("windowName", windowName);
-    console.log("DEBUG", 1);
     let pageIndex = findPage(configState, windowName);
     if (pageIndex === -1) {
-      console.log("DEBUG", 2);
       const collectionIndex = findCollectionPage(configState, windowName);
       if (collectionIndex === -1) return;
-      console.log("DEBUG", 3);
       const currentPageIndex = await appState.serialApi?.getCurrentPage();
       if (currentPageIndex === undefined) return;
-      console.log("DEBUG", 4);
       const currentPageId = configState.pages.sorted[currentPageIndex];
       const collection =
         configState.collections.byId[
           configState.collections.sorted[collectionIndex]
         ];
       if (collection.pages.includes(currentPageId)) return;
-      console.log("DEBUG", 5);
       const pageFoundIndex = configState.pages.sorted.findIndex(
         (id) => id === collection.pages[0]
       );
       if (pageFoundIndex === -1) return;
-      console.log("DEBUG", 6);
-      console.log("switching to page", pageFoundIndex);
-      // if (lastPageTimeout) clearInterval(lastPageTimeout);
-      // lastPageSent = pageFoundIndex;
-      // lastPageTimeout = setTimeout(() => {
-      //   if (appState.autoSwitchBackPageTimeout) lastPageSent = -1;
-      // }, appState.autoSwitchBackPageTimeout) as unknown as number;
       appState.serialApi?.setCurrentPage(pageFoundIndex);
     } else {
+      const currentPageIndex = await appState.serialApi?.getCurrentPage();
+      if (currentPageIndex === undefined || currentPageIndex === pageIndex)
+        return;
+      appState.serialApi?.setCurrentPage(pageIndex);
     }
-
-    // if (pageIndex + 1 || collection) {
-    //   const currentPageString = await appState.serialApi?.getCurrentPage();
-    //   if (currentPageString === undefined) return;
-    //   const currentPageIndex = parseInt(currentPageString);
-    //   if (pageIndex + 1) {
-    //     if (currentPageIndex !== pageIndex && pageIndex !== lastPageSent) {
-    //       appState.serialApi?.setCurrentPage(pageIndex);
-    //       lastPageSent = pageIndex;
-    //     }
-    //   } else if (collection) {
-    //     const currentId = configState.pages.sorted[currentPageIndex];
-    //     if (!collection.pages.includes(currentId)) {
-    //       const firstCollectionPage = configState.pages.sorted.findIndex(
-    //         (pid) => pid === collection.pages[0]
-    //       );
-    //       if (firstCollectionPage !== lastPageSent) {
-    //         appState.serialApi?.setCurrentPage(firstCollectionPage);
-    //         lastPageSent = firstCollectionPage;
-    //       }
-    //     }
-    //   }
-    // }
   } catch {
     console.log("error, companion probably not running");
   }
