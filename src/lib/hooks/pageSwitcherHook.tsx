@@ -109,5 +109,6 @@ export const usePageSwitcher = (props: {
       console.log("clearing interval", interval);
       if (interval) workerInterval.clearInterval(interval);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [configState, appState.serialApi]);
 };

@@ -2,10 +2,8 @@ import {
   ArrowCircleLeftIcon,
   ChipIcon,
   CodeIcon,
-  CollectionIcon,
   InformationCircleIcon,
   SunIcon,
-  SwitchVerticalIcon,
 } from "@heroicons/react/outline";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router";
