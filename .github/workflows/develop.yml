@@ -41,7 +41,7 @@ jobs:
         with:
           REMOTE_HOST: "78.47.56.63"
           REMOTE_USER: githubactions
-          TARGET: "/var/www/fddev.gosewis.ch/"
+          TARGET: "/var/www/fddev.freeyourstream.com/"
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           # The local folder to copy, defaults to root project folder
           SOURCE: "build/"
