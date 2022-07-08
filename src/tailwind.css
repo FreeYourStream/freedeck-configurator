@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+@layer base {
+  body {
+    @apply bg-gray-900 text-white font-sans;
+  }
+  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      @apply h-4 w-4 rounded bg-white;
+    }
+  }
+
+
+}
+::-webkit-scrollbar {
+  @apply w-2;
+}
+::-webkit-scrollbar-track {
+  @apply bg-gray-200;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-500;
+}

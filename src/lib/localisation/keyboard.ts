@@ -6,6 +6,10 @@ export const useTranslateKeyboardLayout = (values: number[]) => {
   const translatable = !(navigator as any).keyboard;
   const [translatedKeys, setTranslatedKeys] = useState<string[]>([]);
   useEffect(() => {
+    if (!values || !values.length) {
+      setTranslatedKeys([]);
+      return;
+    }
     if (translatable) {
       setTranslatedKeys(
         values.map(
@@ -17,7 +21,6 @@ export const useTranslateKeyboardLayout = (values: number[]) => {
       );
     } else {
       (navigator as any).keyboard.getLayoutMap().then((layout: any) => {
-        console.log(layout);
         const translatedKeys = values.map((value) => {
           const key =
             Object.keys(keys).find(

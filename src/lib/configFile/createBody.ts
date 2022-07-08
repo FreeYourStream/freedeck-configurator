@@ -1,38 +1,83 @@
 import { Buffer } from "buffer";
 
-import { IButtonPage, IConvertedImagePage } from "../../App";
-import { EAction } from "../../definitions/modes";
+import { ActionValue, EAction, FDSettings } from "../../definitions/modes";
+import { DisplayButton, Pages } from "../../generated";
 import { optimizeForSSD1306 } from "./ssd1306";
 
-export const createButtonBody = (buttonPages: IButtonPage[]) => {
-  const buttonRowCount = buttonPages.length * buttonPages[0].length;
-  const buttonRows = new Buffer(16 * buttonRowCount);
-  buttonPages.forEach((buttonPage, pageIndex) => {
-    buttonPage.forEach((button, buttonIndex) => {
-      const rowOffset = buttonPage.length * 16 * pageIndex + buttonIndex * 16;
-      // add 16 if the longpress has any functionality
-      const secondaryAddition = (button.secondary.enabled ? 1 : 0) * 16;
+const writeAction = (
+  buttonRows: Buffer,
+  db: DisplayButton,
+  pages: Pages,
+  rowOffset: number,
+  isSecondary: boolean
+) => {
+  const secondaryAddition =
+    (!isSecondary && db.button.secondary.mode !== EAction.noop ? 1 : 0) * 16;
+  const buttonAction = isSecondary ? db.button.secondary : db.button.primary;
+  const dataOffset = rowOffset + (isSecondary ? 8 : 0);
+  buttonRows.writeUInt8(
+    //@ts-ignore
+    ActionValue[buttonAction.mode] + secondaryAddition,
+    dataOffset
+  );
+  switch (buttonAction.mode) {
+    case EAction.changePage:
+      const pageIndex = pages.sorted.findIndex(
+        (id) => id === buttonAction.values[EAction.changePage]
+      );
+      buttonRows.writeUInt8(pageIndex, dataOffset + 1);
+      break;
+    case EAction.hotkeys:
+      buttonAction.values[EAction.hotkeys].forEach((hotkey, index) =>
+        buttonRows.writeUInt8(hotkey, dataOffset + index + 1)
+      );
+      break;
+    case EAction.special_keys:
+      buttonRows.writeUInt8(
+        buttonAction.values[EAction.special_keys],
+        dataOffset + 1
+      );
+      break;
+    case EAction.text:
+      buttonAction.values[EAction.text].forEach((text, index) =>
+        buttonRows.writeUInt8(text, dataOffset + index + 1)
+      );
+      break;
+    case EAction.settings:
+      buttonRows.writeUInt8(
+        buttonAction.values[EAction.settings].setting!,
+        dataOffset + 1
+      );
+      if (
+        buttonAction.values[EAction.settings].setting ===
+        FDSettings.absolute_brightness
+      )
+        buttonRows.writeUInt8(
+          buttonAction.values[EAction.settings].value!,
+          dataOffset + 2
+        );
 
-      // first 8 primary bytes
-      if (button.primary.values.length !== 0) {
-        const primaryMode = button.primary.mode + secondaryAddition;
-        buttonRows.writeUInt8(primaryMode, rowOffset);
-        button.primary.values.forEach((value, index) =>
-          buttonRows.writeUInt8(value, rowOffset + index + 1)
-        );
-      } else {
-        buttonRows.writeUInt8(EAction.noop + secondaryAddition, rowOffset);
-      }
-      // 8 secondary bytes
-      if (button.primary.mode === EAction.text) return;
-      if (button.secondary.values.length !== 0) {
-        const secondaryMode = button.secondary.mode;
-        buttonRows.writeUInt8(secondaryMode, rowOffset + 8);
-        button.secondary.values.forEach((value, index) =>
-          buttonRows.writeUInt8(value, rowOffset + index + 1 + 8)
-        );
-      } else {
-        buttonRows.writeUInt8(EAction.noop + secondaryAddition, rowOffset + 8);
+      break;
+  }
+  return buttonRows;
+};
+
+export const createButtonBody = (pages: Pages) => {
+  const buttonRowCount =
+    pages.sorted.length * pages.byId[pages.sorted[0]].displayButtons.length;
+  let buttonRows = new Buffer(16 * buttonRowCount);
+  pages.sorted.forEach((pageId, pageIndex) => {
+    const page = pages.byId[pageId];
+    page.displayButtons.forEach((db, buttonIndex) => {
+      const rowOffset =
+        page.displayButtons.length * 16 * pageIndex + buttonIndex * 16;
+      // add 16 if the longpress has any functionality
+      buttonRows = writeAction(buttonRows, db, pages, rowOffset, false);
+      if (
+        db.button.primary.mode !== EAction.text &&
+        db.button.secondary.mode !== EAction.noop
+      ) {
+        buttonRows = writeAction(buttonRows, db, pages, rowOffset, true);
       }
     });
   });
@@ -40,14 +85,18 @@ export const createButtonBody = (buttonPages: IButtonPage[]) => {
   return buttonRows;
 };
 
-export const createImageBody = (imagePages: IConvertedImagePage[]) => {
+export const createImageBody = (pages: Pages) => {
   let imageBuffer = new Buffer(0);
-  const bmpHeaderSize = imagePages[0][0].readUInt32LE(10);
-  imagePages.forEach((imagePage) => {
-    imagePage.forEach((image) => {
+  const bmpHeaderSize =
+    pages.byId[
+      pages.sorted[0]
+    ].displayButtons[0].display.convertedImage.readUInt32LE(10);
+  pages.sorted.forEach((id) => {
+    const page = pages.byId[id];
+    page.displayButtons.forEach((db) => {
       imageBuffer = Buffer.concat([
         imageBuffer,
-        optimizeForSSD1306(image.slice(bmpHeaderSize)),
+        optimizeForSSD1306(db.display.convertedImage.slice(bmpHeaderSize)),
       ]);
     });
   });

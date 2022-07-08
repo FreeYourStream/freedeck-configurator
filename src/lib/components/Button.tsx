@@ -1,137 +1,64 @@
+import c from "clsx";
 import React from "react";
-import styled from "styled-components";
-
-import { colors } from "../../definitions/colors";
-import { Icons } from "./Icons";
-
-export const FDButtonInner = styled.div<{
-  size: number;
-  px?: number;
-  py?: number;
-  disabled?: boolean;
-}>`
-  padding: ${(p) => (p.size === 1 ? "0px" : p.size === 2 ? "4px" : "8px")};
-  ${(p) => (p.px ? `padding-left: ${p.px}px;padding-right: ${p.px}px;` : "")}
-  font-family: "Barlow", sans-serif;
-  position: relative;
-  font-weight: 500;
-  width: auto;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ecf0f1;
-  text-decoration: none;
-  border-radius: 5px;
-  border: solid 1px ${(p) => (!p.disabled ? colors.accent : colors.white)};
-  background: ${(p) => (!p.disabled ? colors.accentDark : colors.lightGray)};
-  white-space: nowrap;
-  transition: all 0.1s;
-  box-shadow: 0px 0px 0px, 0px 0px 0px,
-    0px 6px 0px ${(p) => (!p.disabled ? colors.accentDark : colors.lightGray)},
-    0px 0px 0px;
-  cursor: pointer;
-  user-select: none;
-`;
-
-const Font = styled.div<{ size: number }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: ${(p) => (p.size === 1 ? "16px" : p.size === 2 ? "20px" : "24px")};
-`;
-export const Spacer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 4px;
-`;
-const Wrapper = styled.div<{
-  ml: number;
-  mt: number;
-  width: string;
-  disabled: boolean;
-}>`
-  transition: all 0.1s;
-  width: ${(p) => p.width};
-  padding-bottom: 8px;
-  margin-left: ${(p) => p.ml}px;
-  margin-top: ${(p) => p.mt}px;
-  ${(p) =>
-    !p.disabled &&
-    `:hover {
-    padding-top: 6px;
-    padding-bottom: 2px;
-  }
-  &:hover > ${FDButtonInner} {
-    box-shadow: 0px 0px 0px, 0px 0px 0px, 0px 2px 0px ${colors.accentDark},
-      0px 0px 0px;
-  }
-
-  :active {
-    padding-top: 6px;
-    padding-bottom: 0px;
-  }
-  &:active > ${FDButtonInner} {
-    box-shadow: none;
-  }`}
-`;
-const Label = styled.label``;
 
 export interface IFDButtonProps {
+  className?: string;
   disabled?: boolean;
-  children: any;
-  htmlFor?: any;
+  type?: "danger" | "normal" | "primary" | "success";
+  children?: any;
   onClick?: (e: any) => void;
-  background?: string;
   size?: 1 | 2 | 3;
-  ml?: number;
-  mt?: number;
-  px?: number;
-  py?: number;
-  width?: string;
+  prefix?: JSX.Element;
+  suffix?: JSX.Element;
+  title?: string;
 }
 
-export const FDButton = (props: IFDButtonProps) => (
-  <Wrapper
-    ml={props.ml ?? 0}
-    mt={props.mt ?? 0}
-    width={props.width ?? "auto"}
-    disabled={props.disabled ?? false}
-  >
-    <FDButtonInner
-      size={props.size ?? 2}
-      px={props.px}
-      {...props}
-      onClick={props.disabled ? () => undefined : props.onClick}
-    >
-      <Font size={props.size ?? 2}>{props.children}</Font>
-    </FDButtonInner>
-  </Wrapper>
-);
-export const FDIconButton = (props: IFDButtonProps & { icon?: string }) => {
-  const Icon =
-    //@ts-ignore
-    props.icon && Icons[props.icon.split("/")[0]][props.icon.split("/")[1]];
+export const FDButton = ({
+  className,
+  disabled = false,
+  size = 2,
+  type = "normal",
+  onClick,
+  children,
+  prefix,
+  suffix,
+  title,
+}: IFDButtonProps) => {
+  const sizeClasses = c(
+    size === 1 && "px-3 py-0 space-x-2",
+    size === 2 && "px-4 py-1 space-x-2",
+    size === 3 && "px-5 py-2 space-x-2"
+  );
+
+  const typeClasses = c(
+    type === "danger" &&
+      "bg-danger-500 shadow-lg text-white hover:bg-danger-400 hover:shadow-xl",
+    type === "normal" &&
+      (!disabled
+        ? "bg-gray-400 shadow-lg text-white hover:bg-gray-300 hover:shadow-xl"
+        : "text-gray-400 bg-gray-300"),
+    type === "success" &&
+      (!disabled
+        ? "bg-success-600 shadow-lg text-white hover:bg-success-500 hover:shadow-xl"
+        : "text-gray-200 bg-success-400"),
+    type === "primary" &&
+      (!disabled
+        ? "bg-primary-600 shadow-lg text-white hover:bg-primary-500 hover:shadow-xl"
+        : "text-gray-300 bg-primary-200"),
+    disabled && "cursor-not-allowed"
+  );
+
   return (
-    <Label htmlFor={props.htmlFor}>
-      <Wrapper
-        ml={props.ml ?? 0}
-        mt={props.mt ?? 0}
-        width={props.width ?? "auto"}
-        disabled={props.disabled ?? false}
-      >
-        <FDButtonInner size={props.size ?? 2} px={props.px} {...props}>
-          {props.icon && Icon ? (
-            <Spacer>
-              <Icon size={22} />
-            </Spacer>
-          ) : (
-            ""
-          )}
-          <Font size={props.size ?? 2}>{props.children}</Font>
-        </FDButtonInner>
-      </Wrapper>
-    </Label>
+    <div
+      onClick={onClick}
+      title={title}
+      className={`inline-flex items-center text-lg font-normal tracking-wider rounded-md select-none min-w-0 ${sizeClasses} ${typeClasses} ${className}`}
+    >
+      {!!prefix && <span>{prefix}</span>}
+      <span className="overflow-hidden overflow-ellipsis whitespace-nowrap">
+        {children}
+      </span>
+      {!!suffix && <span>{suffix}</span>}
+    </div>
   );
 };

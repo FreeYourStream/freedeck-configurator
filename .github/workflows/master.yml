@@ -41,21 +41,17 @@ jobs:
         with:
           REMOTE_HOST: "78.47.56.63"
           REMOTE_USER: githubactions
-          TARGET: "/var/www/freedeck.gosewis.ch/"
+          TARGET: "/var/www/fdconfig.freeyourstream.com/"
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           # The local folder to copy, defaults to root project folder
           SOURCE: "build/"
 
-      - name: "Get Previous tag"
-        id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@master"
-
       - name: Actions for Discord
         uses: Ilshidur/action-discord@0.0.2
         env:
-          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
+          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL_CONF_STABLE }}
         with:
-          args: "🎉🎉🎉 A new stable Configurator version has been released and published! ${{ steps.previoustag.outputs.tag }} 🎉🎉🎉 https://freedeck.gosewis.ch"
+          args: "🎉🎉🎉 A new stable Configurator version has been released and published! 🎉🎉🎉 https://fdconfig.freeyourstream.com"
 
       - name: Cloudflare Purge Cache
         uses: jakejarvis/cloudflare-purge-action@v0.3.0

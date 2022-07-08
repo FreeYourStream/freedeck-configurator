@@ -1,3 +1,7 @@
+import * as workerInterval from "worker-interval";
+
+import { isMacOS } from "./util";
+
 export type SerialFilter = { usbVendorId: number }[];
 export enum connectionStatus {
   disconnect,
@@ -5,6 +9,7 @@ export enum connectionStatus {
 }
 export interface SerialOptions {
   baudrate?: number;
+  chunksize?: number;
   filters?: SerialFilter;
 }
 type connectCallback = (status: connectionStatus) => void;
@@ -12,6 +17,7 @@ export class SerialConnector {
   buffer: number[];
   writer?: WritableStreamDefaultWriter<ArrayBuffer>;
   filters: SerialFilter;
+  chunkSize: number;
   baudrate: number;
   connectCallback: connectCallback;
   readLoop?: number;
@@ -20,6 +26,7 @@ export class SerialConnector {
   constructor(options: SerialOptions, connectCallback: connectCallback) {
     this.connectCallback = connectCallback;
     this.baudrate = options?.baudrate ?? 4000000;
+    this.chunkSize = options?.chunksize ?? 256;
     this.filters = options?.filters ? options.filters : [];
     this.buffer = [];
     this.connect();
@@ -70,17 +77,30 @@ export class SerialConnector {
       //     // port.open({ baudRate: this.baudrate }).then(console.log);
       //   });
       // }
-      this.openPort(port);
+      await this.openPort(port);
     } catch (err) {
       const message = "There was an error while connecting to serial device";
       throw new Error(message + " " + err);
     }
   }
 
-  write(data: number[] | Uint8Array) {
+  async write(data: number[] | Uint8Array) {
     if (!this.writer) throw new Error("no writer exists for this connection");
-    const arrBuff = new Buffer([...data]);
-    return this.writer.write(arrBuff.buffer);
+    if (isMacOS) {
+      if (data.length > this.chunkSize) {
+        for (let i = 0; i < data.length; i += this.chunkSize) {
+          await this.write(data.slice(i, i + this.chunkSize));
+        }
+        return;
+      }
+
+      const arrBuff = Buffer.from([...data]);
+      await this.writer.write(arrBuff.buffer);
+      await this.sleep(1);
+    } else {
+      const arrBuff = new Buffer([...data]);
+      return this.writer.write(arrBuff.buffer);
+    }
   }
 
   flush() {
@@ -134,22 +154,24 @@ export class SerialConnector {
     if (this.open) return;
     this.open = true;
     await port.open({ baudRate: this.baudrate });
-    const reader: ReadableStreamDefaultReader<Uint8Array> = port.readable.getReader();
     this.writer = port.writable.getWriter();
     this.buffer = [];
-    if (this.readLoop) clearInterval(this.readLoop);
-    this.readLoop = setInterval(async () => {
-      try {
-        const chunkBuffer = await reader.read();
-        if (chunkBuffer.value)
-          this.buffer = [...this.buffer, ...chunkBuffer.value];
-      } catch {}
+
+    const self = this;
+    const bufferWrite = new WritableStream({
+      write(chunk) {
+        self.buffer = [...self.buffer, ...chunk];
+      },
     });
+    port.readable.pipeTo(bufferWrite);
   }
 
   private async sleep(ms: number) {
     return new Promise((res, rej) => {
-      setTimeout(() => res(true), ms);
+      const interval = workerInterval.setInterval(() => {
+        if (interval) workerInterval.clearInterval(interval);
+        res(true);
+      }, ms);
     });
   }
 }

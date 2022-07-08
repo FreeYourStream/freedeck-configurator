@@ -1,31 +1,71 @@
-import React from "react";
+import "./tailwind.css";
+
+import {
+  ApolloClient,
+  ApolloProvider,
+  InMemoryCache,
+  NormalizedCacheObject,
+} from "@apollo/client";
+import { RefreshIcon } from "@heroicons/react/outline";
 import ReactDOM from "react-dom";
-import { toast } from "react-toastify";
 
 import App from "./App";
-import { register } from "./serviceWorker";
+import { FDButton } from "./lib/components/Button";
+import { createToast } from "./lib/createToast";
+import reportWebVitals from "./reportWebVitals";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
+import { defaultAppState } from "./states/appState";
+import { defaultConfigState } from "./states/configState";
 
-if (process.env.NODE_ENV !== "development")
-  window.onbeforeunload = function () {
-    return "Data will be lost if you leave the page, are you sure?";
-  };
+export let client: ApolloClient<NormalizedCacheObject> | undefined;
+const main = async () => {
+  // if (process.env.NODE_ENV !== "development" && !isElectron())
+  //   window.onbeforeunload = function () {
+  //     return "Data will be lost if you leave the page, are you sure?";
+  //   };
+  const awaitedDefaultConfigState = await defaultConfigState();
+  const awaitedDefaultAppState = await defaultAppState();
+  client = new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: process.env.REACT_APP_API_URL + "/graphql",
+    credentials: "include",
+  });
 
-ReactDOM.render(<App />, document.getElementById("root"));
+  ReactDOM.render(
+    <ApolloProvider client={client}>
+      <App
+        defaultConfigState={awaitedDefaultConfigState}
+        defaultAppState={awaitedDefaultAppState}
+      />
+    </ApolloProvider>,
+    document.getElementById("root")
+  );
+};
+main();
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-register({
+serviceWorkerRegistration.register({
   onUpdate: (registration) => {
-    toast("There is an Update! Click here to update.", {
-      autoClose: false,
-      position: "bottom-right",
-      onClick: () => {
-        if (registration && registration.waiting) {
-          registration.waiting.postMessage({ type: "SKIP_WAITING" });
-        }
-        window.location.reload();
-      },
+    createToast({
+      primary: (t) => (
+        <FDButton
+          prefix={<RefreshIcon className="h-4 w-4" />}
+          type="primary"
+          size={2}
+          onClick={async () => {
+            registration.waiting?.postMessage({ type: "SKIP_WAITING" });
+            window.onbeforeunload = () => undefined;
+            window.location.reload();
+          }}
+        >
+          Refresh
+        </FDButton>
+      ),
+      text: "Refresh to load the newest version!",
+      title: "Update available!",
     });
   },
 });
+reportWebVitals();

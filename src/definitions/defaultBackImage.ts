@@ -1,43 +1,35 @@
-import Jimp from "jimp";
+import backImage from "../definitions/back.png";
+import { createDefaultDisplay } from "../definitions/defaultPage";
+import { Display } from "../generated";
+import { generateAdditionalImagery } from "../lib/configFile/parseConfig";
+import { stringToImage } from "../lib/fileToImage";
 
-import { IDefaultBackDisplay } from "../App";
-import * as backImage from "../definitions/back.png";
-import { getDefaultDisplay } from "../definitions/defaultPage";
-import { getEmptyConvertedImage } from "../definitions/emptyConvertedImage";
-
-export const loadDefaultBackDisplay = function (
-  setDefaultBackImage: React.Dispatch<
-    React.SetStateAction<IDefaultBackDisplay>
-  >,
-  forceStock?: boolean
-) {
-  const localDefaultBackImage = localStorage.getItem("defaultBackImage");
-  const localDefaultBackImageSettings = localStorage.getItem(
-    "defaultBackImageSettings"
+export const createDefaultBackDisplay = async function (
+  previousPage?: string
+): Promise<Display> {
+  const localDefaultBackDisplay = JSON.parse(
+    localStorage.getItem("defaultBackDisplay") || "{}"
   );
-  if (!localDefaultBackImage || !localDefaultBackImageSettings || forceStock) {
-    Jimp.read(backImage.default).then((image) => {
-      const mime = image.getMIME();
-      const newMime = mime === "image/jpeg" ? mime : "image/gif";
-      console.log(mime, newMime);
-      image
-        .quality(70)
-        .scaleToFit(256, 128, "")
-        .getBuffer(newMime, async (error, buffer) =>
-          setDefaultBackImage(getStockBackDisplay(await buffer))
-        );
-    });
+  let display: Display = createDefaultDisplay();
+  if (Object.keys(localDefaultBackDisplay).length && previousPage !== "dbd") {
+    localDefaultBackDisplay.convertedImage = Buffer.from(
+      localDefaultBackDisplay.convertedImage
+    );
+    localDefaultBackDisplay.originalImage = Buffer.from(
+      localDefaultBackDisplay.originalImage
+    );
+    display = localDefaultBackDisplay;
   } else {
-    const buffer = Buffer.from(JSON.parse(localDefaultBackImage).data);
-    const settings = JSON.parse(localDefaultBackImageSettings);
-    setDefaultBackImage({ settings, image: buffer });
+    display = {
+      ...display,
+      imageSettings: {
+        ...display.imageSettings,
+        invert: true,
+      },
+      originalImage: await stringToImage(backImage),
+      isGeneratedFromDefaultBackImage: true,
+    };
   }
+  display = await generateAdditionalImagery(display);
+  return display;
 };
-
-export const getStockBackDisplay = (image?: Buffer) => ({
-  image: image ?? getEmptyConvertedImage(),
-  settings: getDefaultDisplay({
-    imageSettings: { invert: true },
-    isGeneratedFromDefaultBackImage: true,
-  }),
-});

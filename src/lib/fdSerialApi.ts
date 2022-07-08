@@ -1,18 +1,34 @@
 import { SerialConnector, SerialOptions, connectionStatus } from "./serial";
+const commands = {
+  init: 0x3,
+  getFirmwareVersion: 0x10,
+  getCurrentPage: 0x30,
+  setCurrentPage: 0x31,
+  getPageCount: 0x32,
+  oledClear: 0x40,
+  oledPower: 0x41,
+  oledWriteLine: 0x42,
+  oledWriteData: 0x43,
+};
 
 type connectCallback = (event: connectionStatus) => void;
 export class FDSerialAPI {
   Serial: SerialConnector;
   connected: connectionStatus = connectionStatus.disconnect;
   connectCallbacks: { [x: number]: connectCallback } = {};
+  blockCommunication: boolean = false;
   constructor(options: SerialOptions = {}) {
     this.Serial = new SerialConnector(
       {
         filters: [
           {
+            usbVendorId: 0xf1f0,
+          },
+          {
             usbVendorId: 0x2341,
           },
         ],
+        chunksize: 62, // this is a magic number -> https://github.com/arduino/ArduinoCore-avr/issues/53
         ...options,
       },
       this.onConnectionChange
@@ -30,14 +46,49 @@ export class FDSerialAPI {
   }
 
   async getFirmwareVersion() {
+    if (this.blockCommunication) throw new Error("reading is blocked");
     if (this.connected === connectionStatus.disconnect)
       throw new Error("not connected");
     this.Serial.flush();
-    this.write([0x3, 0x10]);
+    await this.write([commands.init, commands.getFirmwareVersion]);
     const fwVersion = await this.readAsciiLine();
     // take care about legacy FWs
     if (fwVersion === "") return "1.1.0";
     else return fwVersion;
+  }
+
+  async getCurrentPage(): Promise<number> {
+    if (this.blockCommunication) throw new Error("reading is blocked");
+    if (this.connected === connectionStatus.disconnect)
+      throw new Error("not connected");
+    this.Serial.flush();
+    await this.write([commands.init, commands.getCurrentPage]);
+    const currentPage = await this.readAsciiLine();
+    return parseInt(currentPage);
+  }
+
+  async setCurrentPage(goTo: number) {
+    if (this.blockCommunication) throw new Error("writing is blocked");
+    if (this.connected === connectionStatus.disconnect)
+      throw new Error("not connected");
+    this.Serial.flush();
+    await this.write([commands.init, commands.setCurrentPage, goTo.toString()]);
+  }
+
+  async writeToScreen(text: string, screen = 0, size = 1) {
+    if (this.blockCommunication) throw new Error("reading is blocked");
+    if (this.connected === connectionStatus.disconnect)
+      throw new Error("not connected");
+    this.Serial.flush();
+    await this.write([commands.init, commands.oledClear, screen]);
+    await this.write([
+      commands.init,
+      commands.oledWriteLine,
+      screen,
+      0,
+      size,
+      text,
+    ]);
   }
 
   registerOnConStatusChange(callback: connectCallback): number {
@@ -50,7 +101,6 @@ export class FDSerialAPI {
   clearOnConStatusChange(id: number) {
     delete this.connectCallbacks[id];
   }
-
   async readConfigFromSerial(
     progressCallback?: (
       received: number,
@@ -59,15 +109,21 @@ export class FDSerialAPI {
     ) => void
   ) {
     const fwVersion = await this.getFirmwareVersion();
+    console.log(fwVersion);
+
+    this.blockCommunication = true;
     if (fwVersion.split(".")[0] === "1") {
-      console.log("OLD FIRMWARE");
+      console.log("OLD FIRMWARE", fwVersion);
       await this.Serial.write([0x1]);
     } else {
       await this.write([0x3, 0x20]);
     }
 
     const fileSizeStr = await this.readAsciiLine();
-    if (!fileSizeStr.length) throw new Error("could not receive filesize");
+    if (!fileSizeStr.length) {
+      this.blockCommunication = false;
+      throw new Error("could not receive filesize");
+    }
     const fileSize = parseInt(fileSizeStr);
     const data: number[] = [];
     const transferStartedTime = new Date().getTime();
@@ -82,6 +138,7 @@ export class FDSerialAPI {
       data.push(...received);
     }
     progressCallback?.(data.length, fileSize, transferStartedTime);
+    this.blockCommunication = false;
     return Buffer.from(data.slice(0, fileSize));
   }
 
@@ -94,6 +151,8 @@ export class FDSerialAPI {
     ) => void
   ) {
     const fwVersion = await this.getFirmwareVersion();
+
+    this.blockCommunication = true;
     const fileSize = config.length.toString();
     if (fwVersion.split(".")[0] === "1") {
       console.log(
@@ -125,10 +184,11 @@ export class FDSerialAPI {
       } while (lastLine !== fileSize);
     });
     await this.Serial.write(config);
+    this.blockCommunication = false;
   }
 
   private async readAsciiLine() {
-    const result = await this.Serial.readLine(300);
+    const result = await this.Serial.readLine(3000);
     return String.fromCharCode(...result);
   }
 
@@ -145,7 +205,7 @@ export class FDSerialAPI {
     return this.Serial.read(1000);
   }
 
-  private write(data: Array<number | string>) {
+  private async write(data: Array<number | string>) {
     let mappedData: number[] = [];
     data.forEach((date) => {
       if (typeof date === "string") {
@@ -157,13 +217,13 @@ export class FDSerialAPI {
       }
       mappedData.push(0xa);
     });
-    this.Serial.write(mappedData);
+    // console.log("sending to freedeck", mappedData);
+    await this.Serial.write(mappedData);
   }
 
   private onConnectionChange = async (status: connectionStatus) => {
     this.connected = status;
+    console.log({ status });
     Object.values(this.connectCallbacks).forEach((cb) => cb(status));
   };
 }
-
-export const useSerialApi = function () {};

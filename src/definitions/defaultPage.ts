@@ -1,73 +1,87 @@
-import { merge } from "lodash";
-
-import { IButton, IButtonPage, IDisplay } from "../App";
+import { Button, Display, DisplayButton, Page } from "../generated";
+import { getBase64Image } from "../lib/image/base64Encode";
+import { createDefaultBackDisplay } from "./defaultBackImage";
+import { getEmptyConvertedImage } from "./emptyConvertedImage";
 import { fontMedium } from "./fonts";
-import { EAction } from "./modes";
+import { EAction, EImageMode, ETextPosition } from "./modes";
 
-export type RecursivePartial<T> = {
-  [P in keyof T]?: RecursivePartial<T[P]>;
-};
-export type IDefaultImageDisplayOptions = RecursivePartial<IDisplay>;
-export const getDefaultButton: () => IButton = () => ({
-  primary: {
-    mode: EAction.noop,
-    values: [],
-    enabled: true,
-  },
-  secondary: {
-    mode: EAction.noop,
-    values: [],
-    enabled: false,
-  },
-});
-export const getDefaultDisplay: (
-  options?: IDefaultImageDisplayOptions
-) => IDisplay = (options) =>
-  merge<IDisplay, IDefaultImageDisplayOptions | undefined>(
-    {
-      hasOriginalImage: true,
-      imageSettings: {
-        brightness: 0,
-        contrast: 0,
-        whiteThreshold: 64,
-        blackThreshold: 192,
-        dither: false,
-        invert: false,
+const createDefaultButton: () => Button = () => {
+  const button: Button = {
+    primary: {
+      mode: EAction.noop,
+      values: {
+        [EAction.changePage]: "",
+        [EAction.hotkeys]: [],
+        [EAction.settings]: {
+          setting: 0,
+          value: 128,
+        },
+        [EAction.special_keys]: 0,
+        [EAction.text]: [],
       },
-      textSettings: {
-        font: fontMedium,
-        text: "",
-      },
-      textWithIconSettings: {
-        iconWidthMultiplier: 0.35,
-      },
-      isGeneratedFromDefaultBackImage: false,
-      previousDisplay: undefined,
-      previousPage: undefined,
     },
-    options
-  );
-export const getDefaultButtonPage = (
-  width: number,
-  height: number,
-  previousPageIndex?: number
-): IButtonPage => {
-  const backButton: IButton = getDefaultButton();
-  const displays: IButtonPage = Array<IButton>(width * height - 1).fill(
-    getDefaultButton()
-  );
-  if (previousPageIndex !== undefined) {
-    backButton.primary.mode = EAction.changePage;
-    backButton.primary.values = [previousPageIndex];
-  }
-  displays.unshift(backButton);
-  return [...displays];
+    secondary: {
+      mode: EAction.noop,
+      values: {
+        [EAction.changePage]: "",
+        [EAction.hotkeys]: [],
+        [EAction.settings]: { setting: 0, value: 128 },
+        [EAction.special_keys]: 0,
+        [EAction.text]: [],
+      },
+    },
+  };
+  return button;
 };
-export const getDefaultDisplayPage = (
-  width: number,
-  height: number,
-  options?: IDefaultImageDisplayOptions
-) => {
-  const displays = Array<IDisplay>(width * height).fill(getDefaultDisplay());
-  return [...displays];
+export const createDefaultDisplay = (): Display => ({
+  originalImage: undefined,
+  convertedImage: getEmptyConvertedImage(),
+  previewImage: getBase64Image(getEmptyConvertedImage()),
+  imageSettings: {
+    brightness: 0,
+    contrast: 0,
+    whiteThreshold: 64,
+    blackThreshold: 192,
+    imageMode: EImageMode.normal,
+    invert: true,
+  },
+  textSettings: {
+    font: fontMedium,
+    text: "",
+    position: ETextPosition.right,
+  },
+  textWithIconSettings: {
+    iconWidthMultiplier: 0.35,
+  },
+  isGeneratedFromDefaultBackImage: false,
+});
+
+export const createDefaultDisplayButton = async (): Promise<DisplayButton> => {
+  return {
+    button: createDefaultButton(),
+    display: createDefaultDisplay(),
+  };
+};
+
+export const createDefaultPage = async (
+  count: number,
+  previousPage?: string
+): Promise<Page> => {
+  const page: Page = {
+    name: "",
+    usePageNameAsWindowName: true,
+    displayButtons: [],
+  };
+  for (var i = 0; i < count; i++) {
+    page.displayButtons.push(await createDefaultDisplayButton());
+  }
+  if (previousPage !== undefined) {
+    page.displayButtons[0].button!.primary.mode = EAction.changePage;
+    page.displayButtons[0].button!.primary.values[EAction.changePage] =
+      previousPage;
+    page.displayButtons[0].display = await createDefaultBackDisplay(
+      previousPage
+    );
+  }
+  return page;
 };
