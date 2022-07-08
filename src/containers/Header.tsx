@@ -182,6 +182,17 @@ export const Header: React.FC<{}> = () => {
           {process.env.REACT_APP_ENABLE_API === "true" && (
             <LoginLogoutButtons />
           )}
+          {process.env.REACT_APP_API_COMING_SOON === "true" && (
+            <FDButton
+              onClick={() =>
+                (document.location = "https://fddev.freeyourstream.com")
+              }
+              size={3}
+              title="Use the beta version to get a sneak peek"
+            >
+              FreeDeck Hub - Coming soon!
+            </FDButton>
+          )}
         </div>
       </div>
     </div>
