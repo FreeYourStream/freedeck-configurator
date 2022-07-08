@@ -58,7 +58,11 @@ const run = async (configState: ConfigState, appState: AppState) => {
       const collectionIndex = findCollectionPage(configState, windowName);
       if (collectionIndex === -1) return;
       const currentPageIndex = await appState.serialApi?.getCurrentPage();
-      if ([-1, undefined].includes(currentPageIndex)) return;
+      if (currentPageIndex === undefined) return;
+      if (currentPageIndex < 0) {
+        lastWindowName = "";
+        return;
+      }
       const currentPageId = configState.pages.sorted[currentPageIndex!];
       const collection =
         configState.collections.byId[
@@ -73,11 +77,11 @@ const run = async (configState: ConfigState, appState: AppState) => {
       appState.serialApi?.setCurrentPage(pageFoundIndex);
     } else {
       const currentPageIndex = await appState.serialApi?.getCurrentPage();
-      if (
-        [undefined, pageIndex].includes(currentPageIndex) ||
-        currentPageIndex! < 0
-      )
+      if ([undefined, pageIndex].includes(currentPageIndex)) return;
+      if (currentPageIndex! < 0) {
+        lastWindowName = "";
         return;
+      }
       lastWindowName = windowName;
       appState.serialApi?.setCurrentPage(pageIndex);
     }
