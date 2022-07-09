@@ -14,7 +14,10 @@ const writeAction = (
   let secondaryAddition = 0;
   let writeChangePageData = false;
   if (!isSecondary && db.button.primary.mode !== EAction.text) {
-    if (db.button.leavePage.enabled) {
+    if (
+      db.button.leavePage.enabled &&
+      db.button.primary.mode !== EAction.changePage
+    ) {
       secondaryAddition = 32;
       writeChangePageData = true;
     } else if (db.button.primary.mode !== EAction.noop) {

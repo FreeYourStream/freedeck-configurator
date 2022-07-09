@@ -40,10 +40,10 @@ export const ChangePage: React.FC<{
             }
             options={[
               { text: "Select Page", value: "" },
-              ...Object.entries(pages.byId).map(([id, page]) => ({
-                value: id,
-                text: `Go to ${getPageName(id, page)}`,
-              })),
+              ...pages.sorted.map((id) => {
+                const page = pages.byId[id];
+                return { value: id, text: `Go to ${getPageName(id, page)}` };
+              }),
             ]}
           />
         </Row>
