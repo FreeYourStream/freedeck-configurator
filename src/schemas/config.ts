@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-import { createDefaultDisplayButton } from "../definitions/defaultPage";
+import * as package_json from "../../package.json";
 import { ButtonSchema } from "./button";
 import { DisplaySchema } from "./display";
 
@@ -72,7 +72,9 @@ export const ConfigSchema = Joi.object({
   brightness: Joi.number().failover(128).required(),
   height: Joi.number().max(16).min(1).failover(2).required(),
   width: Joi.number().max(16).min(1).failover(3).required(),
-  configVersion: Joi.string().failover("1.2.0").required(),
+  configVersion: Joi.string()
+    .failover(package_json.configFileVersion)
+    .required(),
   screenSaverTimeout: Joi.number().min(0).failover(0).required(),
   collections: CollectionsSchema.required().failover(CollectionsSchema),
   defaultBackDisplay: DisplaySchema.required().failover(DisplaySchema),
