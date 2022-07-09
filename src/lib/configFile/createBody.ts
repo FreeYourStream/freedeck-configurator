@@ -20,7 +20,7 @@ const writeAction = (
     ) {
       secondaryAddition = 32;
       writeChangePageData = true;
-    } else if (db.button.primary.mode !== EAction.noop) {
+    } else if (db.button.secondary.mode !== EAction.noop) {
       secondaryAddition = 16;
     }
   }
