@@ -13,6 +13,7 @@ import {
 import { ChangePage } from "./ChangePage";
 import { FreeDeckSettings } from "./FreeDeckSettings";
 import { Hotkeys } from "./Hotkeys";
+import { LeavePage } from "./LeavePage";
 import { SpecialKeys } from "./SpecialKeys";
 import { Text } from "./Text";
 
@@ -103,6 +104,24 @@ export const Action: React.FC<{
         <FreeDeckSettings
           values={buttonSettings.values}
           setValues={(values) => setValues(values)}
+        />
+      )}
+      {buttonSettings.mode !== EAction.text && primary && (
+        <LeavePage
+          primary={primary}
+          value={
+            configState.pages.byId[pageId].displayButtons[buttonIndex].button
+              .leavePage
+          }
+          pages={configState.pages}
+          setValue={(value) =>
+            configDispatch.setLeavePage({
+              buttonIndex,
+              pageId,
+              targetPageId: value.pageId,
+              enabled: value.enabled,
+            })
+          }
         />
       )}
     </div>

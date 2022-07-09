@@ -42,7 +42,6 @@ export const PagesSchema = Joi.object({
       return validated;
     })
     .meta({ className: "Record<string,Page>" })
-    .failover({})
     .required(),
   sorted: Joi.array().items(Joi.string()).failover([]).required(),
 }).meta({ className: "Pages" });
@@ -68,7 +67,7 @@ export const ConfigSchema = Joi.object({
   brightness: Joi.number().failover(128).required(),
   height: Joi.number().max(16).min(1).failover(2).required(),
   width: Joi.number().max(16).min(1).failover(3).required(),
-  configVersion: Joi.string().failover("1.1.0").required(),
+  configVersion: Joi.string().failover("1.2.0").required(),
   screenSaverTimeout: Joi.number().min(0).failover(0).required(),
   collections: CollectionsSchema.required(),
   defaultBackDisplay: DisplaySchema.required(),

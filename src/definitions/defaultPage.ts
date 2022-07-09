@@ -7,6 +7,7 @@ import { EAction, EImageMode, ETextPosition } from "./modes";
 
 const createDefaultButton: () => Button = () => {
   const button: Button = {
+    leavePage: { enabled: false },
     primary: {
       mode: EAction.noop,
       values: {

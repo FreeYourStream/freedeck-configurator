@@ -146,6 +146,15 @@ export interface IConfigReducer extends Actions<ConfigState> {
       buttonIndex: number;
     }
   ): Promise<ConfigState>;
+  setLeavePage(
+    state: ConfigState,
+    data: {
+      pageId: string;
+      buttonIndex: number;
+      targetPageId?: string;
+      enabled: boolean;
+    }
+  ): Promise<ConfigState>;
   setDisplaySettings(
     state: ConfigState,
     data: {
@@ -463,6 +472,13 @@ export const configReducer: IConfigReducer = {
     const { pageId, buttonIndex, priOrSec, buttonSettings } = data;
     state.pages.byId[pageId].displayButtons[buttonIndex].button[priOrSec] =
       buttonSettings;
+    return saveConfigToLocalStorage(state);
+  },
+  async setLeavePage(state, { pageId, buttonIndex, targetPageId, enabled }) {
+    state.pages.byId[pageId].displayButtons[buttonIndex].button.leavePage = {
+      pageId: targetPageId,
+      enabled,
+    };
     return saveConfigToLocalStorage(state);
   },
   async setDisplaySettings(state, data) {

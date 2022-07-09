@@ -36,8 +36,8 @@ const Pill: React.FC<{
             <ArrowCircleRightIcon className="w-4 h-4" />
             <span className="overflow-ellipsis overflow-hidden">
               {getPageName(
-                button.values[EAction.changePage],
-                pages.byId[button.values[EAction.changePage]]
+                button.values[EAction.changePage]!,
+                pages.byId[button.values[EAction.changePage]!]
               )}
             </span>
           </div>

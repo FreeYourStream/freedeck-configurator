@@ -23,15 +23,16 @@ export const ButtonSettingsContainer: React.FC<{
           />
         </div>
         <div className="relative flex flex-col p-4 bg-gray-700 rounded-r-2xl">
-          {button.primary.mode !== EAction.text && (
-            <Action
-              primary={false}
-              title="Long press"
-              pageId={pageId}
-              buttonIndex={displayIndex}
-              buttonSettings={button.secondary}
-            />
-          )}
+          {button.primary.mode !== EAction.text &&
+            !button.leavePage.enabled && (
+              <Action
+                primary={false}
+                title="Long press"
+                pageId={pageId}
+                buttonIndex={displayIndex}
+                buttonSettings={button.secondary}
+              />
+            )}
         </div>
       </div>
       <div className="mt-auto text-center">

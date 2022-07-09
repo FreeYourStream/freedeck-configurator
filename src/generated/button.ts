@@ -4,6 +4,10 @@
  */
 
 export interface Button {
+  leavePage: {
+    enabled: boolean;
+    pageId?: string;
+  };
   primary: ButtonSetting;
   secondary: ButtonSetting;
 }
@@ -14,7 +18,7 @@ export interface ButtonSetting {
 }
 
 export interface ButtonValues {
-  changePage: string;
+  changePage?: string;
   hotkeys: number[];
   settings: {
     setting: 0 | 1;

@@ -49,7 +49,7 @@ export const ChangePage: React.FC<{
         </Row>
       ) : null}
       <div className="flex justify-center my-2">
-        {values[EAction.changePage] === "" ? (
+        {["", undefined].includes(values[EAction.changePage]) ? (
           <FDButton
             prefix={<PlusCircleIcon className="h-5 w-5" />}
             size={2}
@@ -67,12 +67,12 @@ export const ChangePage: React.FC<{
           <FDButton
             prefix={<LogoutIcon className="h-5 w-5" />}
             size={2}
-            onClick={() => scrollToPage(values[EAction.changePage])}
+            onClick={() => scrollToPage(values[EAction.changePage]!)}
           >
             Scroll To{" "}
             {getPageName(
-              values[EAction.changePage],
-              pages.byId[values[EAction.changePage]]
+              values[EAction.changePage]!,
+              pages.byId[values[EAction.changePage]!]
             )}
           </FDButton>
         )}
