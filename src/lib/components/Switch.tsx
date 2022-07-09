@@ -1,7 +1,7 @@
 import c from "clsx";
 import React from "react";
 
-export const Switch: React.FC<{
+export const FDSwitch: React.FC<{
   disabled?: boolean;
   className?: string;
   onChange: (value: boolean) => any;

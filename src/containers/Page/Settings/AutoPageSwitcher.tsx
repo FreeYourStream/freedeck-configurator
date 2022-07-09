@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
-import { Switch } from "../../../lib/components/Switch";
+import { FDSwitch } from "../../../lib/components/Switch";
 import { TextInput } from "../../../lib/components/TextInput";
 import {
   ConfigDispatchContext,
@@ -21,7 +21,7 @@ export const AutoPageSwitcherSettings: React.FC<{ pageId: string }> = ({
     <div className="p-8 w-full">
       <Row className="h-8">
         <Label>Use Page name</Label>
-        <Switch
+        <FDSwitch
           onChange={(value) => setUsePageName({ pageId, value })}
           value={page.usePageNameAsWindowName}
         />

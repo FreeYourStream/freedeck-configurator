@@ -24,7 +24,7 @@ import { Label, Value } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
 import { FDSelect } from "../../../lib/components/SelectInput";
 import { FDSlider } from "../../../lib/components/Slider";
-import { Switch } from "../../../lib/components/Switch";
+import { FDSwitch } from "../../../lib/components/Switch";
 import { TextArea } from "../../../lib/components/TextArea";
 import { Title } from "../../../lib/components/Title";
 import {
@@ -242,7 +242,7 @@ export const ImageSettings: React.FC<{
             <Label>Invert</Label>
           </CtrlDuo>
           <CtrlDuo>
-            <Switch
+            <FDSwitch
               disabled={!display.originalImage}
               onChange={(value) => setInvert(value)}
               value={display.imageSettings.invert}
