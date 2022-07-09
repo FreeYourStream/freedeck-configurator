@@ -31,16 +31,18 @@ export const ButtonSettingSchema = Joi.object({
     .failover(EAction.noop)
     .strict()
     .required(),
-  values: ButtonValuesSchema.required(),
+  values: ButtonValuesSchema.required().failover(ButtonValuesSchema),
 }).meta({
   className: "ButtonSetting",
 });
 
+export const LeavePageSchema = Joi.object({
+  enabled: Joi.boolean().failover(false).required(),
+  pageId: Joi.string(),
+}).meta({ className: "LeavePage" });
+
 export const ButtonSchema = Joi.object({
-  primary: ButtonSettingSchema.required(),
-  secondary: ButtonSettingSchema.required(),
-  leavePage: Joi.object({
-    enabled: Joi.boolean().failover(false).required(),
-    pageId: Joi.string(),
-  }).required(),
+  primary: ButtonSettingSchema.required().failover(ButtonSettingSchema),
+  secondary: ButtonSettingSchema.required().failover(ButtonSettingSchema),
+  leavePage: LeavePageSchema.required().failover(LeavePageSchema),
 }).meta({ className: "Button" });

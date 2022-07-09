@@ -4,10 +4,7 @@
  */
 
 export interface Button {
-  leavePage: {
-    enabled: boolean;
-    pageId?: string;
-  };
+  leavePage: LeavePage;
   primary: ButtonSetting;
   secondary: ButtonSetting;
 }
@@ -26,4 +23,9 @@ export interface ButtonValues {
   };
   special_keys: number;
   text: number[];
+}
+
+export interface LeavePage {
+  enabled: boolean;
+  pageId?: string;
 }

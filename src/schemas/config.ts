@@ -1,11 +1,12 @@
 import Joi from "joi";
 
+import { createDefaultDisplayButton } from "../definitions/defaultPage";
 import { ButtonSchema } from "./button";
 import { DisplaySchema } from "./display";
 
 export const DisplayButtonSchema = Joi.object({
-  button: ButtonSchema.required(),
-  display: DisplaySchema.required(),
+  button: ButtonSchema.required().failover(ButtonSchema),
+  display: DisplaySchema.required().failover(DisplaySchema),
 }).meta({ className: "DisplayButton" });
 
 export const PublishData = Joi.object({
@@ -19,7 +20,10 @@ export const PageSchema = Joi.object({
   publishData: PublishData,
   isInCollection: Joi.string(),
   usePageNameAsWindowName: Joi.bool().failover(true).required(),
-  displayButtons: Joi.array().items(DisplayButtonSchema).required(),
+  displayButtons: Joi.array()
+    .items(DisplayButtonSchema)
+    .required()
+    .failover([]),
 }).meta({ className: "Page" });
 
 export interface PagesById {
@@ -42,7 +46,8 @@ export const PagesSchema = Joi.object({
       return validated;
     })
     .meta({ className: "Record<string,Page>" })
-    .required(),
+    .required()
+    .failover({}),
   sorted: Joi.array().items(Joi.string()).failover([]).required(),
 }).meta({ className: "Pages" });
 
@@ -69,8 +74,8 @@ export const ConfigSchema = Joi.object({
   width: Joi.number().max(16).min(1).failover(3).required(),
   configVersion: Joi.string().failover("1.2.0").required(),
   screenSaverTimeout: Joi.number().min(0).failover(0).required(),
-  collections: CollectionsSchema.required(),
-  defaultBackDisplay: DisplaySchema.required(),
+  collections: CollectionsSchema.required().failover(CollectionsSchema),
+  defaultBackDisplay: DisplaySchema.required().failover(DisplaySchema),
 })
   .meta({ className: "Config" })
   .strict(true);
