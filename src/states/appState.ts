@@ -21,7 +21,10 @@ export interface AppState {
 }
 export const defaultAppState: () => Promise<AppState> = async () => ({
   ctrlDown: false,
-  serialApi: (navigator as any).serial ? new FDSerialAPI() : undefined,
+  serialApi:
+    (navigator as any).serial || (window as any).__TAURI_IPC__
+      ? new FDSerialAPI()
+      : undefined,
   alert: {
     isOpen: false,
     text: "",

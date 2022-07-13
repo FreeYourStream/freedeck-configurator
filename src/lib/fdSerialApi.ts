@@ -1,7 +1,11 @@
 import { SerialConnector, SerialOptions, connectionStatus } from "./serial";
+import { TauriSerialConnector } from "./tauri-serial";
+import { WebSerialConnector } from "./web-serial";
 const commands = {
   init: 0x3,
   getFirmwareVersion: 0x10,
+  readConfig: 0x20,
+  writeConfig: 0x21,
   getCurrentPage: 0x30,
   setCurrentPage: 0x31,
   getPageCount: 0x32,
@@ -18,21 +22,28 @@ export class FDSerialAPI {
   connectCallbacks: { [x: number]: connectCallback } = {};
   blockCommunication: boolean = false;
   constructor(options: SerialOptions = {}) {
-    this.Serial = new SerialConnector(
-      {
-        filters: [
-          {
-            usbVendorId: 0xf1f0,
-          },
-          {
-            usbVendorId: 0x2341,
-          },
-        ],
-        chunksize: 62, // this is a magic number -> https://github.com/arduino/ArduinoCore-avr/issues/53
-        ...options,
-      },
-      this.onConnectionChange
-    );
+    console.log((window as any).__TAURI_IPC__);
+    if ((window as any).__TAURI_IPC__)
+      this.Serial = new TauriSerialConnector(
+        { ...options },
+        this.onConnectionChange
+      );
+    else
+      this.Serial = new WebSerialConnector(
+        {
+          filters: [
+            {
+              usbVendorId: 0xf1f0,
+            },
+            {
+              usbVendorId: 0x2341,
+            },
+          ],
+          chunksize: 62, // this is a magic number -> https://github.com/arduino/ArduinoCore-avr/issues/53
+          ...options,
+        },
+        this.onConnectionChange
+      );
   }
 
   async connect() {
@@ -116,7 +127,7 @@ export class FDSerialAPI {
       console.log("OLD FIRMWARE", fwVersion);
       await this.Serial.write([0x1]);
     } else {
-      await this.write([0x3, 0x20]);
+      await this.write([0x3, commands.readConfig]);
     }
 
     const fileSizeStr = await this.readAsciiLine();
@@ -150,7 +161,9 @@ export class FDSerialAPI {
       speed: number
     ) => void
   ) {
+    console.log("reading config from serial, waiting for fw version");
     const fwVersion = await this.getFirmwareVersion();
+    console.log("received fwversion", fwVersion);
 
     this.blockCommunication = true;
     const fileSize = config.length.toString();
@@ -164,26 +177,36 @@ export class FDSerialAPI {
         oldFileSize = "0" + oldFileSize;
       }
       const numberArray = new TextEncoder().encode(oldFileSize);
-      await this.Serial.write(numberArray);
+      await this.Serial.write([...numberArray]);
     } else {
-      await this.write([0x3, 0x21]);
+      await this.write([0x3, commands.writeConfig]);
       await this.write([fileSize]);
     }
 
     const transferStartedTime = new Date().getTime();
-    setTimeout(async () => {
-      let lastLine = "";
-      do {
-        lastLine = await this.readAsciiLine();
-        if (isNaN(parseInt(lastLine))) continue;
-        progressCallback?.(
-          parseInt(lastLine),
-          config.length,
-          transferStartedTime
-        );
-      } while (lastLine !== fileSize);
-    });
-    await this.Serial.write(config);
+    // setTimeout(async () => {
+    //   let lastLine = "";
+    //   do {
+    //     lastLine = await this.readAsciiLine();
+    //     console.log("last line", lastLine);
+    //     if (isNaN(parseInt(lastLine))) continue;
+    //     progressCallback?.(
+    //       parseInt(lastLine),
+    //       config.length,
+    //       transferStartedTime
+    //     );
+    //   } while (lastLine !== fileSize);
+    // });
+    let sent = 0;
+    while (sent < config.length) {
+      const end = Math.min(config.length, sent + 1024);
+      const chunk = config.slice(sent, end);
+      const numberChunk = [...chunk];
+      sent += numberChunk.length;
+      await this.Serial.write([...numberChunk]);
+      progressCallback?.(sent, config.length, transferStartedTime);
+    }
+
     this.blockCommunication = false;
   }
 
@@ -191,16 +214,6 @@ export class FDSerialAPI {
     const result = await this.Serial.readLine(3000);
     return String.fromCharCode(...result);
   }
-
-  private async readLine() {
-    const result = await this.Serial.readLine(300);
-    return result;
-  }
-
-  private async readByte(): Promise<number> {
-    return this.Serial.readByte(1000);
-  }
-
   private async read(): Promise<number[]> {
     return this.Serial.read(1000);
   }

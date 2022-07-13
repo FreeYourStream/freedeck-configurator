@@ -45,15 +45,22 @@ export const AddEventListeners = ({
           ),
         });
     });
-    const onKeyUpDown = (event: KeyboardEvent) => {
-      if (isMacOS) {
-        setCtrl(event.metaKey);
-      } else {
-        setCtrl(event.ctrlKey);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (isMacOS && event.key === "Meta") {
+        setCtrl(true);
+      } else if (event.key === "Control") {
+        setCtrl(true);
       }
     };
-    document.addEventListener("keydown", onKeyUpDown);
-    document.addEventListener("keyup", onKeyUpDown);
+    const onKeyUp = (event: KeyboardEvent) => {
+      if (isMacOS && event.key === "Meta") {
+        setCtrl(false);
+      } else if (event.key === "Control") {
+        setCtrl(false);
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keyup", onKeyUp);
     window.onblur = () => setCtrl(false);
     // eslint-disable-next-line
   }, []); // only execute on page load
