@@ -51,14 +51,11 @@ impl Serial {
     {
         let (clean_port, _) = path.split_once(";").unwrap();
         match self.port.as_ref() {
-            Some(port) => match port.lock() {
-                Ok(port) => {
-                    if port.name().unwrap_or("unknown".to_string()) == clean_port {
-                        return Ok(());
-                    }
+            Some(port) => {
+                if port.lock().unwrap().name().unwrap_or("unknown".to_string()) == clean_port {
+                    return Ok(());
                 }
-                Err(_) => {}
-            },
+            }
             None => {}
         }
         let mut port = match serialport::new(clean_port.clone(), baud_rate).open() {
