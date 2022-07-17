@@ -111,9 +111,13 @@ jobs:
       if: matrix.platform == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
+        sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf libudev-dev
     - name: install app dependencies and build it
       run: npm install && npm run build
+      if: matrix.platform != 'windows-latest'
+    - name: install app dependencies if you run fucking windows and build install
+      run: npm install && npm run build-win
+      if: matrix.platform == 'windows-latest'
     - uses: tauri-apps/tauri-action@v0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
