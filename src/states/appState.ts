@@ -6,6 +6,8 @@ import { Actions, FunctionForFirstParamType } from "./interfaces";
 export interface AppState {
   ctrlDown: boolean;
   serialApi?: FDSerialAPI;
+  availablePorts: string[];
+  connectedPortIndex: number;
   alert: {
     isOpen: boolean;
     text: string;
@@ -22,9 +24,11 @@ export interface AppState {
 export const defaultAppState: () => Promise<AppState> = async () => ({
   ctrlDown: false,
   serialApi:
-    (navigator as any).serial || (window as any).__TAURI_IPC__
+    navigator.serial || (window as any).__TAURI_IPC__
       ? new FDSerialAPI()
       : undefined,
+  availablePorts: [],
+  connectedPortIndex: -1,
   alert: {
     isOpen: false,
     text: "",
@@ -54,6 +58,14 @@ export interface IAppReducer extends Actions<AppState> {
       onAbort?: () => any;
     }
   ): Promise<AppState>;
+  setAvailablePorts(
+    state: AppState,
+    availablePorts: string[]
+  ): Promise<AppState>;
+  setConnectedPortIndex(
+    state: AppState,
+    connectedPortIndex: number
+  ): Promise<AppState>;
 }
 
 export const appReducer: IAppReducer = {
@@ -78,6 +90,12 @@ export const appReducer: IAppReducer = {
   },
   async openConfirm(state, data) {
     return { ...state, confirm: { ...data, isOpen: true } };
+  },
+  async setAvailablePorts(state, availablePorts) {
+    return { ...state, availablePorts };
+  },
+  async setConnectedPortIndex(state, connectedPortIndex) {
+    return { ...state, connectedPortIndex };
   },
 };
 

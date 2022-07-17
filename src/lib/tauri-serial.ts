@@ -1,57 +1,56 @@
 import { invoke } from "@tauri-apps/api";
 
-import {
-  SerialConnector,
-  SerialFilter,
-  SerialOptions,
-  connectCallback,
-  connectionStatus,
-} from "./serial";
-
-// import { isMacOS } from "./util";
-
-// @ts-ignore
-invoke("get_ports").then(console.log);
+import { PortsChangedCallback, SerialConnector } from "./serial";
 
 export class TauriSerialConnector implements SerialConnector {
   buffer: number[];
-  writer?: WritableStreamDefaultWriter<ArrayBuffer>;
-  filters: SerialFilter;
-  chunkSize: number;
-  baudrate: number;
-  connectCallback: connectCallback;
-  readLoop?: number;
+  portsChangedCallback: PortsChangedCallback;
   port = "";
+  ports: string[] = [];
 
-  constructor(options: SerialOptions, connectCallback: connectCallback) {
-    this.connectCallback = connectCallback;
-    this.baudrate = options?.baudrate ?? 4000000;
-    this.chunkSize = options?.chunksize ?? 256;
-    this.filters = options?.filters ? options.filters : [];
+  constructor(portsChangedCallback: PortsChangedCallback) {
+    this.portsChangedCallback = portsChangedCallback;
     this.buffer = [];
     this.port = "";
-    // this.connect();
+    this.refreshPorts(true);
+    setInterval(async () => {
+      this.refreshPorts(false);
+    }, 1000);
   }
-
-  connect = async (event?: any) => {
-    const ports: string[] = await invoke("get_ports");
-    if (!ports[0]) return;
-    await invoke("open", { path: ports[0], baudRate: 4000000 });
-    await this.openPort(ports[0]);
-    this.connectCallback(connectionStatus.connect);
-  };
-
-  async request(): Promise<void> {
+  async connect(portIndex: number, showError = false): Promise<void> {
     try {
-      let port = await (navigator as any).serial.requestPort({
-        filters: this.filters,
-      });
-      await this.openPort(port);
-    } catch (err) {
-      const message = "There was an error while connecting to serial device";
-      throw new Error(message + " " + err);
+      await invoke("open", { path: this.ports[portIndex], baudRate: 4000000 });
+      this.port = this.ports[portIndex];
+      this.portsChangedCallback(this.ports, portIndex);
+    } catch (e: any) {
+      if (showError) alert(`${this.ports[portIndex]} - ${e as string}`);
+      throw e;
     }
   }
+  async disconnect(): Promise<void> {
+    await invoke("close", { path: this.port });
+    this.port = "";
+    this.portsChangedCallback(this.ports, -1);
+  }
+  async refreshPorts(initial: boolean) {
+    const ports: string[] = await invoke("get_ports");
+    this.ports = ports;
+    if (this.ports.length === 0) return this.portsChangedCallback(ports, -1);
+    const portIndex = this.ports.findIndex((port) => port === this.port);
+    if (portIndex === -1 && initial) {
+      let i = 0;
+      do {
+        try {
+          await this.connect(i);
+          return this.portsChangedCallback(ports, i);
+        } catch (e) {
+          i++;
+        }
+      } while (i < ports.length);
+    }
+    this.portsChangedCallback(ports, portIndex);
+  }
+  async requestNewPort(): Promise<void> {}
 
   async write(data: number[] | Uint8Array) {
     await invoke("write", { data });
@@ -76,17 +75,5 @@ export class TauriSerialConnector implements SerialConnector {
     buffer = buffer.slice(index + 1);
 
     return line;
-  }
-
-  private async openPort(port: string) {
-    if (this.port) return;
-    this.port = port;
-    this.buffer = [];
-  }
-
-  private async sleep(ms: number) {
-    return new Promise<void>((res, rej) => {
-      setTimeout(() => res(), ms);
-    });
   }
 }

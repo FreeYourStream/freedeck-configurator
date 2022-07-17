@@ -29,7 +29,7 @@ export const FDSelect: React.FC<{
       <div className="relative">
         <Listbox.Button
           className={c(
-            "relative py-1 pl-3 pr-10 text-left bg-gray-400 rounded-md shadow-md",
+            "py-1 pl-3 pr-10 text-left bg-gray-400 rounded-md shadow-md",
             "cursor-default focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500",
             className
           )}
@@ -50,7 +50,7 @@ export const FDSelect: React.FC<{
           leaveFrom="transform -translate-y-0 opacity-100"
           leaveTo="transform -translate-y-2 opacity-0"
         >
-          <Listbox.Options className="absolute mt-2 bg-gray-400 py-2w-full rounded-md select-none w-full overflow-y-auto max-h-72 z-50 -trans">
+          <Listbox.Options className="fixed mt-2 bg-gray-400 py-2 rounded-md select-none overflow-y-auto max-h-72 z-50 -trans">
             {options.map((option, index) => (
               <Listbox.Option className="" key={index} value={option.value}>
                 {({ selected, active }) => (

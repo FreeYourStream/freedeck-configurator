@@ -1,4 +1,8 @@
-import { SerialConnector, SerialOptions, connectionStatus } from "./serial";
+import {
+  PortsChangedCallback,
+  SerialConnector,
+  connectionStatus,
+} from "./serial";
 import { TauriSerialConnector } from "./tauri-serial";
 import { WebSerialConnector } from "./web-serial";
 const commands = {
@@ -15,45 +19,30 @@ const commands = {
   oledWriteData: 0x43,
 };
 
-type connectCallback = (event: connectionStatus) => void;
 export class FDSerialAPI {
   Serial: SerialConnector;
   connected: connectionStatus = connectionStatus.disconnect;
-  connectCallbacks: { [x: number]: connectCallback } = {};
+  portsChangedCallbacks: { [x: number]: PortsChangedCallback } = {};
   blockCommunication: boolean = false;
-  constructor(options: SerialOptions = {}) {
-    console.log((window as any).__TAURI_IPC__);
+  ports: string[] = [];
+  connectedPortIndex: number = -1;
+
+  constructor() {
     if ((window as any).__TAURI_IPC__)
-      this.Serial = new TauriSerialConnector(
-        { ...options },
-        this.onConnectionChange
-      );
-    else
-      this.Serial = new WebSerialConnector(
-        {
-          filters: [
-            {
-              usbVendorId: 0xf1f0,
-            },
-            {
-              usbVendorId: 0x2341,
-            },
-          ],
-          chunksize: 62, // this is a magic number -> https://github.com/arduino/ArduinoCore-avr/issues/53
-          ...options,
-        },
-        this.onConnectionChange
-      );
+      this.Serial = new TauriSerialConnector(this.onPortsChanged);
+    else this.Serial = new WebSerialConnector(this.onPortsChanged);
   }
 
-  async connect() {
-    if (!this.connected)
-      return this.Serial.request().then(() => {
-        this.connected = connectionStatus.connect;
-        Object.values(this.connectCallbacks).forEach((cb) =>
-          cb(connectionStatus.connect)
-        );
-      });
+  async connect(portIndex: number) {
+    await this.Serial.connect(portIndex, true);
+    this.connected = connectionStatus.connect;
+  }
+  async disconnect() {
+    await this.Serial.disconnect();
+    this.connected = connectionStatus.disconnect;
+  }
+  async requestNewPort() {
+    await this.Serial.requestNewPort();
   }
 
   async getFirmwareVersion() {
@@ -102,15 +91,14 @@ export class FDSerialAPI {
     ]);
   }
 
-  registerOnConStatusChange(callback: connectCallback): number {
-    const id = Object.keys(this.connectCallbacks).length;
-    this.connectCallbacks[id] = callback;
-    this.onConnectionChange(this.connected);
+  registerOnPortsChanged(callback: PortsChangedCallback): number {
+    const id = Object.keys(this.portsChangedCallbacks).length;
+    this.portsChangedCallbacks[id] = callback;
+    this.onPortsChanged(this.ports, this.connectedPortIndex);
     return id;
   }
-
-  clearOnConStatusChange(id: number) {
-    delete this.connectCallbacks[id];
+  clearOnPortsChanged(id: number) {
+    delete this.portsChangedCallbacks[id];
   }
   async readConfigFromSerial(
     progressCallback?: (
@@ -161,9 +149,7 @@ export class FDSerialAPI {
       speed: number
     ) => void
   ) {
-    console.log("reading config from serial, waiting for fw version");
     const fwVersion = await this.getFirmwareVersion();
-    console.log("received fwversion", fwVersion);
 
     this.blockCommunication = true;
     const fileSize = config.length.toString();
@@ -234,9 +220,17 @@ export class FDSerialAPI {
     await this.Serial.write(mappedData);
   }
 
-  private onConnectionChange = async (status: connectionStatus) => {
-    this.connected = status;
-    console.log({ status });
-    Object.values(this.connectCallbacks).forEach((cb) => cb(status));
+  private onPortsChanged = async (
+    ports: string[],
+    connectedPortIndex: number
+  ) => {
+    this.ports = ports;
+    this.connectedPortIndex = connectedPortIndex;
+    if (this.connectedPortIndex === -1)
+      this.connected = connectionStatus.disconnect;
+    else this.connected = connectionStatus.connect;
+    Object.values(this.portsChangedCallbacks).forEach((cb) =>
+      cb(ports, connectedPortIndex)
+    );
   };
 }

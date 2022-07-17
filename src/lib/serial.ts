@@ -3,14 +3,15 @@ export enum connectionStatus {
   disconnect,
   connect,
 }
-export interface SerialOptions {
-  baudrate?: number;
-  chunksize?: number;
-  filters?: SerialFilter;
-}
 export type connectCallback = (status: connectionStatus) => void;
+export type PortsChangedCallback = (
+  ports: string[],
+  connectedPortIndex: number
+) => void;
 export interface SerialConnector {
-  request: () => Promise<void>;
+  requestNewPort: () => Promise<void>;
+  connect: (portIndex: number, showError?: boolean) => Promise<void>;
+  disconnect: () => Promise<void>;
   write: (data: number[]) => Promise<void>;
   flush: () => void;
   read: (timeout?: number) => Promise<number[]>;

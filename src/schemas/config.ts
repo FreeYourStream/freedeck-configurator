@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-import * as package_json from "../../package.json";
+import package_json from "../../package.json";
 import { ButtonSchema } from "./button";
 import { DisplaySchema } from "./display";
 

@@ -30,6 +30,9 @@
     "web-vitals": "^2.1.2",
     "worker-interval": "^1.0.6"
   },
+  "overrides": {
+    "react-error-overlay": "6.0.9"
+  },
   "scripts": {
     "start": "TAILWIND_MODE=watch craco start",
     "build": "craco build",
@@ -70,6 +73,7 @@
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.2",
     "@types/uuid": "^8.3.3",
+    "@types/w3c-web-serial": "^1.0.2",
     "autoprefixer": "^9.8.8",
     "postcss": "^7.0.39",
     "react-scripts": "^4.0.3",

@@ -16,11 +16,12 @@ fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let show = CustomMenuItem::new("show".to_string(), "Show");
     let tray_menu = SystemTrayMenu::new()
-        .add_item(quit)
+        .add_item(show)
         .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(show);
+        .add_item(quit);
     let tray = SystemTray::new().with_menu(tray_menu);
     let serial = Mutex::new(Serial::new());
+
     tauri::Builder::default()
         .system_tray(tray)
         .on_system_tray_event(|app, event| match event {
@@ -48,7 +49,7 @@ fn main() {
             _ => {}
         })
         .manage(serial)
-        .invoke_handler(generate_handler!(get_ports, open, write, read))
+        .invoke_handler(generate_handler!(get_ports, open, close, write, read))
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

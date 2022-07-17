@@ -20,7 +20,6 @@ serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.0.3", features = ["api-all", "system-tray"] }
 tauri-macros = "1.0.3"
 serialport = "4.2.0"
-mio-serial = "5.0.2"
 
 [features]
 # by default Tauri runs in production mode

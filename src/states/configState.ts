@@ -578,7 +578,6 @@ export const configReducer: IConfigReducer = {
     return saveConfigToLocalStorage(state);
   },
   async setState(state, newState) {
-    console.log("NEWSTATE", newState);
     return saveConfigToLocalStorage(newState);
   },
 };

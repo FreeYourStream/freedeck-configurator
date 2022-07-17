@@ -2,7 +2,6 @@ import { ConfigState } from "../../states/configState";
 import { createButtonBody, createImageBody } from "./createBody";
 import { createFooter } from "./createFooter";
 import { createHeader } from "./createHeader";
-
 export const createConfigBuffer = (configState: ConfigState): Buffer =>
   Buffer.concat([
     createHeader(

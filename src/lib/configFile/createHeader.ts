@@ -1,5 +1,3 @@
-import { Buffer } from "buffer";
-
 /**
  * @param width number of displays horizontal.
  * @param height number of displays vertical.

@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 import { AppState } from "../../states/appState";
 import { ConfigState } from "../../states/configState";
 
@@ -95,7 +93,7 @@ export const usePageSwitcher = (props: {
 }) => {
   // const { configState, appState } = props;
   // useEffect(() => {
-  //   if (!(navigator as any).serial && (window as any).__TAURI_IPC__)
+  //   if (!navigator.serial && (window as any).__TAURI_IPC__)
   //     return () => {};
   //   let running = false;
   //   const interval = setInterval(async () => {
