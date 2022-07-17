@@ -115,8 +115,10 @@ jobs:
     - name: install app dependencies and build it
       env:
         CI: false
-      run: npm install && npm run build
+      run: npm install
     - uses: tauri-apps/tauri-action@v0
+      with:
+        configPath: ./src-tauri/tauri.conf.json
       env:
         CI: false
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

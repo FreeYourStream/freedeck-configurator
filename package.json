@@ -41,7 +41,8 @@
     "codegen": "graphql-codegen --config codegen.yml",
     "typegen": "pwd; ts-node -P tsconfig.common.json src/scripts/joiTypes.ts",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:build": "tauri build",
+    "prebuild": "npm i"
   },
   "eslintConfig": {
     "extends": "react-app"
