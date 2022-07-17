@@ -35,7 +35,7 @@
   },
   "scripts": {
     "start": "TAILWIND_MODE=watch craco start",
-    "build": "craco build",
+    "build": "CI=false craco build",
     "check:clean": "unimported; ts-unused-exports ./tsconfig.json --allowUnusedTypes --ignoreFiles=\"generated/.*|_Boilerplate.*\"",
     "eject": "react-scripts eject",
     "codegen": "graphql-codegen --config codegen.yml",
