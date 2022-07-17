@@ -115,7 +115,7 @@ jobs:
     - name: install app dependencies and build it
       env:
         CI: false
-      run: npm install
+      run: npm install && npm install --global @tauri-apps/cli
     - uses: tauri-apps/tauri-action@v0
       env:
         CI: false
