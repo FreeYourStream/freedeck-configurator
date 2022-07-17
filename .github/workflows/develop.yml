@@ -117,13 +117,12 @@ jobs:
         CI: false
       run: npm install
     - uses: tauri-apps/tauri-action@v0
-      with:
-        configPath: ./src-tauri/tauri.conf.json
       env:
         CI: false
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         releaseId: ${{ needs.create-release.outputs.release_id }}
+        configPath: ./src-tauri/tauri.conf.json
 
   publish-release:
     runs-on: ubuntu-latest
