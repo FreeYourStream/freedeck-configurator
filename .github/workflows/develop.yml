@@ -87,7 +87,7 @@ jobs:
     - name: install app dependencies and build it
       env:
         CI: false
-      run: npm install && npm tauri:build
+      run: npm install && npm run tauri:build
     - name: debug ls
       run: ls src-tauri/target/release/bundle/
     - uses: ncipollo/release-action@v1
