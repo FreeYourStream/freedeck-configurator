@@ -118,6 +118,7 @@ jobs:
       run: npm install && npm run build
     - uses: tauri-apps/tauri-action@v0
       env:
+        CI: false
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         releaseId: ${{ needs.create-release.outputs.release_id }}
