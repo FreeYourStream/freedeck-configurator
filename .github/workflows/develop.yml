@@ -100,7 +100,11 @@ jobs:
     - uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        artifacts: "src-tauri/target/release/bundle/**/*.{AppImage,deb,dmg,msi}"
+        artifacts: |
+          "src-tauri/target/release/bundle/**/*.AppImage"
+          "src-tauri/target/release/bundle/**/*.deb"
+          "src-tauri/target/release/bundle/**/*.dmg"
+          "src-tauri/target/release/bundle/**/*.msi"
         token: ${{ secrets.GITHUB_TOKEN }}
         body: always up-to-date. maybe unstable
         tag: "dev"
