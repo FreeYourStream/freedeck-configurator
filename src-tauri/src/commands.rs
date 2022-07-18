@@ -135,7 +135,7 @@ pub fn get_current_window(state: State<Mutex<Serial>>) -> Result<String, String>
         let window = GetForegroundWindow();
         let mut text: [u16; 512] = [0; 512];
         let _result = GetWindowTextW(window, text.as_mut_ptr(), text.len() as i32);
-        return rouille::Response::text(OsString::from_wide(&text).to_str().unwrap());
+        OsString::from_wide(&text).to_str().unwrap()
     }
 }
 #[command]
