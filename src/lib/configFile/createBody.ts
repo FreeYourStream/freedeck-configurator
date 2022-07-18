@@ -1,5 +1,3 @@
-import { Buffer } from "buffer";
-
 import { ActionValue, EAction, FDSettings } from "../../definitions/modes";
 import { DisplayButton, Pages } from "../../generated";
 import { optimizeForSSD1306 } from "./ssd1306";

@@ -2,21 +2,20 @@ import {
   CheckIcon,
   CogIcon,
   DownloadIcon,
-  LightningBoltIcon,
   SaveIcon,
   UploadIcon,
 } from "@heroicons/react/outline";
 import c from "clsx";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { iconSize } from "../definitions/iconSizes";
 import { FDButton } from "../lib/components/Button";
 import { Value } from "../lib/components/LabelValue";
+import { FDSelect } from "../lib/components/SelectInput";
 import { createConfigBuffer } from "../lib/configFile/createBuffer";
 import { loadConfigFile } from "../lib/configFile/loadConfigFile";
 import { download } from "../lib/download";
-import { connectionStatus } from "../lib/serial";
 import { isMacOS } from "../lib/util";
 import { AppStateContext } from "../states/appState";
 import {
@@ -29,26 +28,26 @@ export const Header: React.FC<{}> = () => {
   const configState = useContext(ConfigStateContext);
   const { pages } = configState;
   const { setState } = useContext(ConfigDispatchContext);
-  const { serialApi, ctrlDown } = useContext(AppStateContext);
+  const { serialApi, ctrlDown, availablePorts, connectedPortIndex } =
+    useContext(AppStateContext);
   const nav = useNavigate();
-  const [connected, setConnected] = useState<boolean>(!!serialApi?.connected);
   const [progress, setProgress] = useState<number>(0);
   const loadConfigRef = useRef<HTMLInputElement | null>(null);
-  useEffect(() => {
-    if (!serialApi) return;
-    const id = serialApi.registerOnConStatusChange((type) => {
-      setConnected(type === connectionStatus.connect);
-    });
-
-    return () => serialApi.clearOnConStatusChange(id);
-  }, [serialApi]);
-
   const saveConfigFile = () => {
     if (Object.keys(pages.byId).length === 0) return;
     const completeBuffer = createConfigBuffer(configState);
 
     completeBuffer && download(completeBuffer);
   };
+  const deviceEntries = [
+    { text: "Disconnected", value: -1 },
+    ...availablePorts.map((port, index) => ({
+      text: port.replace(";", " "),
+      value: index,
+    })),
+  ];
+  if (!(window as any).__TAURI_IPC__)
+    deviceEntries.push({ text: "Connect new...", value: -2 });
   return (
     <div
       id="header"
@@ -83,7 +82,7 @@ export const Header: React.FC<{}> = () => {
           <div
             className={c("flex items-center space-x-4 h-auto overflow-hidden")}
           >
-            {connected && !ctrlDown ? (
+            {availablePorts.length && !ctrlDown ? (
               <>
                 <FDButton
                   prefix={<UploadIcon className={iconSize} />}
@@ -155,18 +154,26 @@ export const Header: React.FC<{}> = () => {
                     Save Config
                   </FDButton>
                 )}
-                {serialApi && !serialApi.connected && (
-                  <FDButton
-                    prefix={<LightningBoltIcon className={iconSize} />}
-                    size={3}
-                    onClick={() =>
-                      serialApi.connect().catch((e) => console.log(e))
-                    }
-                  >
-                    Connect to FreeDeck
-                  </FDButton>
-                )}
               </>
+            )}
+            {serialApi && (
+              <FDSelect
+                options={deviceEntries}
+                value={connectedPortIndex}
+                onChange={(value) => {
+                  switch (value) {
+                    case -1:
+                      serialApi?.disconnect();
+                      break;
+                    case -2:
+                      serialApi?.requestNewPort().catch((e) => console.log(e));
+                      break;
+                    default:
+                      serialApi?.connect(value);
+                      break;
+                  }
+                }}
+              />
             )}
           </div>
         </form>

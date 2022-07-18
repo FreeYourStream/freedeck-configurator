@@ -5,7 +5,6 @@ import { v4 } from "uuid";
 
 import { createDefaultBackDisplay } from "../definitions/defaultBackImage";
 import {
-  createDefaultDisplay,
   createDefaultDisplayButton,
   createDefaultPage,
 } from "../definitions/defaultPage";
@@ -534,8 +533,12 @@ export const configReducer: IConfigReducer = {
   },
   async deleteImage(state, data) {
     const { buttonIndex, pageId } = data;
+    delete state.pages.byId[pageId].displayButtons[buttonIndex].display
+      .originalImage;
     state.pages.byId[pageId].displayButtons[buttonIndex].display =
-      createDefaultDisplay();
+      await generateAdditionalImagery(
+        state.pages.byId[pageId].displayButtons[buttonIndex].display
+      );
     return saveConfigToLocalStorage(state);
   },
   async switchButtons(state, data) {
@@ -575,7 +578,6 @@ export const configReducer: IConfigReducer = {
     return saveConfigToLocalStorage(state);
   },
   async setState(state, newState) {
-    console.log("NEWSTATE", newState);
     return saveConfigToLocalStorage(newState);
   },
 };

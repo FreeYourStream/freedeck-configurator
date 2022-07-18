@@ -13,6 +13,7 @@ import { FirstPage } from "./containers/FirstTime";
 import { Header } from "./containers/Header";
 import { Pages } from "./containers/Page/Pages";
 import { FDButton } from "./lib/components/Button";
+import { useBackgroundTasks } from "./lib/hooks/backgroundTasks";
 import { usePageSwitcher } from "./lib/hooks/pageSwitcherHook";
 import { AppStateContext } from "./states/appState";
 import {
@@ -28,6 +29,7 @@ export const Body = () => {
     ConfigDispatchContext
   );
   usePageSwitcher({ appState, configState });
+  useBackgroundTasks();
   const [, drop] = useDrop({
     options: {},
     accept: "page",

@@ -1,7 +1,15 @@
-import { SerialConnector, SerialOptions, connectionStatus } from "./serial";
+import {
+  PortsChangedCallback,
+  SerialConnector,
+  connectionStatus,
+} from "./serial";
+import { TauriSerialConnector } from "./tauri-serial";
+import { WebSerialConnector } from "./web-serial";
 const commands = {
   init: 0x3,
   getFirmwareVersion: 0x10,
+  readConfig: 0x20,
+  writeConfig: 0x21,
   getCurrentPage: 0x30,
   setCurrentPage: 0x31,
   getPageCount: 0x32,
@@ -11,38 +19,30 @@ const commands = {
   oledWriteData: 0x43,
 };
 
-type connectCallback = (event: connectionStatus) => void;
 export class FDSerialAPI {
   Serial: SerialConnector;
   connected: connectionStatus = connectionStatus.disconnect;
-  connectCallbacks: { [x: number]: connectCallback } = {};
+  portsChangedCallbacks: { [x: number]: PortsChangedCallback } = {};
   blockCommunication: boolean = false;
-  constructor(options: SerialOptions = {}) {
-    this.Serial = new SerialConnector(
-      {
-        filters: [
-          {
-            usbVendorId: 0xf1f0,
-          },
-          {
-            usbVendorId: 0x2341,
-          },
-        ],
-        chunksize: 62, // this is a magic number -> https://github.com/arduino/ArduinoCore-avr/issues/53
-        ...options,
-      },
-      this.onConnectionChange
-    );
+  ports: string[] = [];
+  connectedPortIndex: number = -1;
+
+  constructor() {
+    if ((window as any).__TAURI_IPC__)
+      this.Serial = new TauriSerialConnector(this.onPortsChanged);
+    else this.Serial = new WebSerialConnector(this.onPortsChanged);
   }
 
-  async connect() {
-    if (!this.connected)
-      return this.Serial.request().then(() => {
-        this.connected = connectionStatus.connect;
-        Object.values(this.connectCallbacks).forEach((cb) =>
-          cb(connectionStatus.connect)
-        );
-      });
+  async connect(portIndex: number) {
+    await this.Serial.connect(portIndex, true);
+    this.connected = connectionStatus.connect;
+  }
+  async disconnect() {
+    await this.Serial.disconnect();
+    this.connected = connectionStatus.disconnect;
+  }
+  async requestNewPort() {
+    await this.Serial.requestNewPort();
   }
 
   async getFirmwareVersion() {
@@ -91,15 +91,14 @@ export class FDSerialAPI {
     ]);
   }
 
-  registerOnConStatusChange(callback: connectCallback): number {
-    const id = Object.keys(this.connectCallbacks).length;
-    this.connectCallbacks[id] = callback;
-    this.onConnectionChange(this.connected);
+  registerOnPortsChanged(callback: PortsChangedCallback): number {
+    const id = Object.keys(this.portsChangedCallbacks).length;
+    this.portsChangedCallbacks[id] = callback;
+    this.onPortsChanged(this.ports, this.connectedPortIndex);
     return id;
   }
-
-  clearOnConStatusChange(id: number) {
-    delete this.connectCallbacks[id];
+  clearOnPortsChanged(id: number) {
+    delete this.portsChangedCallbacks[id];
   }
   async readConfigFromSerial(
     progressCallback?: (
@@ -116,7 +115,7 @@ export class FDSerialAPI {
       console.log("OLD FIRMWARE", fwVersion);
       await this.Serial.write([0x1]);
     } else {
-      await this.write([0x3, 0x20]);
+      await this.write([0x3, commands.readConfig]);
     }
 
     const fileSizeStr = await this.readAsciiLine();
@@ -164,26 +163,36 @@ export class FDSerialAPI {
         oldFileSize = "0" + oldFileSize;
       }
       const numberArray = new TextEncoder().encode(oldFileSize);
-      await this.Serial.write(numberArray);
+      await this.Serial.write([...numberArray]);
     } else {
-      await this.write([0x3, 0x21]);
+      await this.write([0x3, commands.writeConfig]);
       await this.write([fileSize]);
     }
 
     const transferStartedTime = new Date().getTime();
-    setTimeout(async () => {
-      let lastLine = "";
-      do {
-        lastLine = await this.readAsciiLine();
-        if (isNaN(parseInt(lastLine))) continue;
-        progressCallback?.(
-          parseInt(lastLine),
-          config.length,
-          transferStartedTime
-        );
-      } while (lastLine !== fileSize);
-    });
-    await this.Serial.write(config);
+    // setTimeout(async () => {
+    //   let lastLine = "";
+    //   do {
+    //     lastLine = await this.readAsciiLine();
+    //     console.log("last line", lastLine);
+    //     if (isNaN(parseInt(lastLine))) continue;
+    //     progressCallback?.(
+    //       parseInt(lastLine),
+    //       config.length,
+    //       transferStartedTime
+    //     );
+    //   } while (lastLine !== fileSize);
+    // });
+    let sent = 0;
+    while (sent < config.length) {
+      const end = Math.min(config.length, sent + 1024);
+      const chunk = config.slice(sent, end);
+      const numberChunk = [...chunk];
+      sent += numberChunk.length;
+      await this.Serial.write([...numberChunk]);
+      progressCallback?.(sent, config.length, transferStartedTime);
+    }
+
     this.blockCommunication = false;
   }
 
@@ -191,16 +200,6 @@ export class FDSerialAPI {
     const result = await this.Serial.readLine(3000);
     return String.fromCharCode(...result);
   }
-
-  private async readLine() {
-    const result = await this.Serial.readLine(300);
-    return result;
-  }
-
-  private async readByte(): Promise<number> {
-    return this.Serial.readByte(1000);
-  }
-
   private async read(): Promise<number[]> {
     return this.Serial.read(1000);
   }
@@ -221,9 +220,17 @@ export class FDSerialAPI {
     await this.Serial.write(mappedData);
   }
 
-  private onConnectionChange = async (status: connectionStatus) => {
-    this.connected = status;
-    console.log({ status });
-    Object.values(this.connectCallbacks).forEach((cb) => cb(status));
+  private onPortsChanged = async (
+    ports: string[],
+    connectedPortIndex: number
+  ) => {
+    this.ports = ports;
+    this.connectedPortIndex = connectedPortIndex;
+    if (this.connectedPortIndex === -1)
+      this.connected = connectionStatus.disconnect;
+    else this.connected = connectionStatus.connect;
+    Object.values(this.portsChangedCallbacks).forEach((cb) =>
+      cb(ports, connectedPortIndex)
+    );
   };
 }

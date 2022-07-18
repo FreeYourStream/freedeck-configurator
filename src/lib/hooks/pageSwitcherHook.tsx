@@ -1,6 +1,3 @@
-import { useEffect } from "react";
-import * as workerInterval from "worker-interval";
-
 import { AppState } from "../../states/appState";
 import { ConfigState } from "../../states/configState";
 
@@ -86,7 +83,7 @@ const run = async (configState: ConfigState, appState: AppState) => {
       appState.serialApi?.setCurrentPage(pageIndex);
     }
   } catch {
-    console.log("error, companion probably not running");
+    // console.log("error, companion probably not running");
   }
 };
 
@@ -94,21 +91,22 @@ export const usePageSwitcher = (props: {
   configState: ConfigState;
   appState: AppState;
 }) => {
-  const { configState, appState } = props;
-  useEffect(() => {
-    if (!(navigator as any).serial) return () => {};
-    let running = false;
-    const interval = workerInterval.setInterval(async () => {
-      if (!running) {
-        running = true;
-        await run(configState, appState);
-        running = false;
-      }
-    }, 300);
-    return () => {
-      console.log("clearing interval", interval);
-      if (interval) workerInterval.clearInterval(interval);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [configState, appState.serialApi]);
+  // const { configState, appState } = props;
+  // useEffect(() => {
+  //   if (!navigator.serial && (window as any).__TAURI_IPC__)
+  //     return () => {};
+  //   let running = false;
+  //   const interval = setInterval(async () => {
+  //     if (!running) {
+  //       running = true;
+  //       await run(configState, appState);
+  //       running = false;
+  //     }
+  //   }, 300);
+  //   return () => {
+  //     console.log("clearing interval", interval);
+  //     if (interval) clearInterval(interval);
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [configState, appState.serialApi]);
 };

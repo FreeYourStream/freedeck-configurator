@@ -6,7 +6,6 @@ import { Label, Value } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
 import { FDSelect } from "../lib/components/SelectInput";
 import { Title } from "../lib/components/Title";
-import { connectionStatus } from "../lib/serial";
 import { AppStateContext } from "../states/appState";
 import {
   ConfigDispatchContext,
@@ -42,8 +41,8 @@ export const Device: React.FC<{}> = () => {
 
   useEffect(() => {
     if (!serialApi) return;
-    serialApi.registerOnConStatusChange(async (type) => {
-      if (type === connectionStatus.connect) {
+    serialApi.registerOnPortsChanged(async (ports) => {
+      if (ports.length) {
         const fw = await serialApi.getFirmwareVersion();
         setFwVersion(fw);
       } else {

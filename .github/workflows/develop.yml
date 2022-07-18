@@ -58,3 +58,62 @@ jobs:
         env:
           CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+  
+  build-tauri:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          src-tauri/target
+        key: ${{ runner.os }}-dev-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-dev-cargo-${{ hashFiles('**/Cargo.lock') }}
+          ${{ runner.os }}-dev-cargo-
+    - uses: actions/cache@v3
+      with:
+        path: |
+          node_modules
+        key: ${{ runner.os }}-dev-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-dev-node-${{ hashFiles('**/package-lock.json') }}
+          ${{ runner.os }}-dev-node-
+    - name: setup node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16
+    - name: get version
+      run: echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+
+    - name: install Rust stable
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+    - name: install dependencies (ubuntu only)
+      if: matrix.platform == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf libudev-dev libgssapi-krb5-2
+    - name: install app dependencies and build it
+      env:
+        CI: false
+      run: npm install && npm run tauri:build
+    - name: debug ls
+      run: ls src-tauri/target/release/bundle/
+    - uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        artifacts: src-tauri/target/release/bundle/appimage/*.AppImage,src-tauri/target/release/bundle/deb/*.deb,src-tauri/target/release/bundle/dmg/*.dmg,src-tauri/target/release/bundle/macos/*,src-tauri/target/release/bundle/msi/*.msi
+        token: ${{ secrets.GITHUB_TOKEN }}
+        body: always up-to-date. maybe unstable
+        tag: "dev"
+
+        commit: develop

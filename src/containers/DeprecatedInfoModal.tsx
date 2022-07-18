@@ -11,7 +11,6 @@ export const DeprecatedInfoModal: React.FC<{}> = () => {
       className="w-auto h-auto"
       visible={true}
       setClose={() => {
-        console.log("CLOSING");
         nav("/");
         localStorage.setItem("dontShowDeprecatedInfo", "true");
       }}
