@@ -73,8 +73,19 @@ jobs:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          target
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          src-tauri/target
+        key: ${{ runner.os }}-dev-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-dev-cargo-${{ hashFiles('**/Cargo.lock') }}
+          ${{ runner.os }}-dev-cargo-
+    - uses: actions/cache@v3
+      with:
+        path: |
+          node_modules
+        key: ${{ runner.os }}-dev-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-dev-node-${{ hashFiles('**/package-lock.json') }}
+          ${{ runner.os }}-dev-node-
     - name: setup node
       uses: actions/setup-node@v1
       with:
