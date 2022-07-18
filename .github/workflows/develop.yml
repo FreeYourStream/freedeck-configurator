@@ -6,58 +6,58 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [develop, tauri]
+    branches: [develop]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  # Deploy-to-fddev:
-  #   # The type of runner that the job will run on
-  #   runs-on: ubuntu-latest
+  Deploy-to-fddev:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
 
-  #   # Steps represent a sequence of tasks that will be executed as part of the job
-  #   steps:
-  #     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-  #     - uses: actions/checkout@v2
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
 
-  #     - name: Setup Node.js environment
-  #       uses: actions/setup-node@v1
-  #       with:
-  #         # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0
-  #         node-version: 16 # optional, default is 10.x
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v1
+        with:
+          # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0
+          node-version: 16 # optional, default is 10.x
 
-  #     - name: npm i
-  #       # You may pin to the exact commit or the version.
-  #       # uses: EgorDm/gha-yarn-node-cache@5e3a518810b21a8e0e1d236a3db83a18cfc1be9e
-  #       run: npm i
+      - name: npm i
+        # You may pin to the exact commit or the version.
+        # uses: EgorDm/gha-yarn-node-cache@5e3a518810b21a8e0e1d236a3db83a18cfc1be9e
+        run: npm i
 
-  #     - name: build
-  #       run: CI=false npm run build
+      - name: build
+        run: CI=false npm run build
 
-  #     - name: Deploy
-  #       # You may pin to the exact commit or the version.
-  #       # uses: SamKirkland/FTP-Deploy-Action@da0d77ff390a13097c60f9b9eb954e503a480d97
-  #       uses: easingthemes/ssh-deploy@v2.1.5
-  #       with:
-  #         REMOTE_HOST: "78.47.56.63"
-  #         REMOTE_USER: githubactions
-  #         TARGET: "/var/www/fddev.freeyourstream.com/"
-  #         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-  #         # The local folder to copy, defaults to root project folder
-  #         SOURCE: "build/"
+      - name: Deploy
+        # You may pin to the exact commit or the version.
+        # uses: SamKirkland/FTP-Deploy-Action@da0d77ff390a13097c60f9b9eb954e503a480d97
+        uses: easingthemes/ssh-deploy@v2.1.5
+        with:
+          REMOTE_HOST: "78.47.56.63"
+          REMOTE_USER: githubactions
+          TARGET: "/var/www/fddev.freeyourstream.com/"
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          # The local folder to copy, defaults to root project folder
+          SOURCE: "build/"
 
-  #     - name: Actions for Discord
-  #       uses: Ilshidur/action-discord@0.0.2
-  #       env:
-  #         DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL_CONF_DEV }}
-  #       with:
-  #         args: "A new develop version has been deployed! https://fddev.freeyourstream.com"
+      - name: Actions for Discord
+        uses: Ilshidur/action-discord@0.0.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL_CONF_DEV }}
+        with:
+          args: "A new develop version has been deployed! https://fddev.freeyourstream.com"
 
-  #     - name: Cloudflare Purge Cache
-  #       uses: jakejarvis/cloudflare-purge-action@v0.3.0
-  #       env:
-  #         CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
-  #         CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+      - name: Cloudflare Purge Cache
+        uses: jakejarvis/cloudflare-purge-action@v0.3.0
+        env:
+          CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
   
   build-tauri:
     strategy:
