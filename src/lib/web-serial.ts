@@ -70,6 +70,7 @@ export class WebSerialConnector implements SerialConnector {
     await navigator.serial.requestPort({
       filters: [
         { usbVendorId: 0xf1f0, usbProductId: 0x4005 },
+        { usbVendorId: 0x2341, usbProductId: 0x8036 },
         { usbVendorId: 0x2341, usbProductId: 0x8037 },
       ],
     });
