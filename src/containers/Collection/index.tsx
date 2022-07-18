@@ -18,15 +18,19 @@ export const Collection: React.FC<{ collectionId: string }> = ({
     ConfigDispatchContext
   );
   const collection = configState.collections.byId[collectionId];
-  const [{ targetCollectionId }, drop] = useDrop({
-    options: {},
+  const [{ targetCollectionId }, drop] = useDrop<
+    { pageId: string },
+    {},
+    { targetCollectionId: string }
+  >({
     accept: "page",
-    drop: (item, monitor): void => {
+    drop: (item, monitor): any => {
       if (!collection.pages.find((p) => p === monitor.getItem().pageId))
         setPageCollection({
           pageId: monitor.getItem().pageId,
           collectionId: targetCollectionId,
         });
+      return {};
     },
     collect: () => ({
       targetCollectionId: collectionId,

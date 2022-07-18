@@ -30,8 +30,7 @@ export const Body = () => {
   );
   usePageSwitcher({ appState, configState });
   useBackgroundTasks();
-  const [, drop] = useDrop({
-    options: {},
+  const [, drop] = useDrop<{ pageId: string; collectionId: string }>({
     accept: "page",
     drop: (item, monitor) => {
       if (!!monitor.getItem().collectionId && monitor.isOver()) {

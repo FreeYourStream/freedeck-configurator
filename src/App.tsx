@@ -1,7 +1,7 @@
 import { useSimpleReducer } from "@bitovi/use-simple-reducer";
 import React, { useEffect } from "react";
 import { DndProvider } from "react-dnd";
-import Backend from "react-dnd-html5-backend";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { HashRouter } from "react-router-dom";
 
 import { Body } from "./Body";
@@ -51,7 +51,7 @@ const App: React.FC<{
 
   return (
     <HashRouter>
-      <DndProvider backend={Backend}>
+      <DndProvider backend={HTML5Backend}>
         <ConfigStateContext.Provider value={configState}>
           <ConfigDispatchContext.Provider value={configDispatch}>
             <AppStateContext.Provider value={appState}>

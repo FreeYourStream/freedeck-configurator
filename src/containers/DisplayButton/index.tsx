@@ -14,6 +14,12 @@ import {
   ConfigStateContext,
 } from "../../states/configState";
 
+interface IItem {
+  pageId: string;
+  displayIndex: number;
+  brightness: number;
+}
+
 export const DisplayButton: React.FC<{
   pageId: string;
   displayIndex: number;
@@ -27,9 +33,14 @@ export const DisplayButton: React.FC<{
     pageId === "dbd"
       ? configState.defaultBackDisplay
       : configState.pages.byId[pageId].displayButtons[displayIndex].display;
-  const [{ isDragging }, dragRef] = useDrag({
+
+  const [{ isDragging }, dragRef] = useDrag<
+    IItem,
+    any,
+    { isDragging: boolean }
+  >(() => ({
+    type: "display",
     item: {
-      type: "display",
       pageId,
       displayIndex,
       brightness: configState.brightness,
@@ -37,32 +48,40 @@ export const DisplayButton: React.FC<{
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  });
-  const [{ targetDisplayIndex, targetPageId }, drop] = useDrop({
-    options: {},
-    accept: "display",
-    drop: (item, monitor): void =>
-      appState.ctrlDown
-        ? configDispatch.copyButton({
-            pageDestId: targetPageId,
-            buttonDestIndex: targetDisplayIndex,
-            pageSrcId: monitor.getItem().pageId,
-            buttonSrcIndex: monitor.getItem().displayIndex,
-          })
-        : configDispatch.switchButtons({
-            pageAId: targetPageId,
-            buttonAIndex: targetDisplayIndex,
-            pageBId: monitor.getItem().pageId,
-            buttonBIndex: monitor.getItem().displayIndex,
-          }),
-    collect: () => ({
-      targetDisplayIndex: displayIndex,
-      targetPageId: pageId,
+  }));
+  const [{ targetDisplayIndex, targetPageId }, dropRef] = useDrop<
+    IItem,
+    any,
+    { targetDisplayIndex: number; targetPageId: string }
+  >(
+    () => ({
+      accept: "display",
+      drop: (item, monitor): void => {
+        console.log("DROPPING");
+        appState.ctrlDown
+          ? configDispatch.copyButton({
+              pageDestId: targetPageId,
+              buttonDestIndex: targetDisplayIndex,
+              pageSrcId: monitor.getItem().pageId,
+              buttonSrcIndex: monitor.getItem().displayIndex,
+            })
+          : configDispatch.switchButtons({
+              pageAId: targetPageId,
+              buttonAIndex: targetDisplayIndex,
+              pageBId: monitor.getItem().pageId,
+              buttonBIndex: monitor.getItem().displayIndex,
+            });
+      },
+      collect: () => ({
+        targetDisplayIndex: displayIndex,
+        targetPageId: pageId,
+      }),
     }),
-  });
+    [pageId, displayIndex, configDispatch]
+  );
 
   return (
-    <div className="relative">
+    <div ref={dragRef} className="relative">
       <CtrlDuo>
         <></>
         <TrashIcon
@@ -87,7 +106,6 @@ export const DisplayButton: React.FC<{
       />
       <Link
         to={`/displaybutton/${pageId}/${displayIndex}`}
-        ref={dragRef}
         className={c(
           "bg-opacity-0",
           "flex items-center flex-col ",
@@ -96,7 +114,7 @@ export const DisplayButton: React.FC<{
       >
         <ImagePreview
           className="shadow-xl mb-2"
-          $ref={drop}
+          $ref={dropRef}
           previewImage={display.previewImage}
         />
         <ActionPreview page={page} displayIndex={displayIndex} />

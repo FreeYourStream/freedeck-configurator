@@ -16,24 +16,31 @@ interface IProps {
   pageId: string;
   collectionIndex?: number;
 }
+interface IItem {
+  pageId: string;
+  collectionId?: string;
+}
 export const Page: React.FC<IProps> = ({ pageId }) => {
   const configState = useContext(ConfigStateContext);
   const { renamePage, switchPages } = useContext(ConfigDispatchContext);
   const page = configState.pages.byId[pageId];
   const isStartPage =
     configState.pages.sorted.findIndex((pid) => pid === pageId) === 0;
-  const [, dragRef] = useDrag({
+  const [, dragRef] = useDrag<IItem>(() => ({
+    type: "page",
     item: {
-      type: "page",
       pageId,
       collectionId: page.isInCollection,
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  });
-  const [{ targetPageId, collectionId }, drop] = useDrop({
-    options: {},
+  }));
+  const [{ targetPageId, collectionId }, drop] = useDrop<
+    IItem,
+    any,
+    { targetPageId: string; collectionId?: string }
+  >({
     accept: "page",
     drop: (item, monitor): void => {
       if (!!monitor.getItem().collectionId === !!collectionId)

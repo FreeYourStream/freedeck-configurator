@@ -60,10 +60,11 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 768,
         "resizable": true,
         "title": "FreeDeck Configurator",
-        "width": 800
+        "width": 1366,
+        "fileDropEnabled": false
       }
     ]
   }
