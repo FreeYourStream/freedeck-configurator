@@ -6,8 +6,8 @@
 pub mod commands;
 use std::sync::Mutex;
 use tauri::{
-    CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
-    SystemTrayMenuItem, WindowEvent,
+    CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
+    WindowEvent,
 };
 
 use crate::commands::*;
@@ -32,7 +32,9 @@ fn main() {
                 ..
             } => {
                 let window = app.get_window("main").unwrap();
-                window.unminimize().unwrap();
+                window.show().unwrap();
+                window.set_focus().unwrap();
+                window.request_user_attention(None).unwrap();
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
                 "quit" => {
