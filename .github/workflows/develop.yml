@@ -112,10 +112,11 @@ jobs:
       with:
         allowUpdates: true
         artifacts: |
-          "src-tauri/target/release/bundle/**/*.AppImage"
-          "src-tauri/target/release/bundle/**/*.deb"
-          "src-tauri/target/release/bundle/**/*.dmg"
-          "src-tauri/target/release/bundle/**/*.msi"
+          "src-tauri/target/release/bundle/appimage/*.AppImage"
+          "src-tauri/target/release/bundle/deb/*.deb"
+          "src-tauri/target/release/bundle/dmg/*.dmg"
+          "src-tauri/target/release/bundle/macos/*"
+          "src-tauri/target/release/bundle/msi/*.msi"
         token: ${{ secrets.GITHUB_TOKEN }}
         body: always up-to-date. maybe unstable
         tag: "dev"
