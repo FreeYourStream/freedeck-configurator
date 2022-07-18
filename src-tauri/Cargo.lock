@@ -84,6 +84,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-macros",
+ "winapi",
 ]
 
 [[package]]

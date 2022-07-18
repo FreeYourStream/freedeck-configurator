@@ -1,3 +1,6 @@
+import { invoke } from "@tauri-apps/api";
+import { useEffect } from "react";
+
 import { AppState } from "../../states/appState";
 import { ConfigState } from "../../states/configState";
 
@@ -46,9 +49,7 @@ const findCollectionPage = (configState: ConfigState, name: string): number => {
 
 const run = async (configState: ConfigState, appState: AppState) => {
   try {
-    const res = await fetch("http://localhost:8000/current_window");
-    if (!res.ok) return false;
-    let windowName = await res.text();
+    let windowName = await invoke<string>("get_current_window");
     if (windowName === lastWindowName) return;
     let pageIndex = findPage(configState, windowName);
     if (pageIndex === -1) {
@@ -82,8 +83,8 @@ const run = async (configState: ConfigState, appState: AppState) => {
       lastWindowName = windowName;
       appState.serialApi?.setCurrentPage(pageIndex);
     }
-  } catch {
-    // console.log("error, companion probably not running");
+  } catch (e) {
+    console.log(e);
   }
 };
 
@@ -91,22 +92,21 @@ export const usePageSwitcher = (props: {
   configState: ConfigState;
   appState: AppState;
 }) => {
-  // const { configState, appState } = props;
-  // useEffect(() => {
-  //   if (!navigator.serial && (window as any).__TAURI_IPC__)
-  //     return () => {};
-  //   let running = false;
-  //   const interval = setInterval(async () => {
-  //     if (!running) {
-  //       running = true;
-  //       await run(configState, appState);
-  //       running = false;
-  //     }
-  //   }, 300);
-  //   return () => {
-  //     console.log("clearing interval", interval);
-  //     if (interval) clearInterval(interval);
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [configState, appState.serialApi]);
+  const { configState, appState } = props;
+  useEffect(() => {
+    if (!(window as any).__TAURI_IPC__) return () => {};
+    let running = false;
+    const interval = setInterval(async () => {
+      if (!running) {
+        running = true;
+        await run(configState, appState);
+        running = false;
+      }
+    }, 300);
+    return () => {
+      console.log("clearing interval", interval);
+      if (interval) clearInterval(interval);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [configState, appState.serialApi]);
 };

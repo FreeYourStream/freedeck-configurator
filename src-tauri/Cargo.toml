@@ -21,6 +21,9 @@ tauri = { version = "1.0.3", features = ["api-all", "system-tray"] }
 tauri-macros = "1.0.3"
 serialport = "4.2.0"
 
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3.9", features = ["winuser"] }
+
 [features]
 # by default Tauri runs in production mode
 # when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
