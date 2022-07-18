@@ -127,7 +127,7 @@ pub fn read(state: State<Mutex<Serial>>) -> Vec<u8> {
 
 #[command]
 #[cfg(windows)]
-pub fn get_current_window(state: State<Mutex<Serial>>) -> String {
+pub fn get_current_window(_state: State<Mutex<Serial>>) -> String {
     use std::{ffi::OsString, os::windows::prelude::OsStringExt};
     use winapi::um::winuser::{GetForegroundWindow, GetWindowTextW};
 
@@ -135,7 +135,7 @@ pub fn get_current_window(state: State<Mutex<Serial>>) -> String {
         let window = GetForegroundWindow();
         let mut text: [u16; 512] = [0; 512];
         let _result = GetWindowTextW(window, text.as_mut_ptr(), text.len() as i32);
-        OsString::from_wide(&text).to_str().unwrap()
+        OsString::from_wide(&text).to_str().unwrap().to_string()
     }
 }
 #[command]

@@ -6,7 +6,7 @@
 pub mod commands;
 use std::sync::Mutex;
 use tauri::{
-    CustomMenuItem, Event as Bla, Manager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu,
+    CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
     SystemTrayMenuItem, WindowEvent,
 };
 
@@ -23,7 +23,7 @@ fn main() {
     let tray = SystemTray::new().with_menu(tray_menu);
     let serial = Mutex::new(Serial::new());
 
-    let mut app = tauri::Builder::default()
+    let app = tauri::Builder::default()
         .system_tray(tray)
         .on_system_tray_event(|app, event| match event {
             SystemTrayEvent::DoubleClick {
