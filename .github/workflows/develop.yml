@@ -68,6 +68,9 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
     - uses: actions/checkout@v2
+    - uses: Swatinem/rust-cache@v2
+      with:
+        shared-key: "tauri"
     - name: setup node
       uses: actions/setup-node@v1
       with:
@@ -93,7 +96,7 @@ jobs:
     - uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        artifacts: "src-tauri/target/release/bundle/*"
+        artifacts: "src-tauri/target/release/bundle/*/*.*"
         token: ${{ secrets.GITHUB_TOKEN }}
         body: always up-to-date. maybe unstable
         tag: "dev"
