@@ -55,7 +55,10 @@
       "iconAsTemplate": true
     },
     "updater": {
-      "active": false
+      "active": true,
+      "endpoints": [
+        "https://api.github.com/repos/freeyourstream/freedeck-configurator/releases/latest"
+      ]
     },
     "windows": [
       {
@@ -67,5 +70,6 @@
         "fileDropEnabled": false
       }
     ]
-  }
+  },
+  "version": "2.2.0"
 }

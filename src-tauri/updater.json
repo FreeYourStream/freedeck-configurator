@@ -1,0 +1,18 @@
+{
+  "version": "2.2.0",
+  "pub_date": "2022-07-19T15:15:15.416Z",
+  "platforms": {
+    "linux-x86_64": {
+      "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_2.2.0_amd64.AppImage",
+      "signature": ""
+    },
+    "darwin-x86_64": {
+      "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_2.2.0_x64.dmg",
+      "signature": ""
+    },
+    "windows-x86_64": {
+      "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_2.2.0_x64_en-US.msi",
+      "signature": ""
+    }
+  }
+}
