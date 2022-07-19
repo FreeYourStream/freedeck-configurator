@@ -21,6 +21,7 @@ fn get_compatible_devices() -> Vec<Port> {
     for port in serialport::available_ports().unwrap() {
         if let SerialPortType::UsbPort(info) = port.port_type {
             if (info.vid == 0xf1f0 && info.pid == 0x4005)
+                || (info.vid == 0x2341 && info.pid == 0x8036)
                 || (info.vid == 0x2341 && info.pid == 0x8037)
             {
                 ports.push(Port {
