@@ -137,6 +137,7 @@ jobs:
     needs: build-tauri
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - name: create timestamp
       run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S%z')" >> $GITHUB_ENV
     - name: create-json
