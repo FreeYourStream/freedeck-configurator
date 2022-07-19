@@ -26,7 +26,7 @@ async function main() {
     pub_date: new Date().toISOString(),
     platforms: {
       "linux-x86_64": {
-        url: `https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${packageJson.version}_amd64.AppImage`,
+        url: `https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${packageJson.version}_amd64.AppImage.tar.gz`,
         signature: "",
       },
       "darwin-x86_64": {
@@ -34,7 +34,7 @@ async function main() {
         signature: "",
       },
       "windows-x86_64": {
-        url: `https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${packageJson.version}_x64_en-US.msi`,
+        url: `https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${packageJson.version}_x64_en-US.msi.tar.gz`,
         signature: "",
       },
     },
