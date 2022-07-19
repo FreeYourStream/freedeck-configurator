@@ -17,9 +17,9 @@ export const HelpModal: React.FC<{}> = () => {
       title="Help"
     >
       <div className="flex flex-col items-center space-y-4 p-8 text-xl">
-        <div className="text-4xl">FreeDeck Companion App?</div>
+        <div className="text-4xl">FreeDeck App?</div>
         <a
-          href="https://github.com/FreeYourStream/freedeck-configurator-companion/tree/main#download"
+          href="https://github.com/FreeYourStream/freedeck-configurator/releases"
           className="text-primary-500"
         >
           here
