@@ -62,7 +62,7 @@ impl Serial {
             Ok(port) => port,
             Err(e) => return Err(e.to_string()),
         };
-
+        port.write_data_terminal_ready(true).unwrap();
         port.set_timeout(Duration::from_millis(1000))
             .expect("error setting timeout");
         self.port = Some(Mutex::new(port));
@@ -81,6 +81,7 @@ impl Serial {
         let mut available = port.bytes_to_read().unwrap();
         let start = get_epoch();
         while available <= 0 && get_epoch() - start < 1000 {
+            std::thread::sleep(Duration::from_millis(100));
             available = port.bytes_to_read().unwrap();
         }
         let mut response = vec![0; available.try_into().unwrap()];

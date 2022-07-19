@@ -62,17 +62,19 @@ export class TauriSerialConnector implements SerialConnector {
   }
 
   async read(timeout = 1000): Promise<number[]> {
-    return await invoke("read");
+    const data = [ ...this.buffer,...await invoke<number[]>("read")]
+    this.buffer = []
+    return data
   }
 
   async readLine(timeout = 1000): Promise<number[]> {
-    let buffer: Array<number> = await invoke("read");
-    if (!buffer.length || !buffer.find((byte) => byte === 0xa)) {
+    this.buffer = [...this.buffer, ...await invoke<number[]>("read")];
+    if (!this.buffer.length || !this.buffer.find((byte) => byte === 0xa)) {
       return [];
     }
-    const index = buffer.findIndex((byte) => byte === 0xa);
-    const line = buffer.slice(0, index - 1);
-    buffer = buffer.slice(index + 1);
+    const index = this.buffer.findIndex((byte) => byte === 0xa);
+    const line = [...this.buffer.slice(0, index - 1)]
+    this.buffer = [...this.buffer.slice(index + 1)];
 
     return line;
   }
