@@ -14,7 +14,7 @@ async function main() {
 
   const tauriJson = await readFileSync("./src-tauri/tauri.conf.json", "utf8");
   const tauriJsonObject = JSON.parse(tauriJson);
-  tauriJsonObject.version = packageJson.version;
+  tauriJsonObject.package.version = packageJson.version;
 
   await writeFileSync(
     "./src-tauri/tauri.conf.json",

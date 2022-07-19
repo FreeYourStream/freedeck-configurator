@@ -57,7 +57,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://api.github.com/repos/freeyourstream/freedeck-configurator/releases/latest"
+        "https://raw.githubusercontent.com/FreeYourStream/freedeck-configurator/develop/src-tauri/updater.json"
       ]
     },
     "windows": [
@@ -70,6 +70,5 @@
         "fileDropEnabled": false
       }
     ]
-  },
-  "version": "2.2.0"
+  }
 }
