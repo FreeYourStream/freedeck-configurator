@@ -20,29 +20,6 @@ async function main() {
     "./src-tauri/tauri.conf.json",
     JSON.stringify(tauriJsonObject, null, 2)
   );
-
-  const updaterFileContent = {
-    version: packageJson.version,
-    pub_date: new Date().toISOString(),
-    platforms: {
-      "linux-x86_64": {
-        url: `https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${packageJson.version}_amd64.AppImage.tar.gz`,
-        signature: "",
-      },
-      "darwin-x86_64": {
-        url: `https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${packageJson.version}_x64.dmg`,
-        signature: "",
-      },
-      "windows-x86_64": {
-        url: `https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${packageJson.version}_x64_en-US.msi.tar.gz`,
-        signature: "",
-      },
-    },
-  };
-  await writeFileSync(
-    "./src-tauri/updater.json",
-    JSON.stringify(updaterFileContent, null, 2)
-  );
 }
 
 main();

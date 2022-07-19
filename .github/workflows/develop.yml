@@ -107,8 +107,51 @@ jobs:
         TAURI_PRIVATE_KEY: ${{ secrets.TAURI_UPDATER_KEY }}
         CI: false
       run: npm install && npm run tauri:build
-    - name: debug ls
-      run: ls src-tauri/target/release/bundle/
+    - name: create timestamp
+      run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S%z')" >> $GITHUB_ENV
+    - name: read signatures
+      env: 
+        FILES: src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz.sig src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig src-tauri/target/release/bundle/msi/*.msi.zip.sig
+      run: |
+        echo "APPIMAGE=$(src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz.sig)" >> $GITHUB_ENV
+        echo "MACAPP=$(src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig)" >> $GITHUB_ENV
+        echo "WINDOWS=$(src-tauri/target/release/bundle/msi/*.msi.zip.sig)" >> $GITHUB_ENV
+    - name: create-json
+      id: create-json
+      uses: jsdaniell/create-json@1.1.2
+      with:
+        name: "updater.json"
+        json: |
+          {
+            "version": "${{ env.PACKAGE_VERSION }}",
+            "pub_date": "${{ env.NOW }}",
+            "platforms": {
+              "linux-x86_64": {
+                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${{ env.PACKAGE_VERSION }}_amd64.AppImage.tar.gz.sig",
+                "signature": "${{ env.APPIMAGE }}"
+              },
+              "darwin-x86_64": {
+                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator.app.tar.gz.sig",
+                "signature": "${{ env.MACAPP }}"
+              },
+              "windows-x86_64": {
+                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${{ env.PACKAGE_VERSION }}_x64_en-US.msi.tar.gz.sig",
+                "signature": "${{ env.WINDOWS }}"
+              }
+            }
+          }
+        dir: 'src-tauri/'
+    - name: Deploy
+        # You may pin to the exact commit or the version.
+        # uses: SamKirkland/FTP-Deploy-Action@da0d77ff390a13097c60f9b9eb954e503a480d97
+      uses: easingthemes/ssh-deploy@v2.1.5
+      with:
+        REMOTE_HOST: "78.47.56.63"
+        REMOTE_USER: githubactions
+        TARGET: "/var/www/fddev.freeyourstream.com/updater.json"
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        # The local folder to copy, defaults to root project folder
+        SOURCE: "src-tauri/updater.json"
     - uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
@@ -116,5 +159,4 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         body: always up-to-date. maybe unstable
         tag: "dev"
-
         commit: develop
