@@ -56,9 +56,11 @@
     },
     "updater": {
       "active": true,
+      "dialog": true,
       "endpoints": [
         "https://raw.githubusercontent.com/FreeYourStream/freedeck-configurator/develop/src-tauri/updater.json"
-      ]
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlFNTk1ODc4NzcwQUYyNgpSV1FtcjNDSGg1WGxDZThFbmVIdGh0YTdoV21xTkZ6ODRHSmNXR0JrQ0V5aGJyZVJJS3M1NE5wVQo="
     },
     "windows": [
       {
