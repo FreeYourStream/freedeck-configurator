@@ -23,7 +23,7 @@ fn main() {
     let tray = SystemTray::new().with_menu(tray_menu);
     let serial = Mutex::new(Serial::new());
 
-    let app = tauri::Builder::default()
+    let mut app = tauri::Builder::default()
         .system_tray(tray)
         .on_system_tray_event(|app, event| match event {
             SystemTrayEvent::DoubleClick {
