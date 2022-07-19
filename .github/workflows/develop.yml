@@ -107,16 +107,36 @@ jobs:
         TAURI_PRIVATE_KEY: ${{ secrets.TAURI_UPDATER_KEY }}
         CI: false
       run: npm install && npm run tauri:build
-    - name: create timestamp
-      run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S%z')" >> $GITHUB_ENV
     - name: read signatures
+      if: matrix.platform == 'macos-latest'
+      run: |
+        echo "MACAPP=$(cat src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig)" >> $GITHUB_ENV
+        echo ${{ env.MACAPP }}
+    - name: read signatures
+      if: matrix.platform == 'windows-latest'
+      run: |
+        echo "WINDOWS=$(cat src-tauri/target/release/bundle/msi/freedeck-configurator_${{ env.PACKAGE_VERSION }}_x64_en-US.msi.zip.sig)" >> $GITHUB_ENV
+        echo ${{ env.WINDOWS }}
+    - name: read signatures
+      if: matrix.platform == 'ubuntu-latest'
       run: |
         echo "APPIMAGE=$(cat src-tauri/target/release/bundle/appimage/freedeck-configurator_${{ env.PACKAGE_VERSION }}_amd64.AppImage.tar.gz.sig)" >> $GITHUB_ENV
-        echo "MACAPP=$(cat src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig)" >> $GITHUB_ENV
-        echo "WINDOWS=$(cat src-tauri/target/release/bundle/msi/freedeck-configurator_${{ env.PACKAGE_VERSION }}_x64_en-US.msi.zip.sig)" >> $GITHUB_ENV
         echo ${{ env.APPIMAGE }}
-        echo ${{ env.MACAPP }}
-        echo ${{ env.WINDOWS }}
+    - uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        artifacts: src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz,src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz.sig,src-tauri/target/release/bundle/deb/*.deb,src-tauri/target/release/bundle/deb/*.deb.sig,src-tauri/target/release/bundle/dmg/*.dmg,src-tauri/target/release/bundle/dmg/*.dmg.sig,src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz,src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig,src-tauri/target/release/bundle/msi/*.msi.zip,src-tauri/target/release/bundle/msi/*.msi.zip.sig
+        token: ${{ secrets.GITHUB_TOKEN }}
+        body: always up-to-date. maybe unstable
+        tag: "dev"
+        commit: develop
+
+  deploy-update-json:
+    needs: build-tauri
+    runs-on: ubuntu-latest
+    steps:
+    - name: create timestamp
+      run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S%z')" >> $GITHUB_ENV
     - name: create-json
       id: create-json
       uses: jsdaniell/create-json@1.1.2
@@ -153,11 +173,3 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         # The local folder to copy, defaults to root project folder
         SOURCE: "src-tauri/updater.json"
-    - uses: ncipollo/release-action@v1
-      with:
-        allowUpdates: true
-        artifacts: src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz,src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz.sig,src-tauri/target/release/bundle/deb/*.deb,src-tauri/target/release/bundle/deb/*.deb.sig,src-tauri/target/release/bundle/dmg/*.dmg,src-tauri/target/release/bundle/dmg/*.dmg.sig,src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz,src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig,src-tauri/target/release/bundle/msi/*.msi.zip,src-tauri/target/release/bundle/msi/*.msi.zip.sig
-        token: ${{ secrets.GITHUB_TOKEN }}
-        body: always up-to-date. maybe unstable
-        tag: "dev"
-        commit: develop
