@@ -110,12 +110,13 @@ jobs:
     - name: create timestamp
       run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S%z')" >> $GITHUB_ENV
     - name: read signatures
-      env: 
-        FILES: src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz.sig src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig src-tauri/target/release/bundle/msi/*.msi.zip.sig
       run: |
-        echo "APPIMAGE=$(src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz.sig)" >> $GITHUB_ENV
-        echo "MACAPP=$(src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig)" >> $GITHUB_ENV
-        echo "WINDOWS=$(src-tauri/target/release/bundle/msi/*.msi.zip.sig)" >> $GITHUB_ENV
+        echo "APPIMAGE=$(cat src-tauri/target/release/bundle/appimage/freedeck-configurator_${{ env.PACKAGE_VERSION }}_amd64.AppImage.tar.gz.sig)" >> $GITHUB_ENV
+        echo "MACAPP=$(cat src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig)" >> $GITHUB_ENV
+        echo "WINDOWS=$(cat src-tauri/target/release/bundle/msi/freedeck-configurator_${{ env.PACKAGE_VERSION }}_x64_en-US.msi.zip.sig)" >> $GITHUB_ENV
+        echo ${{ env.APPIMAGE }}
+        echo ${{ env.MACAPP }}
+        echo ${{ env.WINDOWS }}
     - name: create-json
       id: create-json
       uses: jsdaniell/create-json@1.1.2
@@ -135,7 +136,7 @@ jobs:
                 "signature": "${{ env.MACAPP }}"
               },
               "windows-x86_64": {
-                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${{ env.PACKAGE_VERSION }}_x64_en-US.msi.tar.gz.sig",
+                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${{ env.PACKAGE_VERSION }}_x64_en-US.msi.zip.sig",
                 "signature": "${{ env.WINDOWS }}"
               }
             }
