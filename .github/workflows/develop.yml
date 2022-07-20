@@ -46,12 +46,12 @@ jobs:
           # The local folder to copy, defaults to root project folder
           SOURCE: "build/"
 
-      - name: Actions for Discord
-        uses: Ilshidur/action-discord@0.0.2
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL_CONF_DEV }}
-        with:
-          args: "A new develop version has been deployed! https://fddev.freeyourstream.com"
+      # - name: Actions for Discord
+      #   uses: Ilshidur/action-discord@0.0.2
+      #   env:
+      #     DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL_CONF_DEV }}
+      #   with:
+      #     args: "A new develop version has been deployed! https://fddev.freeyourstream.com"
 
       - name: Cloudflare Purge Cache
         uses: jakejarvis/cloudflare-purge-action@v0.3.0
@@ -60,6 +60,11 @@ jobs:
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
   
   build-tauri:
+    outputs:
+      macsig: ${{ steps.readmacsig.outputs.signature }}
+      winsig: ${{ steps.readwinsig.outputs.signature }}
+      linuxsig: ${{ steps.readlinuxsig.outputs.signature }}
+      version: ${{ steps.getversion.outputs.PACKAGE_VERSION }}
     strategy:
       fail-fast: false
       matrix:
@@ -91,8 +96,9 @@ jobs:
       with:
         node-version: 16
     - name: get version
+      id: getversion
       shell: bash
-      run: echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+      run: echo "::set-output PACKAGE_VERSION=$(node -p "require('./package.json').version")"
 
     - name: install Rust stable
       uses: actions-rs/toolchain@v1
@@ -109,21 +115,21 @@ jobs:
         CI: false
       run: npm install && npm run tauri:build
     - name: read signatures
+      id: readmacsig
       if: matrix.platform == 'macos-latest'
       run: |
-        echo "MACAPP=$(cat src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig)" >> $GITHUB_ENV
-        echo ${{ env.MACAPP }}
+        echo "::set-output signature=$(cat src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig)"
     - name: read signatures
+      id: readwinsig
       if: matrix.platform == 'windows-latest'
       shell: bash
       run: |
-        echo "WINDOWS=$(cat src-tauri/target/release/bundle/msi/freedeck-configurator_${{ env.PACKAGE_VERSION }}_x64_en-US.msi.zip.sig)" >> $GITHUB_ENV
-        echo ${{ env.WINDOWS }}
+        echo "::set-output signature=$(cat src-tauri/target/release/bundle/msi/freedeck-configurator_${{ steps.getversion.outputs.PACKAGE_VERSION }}_x64_en-US.msi.zip.sig)"
     - name: read signatures
+      id: readlinuxsig
       if: matrix.platform == 'ubuntu-latest'
       run: |
-        echo "APPIMAGE=$(cat src-tauri/target/release/bundle/appimage/freedeck-configurator_${{ env.PACKAGE_VERSION }}_amd64.AppImage.tar.gz.sig)" >> $GITHUB_ENV
-        echo ${{ env.APPIMAGE }}
+        echo "::set-output signature=$(cat src-tauri/target/release/bundle/appimage/freedeck-configurator_${{ steps.getversion.outputs.PACKAGE_VERSION }}_amd64.AppImage.tar.gz.sig)"
     - uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
@@ -147,20 +153,20 @@ jobs:
         name: "updater.json"
         json: |
           {
-            "version": "${{ env.PACKAGE_VERSION }}",
+            "version": "${{ needs.build-tauri.outputs.version }}",
             "pub_date": "${{ env.NOW }}",
             "platforms": {
-              "linux-x86_64": {
-                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${{ env.PACKAGE_VERSION }}_amd64.AppImage.tar.gz.sig",
-                "signature": "${{ env.APPIMAGE }}"
-              },
               "darwin-x86_64": {
                 "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator.app.tar.gz.sig",
-                "signature": "${{ env.MACAPP }}"
+                "signature": "${{ needs.build-tauri.outputs.macsig }}"
               },
               "windows-x86_64": {
-                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${{ env.PACKAGE_VERSION }}_x64_en-US.msi.zip.sig",
-                "signature": "${{ env.WINDOWS }}"
+                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${{ needs.build-tauri.outputs.version }}_x64_en-US.msi.zip.sig",
+                "signature": "${{ needs.build-tauri.outputs.winsig }}"
+              },
+              "linux-x86_64": {
+                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${{ needs.build-tauri.outputs.version }}_amd64.AppImage.tar.gz.sig",
+                "signature": "${{ needs.build-tauri.outputs.linuxsig }}"
               }
             }
           }
