@@ -145,7 +145,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: create timestamp
-      run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S%z')" >> $GITHUB_ENV
+      run: echo "NOW=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
     - name: create-json
       id: create-json
       uses: jsdaniell/create-json@1.1.2
@@ -157,15 +157,15 @@ jobs:
             "pub_date": "${{ env.NOW }}",
             "platforms": {
               "darwin-x86_64": {
-                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator.app.tar.gz.sig",
+                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator.app.tar.gz",
                 "signature": "${{ needs.build-tauri.outputs.macsig }}"
               },
               "windows-x86_64": {
-                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${{ needs.build-tauri.outputs.version }}_x64_en-US.msi.zip.sig",
+                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${{ needs.build-tauri.outputs.version }}_x64_en-US.msi.zip",
                 "signature": "${{ needs.build-tauri.outputs.winsig }}"
               },
               "linux-x86_64": {
-                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${{ needs.build-tauri.outputs.version }}_amd64.AppImage.tar.gz.sig",
+                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator_${{ needs.build-tauri.outputs.version }}_amd64.AppImage.tar.gz",
                 "signature": "${{ needs.build-tauri.outputs.linuxsig }}"
               }
             }
