@@ -98,7 +98,7 @@ jobs:
     - name: get version
       id: getversion
       shell: bash
-      run: echo "::set-output PACKAGE_VERSION=$(node -p "require('./package.json').version")"
+      run: echo "::set-output name=PACKAGE_VERSION::$(node -p "require('./package.json').version")"
 
     - name: install Rust stable
       uses: actions-rs/toolchain@v1
@@ -118,18 +118,18 @@ jobs:
       id: readmacsig
       if: matrix.platform == 'macos-latest'
       run: |
-        echo "::set-output signature=$(cat src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig)"
+        echo "::set-output name=signature::$(cat src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig)"
     - name: read signatures
       id: readwinsig
       if: matrix.platform == 'windows-latest'
       shell: bash
       run: |
-        echo "::set-output signature=$(cat src-tauri/target/release/bundle/msi/freedeck-configurator_${{ steps.getversion.outputs.PACKAGE_VERSION }}_x64_en-US.msi.zip.sig)"
+        echo "::set-output name=signature::$(cat src-tauri/target/release/bundle/msi/freedeck-configurator_${{ steps.getversion.outputs.PACKAGE_VERSION }}_x64_en-US.msi.zip.sig)"
     - name: read signatures
       id: readlinuxsig
       if: matrix.platform == 'ubuntu-latest'
       run: |
-        echo "::set-output signature=$(cat src-tauri/target/release/bundle/appimage/freedeck-configurator_${{ steps.getversion.outputs.PACKAGE_VERSION }}_amd64.AppImage.tar.gz.sig)"
+        echo "::set-output name=signature::$(cat src-tauri/target/release/bundle/appimage/freedeck-configurator_${{ steps.getversion.outputs.PACKAGE_VERSION }}_amd64.AppImage.tar.gz.sig)"
     - uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
