@@ -76,7 +76,7 @@ jobs:
       - name: get version develop
         id: getversion
         shell: bash
-        run: echo "::set-output name=PACKAGE_VERSION::$(node -p "require('./package.json').version")-dev$(date -u +%s)"
+        run: echo "::set-output name=PACKAGE_VERSION::$(node -p "require('./package.json').version")"
       - name: create dev endpoint
         shell: bash
         run: echo DEV_ENDPOINT='["https://fddev.freeyourstream.com/updater.json"]' >> $GITHUB_ENV
