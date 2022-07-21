@@ -95,22 +95,25 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 16
-    - name: create timestamp
-      run: echo "NOW=$(date -u +%s)" >> $GITHUB_ENV
+    - name: get version
+      id: getversion
+      shell: bash
+      run: echo "::set-output name=PACKAGE_VERSION::0.0.$(date -u +%s)"
     - name: create dev endpoint
-      run: echo DEV_ENDPOINT=["https://fdconfig.freeyourstream.com/updater.json"] >> $GITHUB_ENV
+      run: echo DEV_ENDPOINT=["https://fddev.freeyourstream.com/updater.json"] >> $GITHUB_ENV
     - name: Update tauri.conf.json to dev version
       uses: jossef/action-set-json-field@v2
       with:
         file: src-tauri/tauri.conf.json
         field: package.version
-        value: ${{ env.NOW }}
+        value: ${{ steps.getversion.outputs.PACKAGE_VERSION }}
     - name: Update tauri.conf.json to dev version
       uses: jossef/action-set-json-field@v2
       with:
         file: src-tauri/tauri.conf.json
         field: tauri.updater.endpoints
         value: ${{ env.DEV_ENDPOINT }}
+        parse_json: true
     - uses: actions/upload-artifact@v3
       with:
         name: tauri.conf.json
@@ -119,7 +122,6 @@ jobs:
     #   id: getversion
     #   shell: bash
     #   run: echo "::set-output name=PACKAGE_VERSION::$(node -p "require('./package.json').version")"
-
     - name: install Rust stable
       uses: actions-rs/toolchain@v1
       with:
