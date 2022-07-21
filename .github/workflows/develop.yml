@@ -46,12 +46,12 @@ jobs:
           # The local folder to copy, defaults to root project folder
           SOURCE: "build/"
 
-      # - name: Actions for Discord
-      #   uses: Ilshidur/action-discord@0.0.2
-      #   env:
-      #     DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL_CONF_DEV }}
-      #   with:
-      #     args: "A new develop version has been deployed! https://fddev.freeyourstream.com"
+      - name: Actions for Discord
+        uses: Ilshidur/action-discord@0.0.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL_CONF_DEV }}
+        with:
+          args: "A new develop version has been deployed!  https://fddev.freeyourstream.com \nOr Download here: https://github.com/FreeYourStream/freedeck-configurator/releases/tag/dev"
 
       - name: Cloudflare Purge Cache
         uses: jakejarvis/cloudflare-purge-action@v0.3.0
