@@ -174,12 +174,12 @@ jobs:
       if: matrix.platform == 'windows-latest'
       shell: bash
       run: |
-        echo "::set-output name=signature::$(cat src-tauri/target/release/bundle/msi/freedeck-configurator-dev_${{ steps.getversion.outputs.PACKAGE_VERSION }}_x64_en-US.msi.zip.sig)"
+        echo "::set-output name=signature::$(cat src-tauri/target/release/bundle/msi/freedeck-configurator-dev_${{ needs.create-tauriconfjson.outputs.version }}_x64_en-US.msi.zip.sig)"
     - name: read signatures
       id: readlinuxsig
       if: matrix.platform == 'ubuntu-latest'
       run: |
-        echo "::set-output name=signature::$(cat src-tauri/target/release/bundle/appimage/freedeck-configurator-dev_${{ steps.getversion.outputs.PACKAGE_VERSION }}_amd64.AppImage.tar.gz.sig)"
+        echo "::set-output name=signature::$(cat src-tauri/target/release/bundle/appimage/freedeck-configurator-dev_${{ needs.create-tauriconfjson.outputs.version }}_amd64.AppImage.tar.gz.sig)"
     - uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.platform }}
@@ -227,11 +227,11 @@ jobs:
                 "signature": "${{ needs.build-tauri.outputs.macsig }}"
               },
               "windows-x86_64": {
-                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator-dev_${{ needs.build-tauri.outputs.version }}_x64_en-US.msi.zip",
+                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator-dev_${{ needs.create-tauriconfjson.outputs.version }}_x64_en-US.msi.zip",
                 "signature": "${{ needs.build-tauri.outputs.winsig }}"
               },
               "linux-x86_64": {
-                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator-dev_${{ needs.build-tauri.outputs.version }}_amd64.AppImage.tar.gz",
+                "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/dev/freedeck-configurator-dev_${{ needs.create-tauriconfjson.outputs.version }}_amd64.AppImage.tar.gz",
                 "signature": "${{ needs.build-tauri.outputs.linuxsig }}"
               }
             }
