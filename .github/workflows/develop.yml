@@ -65,18 +65,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      # - name: get version develop
+      #   id: getversion
+      #   shell: bash
+      #   run: echo "::set-output name=PACKAGE_VERSION::$(date -u +%y.%-m.%d)"
+      - name: setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
       - name: get version develop
         id: getversion
         shell: bash
-        run: echo "::set-output name=PACKAGE_VERSION::$(date -u +%Y.%-m.%d)"
-      # - name: setup node
-      #   uses: actions/setup-node@v1
-      #   with:
-      #     node-version: 16
-      # - name: get version master
-      #   id: getversion
-      #   shell: bash
-      #   run: echo "::set-output name=PACKAGE_VERSION::$(node -p "require('./package.json').version")"
+        run: echo "::set-output name=PACKAGE_VERSION::$(node -p "require('./package.json').version")-dev$(date -u +%s)"
       - name: create dev endpoint
         shell: bash
         run: echo DEV_ENDPOINT='["https://fddev.freeyourstream.com/updater.json"]' >> $GITHUB_ENV
@@ -86,6 +86,12 @@ jobs:
           file: src-tauri/tauri.conf.json
           field: package.version
           value: ${{ steps.getversion.outputs.PACKAGE_VERSION }}
+      - name: Update tauri.conf.json to dev version
+        uses: jossef/action-set-json-field@v2
+        with:
+          file: src-tauri/tauri.conf.json
+          field: package.productName
+          value: freedeck-configurator-dev
       - name: Update tauri.conf.json to dev version
         uses: jossef/action-set-json-field@v2
         with:
