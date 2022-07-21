@@ -58,7 +58,7 @@ jobs:
         env:
           CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-          
+
   create-tauriconfjson:
     outputs: 
       version: ${{ steps.getversion.outputs.PACKAGE_VERSION }}
@@ -143,6 +143,9 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf libudev-dev libgssapi-krb5-2
+    - name: remove tauri.conf.json
+      shell: bash
+      run: rm -f src-tauri/tauri.conf.json
     - name: acquire modified tauri.conf.json 
       uses: actions/download-artifact@v3
       with:
