@@ -150,7 +150,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: tauri.conf.json
-        path: src-tauri/tauri.conf.json
+        path: src-tauri
     - name: install app dependencies and build it
       env:
         TAURI_PRIVATE_KEY: ${{ secrets.TAURI_UPDATER_KEY }}
