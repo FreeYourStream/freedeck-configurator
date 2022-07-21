@@ -46,13 +46,6 @@ jobs:
           # The local folder to copy, defaults to root project folder
           SOURCE: "build/"
 
-      - name: Actions for Discord
-        uses: Ilshidur/action-discord@0.0.2
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL_CONF_DEV }}
-        with:
-          args: "A new develop version has been deployed!  https://fddev.freeyourstream.com \nOr Download here: https://github.com/FreeYourStream/freedeck-configurator/releases/tag/dev"
-
       - name: Cloudflare Purge Cache
         uses: jakejarvis/cloudflare-purge-action@v0.3.0
         env:
@@ -248,3 +241,15 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         # The local folder to copy, defaults to root project folder
         SOURCE: "src-tauri/updater.json"
+        
+  Notify-Discord:
+    needs: 
+      - Deploy-to-fddev
+    runs-on: ubuntu-latest
+    steps:
+    - name: Actions for Discord
+      uses: Ilshidur/action-discord@master
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL_CONF_DEV }}
+      with:
+        args: "A new develop version has been deployed! https://fddev.freeyourstream.com"
