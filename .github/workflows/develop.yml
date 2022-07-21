@@ -58,13 +58,50 @@ jobs:
         env:
           CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-  
+  create-tauriconfjson:
+    outputs: 
+      version: ${{ steps.getversion.outputs.PACKAGE_VERSION }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: get version develop
+        id: getversion
+        shell: bash
+        run: echo "::set-output name=PACKAGE_VERSION::0.0.$(date -u +%s)"
+    # - name: get version master
+    #   id: getversion
+    #   shell: bash
+    #   run: echo "::set-output name=PACKAGE_VERSION::$(node -p "require('./package.json').version")"
+      - name: create dev endpoint
+        shell: bash
+        run: echo DEV_ENDPOINT='["https://fddev.freeyourstream.com/updater.json"]' >> $GITHUB_ENV
+      - name: Update tauri.conf.json to dev version
+        uses: jossef/action-set-json-field@v2
+        with:
+          file: src-tauri/tauri.conf.json
+          field: package.version
+          value: ${{ steps.getversion.outputs.PACKAGE_VERSION }}
+      - name: Update tauri.conf.json to dev version
+        uses: jossef/action-set-json-field@v2
+        with:
+          file: src-tauri/tauri.conf.json
+          field: tauri.updater.endpoints
+          value: ${{ env.DEV_ENDPOINT }}
+          parse_json: true
+      - uses: actions/upload-artifact@v3
+        with:
+          name: tauri.conf.json
+          path: src-tauri/tauri.conf.json
+
   build-tauri:
+    needs: create-tauriconfjson
     outputs:
       macsig: ${{ steps.readmacsig.outputs.signature }}
       winsig: ${{ steps.readwinsig.outputs.signature }}
       linuxsig: ${{ steps.readlinuxsig.outputs.signature }}
-      version: ${{ steps.getversion.outputs.PACKAGE_VERSION }}
     strategy:
       fail-fast: false
       matrix:
@@ -95,33 +132,6 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 16
-    - name: get version
-      id: getversion
-      shell: bash
-      run: echo "::set-output name=PACKAGE_VERSION::0.0.$(date -u +%s)"
-    - name: create dev endpoint
-      run: echo DEV_ENDPOINT='["https://fddev.freeyourstream.com/updater.json"]' >> $GITHUB_ENV
-    - name: Update tauri.conf.json to dev version
-      uses: jossef/action-set-json-field@v2
-      with:
-        file: src-tauri/tauri.conf.json
-        field: package.version
-        value: ${{ steps.getversion.outputs.PACKAGE_VERSION }}
-    - name: Update tauri.conf.json to dev version
-      uses: jossef/action-set-json-field@v2
-      with:
-        file: src-tauri/tauri.conf.json
-        field: tauri.updater.endpoints
-        value: ${{ env.DEV_ENDPOINT }}
-        parse_json: true
-    - uses: actions/upload-artifact@v3
-      with:
-        name: tauri.conf.json
-        path: src-tauri/tauri.conf.json
-    # - name: get version
-    #   id: getversion
-    #   shell: bash
-    #   run: echo "::set-output name=PACKAGE_VERSION::$(node -p "require('./package.json').version")"
     - name: install Rust stable
       uses: actions-rs/toolchain@v1
       with:
@@ -131,6 +141,11 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf libudev-dev libgssapi-krb5-2
+    - name: acquire modified tauri.conf.json 
+      uses: actions/download-artifact@v3
+      with:
+        name: tauri.conf.json
+        path: src-tauri/tauri.conf.json
     - name: install app dependencies and build it
       env:
         TAURI_PRIVATE_KEY: ${{ secrets.TAURI_UPDATER_KEY }}
@@ -163,7 +178,9 @@ jobs:
         removeArtifacts: true
 
   deploy-update-json:
-    needs: build-tauri
+    needs: 
+      - build-tauri
+      - create-tauriconfjson
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -176,7 +193,7 @@ jobs:
         name: "updater.json"
         json: |
           {
-            "version": "${{ needs.build-tauri.outputs.version }}",
+            "version": "${{ needs.create-tauriconfjson.outputs.version }}",
             "pub_date": "${{ env.NOW }}",
             "platforms": {
               "darwin-x86_64": {
