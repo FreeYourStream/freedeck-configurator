@@ -172,15 +172,37 @@ jobs:
       if: matrix.platform == 'ubuntu-latest'
       run: |
         echo "::set-output name=signature::$(cat src-tauri/target/release/bundle/appimage/freedeck-configurator_${{ steps.getversion.outputs.PACKAGE_VERSION }}_amd64.AppImage.tar.gz.sig)"
-    - uses: ncipollo/release-action@v1
+    - uses: actions/upload-artifact@v3
       with:
-        allowUpdates: true
-        artifacts: src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz,src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz.sig,src-tauri/target/release/bundle/deb/*.deb,src-tauri/target/release/bundle/deb/*.deb.sig,src-tauri/target/release/bundle/dmg/*.dmg,src-tauri/target/release/bundle/dmg/*.dmg.sig,src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz,src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig,src-tauri/target/release/bundle/msi/*.msi.zip,src-tauri/target/release/bundle/msi/*.msi.zip.sig
-        token: ${{ secrets.GITHUB_TOKEN }}
-        body: always up-to-date. maybe unstable
-        tag: "dev"
-        commit: develop
-        removeArtifacts: true
+        name: ${{ matrix.platform }}
+        path: src-tauri/target/release/bundle/**/*
+    # - uses: ncipollo/release-action@v1
+    #   with:
+    #     allowUpdates: true
+    #     artifacts: src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz,src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz.sig,src-tauri/target/release/bundle/deb/*.deb,src-tauri/target/release/bundle/deb/*.deb.sig,src-tauri/target/release/bundle/dmg/*.dmg,src-tauri/target/release/bundle/dmg/*.dmg.sig,src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz,src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig,src-tauri/target/release/bundle/msi/*.msi.zip,src-tauri/target/release/bundle/msi/*.msi.zip.sig
+    #     token: ${{ secrets.GITHUB_TOKEN }}
+    #     body: always up-to-date. maybe unstable
+    #     tag: "dev"
+    #     commit: develop
+    #     removeArtifacts: true
+
+  upload-release-artifact:
+    needs:
+      - build-tauri
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+      - name: debug
+        run: ls -R
+      # - uses: ncipollo/release-action@v1
+      #   with:
+      #     allowUpdates: true
+      #     artifacts: src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz,src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz.sig,src-tauri/target/release/bundle/deb/*.deb,src-tauri/target/release/bundle/deb/*.deb.sig,src-tauri/target/release/bundle/dmg/*.dmg,src-tauri/target/release/bundle/dmg/*.dmg.sig,src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz,src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig,src-tauri/target/release/bundle/msi/*.msi.zip,src-tauri/target/release/bundle/msi/*.msi.zip.sig
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     body: always up-to-date. maybe unstable
+      #     tag: "dev"
+      #     commit: develop
+      #     removeArtifacts: true
 
   deploy-update-json:
     needs: 
