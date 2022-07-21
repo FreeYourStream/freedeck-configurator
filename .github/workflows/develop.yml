@@ -58,23 +58,25 @@ jobs:
         env:
           CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          
   create-tauriconfjson:
     outputs: 
       version: ${{ steps.getversion.outputs.PACKAGE_VERSION }}
     runs-on: ubuntu-latest
     steps:
-      - name: setup node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 16
+      - uses: actions/checkout@v2
       - name: get version develop
         id: getversion
         shell: bash
         run: echo "::set-output name=PACKAGE_VERSION::0.0.$(date -u +%s)"
-    # - name: get version master
-    #   id: getversion
-    #   shell: bash
-    #   run: echo "::set-output name=PACKAGE_VERSION::$(node -p "require('./package.json').version")"
+      # - name: setup node
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node-version: 16
+      # - name: get version master
+      #   id: getversion
+      #   shell: bash
+      #   run: echo "::set-output name=PACKAGE_VERSION::$(node -p "require('./package.json').version")"
       - name: create dev endpoint
         shell: bash
         run: echo DEV_ENDPOINT='["https://fddev.freeyourstream.com/updater.json"]' >> $GITHUB_ENV
