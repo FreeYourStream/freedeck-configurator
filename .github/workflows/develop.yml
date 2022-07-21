@@ -68,7 +68,7 @@ jobs:
       - name: get version develop
         id: getversion
         shell: bash
-        run: echo "::set-output name=PACKAGE_VERSION::$(date -u +%Y.%m.%d)"
+        run: echo "::set-output name=PACKAGE_VERSION::$(date -u +%Y.%-m.%d)"
       # - name: setup node
       #   uses: actions/setup-node@v1
       #   with:
