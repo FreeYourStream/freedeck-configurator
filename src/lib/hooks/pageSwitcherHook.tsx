@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { useEffect } from "react";
+import * as workerInterval from "worker-interval";
 
 import { AppState } from "../../states/appState";
 import { ConfigState } from "../../states/configState";
@@ -96,7 +97,7 @@ export const usePageSwitcher = (props: {
   useEffect(() => {
     if (!(window as any).__TAURI_IPC__) return () => {};
     let running = false;
-    const interval = setInterval(async () => {
+    const interval = workerInterval.setInterval(async () => {
       if (!running) {
         running = true;
         await run(configState, appState);
@@ -105,7 +106,7 @@ export const usePageSwitcher = (props: {
     }, 300);
     return () => {
       console.log("clearing interval", interval);
-      if (interval) clearInterval(interval);
+      if (interval) workerInterval.clearInterval(interval);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [configState, appState.serialApi]);
