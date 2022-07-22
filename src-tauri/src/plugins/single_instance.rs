@@ -6,6 +6,7 @@ use tauri::{
     AppHandle, Manager, Runtime,
 };
 use tiny_http::{Response, Server};
+
 fn start_server<R: Runtime>(app_handle: AppHandle<R>) {
     thread::spawn(move || {
         let server = Server::http("localhost:57891").unwrap();
