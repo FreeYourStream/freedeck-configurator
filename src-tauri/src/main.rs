@@ -2,8 +2,9 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
-
 pub mod commands;
+mod lib;
+mod plugins;
 use std::sync::Mutex;
 use tauri::{
     CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
@@ -24,6 +25,7 @@ fn main() {
     let serial = Mutex::new(Serial::new());
 
     let mut app = tauri::Builder::default()
+        .plugin(plugins::single_instance::init())
         .system_tray(tray)
         .on_system_tray_event(|app, event| match event {
             SystemTrayEvent::DoubleClick {
@@ -32,9 +34,7 @@ fn main() {
                 ..
             } => {
                 let window = app.get_window("main").unwrap();
-                window.show().unwrap();
-                window.set_focus().unwrap();
-                window.request_user_attention(None).unwrap();
+                lib::window::show(window);
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
                 "quit" => {
@@ -42,10 +42,7 @@ fn main() {
                 }
                 "show" => {
                     let window = app.get_window("main").unwrap();
-                    window.unminimize().unwrap();
-                    window.show().unwrap();
-                    window.set_focus().unwrap();
-                    window.request_user_attention(None).unwrap();
+                    lib::window::show(window)
                 }
                 _ => {}
             },
