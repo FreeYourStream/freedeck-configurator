@@ -7,6 +7,7 @@ import { HashRouter } from "react-router-dom";
 import { Body } from "./Body";
 import { convertCurrentConfig } from "./lib/configFile/parseConfig";
 import { AddEventListeners } from "./lib/eventListeners";
+import { StartUp } from "./lib/hooks/startup";
 import { ModalBody } from "./ModalBody";
 import {
   AppDispatchContext,
@@ -36,17 +37,7 @@ const App: React.FC<{
     defaultAppState,
     appReducer
   );
-  useEffect(() => {
-    (async () => {
-      const config = localStorage.getItem("config");
-      if (config) {
-        const converted = await convertCurrentConfig(JSON.parse(config));
-        console.log(converted);
-        configDispatch.setState(converted);
-      }
-    })();
-    // eslint-disable-next-line
-  }, []);
+
   AddEventListeners({ appDispatchContext: appDispatch });
 
   return (
@@ -56,6 +47,7 @@ const App: React.FC<{
           <ConfigDispatchContext.Provider value={configDispatch}>
             <AppStateContext.Provider value={appState}>
               <AppDispatchContext.Provider value={appDispatch}>
+                <StartUp />
                 <Body />
                 <ModalBody />
               </AppDispatchContext.Provider>
