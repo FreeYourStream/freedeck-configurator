@@ -46,7 +46,7 @@ export const defaultAppState: () => Promise<AppState> = async () => ({
 
 export interface IAppReducer extends Actions<AppState> {
   setCtrl(state: AppState, ctrlDown: boolean): Promise<AppState>;
-  toggleAutoPageSwitcher(state: AppState): Promise<AppState>;
+  toggleAutoPageSwitcher(state: AppState, enabled?: boolean): Promise<AppState>;
   closeAlert(state: AppState): Promise<AppState>;
   openAlert(
     state: AppState,
@@ -76,8 +76,11 @@ export const appReducer: IAppReducer = {
   async setCtrl(state, ctrlDown) {
     return { ...state, ctrlDown };
   },
-  async toggleAutoPageSwitcher(state) {
-    const enabled = !state.autoPageSwitcherEnabled;
+  async toggleAutoPageSwitcher(state, maybeEnabled) {
+    const enabled =
+      maybeEnabled === undefined
+        ? !state.autoPageSwitcherEnabled
+        : maybeEnabled;
     setTimeout(() =>
       localStorage.setItem("autoPageSwitcherEnabled", enabled.toString())
     );
