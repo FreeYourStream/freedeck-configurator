@@ -1,9 +1,11 @@
+import { invoke } from "@tauri-apps/api";
 import { createContext } from "react";
 
 import { FDSerialAPI } from "../lib/fdSerialApi";
 import { Actions, FunctionForFirstParamType } from "./interfaces";
 
 export interface AppState {
+  autoPageSwitcherEnabled: boolean;
   ctrlDown: boolean;
   serialApi?: FDSerialAPI;
   availablePorts: string[];
@@ -22,6 +24,7 @@ export interface AppState {
   };
 }
 export const defaultAppState: () => Promise<AppState> = async () => ({
+  autoPageSwitcherEnabled: true,
   ctrlDown: false,
   serialApi:
     navigator.serial || (window as any).__TAURI_IPC__
@@ -43,6 +46,7 @@ export const defaultAppState: () => Promise<AppState> = async () => ({
 
 export interface IAppReducer extends Actions<AppState> {
   setCtrl(state: AppState, ctrlDown: boolean): Promise<AppState>;
+  toggleAutoPageSwitcher(state: AppState): Promise<AppState>;
   closeAlert(state: AppState): Promise<AppState>;
   openAlert(
     state: AppState,
@@ -71,6 +75,16 @@ export interface IAppReducer extends Actions<AppState> {
 export const appReducer: IAppReducer = {
   async setCtrl(state, ctrlDown) {
     return { ...state, ctrlDown };
+  },
+  async toggleAutoPageSwitcher(state) {
+    const enabled = !state.autoPageSwitcherEnabled;
+    setTimeout(() =>
+      localStorage.setItem("autoPageSwitcherEnabled", enabled.toString())
+    );
+    invoke("set_aps_state", {
+      apsState: enabled,
+    });
+    return { ...state, autoPageSwitcherEnabled: enabled };
   },
   async closeAlert(state) {
     return { ...state, alert: { ...state.alert, isOpen: false } };

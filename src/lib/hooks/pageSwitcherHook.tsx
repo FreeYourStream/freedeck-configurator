@@ -98,7 +98,7 @@ export const usePageSwitcher = (props: {
     if (!(window as any).__TAURI_IPC__) return () => {};
     let running = false;
     const interval = workerInterval.setInterval(async () => {
-      if (!running) {
+      if (!running && appState.autoPageSwitcherEnabled) {
         running = true;
         await run(configState, appState);
         running = false;
@@ -109,5 +109,5 @@ export const usePageSwitcher = (props: {
       if (interval) workerInterval.clearInterval(interval);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [configState, appState.serialApi]);
+  }, [configState, appState.serialApi, appState.autoPageSwitcherEnabled]);
 };

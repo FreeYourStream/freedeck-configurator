@@ -1,7 +1,7 @@
 use std::{sync::Mutex, time::Duration};
 
 use serialport::{SerialPort, SerialPortType};
-use tauri::State;
+use tauri::{Manager, State, Window};
 use tauri_macros::command;
 
 fn get_epoch() -> u128 {
@@ -158,4 +158,10 @@ pub fn get_current_window(_state: State<Mutex<Serial>>) -> Result<String, String
     } else {
         Err("failed to get active window, xprop installed?".to_string())
     }
+}
+#[command]
+pub fn set_aps_state(window: Window, aps_state: bool) {
+    println!("{}", aps_state);
+    let aps_item = window.app_handle().tray_handle().get_item("aps");
+    aps_item.set_selected(aps_state).unwrap();
 }
