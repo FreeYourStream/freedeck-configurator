@@ -1,6 +1,6 @@
 {
   "name": "freedeck-configurator",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "configFileVersion": "1.2.0",
   "private": true,
   "homepage": "./",
@@ -67,7 +67,7 @@
     "@graphql-codegen/typescript-operations": "^1.17.16",
     "@graphql-codegen/typescript-react-apollo": "^2.2.4",
     "@graphql-codegen/typescript-react-query": "^3.0.3",
-    "@tauri-apps/cli": "^1.0.3",
+    "@tauri-apps/cli": "^1.0.5",
     "@types/lodash": "^4.14.160",
     "@types/node": "^12.12.29",
     "@types/preval.macro": "^3.0.0",
