@@ -50,6 +50,7 @@ export const Device: React.FC<{}> = () => {
       }
     });
     return () => serialApi.clearOnPortsChanged(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serialApi?.connected]);
 
   useEffect(() => {
