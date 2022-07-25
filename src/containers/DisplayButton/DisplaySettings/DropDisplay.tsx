@@ -82,14 +82,17 @@ export const DropDisplay = ({
             <PhotographIcon className="h-12 w-12 m-4" />
           </div>
         )}
-        {!isDragActive && display.originalImage && (
-          <ImagePreview size={3} previewImage={display.previewImage} />
-        )}
-        {!isDragActive && !display.originalImage && (
-          <div className="h-32 flex items-center justify-center bg-black w-64 cursor-pointer">
-            Click me or Copy 'n paste
-          </div>
-        )}
+        {!isDragActive &&
+          (display.originalImage || display.textSettings.text) && (
+            <ImagePreview size={3} previewImage={display.previewImage} />
+          )}
+        {!isDragActive &&
+          !display.originalImage &&
+          !display.textSettings.text && (
+            <div className="h-32 flex items-center justify-center bg-black w-64 cursor-pointer">
+              Click me or Copy 'n paste
+            </div>
+          )}
       </div>
       <FDMenu className="absolute top-0 right-0" entries={entries}>
         <div className="rounded-full bg-gray-400 hover:bg-gray-300 p-2 m-2">
