@@ -127,15 +127,15 @@ export const ImageSettings: React.FC<{
 
   return (
     <div className="grid grid-cols-2 gap-2 grid-rows-1 w-full h-full">
-      <div className="relative flex flex-col bg-gray-800 rounded-l-2xl">
+      <div className="relative flex flex-col bg-gray-800 rounded-xl">
         <div
           className={c(
-            "z-10 bg-gray-900 opacity-80 top-0 left-0 right-0 bottom-0 absolute rounded-l-2xl",
+            "z-10 bg-gray-900 opacity-80 top-0 left-0 right-0 bottom-0 absolute rounded-xl",
             display.originalImage ? "hidden" : "block"
           )}
           title="These options are disabled. Load an image by clicking on the black box or just enter some text"
         />
-        <TitleBox title="Image" className="mb-2">
+        <TitleBox title="Image" className="h-full">
           <Row className="h-8">
             <CtrlDuo>
               <LightningBoltIcon className="h-7 w-7" />
@@ -253,8 +253,8 @@ export const ImageSettings: React.FC<{
         </TitleBox>
       </div>
 
-      <div className="relative flex flex-col bg-gray-800 rounded-r-2xl">
-        <TitleBox title="Text" className="mb-2">
+      <div className="relative flex flex-col bg-gray-800 rounded-xl">
+        <TitleBox title="Text" className="h-full">
           <Row>
             <TextArea
               className="w-full"

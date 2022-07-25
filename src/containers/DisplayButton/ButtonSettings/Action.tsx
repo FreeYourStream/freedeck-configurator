@@ -55,7 +55,7 @@ export const Action: React.FC<{
 
   return (
     <div className="flex flex-col h-full">
-      <TitleBox title={title} className="mb-2">
+      <TitleBox title={title} className="mb-2 h-full">
         <>
           <Row>
             <Label>Mode</Label>

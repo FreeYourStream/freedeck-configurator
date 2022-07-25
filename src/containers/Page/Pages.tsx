@@ -13,7 +13,7 @@ export const Pages: React.FC<{ className?: string }> = ({
   return (
     <div>
       <div className="flex flex-col justify-center items-center p-12">
-        <TitleBox title="Pages" center>
+        <TitleBox title="Pages" center className="w-full">
           <div
             className={c(
               "flex flex-wrap justify-evenly items-center w-full h-full",

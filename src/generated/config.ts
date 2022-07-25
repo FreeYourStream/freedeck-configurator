@@ -8,7 +8,7 @@ import { Display, Button } from '.';
 export interface Collection {
   name?: string;
   pages: string[];
-  usePageNameAsWindowName: boolean;
+  useCollectionNameAsWindowName: boolean;
   windowName?: string;
 }
 

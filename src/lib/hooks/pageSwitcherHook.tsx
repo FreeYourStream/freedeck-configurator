@@ -31,7 +31,7 @@ const findPage = (configState: ConfigState, name: string): number => {
 const findCollectionPage = (configState: ConfigState, name: string): number => {
   for (let i = 0; i < configState.collections.sorted.length; i++) {
     const col = configState.collections.byId[configState.collections.sorted[i]];
-    if (col.usePageNameAsWindowName) {
+    if (col.useCollectionNameAsWindowName) {
       if (!col.name) continue;
       if (name.toLowerCase().indexOf(col.name.toLowerCase())) {
         return i;

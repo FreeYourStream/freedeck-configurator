@@ -69,20 +69,26 @@ export const DropDisplay = ({
   }
 
   return (
-    <div className="relative flex w-full justify-center mb-4 bg-gray-800 rounded-2xl shadow-2xl">
+    <div className="relative flex w-full justify-center mb-4 bg-gradient-to-b from-gray-800 via-gray-900 to-gray-900 rounded-2xl shadow-2xl">
       <div
         className="rounded-sm border-0"
         {...getRootProps({ style: { outline: "none" } })}
       >
         <input {...getInputProps()} />
-        {isDragActive ? (
+        {isDragActive && (
           <div className="flex text-2xl font-extrabold h-32 items-center justify-center">
             <ChevronDoubleDownIcon className="h-12 w-12 m-4" />
             Drop Here
             <PhotographIcon className="h-12 w-12 m-4" />
           </div>
-        ) : (
+        )}
+        {!isDragActive && display.originalImage && (
           <ImagePreview size={3} previewImage={display.previewImage} />
+        )}
+        {!isDragActive && !display.originalImage && (
+          <div className="h-32 flex items-center justify-center bg-black w-64 cursor-pointer">
+            Click me or Copy 'n paste
+          </div>
         )}
       </div>
       <FDMenu className="absolute top-0 right-0" entries={entries}>

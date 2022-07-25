@@ -10,18 +10,16 @@ export const Collections: React.FC<{ className?: string }> = ({
 }) => {
   const configState = useContext(ConfigStateContext);
   return (
-    <div>
-      <div className="flex flex-col justify-center items-center p-12">
-        <TitleBox title="Collections">
-          <div className="flex flex-wrap justify-evenly items-center w-full h-full mb-16">
-            {Object.entries(configState.collections.byId).map(
-              ([id, collection]) => (
-                <Collection key={id} collectionId={id} />
-              )
-            )}
-          </div>
-        </TitleBox>
-      </div>
+    <div className="flex flex-col justify-center items-center p-12">
+      <TitleBox title="Collections" center className="w-full">
+        <div className="flex flex-wrap justify-evenly items-center w-full h-full mb-16">
+          {Object.entries(configState.collections.byId).map(
+            ([id, collection]) => (
+              <Collection key={id} collectionId={id} />
+            )
+          )}
+        </div>
+      </TitleBox>
     </div>
   );
 };

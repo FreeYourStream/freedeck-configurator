@@ -23,7 +23,7 @@ export const CollectionMenu: React.FC<{ collectionId: string }> = ({
   const configDispatch = useContext(ConfigDispatchContext);
   const appDispatch = useContext(AppDispatchContext);
   return (
-    <div className="flex items-center justify-center w-8 h-8  cursor-pointer shadow-lg">
+    <div className="flex items-center justify-center w-9 h-9  cursor-pointer shadow-lg">
       {/* {process.env.REACT_APP_ENABLE_API === "true" && (
         <PublishCollection
           isOpen={publishOpen}

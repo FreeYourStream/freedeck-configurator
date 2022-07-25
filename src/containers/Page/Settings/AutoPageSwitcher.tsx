@@ -22,14 +22,16 @@ export const AutoPageSwitcherSettings: React.FC<{ pageId: string }> = ({
     <div className="w-full">
       <TitleBox title="Auto page-switcher">
         <Row className="h-8">
-          <Label>Use Page name as window name</Label>
+          <Label hint="This will be ignored if this page is in a collection">
+            Use Page name as window name
+          </Label>
           <FDSwitch
             onChange={(value) => setUsePageName({ pageId, value })}
             value={page.usePageNameAsWindowName}
           />
         </Row>
         <Row mode="top">
-          <Label hint="This will be ignored if this page is in a collection">
+          <Label hint="One window name per line or comma seperated">
             Window name
           </Label>
           <TextArea

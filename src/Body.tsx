@@ -49,9 +49,8 @@ export const Body = () => {
           (p) => !p.isInCollection
         ).length && <Pages />}
         {!Object.values(configState.pages.sorted).length && <FirstPage />}
-        {!!Object.keys(configState.collections.sorted).length && (
-          <Collections />
-        )}
+        {!!Object.keys(configState.collections.sorted).length &&
+          !!configState.pages.sorted.length && <Collections />}
       </ContentBody>
       <Toaster />
       <div className="fixed bottom-5 left-6 z-30">

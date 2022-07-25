@@ -440,7 +440,7 @@ export const configReducer: IConfigReducer = {
     const newId = v4();
     state.collections.byId[newId] = {
       pages: [],
-      usePageNameAsWindowName: true,
+      useCollectionNameAsWindowName: true,
     };
     state.collections.sorted.push(newId);
     return saveConfigToLocalStorage(state);
@@ -456,7 +456,7 @@ export const configReducer: IConfigReducer = {
     return saveConfigToLocalStorage(state);
   },
   async setUseCollectionName(state, { collectionId, value }) {
-    state.collections.byId[collectionId].usePageNameAsWindowName = value;
+    state.collections.byId[collectionId].useCollectionNameAsWindowName = value;
     return saveConfigToLocalStorage(state);
   },
   async renameCollection(state, { collectionId, name }) {

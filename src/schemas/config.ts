@@ -55,7 +55,7 @@ export const CollectionSchema = Joi.object({
   name: Joi.string(),
   pages: Joi.array().items(Joi.string()).failover([]).required(),
   windowName: Joi.string(),
-  usePageNameAsWindowName: Joi.bool().failover(true).required(),
+  useCollectionNameAsWindowName: Joi.bool().failover(true).required(),
 }).meta({ className: "Collection" });
 
 export const CollectionsSchema = Joi.object({

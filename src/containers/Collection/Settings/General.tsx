@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
 import { TextInput } from "../../../lib/components/TextInput";
+import { TitleBox } from "../../../lib/components/Title";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -16,16 +17,18 @@ export const CollectionGeneralSettings: React.FC<{ collectionId: string }> = ({
   const collection = configState.collections.byId[collectionId];
 
   return (
-    <div className="p-8 w-full">
-      <Row className="h-8">
-        <Label>Name</Label>
-        <TextInput
-          className="w-44"
-          placeholder="Enter page name"
-          value={collection.name}
-          onChange={(name) => renameCollection({ collectionId, name })}
-        />
-      </Row>
+    <div className="w-full">
+      <TitleBox title="General collection settings">
+        <Row className="h-8">
+          <Label>Name</Label>
+          <TextInput
+            className="w-44"
+            placeholder="Enter page name"
+            value={collection.name}
+            onChange={(name) => renameCollection({ collectionId, name })}
+          />
+        </Row>
+      </TitleBox>
     </div>
   );
 };
