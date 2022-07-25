@@ -2,7 +2,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import React, { Fragment } from "react";
 
 import { FDButton } from "./Button";
-import { Title } from "./Title";
+import { TitleBox } from "./Title";
 
 export const Alert: React.FC<{
   title: string;
@@ -39,14 +39,15 @@ export const Alert: React.FC<{
         >
           <div className="flex flex-col items-start justify-center p-6 bg-gray-600 z-50 rounded-xl shadow-2xl max-w-md break-words break-all">
             <Dialog.Title className="mb-2">
-              <Title>{title}</Title>
+              <TitleBox title={title}>
+                <Dialog.Description className="text-lg mb-8">
+                  {text}
+                </Dialog.Description>
+              </TitleBox>
+              <div className="flex w-full justify-end gap-2">
+                <FDButton onClick={() => onClose()}>Ok</FDButton>
+              </div>
             </Dialog.Title>
-            <Dialog.Description className="text-lg mb-8">
-              {text}
-            </Dialog.Description>
-            <div className="flex w-full justify-end gap-2">
-              <FDButton onClick={() => onClose()}>Ok</FDButton>
-            </div>
           </div>
         </Transition.Child>
       </Dialog>

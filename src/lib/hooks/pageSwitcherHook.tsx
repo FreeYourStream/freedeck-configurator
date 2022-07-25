@@ -18,8 +18,9 @@ const findPage = (configState: ConfigState, name: string): number => {
     } else {
       if (!page.windowName) continue;
       const windowNames = page.windowName
-        .split(",")
+        .split(/[,\n]/)
         .map((s) => s.trim().toLowerCase());
+      console.log(windowNames);
       for (const windowName of windowNames) {
         if (name.toLowerCase().indexOf(windowName) !== -1) return i;
       }
@@ -38,7 +39,7 @@ const findCollectionPage = (configState: ConfigState, name: string): number => {
     } else {
       if (!col.windowName) continue;
       const windowNames = col.windowName
-        .split(",")
+        .split(/[,\n]/)
         .map((s) => s.trim().toLowerCase());
       for (const windowName of windowNames) {
         if (name.toLowerCase().indexOf(windowName) !== -1) return i;

@@ -3,7 +3,8 @@ import React, { useContext } from "react";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
 import { FDSwitch } from "../../../lib/components/Switch";
-import { TextInput } from "../../../lib/components/TextInput";
+import { TextArea } from "../../../lib/components/TextArea";
+import { TitleBox } from "../../../lib/components/Title";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -18,29 +19,32 @@ export const AutoPageSwitcherSettings: React.FC<{ pageId: string }> = ({
   const page = configState.pages.byId[pageId];
 
   return (
-    <div className="p-8 w-full">
-      <Row className="h-8">
-        <Label>Use Page name</Label>
-        <FDSwitch
-          onChange={(value) => setUsePageName({ pageId, value })}
-          value={page.usePageNameAsWindowName}
-        />
-      </Row>
-      <Row className="h-8">
-        <Label>Window Name</Label>
-        <TextInput
-          className="w-44"
-          placeholder="Enter window name..."
-          disabled={page.usePageNameAsWindowName}
-          value={page.windowName}
-          onChange={(windowName) =>
-            changePageWindowName({ pageId, windowName })
-          }
-        />
-      </Row>
-      <div className="mt-4">
-        This will be ignored if this page is in a collection
-      </div>
+    <div className="w-full">
+      <TitleBox title="Auto page-switcher">
+        <Row className="h-8">
+          <Label>Use Page name as window name</Label>
+          <FDSwitch
+            onChange={(value) => setUsePageName({ pageId, value })}
+            value={page.usePageNameAsWindowName}
+          />
+        </Row>
+        <Row mode="top">
+          <Label hint="This will be ignored if this page is in a collection">
+            Window name
+          </Label>
+          <TextArea
+            className="w-64 h-64"
+            placeholder={
+              page.usePageNameAsWindowName ? page.name : "Enter window name..."
+            }
+            disabled={page.usePageNameAsWindowName}
+            value={page.windowName}
+            onChange={(windowName) =>
+              changePageWindowName({ pageId, windowName })
+            }
+          />
+        </Row>
+      </TitleBox>
     </div>
   );
 };

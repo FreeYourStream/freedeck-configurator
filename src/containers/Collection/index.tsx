@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useDrop } from "react-dnd";
 
-import { Title } from "../../lib/components/Title";
+import { Label } from "../../lib/components/LabelValue";
 import { TitleInput } from "../../lib/components/TitleInput";
 import {
   ConfigDispatchContext,
@@ -56,11 +56,9 @@ export const Collection: React.FC<{ collectionId: string }> = ({
           ))
         ) : (
           <div className="flex flex-col p-8 w-80 h-40 justify-center items-center">
-            <Title>This collection is Empty</Title>
-            <div className="text-center">
-              Add pages to this collection by clicking their menu button and
-              then "Settings"
-            </div>
+            <Label hint='Add pages to this collection by clicking their menu button -> "Settings"'>
+              This collection is Empty
+            </Label>
           </div>
         )}
       </div>

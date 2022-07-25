@@ -26,7 +26,7 @@ import { FDSelect } from "../../../lib/components/SelectInput";
 import { FDSlider } from "../../../lib/components/Slider";
 import { FDSwitch } from "../../../lib/components/Switch";
 import { TextArea } from "../../../lib/components/TextArea";
-import { Title } from "../../../lib/components/Title";
+import { TitleBox } from "../../../lib/components/Title";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -127,7 +127,7 @@ export const ImageSettings: React.FC<{
 
   return (
     <div className="grid grid-cols-2 gap-2 grid-rows-1 w-full h-full">
-      <div className="relative flex flex-col p-8  bg-gray-700 rounded-l-2xl">
+      <div className="relative flex flex-col bg-gray-800 rounded-l-2xl">
         <div
           className={c(
             "z-10 bg-gray-900 opacity-80 top-0 left-0 right-0 bottom-0 absolute rounded-l-2xl",
@@ -135,190 +135,192 @@ export const ImageSettings: React.FC<{
           )}
           title="These options are disabled. Load an image by clicking on the black box or just enter some text"
         />
-        <Title className="mb-2">Image</Title>
-        <Row className="h-8">
-          <CtrlDuo>
-            <LightningBoltIcon className="h-7 w-7" />
-            <Label>Image mode</Label>
-          </CtrlDuo>
-          <CtrlDuo>
-            <FDSelect
-              className="w-56"
-              value={display.imageSettings.imageMode}
-              disabled={!display.originalImage}
-              onChange={(value) => setImageMode(value)}
-              options={[
-                { text: "Normal (simple icons)", value: EImageMode.normal },
-                { text: "Dither (Pictures)", value: EImageMode.dither },
-                {
-                  text: "Hybrid (complex icons)",
-                  value: EImageMode.hybrid,
-                },
-              ]}
-            />
-            <Value>{display.imageSettings.imageMode}</Value>
-          </CtrlDuo>
-        </Row>
-        {!!(display.imageSettings.imageMode === EImageMode.normal) && (
-          <>
-            <Row className="h-8">
-              <CtrlDuo>
-                <SunIconAlt className="h-7 w-7" />
-                <Label>White Threshold</Label>
-              </CtrlDuo>
-              <FDSlider
+        <TitleBox title="Image" className="mb-2">
+          <Row className="h-8">
+            <CtrlDuo>
+              <LightningBoltIcon className="h-7 w-7" />
+              <Label>Image mode</Label>
+            </CtrlDuo>
+            <CtrlDuo>
+              <FDSelect
+                className="w-56"
+                value={display.imageSettings.imageMode}
                 disabled={!display.originalImage}
-                className="w-44"
-                min={0}
-                max={128}
-                step={1}
-                value={display.imageSettings.whiteThreshold}
-                onChange={(event) =>
-                  setWhite(event.currentTarget.valueAsNumber)
-                }
+                onChange={(value) => setImageMode(value)}
+                options={[
+                  { text: "Normal (simple icons)", value: EImageMode.normal },
+                  { text: "Dither (Pictures)", value: EImageMode.dither },
+                  {
+                    text: "Hybrid (complex icons)",
+                    value: EImageMode.hybrid,
+                  },
+                ]}
               />
-            </Row>
-            <Row className="h-8">
-              <CtrlDuo>
-                <SunIcon className="h-7 w-7" />
-                <Label>Black Threshold</Label>
-              </CtrlDuo>
-              <FDSlider
+              <Value>{display.imageSettings.imageMode}</Value>
+            </CtrlDuo>
+          </Row>
+          {!!(display.imageSettings.imageMode === EImageMode.normal) && (
+            <>
+              <Row className="h-8">
+                <CtrlDuo>
+                  <SunIconAlt className="h-7 w-7" />
+                  <Label>White Threshold</Label>
+                </CtrlDuo>
+                <FDSlider
+                  disabled={!display.originalImage}
+                  className="w-44"
+                  min={0}
+                  max={128}
+                  step={1}
+                  value={display.imageSettings.whiteThreshold}
+                  onChange={(event) =>
+                    setWhite(event.currentTarget.valueAsNumber)
+                  }
+                />
+              </Row>
+              <Row className="h-8">
+                <CtrlDuo>
+                  <SunIcon className="h-7 w-7" />
+                  <Label>Black Threshold</Label>
+                </CtrlDuo>
+                <FDSlider
+                  disabled={!display.originalImage}
+                  className="w-44"
+                  min={128}
+                  max={255}
+                  step={1}
+                  value={display.imageSettings.blackThreshold}
+                  onChange={(event) =>
+                    setBlack(event.currentTarget.valueAsNumber)
+                  }
+                />
+              </Row>
+            </>
+          )}
+          {!!(
+            display.imageSettings.imageMode === EImageMode.dither ||
+            display.imageSettings.imageMode === EImageMode.hybrid
+          ) && (
+            <>
+              <Row className="h-8">
+                <CtrlDuo>
+                  <SunIconAlt className="h-7 w-7" />
+                  <Label>Brightness:</Label>
+                </CtrlDuo>
+                <FDSlider
+                  disabled={!display.originalImage}
+                  min={-1}
+                  max={1}
+                  step={0.02}
+                  value={display.imageSettings.brightness}
+                  onChange={(event) =>
+                    setBrightness(event.currentTarget.valueAsNumber)
+                  }
+                />
+              </Row>
+              <Row className="h-8">
+                <CtrlDuo>
+                  <MoonIcon className="h-7 w-7" />
+                  <Label>Contrast:</Label>
+                </CtrlDuo>
+                <FDSlider
+                  disabled={!display.originalImage}
+                  min={-1}
+                  max={1}
+                  step={0.02}
+                  value={display.imageSettings.contrast}
+                  onChange={(event) =>
+                    setContrast(event.currentTarget.valueAsNumber)
+                  }
+                />
+              </Row>
+            </>
+          )}
+          <Row className="h-8">
+            <CtrlDuo>
+              <RefreshIcon className="h-7 w-7" />
+              <Label>Invert</Label>
+            </CtrlDuo>
+            <CtrlDuo>
+              <FDSwitch
                 disabled={!display.originalImage}
-                className="w-44"
-                min={128}
-                max={255}
-                step={1}
-                value={display.imageSettings.blackThreshold}
-                onChange={(event) =>
-                  setBlack(event.currentTarget.valueAsNumber)
-                }
+                onChange={(value) => setInvert(value)}
+                value={display.imageSettings.invert}
               />
-            </Row>
-          </>
-        )}
-        {!!(
-          display.imageSettings.imageMode === EImageMode.dither ||
-          display.imageSettings.imageMode === EImageMode.hybrid
-        ) && (
-          <>
-            <Row className="h-8">
-              <CtrlDuo>
-                <SunIconAlt className="h-7 w-7" />
-                <Label>Brightness:</Label>
-              </CtrlDuo>
-              <FDSlider
-                disabled={!display.originalImage}
-                min={-1}
-                max={1}
-                step={0.02}
-                value={display.imageSettings.brightness}
-                onChange={(event) =>
-                  setBrightness(event.currentTarget.valueAsNumber)
-                }
-              />
-            </Row>
-            <Row className="h-8">
-              <CtrlDuo>
-                <MoonIcon className="h-7 w-7" />
-                <Label>Contrast:</Label>
-              </CtrlDuo>
-              <FDSlider
-                disabled={!display.originalImage}
-                min={-1}
-                max={1}
-                step={0.02}
-                value={display.imageSettings.contrast}
-                onChange={(event) =>
-                  setContrast(event.currentTarget.valueAsNumber)
-                }
-              />
-            </Row>
-          </>
-        )}
-        <Row className="h-8">
-          <CtrlDuo>
-            <RefreshIcon className="h-7 w-7" />
-            <Label>Invert</Label>
-          </CtrlDuo>
-          <CtrlDuo>
-            <FDSwitch
-              disabled={!display.originalImage}
-              onChange={(value) => setInvert(value)}
-              value={display.imageSettings.invert}
-            />
-            <Value>{!!display.imageSettings.invert ? "on" : "off"}</Value>
-          </CtrlDuo>
-        </Row>
+              <Value>{!!display.imageSettings.invert ? "on" : "off"}</Value>
+            </CtrlDuo>
+          </Row>
+        </TitleBox>
       </div>
 
-      <div className="relative flex flex-col p-8 bg-gray-700 rounded-r-2xl">
-        <Title className="mb-2">Text</Title>
-        <Row>
-          <TextArea
-            className="w-full"
-            placeholder={"Enter text"}
-            value={display.textSettings.text ?? ""}
-            onChange={(value) => setText(value)}
-          />
-        </Row>
-        <Row className="h-8">
-          <CtrlDuo>
-            <AdjustmentsIcon className="h-7 w-7" />
-            <Label>Position:</Label>
-          </CtrlDuo>
-          <CtrlDuo>
-            <FDSelect
-              className="w-44"
-              value={display.textSettings.position}
-              onChange={(value) => setTextPosition(value)}
-              options={[
-                { value: ETextPosition.right, text: "right" },
-                { value: ETextPosition.bottom, text: "bottom" },
-              ]}
+      <div className="relative flex flex-col bg-gray-800 rounded-r-2xl">
+        <TitleBox title="Text" className="mb-2">
+          <Row>
+            <TextArea
+              className="w-full"
+              placeholder={"Enter text"}
+              value={display.textSettings.text ?? ""}
+              onChange={(value) => setText(value)}
             />
-            <Value>{display.textSettings.position}</Value>
-          </CtrlDuo>
-        </Row>
-        <Row className="h-8">
-          <CtrlDuo>
-            <TranslateIcon className="h-7 w-7" />
-            <Label>Font:</Label>
-          </CtrlDuo>
-          <CtrlDuo>
-            <FDSelect
-              className="w-44"
-              value={display.textSettings.font}
-              onChange={(value) => setfontName(value)}
-              options={[
-                { value: fontSmaller, text: "xs" },
-                { value: fontSmall, text: "medium" },
-                { value: fontMedium, text: "large" },
-                { value: fontLarge, text: "xl" },
-              ]}
+          </Row>
+          <Row className="h-8">
+            <CtrlDuo>
+              <AdjustmentsIcon className="h-7 w-7" />
+              <Label>Position:</Label>
+            </CtrlDuo>
+            <CtrlDuo>
+              <FDSelect
+                className="w-44"
+                value={display.textSettings.position}
+                onChange={(value) => setTextPosition(value)}
+                options={[
+                  { value: ETextPosition.right, text: "right" },
+                  { value: ETextPosition.bottom, text: "bottom" },
+                ]}
+              />
+              <Value>{display.textSettings.position}</Value>
+            </CtrlDuo>
+          </Row>
+          <Row className="h-8">
+            <CtrlDuo>
+              <TranslateIcon className="h-7 w-7" />
+              <Label>Font:</Label>
+            </CtrlDuo>
+            <CtrlDuo>
+              <FDSelect
+                className="w-44"
+                value={display.textSettings.font}
+                onChange={(value) => setfontName(value)}
+                options={[
+                  { value: fontSmaller, text: "xs" },
+                  { value: fontSmall, text: "medium" },
+                  { value: fontMedium, text: "large" },
+                  { value: fontLarge, text: "xl" },
+                ]}
+              />
+              <Value>{display.textSettings.font}</Value>
+            </CtrlDuo>
+          </Row>
+          <Row className="h-8">
+            <CtrlDuo>
+              <ArrowsExpandIcon className="h-7 w-7" />
+              <Label>Icon width:</Label>
+            </CtrlDuo>
+            <FDSlider
+              disabled={
+                !display.textSettings.text?.length ||
+                display.textSettings.position === ETextPosition.bottom
+              }
+              min={0.1}
+              max={0.9}
+              step={0.01}
+              value={display.textWithIconSettings.iconWidthMultiplier}
+              onChange={(event) =>
+                setIconWidthMultiplier(event.currentTarget.valueAsNumber)
+              }
             />
-            <Value>{display.textSettings.font}</Value>
-          </CtrlDuo>
-        </Row>
-        <Row className="h-8">
-          <CtrlDuo>
-            <ArrowsExpandIcon className="h-7 w-7" />
-            <Label>Icon width:</Label>
-          </CtrlDuo>
-          <FDSlider
-            disabled={
-              !display.textSettings.text?.length ||
-              display.textSettings.position === ETextPosition.bottom
-            }
-            min={0.1}
-            max={0.9}
-            step={0.01}
-            value={display.textWithIconSettings.iconWidthMultiplier}
-            onChange={(event) =>
-              setIconWidthMultiplier(event.currentTarget.valueAsNumber)
-            }
-          />
-        </Row>
+          </Row>
+        </TitleBox>
       </div>
     </div>
   );

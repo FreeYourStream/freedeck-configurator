@@ -13,7 +13,7 @@ export const ButtonSettingsContainer: React.FC<{
   return (
     <div className="flex flex-col h-full">
       <div className="grid grid-cols-2 grid-rows-1 gap-2 h-full mb-4">
-        <div className="relative flex flex-col p-4 bg-gray-700 rounded-l-2xl">
+        <div className="relative flex flex-col bg-gray-800 rounded-l-2xl">
           <Action
             primary={true}
             title="Short press"
@@ -22,7 +22,7 @@ export const ButtonSettingsContainer: React.FC<{
             buttonSettings={button.primary}
           />
         </div>
-        <div className="relative flex flex-col p-4 bg-gray-700 rounded-r-2xl">
+        <div className="relative flex flex-col bg-gray-800 rounded-r-2xl">
           {button.primary.mode !== EAction.text &&
             !button.leavePage.enabled && (
               <Action
