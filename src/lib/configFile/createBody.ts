@@ -76,7 +76,6 @@ const writeAction = (
       }),
       0
     );
-    console.log(pageIndex);
     buttonRows.writeUInt8(pageIndex, dataOffset + 8);
   }
   return buttonRows;
@@ -102,7 +101,6 @@ export const createButtonBody = (pages: Pages) => {
       }
     });
   });
-  console.timeEnd("buttons");
   return buttonRows;
 };
 

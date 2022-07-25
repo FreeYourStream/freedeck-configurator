@@ -161,7 +161,6 @@ pub fn get_current_window(_state: State<Mutex<Serial>>) -> Result<String, String
 }
 #[command]
 pub fn set_aps_state(window: Window, aps_state: bool) {
-    println!("{}", aps_state);
     let aps_item = window.app_handle().tray_handle().get_item("aps");
     aps_item.set_selected(aps_state).unwrap();
 }

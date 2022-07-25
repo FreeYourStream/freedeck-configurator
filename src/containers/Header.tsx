@@ -82,7 +82,7 @@ export const Header: React.FC<{}> = () => {
           <div
             className={c("flex items-center space-x-4 h-auto overflow-hidden")}
           >
-            {availablePorts.length && !ctrlDown ? (
+            {serialApi?.connected && !ctrlDown ? (
               <>
                 <FDButton
                   prefix={<UploadIcon className={iconSize} />}
