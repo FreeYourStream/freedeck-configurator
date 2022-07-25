@@ -1,6 +1,7 @@
 import Joi from "joi";
 
 import package_json from "../../package.json";
+import { ConfigState } from "../states/configState";
 import { ButtonSchema } from "./button";
 import { DisplaySchema } from "./display";
 
@@ -67,7 +68,7 @@ export const CollectionsSchema = Joi.object({
   sorted: Joi.array().items(Joi.string()).failover([]).required(),
 }).meta({ className: "Collections" });
 
-export const ConfigSchema = Joi.object({
+export const ConfigSchema = Joi.object<ConfigState>({
   pages: PagesSchema.required(),
   brightness: Joi.number().failover(128).required(),
   height: Joi.number().max(16).min(1).failover(2).required(),

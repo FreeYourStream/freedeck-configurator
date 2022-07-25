@@ -14,7 +14,7 @@ interface IProps {
 export const createToast = ({ danger, primary, title, text }: IProps) => {
   toast(
     (t) => (
-      <div className="py-2">
+      <div className="">
         {!!title && (
           <TitleBox title={title} className="mb-2">
             <div className="mb-8">{text}</div>
@@ -40,7 +40,8 @@ export const createToast = ({ danger, primary, title, text }: IProps) => {
     {
       duration: Infinity,
       position: "bottom-right",
-      className: "bg-gray-700 text-white border-0 border-white text-lg",
+      style: { background: "#fff0" },
+      className: "text-white border-0 p-0 m-0 border-white text-lg",
     }
   );
 };

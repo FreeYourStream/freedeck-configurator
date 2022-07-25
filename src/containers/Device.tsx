@@ -42,7 +42,7 @@ export const Device: React.FC<{}> = () => {
   useEffect(() => {
     if (!serialApi) return;
     const id = serialApi.registerOnPortsChanged(async (ports) => {
-      if (ports.length) {
+      if (serialApi.connected) {
         const fw = await serialApi.getFirmwareVersion();
         setFwVersion(fw);
       } else {
@@ -50,7 +50,7 @@ export const Device: React.FC<{}> = () => {
       }
     });
     return () => serialApi.clearOnPortsChanged(id);
-  }, [serialApi]);
+  }, [serialApi?.connected]);
 
   useEffect(() => {
     const wArray = [];

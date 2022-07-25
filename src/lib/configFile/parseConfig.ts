@@ -48,7 +48,11 @@ export const convertCurrentConfig = async (
     { stripUnknown: true }
   );
   if (validated.error) throw new Error(validated.error.message);
-  return validated.value;
+  const config = validated.value;
+  config.configVersion = (
+    await import("../../../package.json")
+  ).configFileVersion;
+  return config;
 };
 
 export const parseConfig = async (
@@ -69,5 +73,9 @@ export const parseConfig = async (
   if (!rawConfig.configVersion) {
     throw new Error("legacy config. not compatible");
   }
-  return await convertCurrentConfig(rawConfig);
+  const config = await convertCurrentConfig(rawConfig);
+  config.configVersion = (
+    await import("../../../package.json")
+  ).configFileVersion;
+  return config;
 };

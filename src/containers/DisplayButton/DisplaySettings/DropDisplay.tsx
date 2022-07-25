@@ -69,7 +69,7 @@ export const DropDisplay = ({
   }
 
   return (
-    <div className="relative flex w-full justify-center mb-4 bg-gradient-to-b from-gray-800 via-gray-900 to-gray-900 rounded-2xl shadow-2xl">
+    <div className="relative flex w-full justify-center mb-4 bg-gradient-to-b bg-gray-800 rounded-2xl shadow-2xl">
       <div
         className="rounded-sm border-0"
         {...getRootProps({ style: { outline: "none" } })}

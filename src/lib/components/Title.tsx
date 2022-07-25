@@ -9,7 +9,7 @@ export const TitleBox: React.FC<{
   return (
     <div
       className={c(
-        "p-6 rounded-xl bg-gradient-to-b from-gray-700 via-gray-900 to-gray-900 shadow-2xl",
+        "p-6 rounded-xl bg-gradient-to-b bg-gray-800 shadow-2xl",
         className
       )}
     >

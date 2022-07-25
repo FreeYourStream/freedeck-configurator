@@ -37,16 +37,16 @@ export const Alert: React.FC<{
           leaveFrom="transform scale-100 opacity-70"
           leaveTo="transform scale-95 opacity-0"
         >
-          <div className="flex flex-col items-start justify-center p-6 bg-gray-600 z-50 rounded-xl shadow-2xl max-w-md break-words break-all">
+          <div className="flex flex-col items-start justify-center z-50 rounded-xl shadow-2xl max-w-md break-words break-all">
             <Dialog.Title className="mb-2">
               <TitleBox title={title}>
                 <Dialog.Description className="text-lg mb-8">
                   {text}
                 </Dialog.Description>
+                <div className="flex w-full justify-end gap-2">
+                  <FDButton onClick={() => onClose()}>Ok</FDButton>
+                </div>
               </TitleBox>
-              <div className="flex w-full justify-end gap-2">
-                <FDButton onClick={() => onClose()}>Ok</FDButton>
-              </div>
             </Dialog.Title>
           </div>
         </Transition.Child>

@@ -20,7 +20,6 @@ const findPage = (configState: ConfigState, name: string): number => {
       const windowNames = page.windowName
         .split(/[,\n]/)
         .map((s) => s.trim().toLowerCase());
-      console.log(windowNames);
       for (const windowName of windowNames) {
         if (name.toLowerCase().indexOf(windowName) !== -1) return i;
       }
@@ -106,7 +105,6 @@ export const usePageSwitcher = (props: {
       }
     }, 300);
     return () => {
-      console.log("clearing interval", interval);
       if (interval) workerInterval.clearInterval(interval);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
