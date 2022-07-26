@@ -5,7 +5,11 @@
 pub mod commands;
 mod lib;
 mod plugins;
-use std::sync::Mutex;
+use std::{
+    sync::{Arc, Mutex},
+    thread,
+    time::Duration,
+};
 use tauri::{
     CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
     WindowEvent,
@@ -26,7 +30,8 @@ fn main() {
         .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(quit);
     let tray = SystemTray::new().with_menu(tray_menu);
-    let serial = Mutex::new(Serial::new());
+    let serial = Arc::new(Mutex::new(Serial::new()));
+    let thread_serial = serial.clone();
 
     let mut app = tauri::Builder::default()
         .plugin(plugins::single_instance::init())
@@ -69,6 +74,23 @@ fn main() {
     #[cfg(target_os = "macos")]
     app.set_activation_policy(tauri::ActivationPolicy::Regular);
 
+    let thread_app = app.handle().clone();
+    let thread_join = thread::spawn(move || {
+        let mut ports = Vec::new();
+        loop {
+            let new_ports = thread_serial.lock().unwrap().get_ports();
+            if new_ports.len() != ports.len() {
+                let new_ports_str: Vec<String> = new_ports
+                    .iter()
+                    .map(|p| format!("{};{}", p.path, p.name))
+                    .collect();
+                thread_app.emit_all("ports_changed", new_ports_str).unwrap();
+            }
+            ports = new_ports;
+            thread::sleep(Duration::from_millis(200));
+        }
+    });
+
     app.run(|app_handle, e| match e {
         tauri::RunEvent::WindowEvent { label, event, .. } => {
             let app_handle = app_handle.clone();
@@ -83,4 +105,5 @@ fn main() {
         }
         _ => {}
     });
+    thread_join.join().unwrap();
 }

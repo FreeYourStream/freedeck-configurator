@@ -1,8 +1,13 @@
-use std::{sync::Mutex, time::Duration};
+use std::{
+    sync::{Arc, Mutex},
+    time::Duration,
+};
 
 use serialport::{SerialPort, SerialPortType};
 use tauri::{Manager, State, Window};
 use tauri_macros::command;
+
+type FDState = Arc<Mutex<Serial>>;
 
 fn get_epoch() -> u128 {
     let now = std::time::SystemTime::now();
@@ -12,8 +17,8 @@ fn get_epoch() -> u128 {
 }
 
 pub struct Port {
-    path: String,
-    name: String,
+    pub path: String,
+    pub name: String,
 }
 
 fn get_compatible_devices() -> Vec<Port> {
@@ -91,7 +96,7 @@ impl Serial {
     }
 }
 #[command]
-pub fn get_ports(state: State<Mutex<Serial>>) -> Vec<String> {
+pub fn get_ports(state: State<FDState>) -> Vec<String> {
     state
         .lock()
         .unwrap()
@@ -102,15 +107,15 @@ pub fn get_ports(state: State<Mutex<Serial>>) -> Vec<String> {
 }
 
 #[command]
-pub fn open(state: State<Mutex<Serial>>, path: String, baud_rate: u32) -> Result<(), String> {
+pub fn open(state: State<FDState>, path: String, baud_rate: u32) -> Result<(), String> {
     state.lock().unwrap().connect(path, baud_rate).into()
 }
 #[command]
-pub fn close(state: State<Mutex<Serial>>) {
+pub fn close(state: State<FDState>) {
     state.lock().unwrap().disconnect();
 }
 #[command]
-pub fn write(state: State<Mutex<Serial>>, data: Vec<u8>) {
+pub fn write(state: State<FDState>, data: Vec<u8>) {
     state
         .lock()
         .unwrap()
@@ -119,7 +124,7 @@ pub fn write(state: State<Mutex<Serial>>, data: Vec<u8>) {
 }
 
 #[command]
-pub fn read(state: State<Mutex<Serial>>) -> Vec<u8> {
+pub fn read(state: State<FDState>) -> Vec<u8> {
     state
         .lock()
         .unwrap()
@@ -129,7 +134,7 @@ pub fn read(state: State<Mutex<Serial>>) -> Vec<u8> {
 
 #[command]
 #[cfg(windows)]
-pub fn get_current_window(_state: State<Mutex<Serial>>) -> String {
+pub fn get_current_window(_state: State<FDState>) -> String {
     use std::{ffi::OsString, os::windows::prelude::OsStringExt};
     use winapi::um::winuser::{GetForegroundWindow, GetWindowTextW};
 
@@ -142,7 +147,7 @@ pub fn get_current_window(_state: State<Mutex<Serial>>) -> String {
 }
 #[command]
 #[cfg(not(windows))]
-pub fn get_current_window(_state: State<Mutex<Serial>>) -> Result<String, String> {
+pub fn get_current_window(_state: State<FDState>) -> Result<String, String> {
     use std::process::Command;
     let mut command = Command::new("sh");
     command
