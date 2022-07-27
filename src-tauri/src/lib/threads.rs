@@ -17,7 +17,7 @@ pub fn ports_thread(
     thread::spawn(move || {
         let mut ports = Vec::new();
         loop {
-            thread::sleep(Duration::from_millis(1000));
+            thread::sleep(Duration::from_millis(500));
             let serial = serial_clone.lock().unwrap();
             let new_ports = serial.get_ports();
             if new_ports.len() != ports.len() {
@@ -36,7 +36,7 @@ pub fn read_thread(serial_ref: &Arc<Mutex<Serial>>) -> JoinHandle<()> {
 
         let mut serial = serial_clone.lock().unwrap();
         let available = match serial.port.as_ref() {
-            Some(port) => port.bytes_to_read().unwrap(),
+            Some(port) => port.bytes_to_read().unwrap_or(0),
             None => {
                 continue;
             }
