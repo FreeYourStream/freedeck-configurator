@@ -87,9 +87,6 @@ impl Serial {
     pub fn read(&mut self) -> Result<Vec<u8>, Box<dyn std::error::Error>> // sends command to serial port and returns response
     {
         let data = self.data.clone();
-        if data.len() != 0 {
-            println!("{}", data.len());
-        }
         self.data.clear();
         Ok(data)
     }
