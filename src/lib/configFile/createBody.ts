@@ -37,18 +37,16 @@ const writeAction = (
       buttonRows.writeUInt8(pageIndex, dataOffset + 1);
       break;
     case EAction.hotkeys:
-      buttonAction.values[EAction.hotkeys].forEach((hotkey, index) =>
-        buttonRows.writeUInt8(
-          !!(
-            buttonAction.values[EAction.hotkeys]
-              .slice(0, index + 1)
-              .filter((k) => k === hotkey).length % 2
-          )
-            ? hotkey
-            : hotkey + 0x80,
-          dataOffset + index + 1
+      buttonAction.values[EAction.hotkeys].forEach((hotkey, index) => {
+        let hotkeyValue = !!(
+          buttonAction.values[EAction.hotkeys]
+            .slice(0, index + 1)
+            .filter((k) => k === hotkey).length % 2
         )
-      );
+          ? hotkey
+          : hotkey + 0x80;
+        buttonRows.writeUInt8(hotkeyValue, dataOffset + index + 1);
+      });
       break;
     case EAction.special_keys:
       buttonRows.writeUInt8(

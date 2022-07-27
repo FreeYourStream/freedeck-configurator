@@ -54,6 +54,7 @@ export const Hotkeys: React.FC<{
       (key) => keys[key]?.js === e.nativeEvent.code
     );
     if (!key) return;
+    if (!!values[EAction.hotkeys].find((k) => k === keys[key]?.hid)) return;
     //ignore backspace
     if (keys[key]!.hid === 42 && values[EAction.hotkeys].length > 0) {
       setKeys([
@@ -70,6 +71,7 @@ export const Hotkeys: React.FC<{
           className="w-48"
           value={0}
           onChange={(value) => {
+            if (!!values[EAction.hotkeys].find((k) => k === value)) return;
             setKeys([...values[EAction.hotkeys], parseInt(value)]);
           }}
           options={[
