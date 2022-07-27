@@ -4,7 +4,6 @@ import { listen } from "@tauri-apps/api/event";
 import { PortsChangedCallback, SerialConnector } from "./serial";
 
 export class TauriSerialConnector implements SerialConnector {
-  buffer: number[];
   portsChangedCallback: PortsChangedCallback;
   port = "";
   ports: string[] = [];
@@ -12,7 +11,6 @@ export class TauriSerialConnector implements SerialConnector {
 
   constructor(portsChangedCallback: PortsChangedCallback) {
     this.portsChangedCallback = portsChangedCallback;
-    this.buffer = [];
     this.port = "";
     this.refreshPorts(true).then(() =>
       listen<string[]>("ports_changed", ({ payload }) => {
@@ -63,25 +61,22 @@ export class TauriSerialConnector implements SerialConnector {
   }
 
   flush() {
-    this.buffer = [];
     return;
   }
 
   async read(timeout = 1000): Promise<number[]> {
-    const data = [...this.buffer, ...(await invoke<number[]>("read"))];
-    this.buffer = [];
+    let data: number[] = [];
+    do {
+      data = await invoke<number[]>("read");
+    } while (data.length === 0);
     return data;
   }
 
   async readLine(timeout = 1000): Promise<number[]> {
-    this.buffer = [...this.buffer, ...(await invoke<number[]>("read"))];
-    if (!this.buffer.length || !this.buffer.find((byte) => byte === 0xa)) {
-      return [];
-    }
-    const index = this.buffer.findIndex((byte) => byte === 0xa);
-    const line = [...this.buffer.slice(0, index - 1)];
-    this.buffer = [...this.buffer.slice(index + 1)];
-
-    return line;
+    let data: number[] = [];
+    do {
+      data = await invoke<number[]>("read_line").catch(() => []);
+    } while (data.length === 0);
+    return data;
   }
 }

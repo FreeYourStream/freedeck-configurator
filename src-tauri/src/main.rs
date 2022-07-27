@@ -5,15 +5,12 @@
 pub mod commands;
 mod lib;
 mod plugins;
-use std::{
-    sync::{Arc, Mutex},
-    thread,
-    time::Duration,
+use lib::{
+    event_handlers::{handle_tauri_event, handle_tray_event},
+    threads,
 };
-use tauri::{
-    CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
-    WindowEvent,
-};
+use std::sync::{Arc, Mutex};
+use tauri::{CustomMenuItem, SystemTray, SystemTrayMenu, SystemTrayMenuItem};
 
 use crate::commands::*;
 use tauri_macros::generate_handler;
@@ -30,41 +27,22 @@ fn main() {
         .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(quit);
     let tray = SystemTray::new().with_menu(tray_menu);
-    let serial = Arc::new(Mutex::new(Serial::new()));
-    let thread_serial = serial.clone();
 
+    let serial = Arc::new(Mutex::new(Serial::new()));
+
+    #[allow(unused_mut)] // needed for macos
     let mut app = tauri::Builder::default()
         .plugin(plugins::single_instance::init())
         .system_tray(tray)
-        .on_system_tray_event(|app, event| match event {
-            SystemTrayEvent::DoubleClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                let window = app.get_window("main").unwrap();
-                lib::window::show(window);
-            }
-            SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                "quit" => {
-                    std::process::exit(0);
-                }
-                "aps" => app.emit_all("toggle_aps", ()).unwrap(),
-                "show" => {
-                    let window = app.get_window("main").unwrap();
-                    lib::window::show(window)
-                }
-                _ => {}
-            },
-            _ => {}
-        })
-        .manage(serial)
+        .on_system_tray_event(handle_tray_event)
+        .manage(serial.clone())
         .invoke_handler(generate_handler!(
             get_ports,
             open,
             close,
             write,
             read,
+            read_line,
             get_current_window,
             set_aps_state
         ))
@@ -74,36 +52,10 @@ fn main() {
     #[cfg(target_os = "macos")]
     app.set_activation_policy(tauri::ActivationPolicy::Regular);
 
-    let thread_app = app.handle().clone();
-    let thread_join = thread::spawn(move || {
-        let mut ports = Vec::new();
-        loop {
-            let new_ports = thread_serial.lock().unwrap().get_ports();
-            if new_ports.len() != ports.len() {
-                let new_ports_str: Vec<String> = new_ports
-                    .iter()
-                    .map(|p| format!("{};{}", p.path, p.name))
-                    .collect();
-                thread_app.emit_all("ports_changed", new_ports_str).unwrap();
-            }
-            ports = new_ports;
-            thread::sleep(Duration::from_millis(200));
-        }
-    });
+    let ports_join = threads::ports_thread(&app.handle(), &serial);
+    let read_join = threads::read_thread(&serial);
 
-    app.run(|app_handle, e| match e {
-        tauri::RunEvent::WindowEvent { label, event, .. } => {
-            let app_handle = app_handle.clone();
-            let window = app_handle.get_window(&label).unwrap();
-            match event {
-                WindowEvent::CloseRequested { api, .. } => {
-                    api.prevent_close();
-                    window.hide().unwrap();
-                }
-                _ => {}
-            }
-        }
-        _ => {}
-    });
-    thread_join.join().unwrap();
+    app.run(handle_tauri_event);
+    ports_join.join().unwrap();
+    read_join.join().unwrap();
 }

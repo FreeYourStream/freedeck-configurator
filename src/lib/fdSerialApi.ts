@@ -112,7 +112,7 @@ export class FDSerialAPI {
 
     this.blockCommunication = true;
     if (fwVersion.split(".")[0] === "1") {
-      throw new Error("unsupport 1.x firmware")
+      throw new Error("unsupported 1.x firmware");
     } else {
       await this.write([0x3, commands.readConfig]);
     }
@@ -133,7 +133,6 @@ export class FDSerialAPI {
         progressCallback?.(data.length, fileSize, transferStartedTime);
       }
       if (received.length === 0) break;
-      console.log(received)
       data.push(...received);
     }
     progressCallback?.(data.length, fileSize, transferStartedTime);

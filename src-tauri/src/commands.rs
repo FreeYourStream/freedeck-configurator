@@ -9,16 +9,15 @@ use tauri_macros::command;
 
 type FDState = Arc<Mutex<Serial>>;
 
-fn get_epoch() -> u128 {
-    let now = std::time::SystemTime::now();
-    now.duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
-        .as_millis()
-}
-
 pub struct Port {
     pub path: String,
     pub name: String,
+}
+
+impl Into<String> for &Port {
+    fn into(self) -> String {
+        format!("{};{}", self.path, self.name)
+    }
 }
 
 fn get_compatible_devices() -> Vec<Port> {
@@ -39,12 +38,16 @@ fn get_compatible_devices() -> Vec<Port> {
     ports
 }
 pub struct Serial {
-    port: Option<Mutex<Box<dyn SerialPort>>>,
+    pub port: Option<Box<dyn SerialPort>>,
+    pub data: Vec<u8>,
 }
 
 impl Serial {
     pub fn new() -> Self {
-        Serial { port: None }
+        Serial {
+            port: None,
+            data: Vec::new(),
+        }
     }
     pub fn get_ports(&self) -> Vec<Port> // returns vector of all avaliable serial ports
     {
@@ -58,7 +61,7 @@ impl Serial {
         let (clean_port, _) = path.split_once(";").unwrap();
         match self.port.as_ref() {
             Some(port) => {
-                if port.lock().unwrap().name().unwrap_or("unknown".to_string()) == clean_port {
+                if port.name().unwrap_or("unknown".to_string()) == clean_port {
                     return Ok(());
                 }
             }
@@ -69,30 +72,41 @@ impl Serial {
             Err(e) => return Err(e.to_string()),
         };
         port.write_data_terminal_ready(true).unwrap();
-        port.set_timeout(Duration::from_millis(1000))
+        port.set_timeout(Duration::from_millis(50))
             .expect("error setting timeout");
-        self.port = Some(Mutex::new(port));
+        self.port = Some(port);
         Ok(())
     }
     pub fn write(&mut self, data: Vec<u8>) -> Result<(), Box<dyn std::error::Error>> // sends command to serial port
     {
-        let mut port = self.port.as_mut().unwrap().lock().unwrap();
+        let port = self.port.as_mut().unwrap();
         port.write_all(&data)?;
         port.flush()?;
         Ok(())
     }
     pub fn read(&mut self) -> Result<Vec<u8>, Box<dyn std::error::Error>> // sends command to serial port and returns response
     {
-        let mut port = self.port.as_mut().unwrap().lock().unwrap();
-        let mut available = port.bytes_to_read().unwrap();
-        let start = get_epoch();
-        while available <= 0 && get_epoch() - start < 1000 {
-            std::thread::sleep(Duration::from_millis(100));
-            available = port.bytes_to_read().unwrap();
+        let data = self.data.clone();
+        if data.len() != 0 {
+            println!("{}", data.len());
         }
-        let mut response = vec![0; available.try_into().unwrap()];
-        port.read(&mut response).unwrap_or_else(|_e| 0);
-        Ok(response)
+        self.data.clear();
+        Ok(data)
+    }
+    pub fn read_line(&mut self) -> Result<Vec<u8>, String> // sends command to serial port and returns response
+    {
+        let data = self.data.clone();
+        if data.len() < 2 {
+            return Err("Not enough data".into());
+        }
+        for index in 0..data.len() {
+            let r = data[index];
+            let n = data[index + 1];
+            if r == b'\r' && n == b'\n' {
+                return Ok(self.data.drain(0..index + 2).collect::<Vec<u8>>());
+            }
+        }
+        Err("No Line Found".into())
     }
 }
 #[command]
@@ -102,7 +116,7 @@ pub fn get_ports(state: State<FDState>) -> Vec<String> {
         .unwrap()
         .get_ports()
         .iter()
-        .map(|p| format!("{};{}", p.path, p.name))
+        .map(|p| p.into())
         .collect()
 }
 
@@ -130,6 +144,11 @@ pub fn read(state: State<FDState>) -> Vec<u8> {
         .unwrap()
         .read()
         .expect("failed to receive response")
+}
+
+#[command]
+pub fn read_line(state: State<FDState>) -> Result<Vec<u8>, String> {
+    state.lock().unwrap().read_line()
 }
 
 #[command]
