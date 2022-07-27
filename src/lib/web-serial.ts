@@ -92,7 +92,7 @@ export class WebSerialConnector implements SerialConnector {
       await this.sleep(1);
     } else {
       const arrBuff = new Buffer([...data]);
-      this.writer.write(arrBuff);
+      await this.writer.write(arrBuff);
       return;
     }
   }
