@@ -21,7 +21,7 @@ pub fn ports_thread(
             let serial = serial_clone.lock().unwrap();
             let new_ports = serial.get_ports();
             if new_ports.len() != ports.len() {
-                let new_ports_str: Vec<String> = new_ports.iter().map(|p| p.into()).collect();
+                let new_ports_str = new_ports.iter().map(|p| p.into()).collect::<Vec<String>>();
                 app_clone.emit_all("ports_changed", new_ports_str).unwrap();
             }
             ports = new_ports;

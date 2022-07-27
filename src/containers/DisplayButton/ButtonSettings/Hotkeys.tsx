@@ -26,7 +26,12 @@ const HotkeyKeys: React.FC<{
             setKeys(newKeys.slice(0, 7));
           }}
         >
-          {key}
+          {!!(
+            translatedKeys.slice(0, index + 1).filter((k) => k === key).length %
+            2
+          )
+            ? key
+            : `^${key}`}
         </FDButton>
       ))}
     </div>
