@@ -18,12 +18,14 @@ use tauri_macros::generate_handler;
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let show = CustomMenuItem::new("show".to_string(), "Show");
+    let updates = CustomMenuItem::new("updates".to_string(), "Restart & check for updates");
     let mut aps_enabled = CustomMenuItem::new("aps".to_string(), "Auto page-switcher");
     aps_enabled.selected = true;
 
     let tray_menu = SystemTrayMenu::new()
         .add_item(show)
         .add_item(aps_enabled)
+        .add_item(updates)
         .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(quit);
     let tray = SystemTray::new().with_menu(tray_menu);

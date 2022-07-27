@@ -21,6 +21,10 @@ pub fn handle_tray_event(app: &AppHandle, event: SystemTrayEvent) {
                 let window = app.get_window("main").unwrap();
                 window::show(window)
             }
+            "updates" => {
+                let window = app.get_window("main").unwrap();
+                window.app_handle().restart();
+            }
             _ => {}
         },
         _ => {}
