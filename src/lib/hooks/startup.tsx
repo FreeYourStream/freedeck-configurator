@@ -52,8 +52,8 @@ export const StartUp: FC<{}> = () => {
               const button =
                 configState.pages.byId[pageId].displayButtons[args[1]].button;
               const text = args[2]
-                ? button.secondary.values
-                : button.primary.values;
+                ? button.secondary.values.text
+                : button.primary.values.text;
               invoke("press_keys", { keyString: text ?? "nothing" });
             }
           }
