@@ -14,7 +14,7 @@ pub fn handle_tray_event(app: &AppHandle, event: SystemTrayEvent) {
         }
         SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
             "quit" => {
-                std::process::exit(0);
+                app.exit(0);
             }
             "aps" => app.emit_all("toggle_aps", ()).unwrap(),
             "show" => {
