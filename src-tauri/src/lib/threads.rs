@@ -29,7 +29,11 @@ pub fn ports_thread(
     })
 }
 
-pub fn read_thread(serial_ref: &Arc<Mutex<Serial>>) -> JoinHandle<()> {
+pub fn read_thread(
+    app_handle_ref: &AppHandle<Wry>,
+    serial_ref: &Arc<Mutex<Serial>>,
+) -> JoinHandle<()> {
+    let app_clone = app_handle_ref.clone();
     let serial_clone = serial_ref.clone();
     thread::spawn(move || loop {
         thread::sleep(Duration::from_millis(10));
@@ -54,6 +58,12 @@ pub fn read_thread(serial_ref: &Arc<Mutex<Serial>>) -> JoinHandle<()> {
             .unwrap()
             .read(&mut response)
             .unwrap_or_else(|_e| 0);
+        let match_pattern = [0x3, b'\r', b'\n'];
+
+        match response.starts_with(&match_pattern) {
+            true => app_clone.emit_all("serial_command", ()).unwrap(),
+            false => {}
+        }
 
         serial.data.extend_from_slice(&response);
     })

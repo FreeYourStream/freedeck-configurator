@@ -195,6 +195,10 @@ export class FDSerialAPI {
     this.blockCommunication = false;
   }
 
+  async readSerialCommand() {
+    return this.Serial.readSerialCommand();
+  }
+
   private async readAsciiLine() {
     const result = await this.Serial.readLine(3000);
     return String.fromCharCode(...result);

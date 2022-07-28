@@ -114,6 +114,10 @@ export class WebSerialConnector implements SerialConnector {
     return data;
   }
 
+  async readSerialCommand(): Promise<{ command: number; args: number[] }> {
+    throw new Error("not implemented");
+  }
+
   async readLine(timeout = 1000): Promise<number[]> {
     const startTime = new Date().getTime();
     while (

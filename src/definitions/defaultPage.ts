@@ -18,7 +18,7 @@ const createDefaultButton: () => Button = () => {
           value: 128,
         },
         [EAction.special_keys]: 0,
-        [EAction.text]: [],
+        [EAction.text]: "",
       },
     },
     secondary: {
@@ -28,7 +28,7 @@ const createDefaultButton: () => Button = () => {
         [EAction.hotkeys]: [],
         [EAction.settings]: { setting: 0, value: 128 },
         [EAction.special_keys]: 0,
-        [EAction.text]: [],
+        [EAction.text]: "",
       },
     },
   };

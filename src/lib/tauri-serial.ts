@@ -79,4 +79,21 @@ export class TauriSerialConnector implements SerialConnector {
     } while (data.length === 0);
     return data;
   }
+
+  async readSerialCommand() {
+    const start = await (
+      await this.readLine()
+    ).filter((x) => x !== 13 && x !== 10)[0];
+    if (start !== 3) throw new Error("invalid start");
+
+    let command = (await this.readLine()).filter(
+      (x) => x !== 13 && x !== 10
+    )[0];
+    if (command < 16) throw new Error("invalid command");
+    const data = (await this.readLine()).filter((x) => x !== 13 && x !== 10);
+    const args = String.fromCharCode(...data)
+      .split("\t")
+      .map((x) => parseInt(x));
+    return { command, args };
+  }
 }

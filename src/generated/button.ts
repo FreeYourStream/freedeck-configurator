@@ -22,7 +22,7 @@ export interface ButtonValues {
     value: number;
   };
   special_keys: number;
-  text: number[];
+  text?: string;
 }
 
 export interface LeavePage {

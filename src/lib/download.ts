@@ -1,5 +1,6 @@
 export const download = async (data: Buffer) => {
   if ("__TAURI_IPC__" in window) {
+    // todo: fix this not downloading
     const { save } = await import("@tauri-apps/api/dialog");
     await save({
       defaultPath: "config.bin",

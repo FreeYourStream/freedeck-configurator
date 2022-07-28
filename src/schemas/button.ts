@@ -13,7 +13,7 @@ export const ButtonValuesSchema = Joi.object({
     value: Joi.number().failover(128).required(),
   }).required(),
   [EAction.special_keys]: Joi.number().failover(0).required(),
-  [EAction.text]: Joi.array().items(Joi.number()).failover([]).required(),
+  [EAction.text]: Joi.string().allow("").failover(" "),
 }).meta({
   className: "ButtonValues",
 });

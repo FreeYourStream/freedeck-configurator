@@ -16,4 +16,5 @@ export interface SerialConnector {
   flush: () => void;
   read: (timeout?: number) => Promise<number[]>;
   readLine: (timeout?: number) => Promise<number[]>;
+  readSerialCommand: () => Promise<{ command: number; args: number[] }>;
 }

@@ -20,11 +20,7 @@ const Pill: React.FC<{
 }> = ({ className, button, hideChangePage: genericBackButton = false }) => {
   const configState = useContext(ConfigStateContext);
   const { pages } = configState;
-  const keys = useTranslateKeyboardLayout(
-    button.mode === EAction.hotkeys
-      ? button.values[EAction.hotkeys]
-      : button.values[EAction.text]
-  );
+  const keys = useTranslateKeyboardLayout(button.values[EAction.hotkeys]);
   const pillClassName =
     "flex px-2 justify-center items-center gap-1 align-middle h-6 text-base shadow-lg rounded-md overflow-hidden";
   return (
@@ -48,9 +44,9 @@ const Pill: React.FC<{
             <span>{keys.join("+")}</span>
           </div>
         )}
-      {button.mode === EAction.text && !!button.values[EAction.text].length && (
+      {button.mode === EAction.text && !!button.values[EAction.text]?.length && (
         <div className={c(pillClassName, "bg-gray-500")}>
-          <span>{keys.join("+")}</span>
+          <span>{button.values[EAction.text]}</span>
         </div>
       )}
       {button.mode === EAction.special_keys &&

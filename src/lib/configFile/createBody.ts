@@ -11,7 +11,7 @@ const writeAction = (
 ) => {
   let secondaryAddition = 0;
   let writeChangePageData = false;
-  if (!isSecondary && db.button.primary.mode !== EAction.text) {
+  if (!isSecondary) {
     if (
       db.button.leavePage.enabled &&
       db.button.primary.mode !== EAction.changePage
@@ -52,11 +52,6 @@ const writeAction = (
       buttonRows.writeUInt8(
         buttonAction.values[EAction.special_keys],
         dataOffset + 1
-      );
-      break;
-    case EAction.text:
-      buttonAction.values[EAction.text].forEach((text, index) =>
-        buttonRows.writeUInt8(text, dataOffset + index + 1)
       );
       break;
     case EAction.settings:
@@ -100,7 +95,6 @@ export const createButtonBody = (pages: Pages) => {
       // add 16 if the longpress has any functionality
       buttonRows = writeAction(buttonRows, db, pages, rowOffset, false);
       if (
-        db.button.primary.mode !== EAction.text &&
         db.button.secondary.mode !== EAction.noop &&
         !db.button.leavePage.enabled
       ) {

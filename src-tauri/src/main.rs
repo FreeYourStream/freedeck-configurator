@@ -46,7 +46,8 @@ fn main() {
             read,
             read_line,
             get_current_window,
-            set_aps_state
+            set_aps_state,
+            press_keys
         ))
         .build(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -55,7 +56,7 @@ fn main() {
     app.set_activation_policy(tauri::ActivationPolicy::Regular);
 
     let ports_join = threads::ports_thread(&app.handle(), &serial);
-    let read_join = threads::read_thread(&serial);
+    let read_join = threads::read_thread(&app.handle(), &serial);
 
     app.run(handle_tauri_event);
     ports_join.join().unwrap();

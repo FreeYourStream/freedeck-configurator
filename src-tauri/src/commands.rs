@@ -3,6 +3,7 @@ use std::{
     time::Duration,
 };
 
+use enigo::{Enigo, KeyboardControllable};
 use serialport::{SerialPort, SerialPortType};
 use tauri::{Manager, State, Window};
 use tauri_macros::command;
@@ -96,11 +97,12 @@ impl Serial {
         if data.len() < 2 {
             return Err("Not enough data".into());
         }
-        for index in 0..data.len() {
+        for index in 0..data.len() - 1 {
             let r = data[index];
             let n = data[index + 1];
             if r == b'\r' && n == b'\n' {
-                return Ok(self.data.drain(0..index + 2).collect::<Vec<u8>>());
+                let data = self.data.drain(0..index + 2).collect::<Vec<u8>>();
+                return Ok(data);
             }
         }
         Err("No Line Found".into())
@@ -146,6 +148,13 @@ pub fn read(state: State<FDState>) -> Vec<u8> {
 #[command]
 pub fn read_line(state: State<FDState>) -> Result<Vec<u8>, String> {
     state.lock().unwrap().read_line()
+}
+
+#[command]
+pub fn press_keys(_state: State<FDState>, key_string: String) -> Result<(), ()> {
+    let mut enigo = Enigo::new();
+    enigo.key_sequence_parse(&key_string);
+    Ok(())
 }
 
 #[command]

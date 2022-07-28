@@ -12,8 +12,8 @@ export const ActionValue = {
   [EAction.changePage]: 1,
   [EAction.noop]: 2,
   [EAction.special_keys]: 3,
-  [EAction.text]: 4,
   [EAction.settings]: 5,
+  [EAction.text]: 6,
 };
 
 export enum FDSettings {
