@@ -60,11 +60,10 @@ pub fn read_thread(
             .unwrap_or_else(|_e| 0);
         let match_pattern = [0x3, b'\r', b'\n'];
 
+        serial.data.extend_from_slice(&response);
         match response.starts_with(&match_pattern) {
             true => app_clone.emit_all("serial_command", ()).unwrap(),
             false => {}
         }
-
-        serial.data.extend_from_slice(&response);
     })
 }
