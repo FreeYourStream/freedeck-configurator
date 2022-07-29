@@ -22,7 +22,7 @@ const Pill: React.FC<{
   const { pages } = configState;
   const keys = useTranslateKeyboardLayout(button.values[EAction.hotkeys]);
   const pillClassName =
-    "flex px-2 justify-center items-center gap-1 align-middle h-6 text-base shadow-lg rounded-md overflow-hidden";
+    "flex px-2 justify-center items-center gap-1 align-middle text-base shadow-lg rounded-md overflow-hidden";
   return (
     <div className={c("flex justify-center whitespace-nowrap", className)}>
       {button.mode === EAction.changePage &&
@@ -46,7 +46,9 @@ const Pill: React.FC<{
         )}
       {button.mode === EAction.text && !!button.values[EAction.text]?.length && (
         <div className={c(pillClassName, "bg-gray-500")}>
-          <span>{button.values[EAction.text]}</span>
+          <span className="min-w-0 overflow-ellipsis overflow-hidden">
+            {button.values[EAction.text]}
+          </span>
         </div>
       )}
       {button.mode === EAction.special_keys &&
