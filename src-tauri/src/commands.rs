@@ -153,7 +153,7 @@ pub fn read_line(state: State<FDState>) -> Result<Vec<u8>, String> {
 #[command]
 pub fn press_keys(_state: State<FDState>, key_string: String) -> Result<(), ()> {
     let mut enigo = Enigo::new();
-    enigo.key_sequence_parse(&key_string);
+    enigo.key_sequence(&key_string);
     Ok(())
 }
 
