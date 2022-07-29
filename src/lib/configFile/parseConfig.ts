@@ -69,7 +69,7 @@ export const parseConfig = async (
     );
   }
   const jsonConfigSlice = configBuffer.slice(jsonOffset);
-  const rawConfig = JSON.parse(jsonConfigSlice.toString());
+  const rawConfig = JSON.parse(jsonConfigSlice.toString("utf-8"));
   if (!rawConfig.configVersion) {
     throw new Error("legacy config. not compatible");
   }
