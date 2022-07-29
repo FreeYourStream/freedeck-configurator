@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
 
-import { PortsChangedCallback, SerialConnector } from "./serial";
+import { PortsChangedCallback, SerialConnector } from ".";
 
 export class TauriSerialConnector implements SerialConnector {
   portsChangedCallback: PortsChangedCallback;

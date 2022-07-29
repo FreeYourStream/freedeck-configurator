@@ -2,8 +2,8 @@ import { CloudDownloadIcon, XIcon } from "@heroicons/react/outline";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
-import { IAppDispatch } from "../states/appState";
-import { FDButton } from "./components/Button";
+import { IAppDispatch } from "../../states/appState";
+import { FDButton } from "../components/Button";
 import { createToast } from "./createToast";
 import { isMacOS } from "./util";
 

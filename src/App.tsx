@@ -5,8 +5,8 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { HashRouter } from "react-router-dom";
 
 import { Body } from "./Body";
-import { AddEventListeners } from "./lib/eventListeners";
 import { StartUp } from "./lib/hooks/startup";
+import { AddEventListeners } from "./lib/misc/eventListeners";
 import { ModalBody } from "./ModalBody";
 import {
   AppDispatchContext,

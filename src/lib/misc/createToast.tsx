@@ -2,8 +2,8 @@ import { XIcon } from "@heroicons/react/outline";
 import React from "react";
 import toast, { Toast } from "react-hot-toast";
 
-import { FDButton } from "./components/Button";
-import { TitleBox } from "./components/Title";
+import { FDButton } from "../components/Button";
+import { TitleBox } from "../components/Title";
 
 interface IProps {
   primary?: (t: Toast) => JSX.Element;

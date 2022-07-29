@@ -11,7 +11,7 @@ import ReactDOM from "react-dom";
 
 import App from "./App";
 import { FDButton } from "./lib/components/Button";
-import { createToast } from "./lib/createToast";
+import { createToast } from "./lib/misc/createToast";
 import reportWebVitals from "./reportWebVitals";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { defaultAppState } from "./states/appState";

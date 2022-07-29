@@ -5,7 +5,7 @@ import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
 import { FDSelect } from "../../../lib/components/SelectInput";
 import { FDSwitch } from "../../../lib/components/Switch";
-import { getPageName } from "../../../lib/util";
+import { getPageName } from "../../../lib/misc/util";
 
 export const LeavePage: React.FC<{
   value: Button["leavePage"];

@@ -2,7 +2,7 @@ import backImage from "../definitions/back.png";
 import { createDefaultDisplay } from "../definitions/defaultPage";
 import { Display } from "../generated";
 import { generateAdditionalImagery } from "../lib/configFile/parseConfig";
-import { stringToImage } from "../lib/fileToImage";
+import { stringToImage } from "../lib/file/fileToImage";
 
 export const createDefaultBackDisplay = async function (
   previousPage?: string

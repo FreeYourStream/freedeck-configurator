@@ -10,7 +10,7 @@ import { EAction, FDSettings } from "../../definitions/modes";
 import { ButtonSetting, Page } from "../../generated";
 import { ConfigStateContext } from "../../states/configState";
 import { useTranslateKeyboardLayout } from "../localisation/keyboard";
-import { getPageName } from "../util";
+import { getPageName } from "../misc/util";
 import { CtrlDuo } from "./CtrlDuo";
 
 const Pill: React.FC<{

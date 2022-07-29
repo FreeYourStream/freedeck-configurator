@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 
-import { EAction } from "../../../definitions/modes";
 import { ConfigStateContext } from "../../../states/configState";
 import { Action } from "./Action";
 

@@ -1,10 +1,6 @@
-import {
-  PortsChangedCallback,
-  SerialConnector,
-  connectionStatus,
-} from "./serial";
 import { TauriSerialConnector } from "./tauri-serial";
 import { WebSerialConnector } from "./web-serial";
+import { PortsChangedCallback, SerialConnector, connectionStatus } from ".";
 const commands = {
   init: 0x3,
   getFirmwareVersion: 0x10,

@@ -5,7 +5,7 @@ import { Label } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
 import { TextInput } from "../lib/components/TextInput";
 import { TitleBox } from "../lib/components/Title";
-import { createToast } from "../lib/createToast";
+import { createToast } from "../lib/misc/createToast";
 import { AppDispatchContext, AppStateContext } from "../states/appState";
 
 export const DeveloperSettings: React.FC = () => {

@@ -15,8 +15,8 @@ import { Value } from "../lib/components/LabelValue";
 import { FDSelect } from "../lib/components/SelectInput";
 import { createConfigBuffer } from "../lib/configFile/createBuffer";
 import { loadConfigFile } from "../lib/configFile/loadConfigFile";
-import { download } from "../lib/download";
-import { isMacOS } from "../lib/util";
+import { download } from "../lib/file/download";
+import { isMacOS } from "../lib/misc/util";
 import { AppStateContext } from "../states/appState";
 import {
   ConfigDispatchContext,

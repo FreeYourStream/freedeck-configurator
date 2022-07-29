@@ -1,9 +1,5 @@
-import {
-  PortsChangedCallback,
-  SerialConnector,
-  connectionStatus,
-} from "./serial";
-import { isMacOS } from "./util";
+import { isMacOS } from "../misc/util";
+import { PortsChangedCallback, SerialConnector, connectionStatus } from ".";
 export class WebSerialConnector implements SerialConnector {
   buffer: number[];
   port?: SerialPort;

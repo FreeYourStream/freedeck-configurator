@@ -7,8 +7,8 @@ import { FDButton } from "../../../lib/components/Button";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
 import { FDSelect } from "../../../lib/components/SelectInput";
-import { scrollToPage } from "../../../lib/scrollToPage";
-import { getPageName } from "../../../lib/util";
+import { scrollToPage } from "../../../lib/misc/scrollToPage";
+import { getPageName } from "../../../lib/misc/util";
 import { ConfigDispatchContext } from "../../../states/configState";
 
 export const ChangePage: React.FC<{

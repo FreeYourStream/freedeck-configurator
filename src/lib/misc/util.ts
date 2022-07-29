@@ -1,4 +1,4 @@
-import { Collection, Page } from "../generated";
+import { Collection, Page } from "../../generated";
 export const getPageName = (pageId: string, page?: Page) => {
   return page?.name ? page.name : pageId.slice(-4);
 };

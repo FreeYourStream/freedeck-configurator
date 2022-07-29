@@ -1,5 +1,5 @@
 import { ConfigState } from "../../states/configState";
-import { handleFileSelect } from "../handleFileSelect";
+import { handleFileSelect } from "../file/handleFileSelect";
 import { parseConfig } from "./parseConfig";
 const isBuffer = (data: Buffer | FileList): data is Buffer => {
   return !!(data as Buffer).byteLength;

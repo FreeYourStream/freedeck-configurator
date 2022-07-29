@@ -21,6 +21,7 @@ export const Text: React.FC<{
   return (
     <>
       <textarea
+        placeholder="Enter your text here"
         className="bg-gray-400 my-2 rounded-lg resize-none p-2 w-full h-60"
         rows={12}
         onChange={(e) => {

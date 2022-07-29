@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 import { createContext } from "react";
 
-import { FDSerialAPI } from "../lib/fdSerialApi";
+import { FDSerialAPI } from "../lib/serial/fdSerialApi";
 import { Actions, FunctionForFirstParamType } from "./interfaces";
 
 export interface AppState {

@@ -5,7 +5,7 @@ import { Row } from "../../../lib/components/Row";
 import { FDSelect } from "../../../lib/components/SelectInput";
 import { TextInput } from "../../../lib/components/TextInput";
 import { TitleBox } from "../../../lib/components/Title";
-import { getCollectionName } from "../../../lib/util";
+import { getCollectionName } from "../../../lib/misc/util";
 import {
   ConfigDispatchContext,
   ConfigStateContext,

@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
-import { FC, useContext, useEffect, useMemo, useRef } from "react";
+import { FC, useContext, useEffect } from "react";
 
 import { AppDispatchContext, AppStateContext } from "../../states/appState";
 import {
@@ -34,6 +34,7 @@ export const StartUp: FC<{}> = () => {
       });
     };
     handleStartup();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     if (!(window as any).__TAURI_IPC__) return;
