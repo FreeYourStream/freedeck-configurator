@@ -6,20 +6,51 @@ use std::{
 
 use tauri::{AppHandle, Manager, Wry};
 
-use crate::commands::Serial;
+pub fn current_window_thread(
+    app_handle_ref: &AppHandle<Wry>,
+    state_ref: &Arc<Mutex<crate::FDState>>,
+) -> JoinHandle<()> {
+    let app_clone = app_handle_ref.clone();
+    let state = state_ref.clone();
+    thread::spawn(move || loop {
+        thread::sleep(Duration::from_millis(250));
+
+        use std::process::Command;
+        let script_location = app_clone
+            .path_resolver()
+            .resolve_resource("./src/macos_active_window.as")
+            .unwrap();
+        let mut command = Command::new("sh");
+
+        command.arg("-c").arg(format!(
+            "osascript {}",
+            script_location.as_path().to_str().unwrap()
+        ));
+
+        let output = command.output().unwrap();
+        let result = String::from_utf8(output.stdout).unwrap();
+        let success = result.trim().len() > 0;
+
+        if success {
+            state.lock().unwrap().current_window = result;
+        } else {
+            println!("failed to get active window, xprop installed?")
+        }
+    })
+}
 
 pub fn ports_thread(
     app_handle_ref: &AppHandle<Wry>,
-    serial_ref: &Arc<Mutex<Serial>>,
+    state_ref: &Arc<Mutex<crate::FDState>>,
 ) -> JoinHandle<()> {
     let app_clone = app_handle_ref.clone();
-    let serial_clone = serial_ref.clone();
+    let state = state_ref.clone();
     thread::spawn(move || {
         let mut ports = Vec::new();
         loop {
             thread::sleep(Duration::from_millis(500));
-            let serial = serial_clone.lock().unwrap();
-            let new_ports = serial.get_ports();
+            let state = state.lock().unwrap();
+            let new_ports = state.serial.get_ports();
             if new_ports.len() != ports.len() {
                 let new_ports_str = new_ports.iter().map(|p| p.into()).collect::<Vec<String>>();
                 app_clone.emit_all("ports_changed", new_ports_str).unwrap();
@@ -31,15 +62,15 @@ pub fn ports_thread(
 
 pub fn read_thread(
     app_handle_ref: &AppHandle<Wry>,
-    serial_ref: &Arc<Mutex<Serial>>,
+    state_ref: &Arc<Mutex<crate::FDState>>,
 ) -> JoinHandle<()> {
     let app_clone = app_handle_ref.clone();
-    let serial_clone = serial_ref.clone();
+    let state = state_ref.clone();
     thread::spawn(move || loop {
         thread::sleep(Duration::from_millis(10));
 
-        let mut serial = serial_clone.lock().unwrap();
-        let available = match serial.port.as_ref() {
+        let mut state = state.lock().unwrap();
+        let available = match state.serial.port.as_ref() {
             Some(port) => port.bytes_to_read().unwrap_or(0),
             None => {
                 continue;
@@ -52,7 +83,8 @@ pub fn read_thread(
 
         let mut response = vec![0; available.try_into().unwrap()];
 
-        serial
+        state
+            .serial
             .port
             .as_mut()
             .unwrap()
@@ -60,7 +92,7 @@ pub fn read_thread(
             .unwrap_or_else(|_e| 0);
         let match_pattern = [0x3, b'\r', b'\n'];
 
-        serial.data.extend_from_slice(&response);
+        state.serial.data.extend_from_slice(&response);
         match response.starts_with(&match_pattern) {
             true => app_clone.emit_all("serial_command", ()).unwrap(),
             false => {}

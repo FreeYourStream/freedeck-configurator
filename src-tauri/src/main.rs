@@ -15,6 +15,11 @@ use tauri::{CustomMenuItem, SystemTray, SystemTrayMenu, SystemTrayMenuItem};
 use crate::commands::*;
 use tauri_macros::generate_handler;
 
+pub struct FDState {
+    serial: Serial,
+    current_window: String,
+}
+
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let show = CustomMenuItem::new("show".to_string(), "Show");
@@ -30,14 +35,17 @@ fn main() {
         .add_item(quit);
     let tray = SystemTray::new().with_menu(tray_menu);
 
-    let serial = Arc::new(Mutex::new(Serial::new()));
+    let state = Arc::new(Mutex::new(FDState {
+        serial: Serial::new(),
+        current_window: "".to_string(),
+    }));
 
     #[allow(unused_mut)] // needed for macos
     let mut app = tauri::Builder::default()
         .plugin(plugins::single_instance::init())
         .system_tray(tray)
         .on_system_tray_event(handle_tray_event)
-        .manage(serial.clone())
+        .manage(state.clone())
         .invoke_handler(generate_handler!(
             get_ports,
             open,
@@ -55,10 +63,12 @@ fn main() {
     #[cfg(target_os = "macos")]
     app.set_activation_policy(tauri::ActivationPolicy::Regular);
 
-    let ports_join = threads::ports_thread(&app.handle(), &serial);
-    let read_join = threads::read_thread(&app.handle(), &serial);
+    let ports_join = threads::ports_thread(&app.handle(), &state);
+    let read_join = threads::read_thread(&app.handle(), &state);
+    let current_window_join = threads::current_window_thread(&app.handle(), &state);
 
     app.run(handle_tauri_event);
     ports_join.join().unwrap();
     read_join.join().unwrap();
+    current_window_join.join().unwrap();
 }
