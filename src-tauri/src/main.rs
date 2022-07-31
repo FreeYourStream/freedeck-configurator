@@ -21,6 +21,9 @@ pub struct FDState {
 }
 
 fn main() {
+    #[cfg(target_os = "macos")]
+    macos_app_nap::prevent();
+
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let show = CustomMenuItem::new("show".to_string(), "Show");
     let updates = CustomMenuItem::new("updates".to_string(), "Restart & check for updates");

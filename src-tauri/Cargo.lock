@@ -76,9 +76,10 @@ checksum = "bb07d2053ccdbe10e2af2995a2f116c1330396493dc1269f6a91d0ae82e19704"
 
 [[package]]
 name = "app"
-version = "2.7.4"
+version = "2.7.5"
 dependencies = [
  "enigo",
+ "macos-app-nap",
  "reqwest",
  "serde",
  "serde_json",
@@ -1665,6 +1666,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b823e83b2affd8f40a9ee8c29dbc56404c1e34cd2710921f2801e2cf29527afa"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "macos-app-nap"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9701bd74bcff7fb5f9bff8ff4930a889a55f9cccc8a0dfc4c51ea08b786f0c6a"
+dependencies = [
+ "cc",
+ "cocoa-foundation",
+ "objc",
 ]
 
 [[package]]
