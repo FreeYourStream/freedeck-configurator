@@ -171,7 +171,7 @@ pub fn get_current_window(_state: State<FDState>) -> String {
     }
 }
 #[command]
-#[cfg(not(windows))]
+#[cfg(target_os="linux")]
 pub fn get_current_window(_state: State<FDState>) -> Result<String, String> {
     use std::process::Command;
     let mut command = Command::new("sh");
@@ -184,6 +184,28 @@ pub fn get_current_window(_state: State<FDState>) -> Result<String, String> {
     let success = result.trim().len() > 0;
 
     if success {
+        Ok(result)
+    } else {
+        Err("failed to get active window, xprop installed?".to_string())
+    }
+}
+#[command]
+#[cfg(target_os="macos")]
+pub fn get_current_window(window: Window, _state: State<FDState>) -> Result<String, String> {
+    use std::process::Command;
+    let script_location = window.app_handle().path_resolver().resolve_resource("./src/macos_active_window.as").unwrap();
+    let mut command = Command::new("sh");
+
+    command
+        .arg("-c")
+        .arg(format!("osascript {}", script_location.as_path().to_str().unwrap()));
+
+    let output = command.output().unwrap();
+    let result = String::from_utf8(output.stdout).unwrap();
+    let success = result.trim().len() > 0;
+
+    if success {
+        println!("{}", result);
         Ok(result)
     } else {
         Err("failed to get active window, xprop installed?".to_string())

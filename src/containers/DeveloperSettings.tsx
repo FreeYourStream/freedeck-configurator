@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-
+import {invoke} from "@tauri-apps/api"
 import { FDButton } from "../lib/components/Button";
 import { Label } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
@@ -39,6 +39,14 @@ export const DeveloperSettings: React.FC = () => {
             onClick={() => createToast({ title: "Title", text: "Text" })}
           >
             Toast!
+          </FDButton>
+        </Row>
+        <Row>
+          <Label>call get_current_window</Label>
+          <FDButton
+            onClick={() => invoke<string>("get_current_window").then(value => appDispatch.openAlert({text: value, title: "debug"}))}
+          >
+            invoke
           </FDButton>
         </Row>
       </TitleBox>
