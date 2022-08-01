@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router";
+import { Anchor } from "../lib/components/Anchor";
 
 import { FDWindow } from "../lib/components/Window";
 
@@ -22,9 +23,9 @@ export const DeprecatedInfoModal: React.FC<{}> = () => {
         <div>Your old config is not supported anymore. </div>
         <div>Please create a new one with this new configurator.</div>
         <div>You can find the old configurator here:</div>
-        <a href="https://fdold.freeyourstream.com" className="text-primary-500">
+        <Anchor newTab href="https://fdold.freeyourstream.com" className="text-primary-500">
           fdold.freeyourstream.com
-        </a>
+        </Anchor>
         <div>It won't receive further updates</div>
       </div>
     </FDWindow>
