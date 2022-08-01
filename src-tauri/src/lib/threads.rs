@@ -76,14 +76,15 @@ pub fn current_window_thread(
     use winapi::um::winuser::{GetForegroundWindow, GetWindowTextW};
     let state = state_ref.clone();
     thread::spawn(move || loop {
-        thread::sleep(Duration::from_millis(250));
-
+        thread::sleep(Duration::from_millis(80));
         unsafe {
             let window = GetForegroundWindow();
             let mut text: [u16; 512] = [0; 512];
-            let _result = GetWindowTextW(window, text.as_mut_ptr(), text.len() as i32);
+            let _result: usize =
+                GetWindowTextW(window, text.as_mut_ptr(), text.len() as i32) as usize;
+            let (short, _) = text.split_at(_result);
             state.lock().unwrap().current_window =
-                OsString::from_wide(&text).to_str().unwrap().to_string();
+                OsString::from_wide(&short).to_str().unwrap().to_string();
         }
     })
 }
