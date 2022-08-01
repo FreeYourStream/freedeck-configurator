@@ -159,39 +159,6 @@ pub fn press_keys(_state: State<Arc<Mutex<FDState>>>, key_string: String) -> Res
 }
 
 #[command]
-#[cfg(windows)]
-pub fn get_current_window(_state: State<Arc<Mutex<FDState>>>) -> String {
-    use std::{ffi::OsString, os::windows::prelude::OsStringExt};
-    use winapi::um::winuser::{GetForegroundWindow, GetWindowTextW};
-
-    unsafe {
-        let window = GetForegroundWindow();
-        let mut text: [u16; 512] = [0; 512];
-        let _result = GetWindowTextW(window, text.as_mut_ptr(), text.len() as i32);
-        OsString::from_wide(&text).to_str().unwrap().to_string()
-    }
-}
-#[command]
-#[cfg(target_os = "linux")]
-pub fn get_current_window(_state: State<Arc<Mutex<FDState>>>) -> Result<String, String> {
-    use std::process::Command;
-    let mut command = Command::new("sh");
-    command
-        .arg("-c")
-        .arg(include_str!("./linux_active_window.sh"));
-
-    let output = command.output().expect("failed to execute process");
-    let result = String::from_utf8(output.stdout).unwrap();
-    let success = result.trim().len() > 0;
-
-    if success {
-        Ok(result)
-    } else {
-        Err("failed to get active window, xprop installed?".to_string())
-    }
-}
-#[command]
-#[cfg(target_os = "macos")]
 pub fn get_current_window(state: State<Arc<Mutex<FDState>>>) -> String {
     state.lock().unwrap().current_window.clone()
 }

@@ -6,6 +6,7 @@ use std::{
 
 use tauri::{AppHandle, Manager, Wry};
 
+#[cfg(target_os = "macos")]
 pub fn current_window_thread(
     app_handle_ref: &AppHandle<Wry>,
     state_ref: &Arc<Mutex<crate::FDState>>,
@@ -34,7 +35,55 @@ pub fn current_window_thread(
         if success {
             state.lock().unwrap().current_window = result;
         } else {
+            println!("failed to get active window, remove and readd freedeck-configurator to accessibility list?")
+        }
+    })
+}
+
+#[cfg(target_os = "linux")]
+pub fn current_window_thread(
+    _app_handle_ref: &AppHandle<Wry>,
+    state_ref: &Arc<Mutex<crate::FDState>>,
+) -> JoinHandle<()> {
+    use std::process::Command;
+    let state = state_ref.clone();
+    thread::spawn(move || loop {
+        thread::sleep(Duration::from_millis(80));
+
+        let mut command = Command::new("sh");
+        command
+            .arg("-c")
+            .arg(include_str!("../linux_active_window.sh"));
+
+        let output = command.output().expect("failed to execute process");
+        let result = String::from_utf8(output.stdout).unwrap();
+        let success = result.trim().len() > 0;
+
+        if success {
+            state.lock().unwrap().current_window = result;
+        } else {
             println!("failed to get active window, xprop installed?")
+        }
+    })
+}
+
+#[cfg(target_os = "windows")]
+pub fn current_window_thread(
+    _app_handle_ref: &AppHandle<Wry>,
+    state_ref: &Arc<Mutex<crate::FDState>>,
+) -> JoinHandle<()> {
+    use std::{ffi::OsString, os::windows::prelude::OsStringExt};
+    use winapi::um::winuser::{GetForegroundWindow, GetWindowTextW};
+    let state = state_ref.clone();
+    thread::spawn(move || loop {
+        thread::sleep(Duration::from_millis(250));
+
+        unsafe {
+            let window = GetForegroundWindow();
+            let mut text: [u16; 512] = [0; 512];
+            let _result = GetWindowTextW(window, text.as_mut_ptr(), text.len() as i32);
+            state.lock().unwrap().current_window =
+                OsString::from_wide(&text).to_str().unwrap().to_string();
         }
     })
 }

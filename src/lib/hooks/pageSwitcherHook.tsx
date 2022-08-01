@@ -75,7 +75,10 @@ const run = async (configState: ConfigState, appState: AppState) => {
       lastWindowName = windowName;
       appState.serialApi?.setCurrentPage(pageFoundIndex);
     } else {
+      console.time("getcurrentpage");
       const currentPageIndex = await appState.serialApi?.getCurrentPage();
+      console.log(currentPageIndex);
+      console.timeEnd("getcurrentpage");
       if ([undefined, pageIndex].includes(currentPageIndex)) return;
       if (currentPageIndex! < 0) {
         lastWindowName = "";
@@ -103,7 +106,7 @@ export const usePageSwitcher = (props: {
         await run(configState, appState);
         running = false;
       }
-    }, 300);
+    }, 80);
     return () => {
       if (interval) workerInterval.clearInterval(interval);
     };
