@@ -17,6 +17,9 @@ export const createHeader = (
   height: number,
   brightness: number,
   screenTimeout: number,
+  oledSpeed: number,
+  preChargePeriod: number,
+  refreshFrequency: number,
   numberOfPages: number
 ): Buffer => {
   // const header = new Buffer(16);
@@ -37,5 +40,9 @@ export const createHeader = (
   header.writeUInt16LE(numberOfPages * width * height + 1, 2);
   header.writeUInt8(brightness, 4);
   header.writeUInt16LE(screenTimeout, 5);
+  header.writeUInt8(oledSpeed, 7);
+  header.writeUInt8(preChargePeriod, 8);
+  header.writeUInt8(refreshFrequency, 9);
+  console.log(header);
   return header;
 };

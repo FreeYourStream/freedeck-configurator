@@ -1,7 +1,6 @@
 import Joi from "joi";
 
 import package_json from "../../package.json";
-import { ConfigState } from "../states/configState";
 import { ButtonSchema } from "./button";
 import { DisplaySchema } from "./display";
 
@@ -68,9 +67,13 @@ export const CollectionsSchema = Joi.object({
   sorted: Joi.array().items(Joi.string()).failover([]).required(),
 }).meta({ className: "Collections" });
 
-export const ConfigSchema = Joi.object<ConfigState>({
+export const ConfigSchema = Joi.object({
   pages: PagesSchema.required(),
   brightness: Joi.number().failover(128).required(),
+  oledSpeed: Joi.number().failover(50).required(),
+  preChargePeriod: Joi.number().failover(0x11).required(),
+  clockFreq: Joi.number().failover(0xf).required(),
+  clockDiv: Joi.number().failover(0x2).required(),
   height: Joi.number().max(16).min(1).failover(2).required(),
   width: Joi.number().max(16).min(1).failover(3).required(),
   configVersion: Joi.string()
@@ -80,5 +83,6 @@ export const ConfigSchema = Joi.object<ConfigState>({
   collections: CollectionsSchema.required().failover(CollectionsSchema),
   defaultBackDisplay: DisplaySchema.required().failover(DisplaySchema),
 })
+  .required()
   .meta({ className: "Config" })
   .strict(true);

@@ -2,11 +2,11 @@ import { invoke } from "@tauri-apps/api";
 import { useEffect } from "react";
 import * as workerInterval from "worker-interval";
 
+import { Config } from "../../generated";
 import { AppState } from "../../states/appState";
-import { ConfigState } from "../../states/configState";
 
 let lastWindowName = "";
-const findPage = (configState: ConfigState, name: string): number => {
+const findPage = (configState: Config, name: string): number => {
   for (let i = 0; i < configState.pages.sorted.length; i++) {
     const page = configState.pages.byId[configState.pages.sorted[i]];
     if (page.isInCollection) continue;
@@ -27,7 +27,7 @@ const findPage = (configState: ConfigState, name: string): number => {
   }
   return -1;
 };
-const findCollectionPage = (configState: ConfigState, name: string): number => {
+const findCollectionPage = (configState: Config, name: string): number => {
   for (let i = 0; i < configState.collections.sorted.length; i++) {
     const col = configState.collections.byId[configState.collections.sorted[i]];
     if (col.useCollectionNameAsWindowName) {
@@ -48,7 +48,7 @@ const findCollectionPage = (configState: ConfigState, name: string): number => {
   return -1;
 };
 
-const run = async (configState: ConfigState, appState: AppState) => {
+const run = async (configState: Config, appState: AppState) => {
   try {
     let windowName = await invoke<string>("get_current_window");
     if (windowName === lastWindowName) return;
@@ -75,10 +75,8 @@ const run = async (configState: ConfigState, appState: AppState) => {
       lastWindowName = windowName;
       appState.serialApi?.setCurrentPage(pageFoundIndex);
     } else {
-      console.time("getcurrentpage");
       const currentPageIndex = await appState.serialApi?.getCurrentPage();
       console.log(currentPageIndex);
-      console.timeEnd("getcurrentpage");
       if ([undefined, pageIndex].includes(currentPageIndex)) return;
       if (currentPageIndex! < 0) {
         lastWindowName = "";
@@ -93,7 +91,7 @@ const run = async (configState: ConfigState, appState: AppState) => {
 };
 
 export const usePageSwitcher = (props: {
-  configState: ConfigState;
+  configState: Config;
   appState: AppState;
 }) => {
   const { configState, appState } = props;

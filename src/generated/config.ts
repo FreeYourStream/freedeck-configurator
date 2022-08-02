@@ -24,11 +24,15 @@ export interface Collections {
 
 export interface Config {
   brightness: number;
+  clockDiv: number;
+  clockFreq: number;
   collections: Collections;
   configVersion: string;
   defaultBackDisplay: Display;
   height: number;
+  oledSpeed: number;
   pages: Pages;
+  preChargePeriod: number;
   screenSaverTimeout: number;
   width: number;
 }

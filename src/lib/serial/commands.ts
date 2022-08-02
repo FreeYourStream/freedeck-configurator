@@ -1,8 +1,8 @@
 import { invoke } from "@tauri-apps/api";
 
-import { ConfigState } from "../../states/configState";
+import { Config } from "../../generated";
 
-const pressKeys = (args: number[], configState: ConfigState) => {
+const pressKeys = (args: number[], configState: Config) => {
   const pageId = configState.pages.sorted[args[0]];
   const button = configState.pages.byId[pageId].displayButtons[args[1]].button;
   const text = args[2]
@@ -14,7 +14,7 @@ const pressKeys = (args: number[], configState: ConfigState) => {
 export const runCommand = (
   command: number,
   args: number[],
-  configState: ConfigState
+  configState: Config
 ) => {
   if (command === 16) pressKeys(args, configState);
 };

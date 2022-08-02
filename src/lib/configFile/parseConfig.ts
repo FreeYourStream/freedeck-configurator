@@ -1,7 +1,6 @@
 import { createDefaultDisplay } from "../../definitions/defaultPage";
-import { Display } from "../../generated";
+import { Config, Display } from "../../generated";
 import { ConfigSchema } from "../../schemas/config";
-import { ConfigState } from "../../states/configState";
 import { getBase64Image } from "../image/base64Encode";
 import { composeImage, composeText } from "../image/composeImage";
 
@@ -26,8 +25,8 @@ export const generateAdditionalImagery = async (
 };
 
 export const convertCurrentConfig = async (
-  rawConfig: ConfigState
-): Promise<ConfigState> => {
+  rawConfig: Config
+): Promise<Config> => {
   for (let outer = 0; outer < rawConfig.pages.sorted.length; outer++) {
     const id = rawConfig.pages.sorted[outer];
     const page = rawConfig.pages.byId[id];
@@ -55,9 +54,7 @@ export const convertCurrentConfig = async (
   return config;
 };
 
-export const parseConfig = async (
-  configBuffer: Buffer
-): Promise<ConfigState> => {
+export const parseConfig = async (configBuffer: Buffer): Promise<Config> => {
   const displayButtonCount = configBuffer.readUInt16LE(2) - 1; // subtract 1 for the header row
   const imageOffset = 16 * (displayButtonCount + 1);
   const jsonOffset = imageOffset + 1024 * displayButtonCount;

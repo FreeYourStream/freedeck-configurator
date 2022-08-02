@@ -5,6 +5,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { HashRouter } from "react-router-dom";
 
 import { Body } from "./Body";
+import { Config } from "./generated";
 import { StartUp } from "./lib/hooks/startup";
 import { AddEventListeners } from "./lib/misc/eventListeners";
 import { ModalBody } from "./ModalBody";
@@ -17,18 +18,17 @@ import {
 } from "./states/appState";
 import {
   ConfigDispatchContext,
-  ConfigState,
   ConfigStateContext,
   IConfigReducer,
   configReducer,
 } from "./states/configState";
 
 const App: React.FC<{
-  defaultConfigState: ConfigState;
+  defaultConfigState: Config;
   defaultAppState: AppState;
 }> = ({ defaultConfigState, defaultAppState }) => {
   const [configState, configDispatch] = useSimpleReducer<
-    ConfigState,
+    Config,
     IConfigReducer
   >(defaultConfigState, configReducer);
 

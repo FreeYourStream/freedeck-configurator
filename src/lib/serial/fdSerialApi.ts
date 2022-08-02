@@ -13,6 +13,7 @@ const commands = {
   oledPower: 0x41,
   oledWriteLine: 0x42,
   oledWriteData: 0x43,
+  oledSetParameters: 0x44,
 };
 
 export class FDSerialAPI {
@@ -144,40 +145,16 @@ export class FDSerialAPI {
       speed: number
     ) => void
   ) {
+    console.log("GO");
     const fwVersion = await this.getFirmwareVersion();
-
+    console.log({ fwVersion });
     this.blockCommunication = true;
     const fileSize = config.length.toString();
-    if (fwVersion.split(".")[0] === "1") {
-      console.log(
-        "OLD FIRMWARE, will be removed in the future, please upgrade"
-      );
-      await this.Serial.write([0x2]);
-      let oldFileSize = fileSize;
-      while (oldFileSize.length < 9) {
-        oldFileSize = "0" + oldFileSize;
-      }
-      const numberArray = new TextEncoder().encode(oldFileSize);
-      await this.Serial.write([...numberArray]);
-    } else {
-      await this.write([0x3, commands.writeConfig]);
-      await this.write([fileSize]);
-    }
 
+    await this.write([0x3, commands.writeConfig]);
+    await this.write([fileSize]);
+    console.log("FILESIZE", fileSize);
     const transferStartedTime = new Date().getTime();
-    // setTimeout(async () => {
-    //   let lastLine = "";
-    //   do {
-    //     lastLine = await this.readAsciiLine();
-    //     console.log("last line", lastLine);
-    //     if (isNaN(parseInt(lastLine))) continue;
-    //     progressCallback?.(
-    //       parseInt(lastLine),
-    //       config.length,
-    //       transferStartedTime
-    //     );
-    //   } while (lastLine !== fileSize);
-    // });
     let sent = 0;
     while (sent < config.length) {
       const end = Math.min(config.length, sent + 1024);
@@ -186,9 +163,31 @@ export class FDSerialAPI {
       sent += numberChunk.length;
       await this.Serial.write([...numberChunk]);
       progressCallback?.(sent, config.length, transferStartedTime);
+      console.log("SENT", sent);
     }
 
     this.blockCommunication = false;
+  }
+
+  async testOledParameters(
+    oledSpeed: number,
+    preChargePeriod: number,
+    clockFreq: number,
+    clockDivider: number
+  ) {
+    if (this.blockCommunication) throw new Error("reading is blocked");
+    if (this.connected === connectionStatus.disconnect)
+      throw new Error("not connected");
+    this.Serial.flush();
+    const refreshFrequency =
+      Math.min(15, clockFreq) * 16 + Math.min(15, clockDivider);
+    await this.write([
+      commands.init,
+      commands.oledSetParameters,
+      oledSpeed.toString(),
+      preChargePeriod.toString(),
+      refreshFrequency.toString(),
+    ]);
   }
 
   async readSerialCommand() {
