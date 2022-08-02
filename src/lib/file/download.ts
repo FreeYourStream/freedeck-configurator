@@ -1,10 +1,13 @@
+import { writeBinaryFile } from "@tauri-apps/api/fs";
+
 export const download = async (data: Buffer) => {
   if ("__TAURI_IPC__" in window) {
     // todo: fix this not downloading
     const { save } = await import("@tauri-apps/api/dialog");
-    await save({
+    const path = await save({
       defaultPath: "config.bin",
     });
+    await writeBinaryFile(path, data);
   } else {
     var a = document.createElement("a");
     document.body.appendChild(a);
