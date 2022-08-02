@@ -1,4 +1,8 @@
+use std::sync::{Arc, Mutex};
+
 use tauri::{AppHandle, Manager, RunEvent, SystemTrayEvent, WindowEvent};
+
+use crate::FDState;
 
 use super::window;
 
@@ -22,6 +26,12 @@ pub fn handle_tray_event(app: &AppHandle, event: SystemTrayEvent) {
                 window::show(window)
             }
             "updates" => {
+                app.state::<Arc<Mutex<FDState>>>()
+                    .lock()
+                    .unwrap()
+                    .serial
+                    .port
+                    .take();
                 let window = app.get_window("main").unwrap();
                 window.app_handle().restart();
             }
