@@ -46,6 +46,7 @@ export const defaultConfig = async (): Promise<Config> => ({
   brightness: 100,
   screenSaverTimeout: 1 * 60 * 1000, // in milliseconds
   oledSpeed: 50,
+  oledDelay: 2,
   preChargePeriod: 0x11,
   clockFreq: 0xf,
   clockDiv: 0x2,

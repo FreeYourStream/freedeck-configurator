@@ -52,9 +52,11 @@ export const Displays: React.FC<{}> = () => {
         </Row>
       </TitleBox>
       <Divider />
-      <TitleBox title="Advanced (currently only freedeck-pico)">
+      <TitleBox title="Advanced">
         <Row>
-          <Label hint="similar to fps">OLED speed:</Label>
+          <Label hint="only for freedeck-pico, if too high the freedeck crashes. try lower values after restarting the freedeck, default 50">
+            OLED speed:
+          </Label>
           <FDSlider
             min={1}
             max={255}
@@ -65,7 +67,20 @@ export const Displays: React.FC<{}> = () => {
           />
         </Row>
         <Row>
-          <Label hint="just play with this value to reduce noise">
+          <Label hint="only for freedeck-micro, if too low the freedeck crashes. try higher values after restarting the freedeck, default 2">
+            OLED delay:
+          </Label>
+          <FDSlider
+            min={1}
+            max={10}
+            value={configState.oledDelay}
+            onChange={(e) =>
+              configDispatch.setOledDelay(e.currentTarget.valueAsNumber)
+            }
+          />
+        </Row>
+        <Row>
+          <Label hint="just play with this value to reduce noise, default 17">
             Pre charge period:
           </Label>
           <FDSlider
@@ -78,7 +93,7 @@ export const Displays: React.FC<{}> = () => {
           />
         </Row>
         <Row>
-          <Label hint="just play with this value to reduce flickering, higher is better">
+          <Label hint="just play with this value to reduce flickering, higher is better, default 15">
             Clock frequency:
           </Label>
           <FDSlider
@@ -91,7 +106,7 @@ export const Displays: React.FC<{}> = () => {
           />
         </Row>
         <Row>
-          <Label hint="just play with this value to reduce flickering, lower is better">
+          <Label hint="just play with this value to reduce flickering, lower is better, default 2">
             Clock divider:
           </Label>
           <FDSlider
@@ -111,6 +126,7 @@ export const Displays: React.FC<{}> = () => {
             onClick={() =>
               appState.serialApi?.testOledParameters(
                 configState.oledSpeed,
+                configState.oledDelay,
                 configState.preChargePeriod,
                 configState.clockFreq,
                 configState.clockDiv

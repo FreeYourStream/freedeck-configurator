@@ -71,6 +71,7 @@ export const ConfigSchema = Joi.object({
   pages: PagesSchema.required(),
   brightness: Joi.number().failover(128).required(),
   oledSpeed: Joi.number().failover(50).required(),
+  oledDelay: Joi.number().failover(2).required(),
   preChargePeriod: Joi.number().failover(0x11).required(),
   clockFreq: Joi.number().failover(0xf).required(),
   clockDiv: Joi.number().failover(0x2).required(),

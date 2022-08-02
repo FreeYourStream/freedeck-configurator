@@ -171,6 +171,7 @@ export class FDSerialAPI {
 
   async testOledParameters(
     oledSpeed: number,
+    oledDelay: number,
     preChargePeriod: number,
     clockFreq: number,
     clockDivider: number
@@ -185,6 +186,7 @@ export class FDSerialAPI {
       commands.init,
       commands.oledSetParameters,
       oledSpeed.toString(),
+      oledDelay.toString(),
       preChargePeriod.toString(),
       refreshFrequency.toString(),
     ]);

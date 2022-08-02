@@ -18,6 +18,7 @@ export const createHeader = (
   brightness: number,
   screenTimeout: number,
   oledSpeed: number,
+  oledDelay: number,
   preChargePeriod: number,
   refreshFrequency: number,
   numberOfPages: number
@@ -41,8 +42,9 @@ export const createHeader = (
   header.writeUInt8(brightness, 4);
   header.writeUInt16LE(screenTimeout, 5);
   header.writeUInt8(oledSpeed, 7);
-  header.writeUInt8(preChargePeriod, 8);
-  header.writeUInt8(refreshFrequency, 9);
+  header.writeUInt8(oledDelay, 8);
+  header.writeUInt8(preChargePeriod, 9);
+  header.writeUInt8(refreshFrequency, 10);
   console.log(header);
   return header;
 };

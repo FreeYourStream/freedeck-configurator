@@ -30,6 +30,7 @@ export interface Config {
   configVersion: string;
   defaultBackDisplay: Display;
   height: number;
+  oledDelay: number;
   oledSpeed: number;
   pages: Pages;
   preChargePeriod: number;

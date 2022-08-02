@@ -10,6 +10,7 @@ export const createConfigBuffer = (configState: Config): Buffer =>
       configState.brightness,
       configState.screenSaverTimeout,
       configState.oledSpeed,
+      configState.oledDelay,
       configState.preChargePeriod,
       Math.min(15, configState.clockFreq) * 16 +
         Math.min(15, configState.clockDiv),
