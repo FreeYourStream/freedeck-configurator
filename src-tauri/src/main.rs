@@ -5,18 +5,20 @@
 pub mod commands;
 mod lib;
 mod plugins;
+
 use lib::{
     event_handlers::{handle_tauri_event, handle_tray_event},
+    fd_serial::FDSerial,
     threads,
 };
 use std::sync::{Arc, Mutex};
-use tauri::{CustomMenuItem, SystemTray, SystemTrayMenu, SystemTrayMenuItem};
+use tauri::{CustomMenuItem, Manager, SystemTray, SystemTrayMenu, SystemTrayMenuItem};
 
 use crate::commands::*;
 use tauri_macros::generate_handler;
 
 pub struct FDState {
-    serial: Serial,
+    serial: FDSerial,
     current_window: String,
 }
 
@@ -26,7 +28,7 @@ fn main() {
 
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let show = CustomMenuItem::new("show".to_string(), "Show");
-    let updates = CustomMenuItem::new("updates".to_string(), "Restart & check for updates");
+    let updates = CustomMenuItem::new("updates".to_string(), "Check for updates");
     let mut aps_enabled = CustomMenuItem::new("aps".to_string(), "Auto page-switcher");
     aps_enabled.selected = true;
 
@@ -39,7 +41,7 @@ fn main() {
     let tray = SystemTray::new().with_menu(tray_menu);
 
     let state = Arc::new(Mutex::new(FDState {
-        serial: Serial::new(),
+        serial: FDSerial::new(),
         current_window: "".to_string(),
     }));
 
@@ -62,6 +64,18 @@ fn main() {
         ))
         .build(tauri::generate_context!())
         .expect("error while running tauri application");
+
+    #[cfg(target_os = "linux")]
+    if app.handle().env().appimage.is_none() {
+        app.tray_handle()
+            .get_item("updates")
+            .set_enabled(false)
+            .unwrap();
+        app.tray_handle()
+            .get_item("updates")
+            .set_title("Platform does not support updates")
+            .unwrap();
+    }
 
     #[cfg(target_os = "macos")]
     app.set_activation_policy(tauri::ActivationPolicy::Regular);

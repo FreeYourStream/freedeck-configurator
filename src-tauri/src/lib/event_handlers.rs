@@ -1,10 +1,45 @@
 use std::sync::{Arc, Mutex};
 
-use tauri::{AppHandle, Manager, RunEvent, SystemTrayEvent, WindowEvent};
+use tauri::{
+    api::dialog, AppHandle, Manager, RunEvent, SystemTrayEvent, UpdaterEvent, Window, WindowEvent,
+};
 
 use crate::FDState;
 
 use super::window;
+
+async fn handle_update(app_handle: AppHandle, window: Window) {
+    match app_handle.updater().check().await {
+        Ok(update) => {
+            if !update.is_update_available() {
+                return;
+            }
+            #[cfg(target_os = "linux")]
+            {
+                if app_handle.env().appimage.is_none() {
+                    return;
+                }
+            }
+            dialog::confirm(
+                Some(&window),
+                "Update available",
+                format!(
+                    "Update to version {}?\nYou have version {}",
+                    update.latest_version(),
+                    update.current_version()
+                ),
+                |confirmed| {
+                    if confirmed {
+                        tauri::async_runtime::spawn(async { update.download_and_install().await });
+                    }
+                },
+            )
+        }
+        Err(e) => {
+            println!("error checking for update: {}", e);
+        }
+    };
+}
 
 pub fn handle_tray_event(app: &AppHandle, event: SystemTrayEvent) {
     match event {
@@ -33,7 +68,8 @@ pub fn handle_tray_event(app: &AppHandle, event: SystemTrayEvent) {
                     .port
                     .take();
                 let window = app.get_window("main").unwrap();
-                window.app_handle().restart();
+                let app_handle = app.clone();
+                tauri::async_runtime::spawn(async { handle_update(app_handle, window).await });
             }
             _ => {}
         },
@@ -42,18 +78,36 @@ pub fn handle_tray_event(app: &AppHandle, event: SystemTrayEvent) {
 }
 
 pub fn handle_tauri_event(app_handle: &AppHandle, e: RunEvent) {
+    let app_handle = app_handle.clone();
     match e {
-        tauri::RunEvent::WindowEvent { label, event, .. } => {
-            let app_handle = app_handle.clone();
-            let window = app_handle.get_window(&label).unwrap();
-            match event {
-                WindowEvent::CloseRequested { api, .. } => {
-                    api.prevent_close();
-                    window.hide().unwrap();
-                }
-                _ => {}
-            }
+        tauri::RunEvent::Ready => {
+            let window = app_handle.get_window("main").unwrap();
+            tauri::async_runtime::spawn(async { handle_update(app_handle, window).await });
         }
-        _ => {}
+        tauri::RunEvent::WindowEvent { label, event, .. } => match event {
+            WindowEvent::CloseRequested { api, .. } => {
+                let window = app_handle.get_window(&label).unwrap();
+                api.prevent_close();
+                window.hide().unwrap();
+            }
+            _ => (),
+        },
+        tauri::RunEvent::Updater(update_event) => match update_event {
+            UpdaterEvent::Error(e) => {
+                println!("updater error: {}", e);
+            }
+            UpdaterEvent::Updated => {
+                app_handle
+                    .state::<Arc<Mutex<FDState>>>()
+                    .lock()
+                    .unwrap()
+                    .serial
+                    .port
+                    .take();
+                app_handle.restart();
+            }
+            _ => (),
+        },
+        _ => (),
     }
 }

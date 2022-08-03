@@ -57,7 +57,7 @@
     },
     "updater": {
       "active": true,
-      "dialog": true,
+      "dialog": false,
       "endpoints": [
         "https://fdconfig.freeyourstream.com/updater.json"
       ],

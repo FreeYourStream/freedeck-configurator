@@ -27,7 +27,7 @@ fn start_server<R: Runtime>(app_handle: AppHandle<R>) {
 pub fn init<R: Runtime>() -> TauriPlugin<R> {
     Builder::new("single-instance")
         .setup(|app_handle| {
-            println!("{}", "Starting server...");
+            println!("Starting server...");
             match reqwest::blocking::get("http://localhost:57891/") {
                 Ok(result) => {
                     println!("App already running {}", result.text().unwrap());

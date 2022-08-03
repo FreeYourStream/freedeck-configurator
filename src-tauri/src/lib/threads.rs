@@ -57,12 +57,10 @@ pub fn current_window_thread(
 
         let output = command.output().expect("failed to execute process");
         let result = String::from_utf8(output.stdout).unwrap();
-        let success = result.trim().len() > 0;
+        let success = !result.trim().is_empty();
 
         if success {
             state.lock().unwrap().current_window = result;
-        } else {
-            println!("failed to get active window, xprop installed?")
         }
     })
 }
@@ -133,13 +131,16 @@ pub fn read_thread(
 
         let mut response = vec![0; available.try_into().unwrap()];
 
-        state
+        let amount = state
             .serial
             .port
             .as_mut()
             .unwrap()
             .read(&mut response)
-            .unwrap_or_else(|_e| 0);
+            .unwrap_or(0);
+        if amount == 0 {
+            continue;
+        }
         let match_pattern = [0x3, b'\r', b'\n'];
 
         state.serial.data.extend_from_slice(&response);
