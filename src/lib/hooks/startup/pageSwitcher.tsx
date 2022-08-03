@@ -2,10 +2,11 @@ import { invoke } from "@tauri-apps/api";
 import { useEffect } from "react";
 import * as workerInterval from "worker-interval";
 
-import { Config } from "../../generated";
-import { AppState } from "../../states/appState";
+import { Config } from "../../../generated";
+import { AppState } from "../../../states/appState";
 
 let lastWindowName = "";
+
 const findPage = (configState: Config, name: string): number => {
   for (let i = 0; i < configState.pages.sorted.length; i++) {
     const page = configState.pages.byId[configState.pages.sorted[i]];
@@ -48,63 +49,80 @@ const findCollectionPage = (configState: Config, name: string): number => {
   return -1;
 };
 
-const run = async (configState: Config, appState: AppState) => {
+const switchToPage = async (
+  windowName: string,
+  pageIndex: number,
+  appState: AppState
+) => {
+  const currentPageIndex = await appState.serialApi?.getCurrentPage();
+  if ([undefined, pageIndex].includes(currentPageIndex)) return;
+  if (currentPageIndex! < 0) {
+    lastWindowName = "";
+    return;
+  }
+  lastWindowName = windowName;
+  appState.serialApi?.setCurrentPage(pageIndex);
+};
+
+const switchToCollection = async (
+  windowName: string,
+  configState: Config,
+  appState: AppState
+) => {
+  const collectionIndex = findCollectionPage(configState, windowName);
+  if (collectionIndex === -1) return;
+  const currentPageIndex = await appState.serialApi?.getCurrentPage();
+  if (currentPageIndex === undefined) return;
+  if (currentPageIndex < 0) {
+    lastWindowName = "";
+    return;
+  }
+  const currentPageId = configState.pages.sorted[currentPageIndex!];
+  const collection =
+    configState.collections.byId[
+      configState.collections.sorted[collectionIndex]
+    ];
+  if (collection.pages.includes(currentPageId)) return;
+  const pageFoundIndex = configState.pages.sorted.findIndex(
+    (id) => id === collection.pages[0]
+  );
+  if (pageFoundIndex === -1) return;
+  lastWindowName = windowName;
+  appState.serialApi?.setCurrentPage(pageFoundIndex);
+};
+
+const switchToPageOrCollection = async (
+  configState: Config,
+  appState: AppState
+) => {
   try {
     let windowName = await invoke<string>("get_current_window");
     if (windowName === lastWindowName) return;
     let pageIndex = findPage(configState, windowName);
     if (pageIndex === -1) {
-      const collectionIndex = findCollectionPage(configState, windowName);
-      if (collectionIndex === -1) return;
-      const currentPageIndex = await appState.serialApi?.getCurrentPage();
-      if (currentPageIndex === undefined) return;
-      if (currentPageIndex < 0) {
-        lastWindowName = "";
-        return;
-      }
-      const currentPageId = configState.pages.sorted[currentPageIndex!];
-      const collection =
-        configState.collections.byId[
-          configState.collections.sorted[collectionIndex]
-        ];
-      if (collection.pages.includes(currentPageId)) return;
-      const pageFoundIndex = configState.pages.sorted.findIndex(
-        (id) => id === collection.pages[0]
-      );
-      if (pageFoundIndex === -1) return;
-      lastWindowName = windowName;
-      appState.serialApi?.setCurrentPage(pageFoundIndex);
+      await switchToCollection(windowName, configState, appState);
     } else {
-      const currentPageIndex = await appState.serialApi?.getCurrentPage();
-      console.log(currentPageIndex);
-      if ([undefined, pageIndex].includes(currentPageIndex)) return;
-      if (currentPageIndex! < 0) {
-        lastWindowName = "";
-        return;
-      }
-      lastWindowName = windowName;
-      appState.serialApi?.setCurrentPage(pageIndex);
+      await switchToPage(windowName, pageIndex, appState);
     }
   } catch (e) {
     console.log(e);
   }
 };
 
-export const usePageSwitcher = (props: {
-  configState: Config;
-  appState: AppState;
-}) => {
-  const { configState, appState } = props;
+export const usePageSwitcher = (configState: Config, appState: AppState) => {
   useEffect(() => {
     if (!(window as any).__TAURI_IPC__) return () => {};
+
     let running = false;
+
     const interval = workerInterval.setInterval(async () => {
       if (!running && appState.autoPageSwitcherEnabled) {
         running = true;
-        await run(configState, appState);
+        await switchToPageOrCollection(configState, appState);
         running = false;
       }
     }, 80);
+
     return () => {
       if (interval) workerInterval.clearInterval(interval);
     };

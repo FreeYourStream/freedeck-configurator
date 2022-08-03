@@ -6,7 +6,7 @@ import { HashRouter } from "react-router-dom";
 
 import { Body } from "./Body";
 import { Config } from "./generated";
-import { StartUp } from "./lib/hooks/startup";
+import { useStartupHooks } from "./lib/hooks/startup";
 import { AddEventListeners } from "./lib/misc/eventListeners";
 import { ModalBody } from "./ModalBody";
 import {
@@ -36,7 +36,7 @@ const App: React.FC<{
     defaultAppState,
     appReducer
   );
-
+  useStartupHooks(configState, configDispatch, appState, appDispatch);
   AddEventListeners({ appDispatchContext: appDispatch });
 
   return (
@@ -46,7 +46,6 @@ const App: React.FC<{
           <ConfigDispatchContext.Provider value={configDispatch}>
             <AppStateContext.Provider value={appState}>
               <AppDispatchContext.Provider value={appDispatch}>
-                <StartUp />
                 <Body />
                 <ModalBody />
               </AppDispatchContext.Provider>

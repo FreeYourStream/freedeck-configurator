@@ -594,13 +594,13 @@ export const configReducer: IConfigReducer = {
   },
 };
 
-type IDispatch = {
+export type IConfigDispatch = {
   [PropertyType in keyof IConfigReducer]: FunctionForFirstParamType<
     Parameters<IConfigReducer[PropertyType]>[1]
   >;
 };
 
 export const ConfigStateContext = createContext<Config>({} as unknown as any);
-export const ConfigDispatchContext = createContext<IDispatch>(
-  configReducer as unknown as IDispatch
+export const ConfigDispatchContext = createContext<IConfigDispatch>(
+  configReducer as unknown as IConfigDispatch
 );

@@ -14,8 +14,6 @@ import { Header } from "./containers/Header";
 import { Pages } from "./containers/Page/Pages";
 import { FDButton } from "./lib/components/Button";
 import { useBackgroundTasks } from "./lib/hooks/backgroundTasks";
-import { usePageSwitcher } from "./lib/hooks/pageSwitcherHook";
-import { AppStateContext } from "./states/appState";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -24,11 +22,9 @@ import {
 export const Body = () => {
   const nav = useNavigate();
   const configState = useContext(ConfigStateContext);
-  const appState = useContext(AppStateContext);
   const { createCollection, addPage, setPageCollection } = useContext(
     ConfigDispatchContext
   );
-  usePageSwitcher({ appState, configState });
   useBackgroundTasks();
   const [, drop] = useDrop<{ pageId: string; collectionId: string }>({
     accept: "page",

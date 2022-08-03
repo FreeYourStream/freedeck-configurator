@@ -11,3 +11,7 @@ export const getCollectionName = (
 };
 
 export const isMacOS = navigator.userAgent.indexOf("Mac OS X") !== -1;
+
+export function timeout(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
