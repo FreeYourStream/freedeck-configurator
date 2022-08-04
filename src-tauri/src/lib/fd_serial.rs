@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use serialport::{SerialPort, SerialPortType};
-
+#[derive(Debug)]
 pub struct Port {
     pub path: String,
     pub name: String,
@@ -11,6 +11,7 @@ impl From<&Port> for String {
         format!("{};{}", port.path, port.name)
     }
 }
+
 #[derive(Default)]
 pub struct FDSerial {
     pub port: Option<Box<dyn SerialPort>>,

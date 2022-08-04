@@ -105,19 +105,16 @@ pub fn handle_tauri_event(app_handle: &AppHandle, e: RunEvent) {
             api.prevent_close();
             window.hide().unwrap();
         }
-        tauri::RunEvent::Updater(update_event) => match update_event {
-            UpdaterEvent::Updated => {
-                app_handle
-                    .state::<Arc<Mutex<FDState>>>()
-                    .lock()
-                    .unwrap()
-                    .serial
-                    .port
-                    .take();
-                app_handle.restart();
-            }
-            _ => (),
-        },
+        tauri::RunEvent::Updater(UpdaterEvent::Updated) => {
+            app_handle
+                .state::<Arc<Mutex<FDState>>>()
+                .lock()
+                .unwrap()
+                .serial
+                .port
+                .take();
+            app_handle.restart();
+        }
         _ => (),
     }
 }
