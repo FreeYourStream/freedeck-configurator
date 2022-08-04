@@ -137,6 +137,7 @@ export const Displays: React.FC<{}> = () => {
           </FDButton>
         </Row>
       </TitleBox>
+      <Divider />
     </div>
   );
 };
