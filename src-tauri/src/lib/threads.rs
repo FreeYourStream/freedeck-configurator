@@ -97,11 +97,18 @@ pub fn ports_thread(
         let mut ports = Vec::new();
         loop {
             thread::sleep(Duration::from_millis(500));
-            let state = state.lock().unwrap();
+            let mut state = state.lock().unwrap();
             let new_ports = state.serial.get_ports();
             if new_ports.len() != ports.len() {
                 let new_ports_str = new_ports.iter().map(|p| p.into()).collect::<Vec<String>>();
                 app_clone.emit_all("ports_changed", new_ports_str).unwrap();
+                if let Some(port) = state.serial.port.as_ref() {
+                    let old_name = port.name().unwrap();
+                    let found = new_ports.iter().find(|port| port.path == old_name);
+                    if found.is_none() {
+                        state.serial.data.truncate(0);
+                    }
+                }
             }
             ports = new_ports;
         }
