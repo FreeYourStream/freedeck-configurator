@@ -8,17 +8,27 @@ use crate::FDState;
 
 use super::window;
 
-async fn handle_update(app_handle: AppHandle, window: Window) {
+async fn handle_update(app_handle: AppHandle, window: Window, initial: bool) {
     match app_handle.updater().check().await {
         Ok(update) => {
-            if !update.is_update_available() {
-                return;
-            }
             #[cfg(target_os = "linux")]
             {
                 if app_handle.env().appimage.is_none() {
                     return;
                 }
+            }
+            if !update.is_update_available() {
+                if !initial {
+                    dialog::message(
+                        Some(&window),
+                        "No update available",
+                        format!(
+                            "Your version is the latest version.\nYour version is: {}",
+                            update.current_version()
+                        ),
+                    );
+                }
+                return;
             }
             dialog::confirm(
                 Some(&window),
@@ -69,7 +79,9 @@ pub fn handle_tray_event(app: &AppHandle, event: SystemTrayEvent) {
                     .take();
                 let window = app.get_window("main").unwrap();
                 let app_handle = app.clone();
-                tauri::async_runtime::spawn(async { handle_update(app_handle, window).await });
+                tauri::async_runtime::spawn(async {
+                    handle_update(app_handle, window, false).await
+                });
             }
             _ => {}
         },
@@ -82,16 +94,17 @@ pub fn handle_tauri_event(app_handle: &AppHandle, e: RunEvent) {
     match e {
         tauri::RunEvent::Ready => {
             let window = app_handle.get_window("main").unwrap();
-            tauri::async_runtime::spawn(async { handle_update(app_handle, window).await });
+            tauri::async_runtime::spawn(async { handle_update(app_handle, window, true).await });
         }
-        tauri::RunEvent::WindowEvent { label, event, .. } => match event {
-            WindowEvent::CloseRequested { api, .. } => {
-                let window = app_handle.get_window(&label).unwrap();
-                api.prevent_close();
-                window.hide().unwrap();
-            }
-            _ => (),
-        },
+        tauri::RunEvent::WindowEvent {
+            label,
+            event: WindowEvent::CloseRequested { api, .. },
+            ..
+        } => {
+            let window = app_handle.get_window(&label).unwrap();
+            api.prevent_close();
+            window.hide().unwrap();
+        }
         tauri::RunEvent::Updater(update_event) => match update_event {
             UpdaterEvent::Error(e) => {
                 println!("updater error: {}", e);
