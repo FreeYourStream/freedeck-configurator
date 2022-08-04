@@ -106,9 +106,6 @@ pub fn handle_tauri_event(app_handle: &AppHandle, e: RunEvent) {
             window.hide().unwrap();
         }
         tauri::RunEvent::Updater(update_event) => match update_event {
-            UpdaterEvent::Error(e) => {
-                println!("updater error: {}", e);
-            }
             UpdaterEvent::Updated => {
                 app_handle
                     .state::<Arc<Mutex<FDState>>>()
