@@ -122,6 +122,7 @@ module.exports = {
       width: {
         "publish-page": "336px",
         "dp-settings": "1000px",
+        help: "500px",
       },
       gap: {
         "1px": "1px",

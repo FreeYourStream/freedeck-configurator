@@ -1,3 +1,4 @@
+import c from "clsx";
 import { FC } from "react";
 
 const isTauri = "__TAURI_IPC__" in window;
@@ -7,17 +8,17 @@ export const Anchor: FC<{
   className?: string;
 }> = ({ children, href, newTab = false, className }) => {
   return isTauri && newTab ? (
-    <div
-      className={className}
+    <span
+      className={c("cursor-pointer", className)}
       onClick={() =>
         import("@tauri-apps/api/shell").then(({ open }) => open(href))
       }
     >
       {children}
-    </div>
+    </span>
   ) : (
     <a
-      className={className}
+      className={c("cursor-pointer", className)}
       target={newTab ? "_blank" : undefined}
       rel="noreferrer"
       href={href}
