@@ -1,18 +1,25 @@
 [package]
-name = "app"
+name = "freedeck_configurator"
 version = "2.7.14"
 description = "A Tauri App"
 authors = ["you"]
 license = ""
 repository = ""
-default-run = "app"
+default-run = "freedeck_configurator"
 edition = "2021"
 rust-version = "1.57"
+
+[lib]
+name = "fd_lib"
+path = "src/lib/mod.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
 tauri-build = { version = "1.0.4", features = [] }
+
+[dev-dependencies]
+criterion = { version = "0.3" }
 
 [dependencies]
 enigo = "0.0.14"
@@ -33,7 +40,16 @@ macos-app-nap = "0.0.1"
 [features]
 # by default Tauri runs in production mode
 # when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
-default = [ "custom-protocol" ]
+default = ["custom-protocol"]
 # this feature is used used for production builds where `devPath` points to the filesystem
 # DO NOT remove this
-custom-protocol = [ "tauri/custom-protocol" ]
+custom-protocol = ["tauri/custom-protocol"]
+
+[[bench]]
+path = "benches.rs"
+name = "benches"
+harness = false
+
+# [[bench]]
+# name = "serial"
+# harness = false

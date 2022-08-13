@@ -2,25 +2,15 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
-pub mod commands;
-mod lib;
-mod plugins;
+mod modules;
 
-use lib::{
-    event_handlers::{handle_tauri_event, handle_tray_event},
-    fd_serial::FDSerial,
-    threads,
-};
+use fd_lib::{serial::FDSerial, state::FDState};
+use modules::{commands, event_handlers, plugins::single_instance, threads};
+
 use std::sync::{Arc, Mutex};
 use tauri::{CustomMenuItem, Manager, SystemTray, SystemTrayMenu, SystemTrayMenuItem};
 
-use crate::commands::*;
 use tauri_macros::generate_handler;
-
-pub struct FDState {
-    serial: FDSerial,
-    current_window: String,
-}
 
 fn main() {
     #[cfg(target_os = "macos")]
@@ -47,20 +37,20 @@ fn main() {
 
     #[allow(unused_mut)] // needed for macos
     let mut app = tauri::Builder::default()
-        .plugin(plugins::single_instance::init())
+        .plugin(single_instance::init())
         .system_tray(tray)
-        .on_system_tray_event(handle_tray_event)
+        .on_system_tray_event(event_handlers::handle_tray_event)
         .manage(state.clone())
         .invoke_handler(generate_handler!(
-            get_ports,
-            open,
-            close,
-            write,
-            read,
-            read_line,
-            get_current_window,
-            set_aps_state,
-            press_keys
+            commands::get_ports,
+            commands::open,
+            commands::close,
+            commands::write,
+            commands::read,
+            commands::read_line,
+            commands::get_current_window,
+            commands::set_aps_state,
+            commands::press_keys
         ))
         .build(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -84,7 +74,7 @@ fn main() {
     let read_join = threads::read_thread(&app.handle(), &state);
     let current_window_join = threads::current_window_thread(&app.handle(), &state);
 
-    app.run(handle_tauri_event);
+    app.run(event_handlers::handle_tauri_event);
     ports_join.join().unwrap();
     read_join.join().unwrap();
     current_window_join.join().unwrap();

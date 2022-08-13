@@ -1,4 +1,3 @@
-pub mod event_handlers;
-pub mod fd_serial;
-pub mod threads;
-pub mod window;
+pub mod os;
+pub mod serial;
+pub mod state;
