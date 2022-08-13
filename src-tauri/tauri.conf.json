@@ -39,7 +39,7 @@
         "signingIdentity": null
       },
       "resources": [
-        "src/macos_active_window.as"
+        "src/assets/macos_active_window.as"
       ],
       "shortDescription": "",
       "targets": "all",
