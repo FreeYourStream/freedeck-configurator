@@ -79,9 +79,7 @@ export const Header: React.FC<{}> = () => {
                 loadConfigFile(event.currentTarget.files, setState);
             }}
           ></input>
-          <div
-            className={c("flex items-center space-x-4 h-auto overflow-hidden")}
-          >
+          <div className={c("flex items-center space-x-4")}>
             {serialApi?.connected && !ctrlDown ? (
               <>
                 <FDButton
@@ -159,7 +157,7 @@ export const Header: React.FC<{}> = () => {
             {serialApi && (
               <FDSelect
                 options={deviceEntries}
-                value={connectedPortIndex}
+                value={connectedPortIndex ?? -1}
                 onChange={(value) => {
                   switch (value) {
                     case -1:

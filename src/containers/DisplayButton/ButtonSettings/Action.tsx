@@ -68,8 +68,8 @@ export const Action: React.FC<{
                 { value: EAction.changePage, text: "Change Page" },
                 { value: EAction.hotkeys, text: "Hot Key" },
                 { value: EAction.special_keys, text: "Special Keys" },
-                { value: EAction.text, text: "Text (Beta)" },
-                { value: EAction.settings, text: "Settings (Beta)" },
+                { value: EAction.text, text: "Text (App only)" },
+                { value: EAction.settings, text: "Settings" },
               ]}
             />
           </Row>

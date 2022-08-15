@@ -29,6 +29,7 @@ export const Text: React.FC<{
         }}
         value={values[EAction.text]}
       />
+      <span>This only works with the configurator app installed and running. Check the help to find the download</span>
     </>
   );
 };

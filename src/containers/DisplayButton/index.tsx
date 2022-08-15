@@ -1,14 +1,13 @@
 import { TrashIcon } from "@heroicons/react/outline";
 import c from "clsx";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { Link } from "react-router-dom";
 
 import { ActionPreview } from "../../lib/components/ActionPreview";
 import { CtrlDuo } from "../../lib/components/CtrlDuo";
 import { ImagePreview } from "../../lib/components/ImagePreview";
-import { Modal } from "../../lib/components/Modal";
-import { AppStateContext } from "../../states/appState";
+import { AppDispatchContext, AppStateContext } from "../../states/appState";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -27,8 +26,9 @@ export const DisplayButton: React.FC<{
   const configState = useContext(ConfigStateContext);
   const appState = useContext(AppStateContext);
   const configDispatch = useContext(ConfigDispatchContext);
+  const appDispatch = useContext(AppDispatchContext);
   const page = configState.pages.byId[pageId];
-  const [deleteOpen, setDeleteOpen] = useState(false);
+
   const display =
     pageId === "dbd"
       ? configState.defaultBackDisplay
@@ -86,24 +86,19 @@ export const DisplayButton: React.FC<{
         <></>
         <TrashIcon
           onClick={async () => {
-            setDeleteOpen(true);
+            appDispatch.openConfirm({
+              title: "Delete this display button?",
+              text: "Do you want to delete this display button? It will be gone forever.",
+              onAccept: () =>
+                configDispatch.deleteDisplayButton({
+                  pageId,
+                  buttonIndex: displayIndex,
+                }),
+            });
           }}
           className="absolute -top-3 -left-3 w-6 h-6 p-1 rounded-full bg-danger-600 hover:bg-danger-400 cursor-pointer"
         />
       </CtrlDuo>
-      <Modal
-        isOpen={deleteOpen}
-        onAccept={() => {
-          configDispatch.deleteDisplayButton({
-            pageId,
-            buttonIndex: displayIndex,
-          });
-          setDeleteOpen(false);
-        }}
-        onAbort={() => setDeleteOpen(false)}
-        title="Delete this display button?"
-        text="Do you want to delete this display button? It will be gone forever"
-      />
       <Link
         to={`/displaybutton/${pageId}/${displayIndex}`}
         className={c(

@@ -10,7 +10,7 @@ export const ButtonSettingsContainer: React.FC<{
   const { pages } = useContext(ConfigStateContext);
   const button = pages.byId[pageId].displayButtons[displayIndex].button;
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full">
       <div className="grid grid-cols-2 grid-rows-1 gap-2 h-full mb-4">
         <div className="relative flex flex-col">
           <Action
@@ -33,16 +33,19 @@ export const ButtonSettingsContainer: React.FC<{
           )}
         </div>
       </div>
-      <div className="mt-auto text-center">
-        <div>Disclaimer for Firefox and Safari:</div>
-        <p>
-          If you have a non-US keyboard, the buttons recognized will not show
-          the buttons on your keyboard. But it will still work like expected :)
-          I would love to show the buttons as they are on your keyboard, but
-          that is not so easy as i hoped. If you can help, please feel free to
-          contribute!
-        </p>
-      </div>
+      {(button.primary.mode === "hotkeys" ||
+        button.secondary.mode === "hotkeys") && (
+        <div className="mt-auto text-center">
+          <div>Disclaimer for Firefox and Safari:</div>
+          <p>
+            If you have a non-US keyboard, the buttons recognized will not show
+            the buttons on your keyboard. But it will still work like expected
+            :) I would love to show the buttons as they are on your keyboard,
+            but that is not so easy as i hoped. If you can help, please feel
+            free to contribute!
+          </p>
+        </div>
+      )}
     </div>
   );
 };

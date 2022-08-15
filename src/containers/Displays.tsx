@@ -37,7 +37,6 @@ export const Displays: React.FC<{}> = () => {
             className="w-44"
             onChange={(value) => configDispatch.setScreenSaver(value)}
             value={configState.screenSaverTimeout}
-            defaultValue={0}
             options={[
               { text: "never", value: 0 },
               { text: "5s", value: 5 },
