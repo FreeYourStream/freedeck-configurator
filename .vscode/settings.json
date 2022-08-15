@@ -1,3 +1,7 @@
 {
   // "eslint.run": "onSave",
+  "sort-imports.on-save": true,
+  "sort-imports.default-sort-style": "module",
+  "typescript.preferences.quoteStyle": "double",
+  "editor.formatOnSave": true,
 }
