@@ -75,6 +75,7 @@ export const ConfigSchema = Joi.object({
   preChargePeriod: Joi.number().failover(0x11).required(),
   clockFreq: Joi.number().failover(0xf).required(),
   clockDiv: Joi.number().failover(0x2).required(),
+  saveJson: Joi.bool().failover(true).required(),
   height: Joi.number().max(16).min(1).failover(2).required(),
   width: Joi.number().max(16).min(1).failover(3).required(),
   configVersion: Joi.string()

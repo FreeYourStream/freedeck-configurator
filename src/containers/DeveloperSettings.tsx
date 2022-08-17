@@ -1,5 +1,6 @@
+import { invoke } from "@tauri-apps/api";
 import React, { useContext } from "react";
-import {invoke} from "@tauri-apps/api"
+
 import { FDButton } from "../lib/components/Button";
 import { Label } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
@@ -19,10 +20,10 @@ export const DeveloperSettings: React.FC = () => {
           <TextInput onChange={(val) => serialApi?.writeToScreen(val)} />
         </Row>
         <Row>
-          <Label>Get current page:</Label>
+          <Label>Get has json:</Label>
           <FDButton
             onClick={() =>
-              serialApi?.getCurrentPage().then((a) =>
+              serialApi?.getHasJson().then((a) =>
                 appDispatch.openAlert({
                   text: a.toString(),
                   title: "Debug message",
@@ -44,7 +45,11 @@ export const DeveloperSettings: React.FC = () => {
         <Row>
           <Label>call get_current_window</Label>
           <FDButton
-            onClick={() => invoke<string>("get_current_window").then(value => appDispatch.openAlert({text: value, title: "debug"}))}
+            onClick={() =>
+              invoke<string>("get_current_window").then((value) =>
+                appDispatch.openAlert({ text: value, title: "debug" })
+              )
+            }
           >
             invoke
           </FDButton>

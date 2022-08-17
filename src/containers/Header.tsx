@@ -17,7 +17,7 @@ import { createConfigBuffer } from "../lib/configFile/createBuffer";
 import { loadConfigFile } from "../lib/configFile/loadConfigFile";
 import { download } from "../lib/file/download";
 import { isMacOS } from "../lib/misc/util";
-import { AppStateContext } from "../states/appState";
+import { AppDispatchContext, AppStateContext } from "../states/appState";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -26,6 +26,8 @@ import { LoginLogoutButtons } from "./LoginButton";
 
 export const Header: React.FC<{}> = () => {
   const configState = useContext(ConfigStateContext);
+  const { hasJson } = useContext(AppStateContext);
+  const { setHasJson, openAlert } = useContext(AppDispatchContext);
   const { pages } = configState;
   const { setState } = useContext(ConfigDispatchContext);
   const { serialApi, ctrlDown, availablePorts, connectedPortIndex } =
@@ -35,7 +37,7 @@ export const Header: React.FC<{}> = () => {
   const loadConfigRef = useRef<HTMLInputElement | null>(null);
   const saveConfigFile = () => {
     if (Object.keys(pages.byId).length === 0) return;
-    const completeBuffer = createConfigBuffer(configState);
+    const completeBuffer = createConfigBuffer(configState, true);
 
     completeBuffer && download(completeBuffer);
   };
@@ -85,12 +87,24 @@ export const Header: React.FC<{}> = () => {
                 <FDButton
                   prefix={<UploadIcon className={iconSize} />}
                   size={3}
+                  disabled={!hasJson}
+                  title={
+                    hasJson
+                      ? "Load config over serial"
+                      : "Cannot load config. FreeDeck stores no JSON. Change it in Settings -> Device"
+                  }
                   onClick={() =>
                     serialApi!
                       .readConfigFromSerial((rec, size) =>
                         setProgress(rec / size)
                       )
                       .then((data) => loadConfigFile(data, setState))
+                      .catch((e) =>
+                        openAlert({
+                          title: "Attention: Error",
+                          text: e.message,
+                        })
+                      )
                   }
                 >
                   Load from FreeDeck
@@ -99,10 +113,18 @@ export const Header: React.FC<{}> = () => {
                   prefix={<SaveIcon className={iconSize} />}
                   size={3}
                   onClick={async () =>
-                    serialApi!.writeConfigOverSerial(
-                      createConfigBuffer(configState),
-                      (rec, size) => setProgress(rec / size)
-                    )
+                    serialApi!
+                      .writeConfigOverSerial(
+                        createConfigBuffer(configState, false),
+                        (rec, size) => setProgress(rec / size)
+                      )
+                      .then(() => setHasJson(configState.saveJson))
+                      .catch((e) =>
+                        openAlert({
+                          title: "Attention: Error",
+                          text: e.message,
+                        })
+                      )
                   }
                 >
                   Save to FreeDeck

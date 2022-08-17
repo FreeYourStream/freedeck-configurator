@@ -1,3 +1,5 @@
+import { minFWVersion } from "../../../package.json";
+import { compareVersions } from "../misc/util";
 import { TauriSerialConnector } from "./tauri-serial";
 import { WebSerialConnector } from "./web-serial";
 import { PortsChangedCallback, SerialConnector, connectionStatus } from ".";
@@ -6,6 +8,7 @@ const commands = {
   getFirmwareVersion: 0x10,
   readConfig: 0x20,
   writeConfig: 0x21,
+  getHasJson: 0x22,
   getCurrentPage: 0x30,
   setCurrentPage: 0x31,
   getPageCount: 0x32,
@@ -52,6 +55,17 @@ export class FDSerialAPI {
     // take care about legacy FWs
     if (fwVersion === "") return "1.1.0";
     else return fwVersion;
+  }
+
+  async getHasJson() {
+    if (this.blockCommunication) throw new Error("reading is blocked");
+    if (this.connected === connectionStatus.disconnect)
+      throw new Error("not connected");
+    this.Serial.flush();
+    await this.write([commands.init, commands.getHasJson]);
+    const hasJson = await this.readAsciiLine();
+    console.log(hasJson);
+    return hasJson === "1";
   }
 
   async getCurrentPage(): Promise<number> {
@@ -105,7 +119,6 @@ export class FDSerialAPI {
     ) => void
   ) {
     const fwVersion = await this.getFirmwareVersion();
-    console.log(fwVersion);
 
     this.blockCommunication = true;
     if (fwVersion.split(".")[0] === "1") {
@@ -113,8 +126,8 @@ export class FDSerialAPI {
     } else {
       await this.write([0x3, commands.readConfig]);
     }
-
     const fileSizeStr = await this.readAsciiLine();
+    if (fileSizeStr === "unavailable") throw new Error("no config available");
     if (!fileSizeStr.length) {
       this.blockCommunication = false;
       throw new Error("could not receive filesize");
@@ -145,15 +158,16 @@ export class FDSerialAPI {
       speed: number
     ) => void
   ) {
-    console.log("GO");
     const fwVersion = await this.getFirmwareVersion();
-    console.log({ fwVersion });
+    if (compareVersions(fwVersion, minFWVersion) === -1)
+      throw new Error(
+        `Unsupported firmware. Please update to ${minFWVersion} or newer.`
+      );
     this.blockCommunication = true;
     const fileSize = config.length.toString();
 
     await this.write([0x3, commands.writeConfig]);
     await this.write([fileSize]);
-    console.log("FILESIZE", fileSize);
     const transferStartedTime = new Date().getTime();
     let sent = 0;
     while (sent < config.length) {
@@ -163,7 +177,6 @@ export class FDSerialAPI {
       sent += numberChunk.length;
       await this.Serial.write([...numberChunk]);
       progressCallback?.(sent, config.length, transferStartedTime);
-      console.log("SENT", sent);
     }
 
     this.blockCommunication = false;

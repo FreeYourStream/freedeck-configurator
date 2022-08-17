@@ -18,6 +18,11 @@ export const ButtonValuesSchema = Joi.object({
   className: "ButtonValues",
 });
 
+export const LeavePageSchema = Joi.object({
+  enabled: Joi.boolean().failover(false).required(),
+  pageId: Joi.string(),
+}).meta({ className: "LeavePage" });
+
 export const ButtonSettingSchema = Joi.object({
   mode: Joi.string()
     .valid(
@@ -32,17 +37,12 @@ export const ButtonSettingSchema = Joi.object({
     .strict()
     .required(),
   values: ButtonValuesSchema.required().failover(ButtonValuesSchema),
+  leavePage: LeavePageSchema.required().failover(LeavePageSchema),
 }).meta({
   className: "ButtonSetting",
 });
 
-export const LeavePageSchema = Joi.object({
-  enabled: Joi.boolean().failover(false).required(),
-  pageId: Joi.string(),
-}).meta({ className: "LeavePage" });
-
 export const ButtonSchema = Joi.object({
   primary: ButtonSettingSchema.required().failover(ButtonSettingSchema),
   secondary: ButtonSettingSchema.required().failover(ButtonSettingSchema),
-  leavePage: LeavePageSchema.required().failover(LeavePageSchema),
 }).meta({ className: "Button" });

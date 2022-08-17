@@ -1,5 +1,6 @@
 import { ActionValue, EAction, FDSettings } from "../../definitions/modes";
 import { DisplayButton, Pages } from "../../generated";
+import { ROW_SIZE } from "./consts";
 import { optimizeForSSD1306 } from "./ssd1306";
 
 const writeAction = (
@@ -9,24 +10,11 @@ const writeAction = (
   rowOffset: number,
   isSecondary: boolean
 ) => {
-  let secondaryAddition = 0;
-  let writeChangePageData = false;
-  if (!isSecondary) {
-    if (
-      db.button.leavePage.enabled &&
-      db.button.primary.mode !== EAction.changePage
-    ) {
-      secondaryAddition = 32;
-      writeChangePageData = true;
-    } else if (db.button.secondary.mode !== EAction.noop) {
-      secondaryAddition = 16;
-    }
-  }
   const buttonAction = isSecondary ? db.button.secondary : db.button.primary;
-  const dataOffset = rowOffset + (isSecondary ? 8 : 0);
+  const dataOffset = rowOffset + (isSecondary ? ROW_SIZE / 2 : 0);
   buttonRows.writeUInt8(
     //@ts-ignore
-    ActionValue[buttonAction.mode] + secondaryAddition,
+    ActionValue[buttonAction.mode],
     dataOffset
   );
   switch (buttonAction.mode) {
@@ -34,18 +22,11 @@ const writeAction = (
       const pageIndex = pages.sorted.findIndex(
         (id) => id === buttonAction.values[EAction.changePage]
       );
-      buttonRows.writeUInt8(pageIndex, dataOffset + 1);
+      buttonRows.writeUInt16LE(pageIndex, dataOffset + 1);
       break;
     case EAction.hotkeys:
       buttonAction.values[EAction.hotkeys].forEach((hotkey, index) => {
-        let hotkeyValue = !!(
-          buttonAction.values[EAction.hotkeys]
-            .slice(0, index + 1)
-            .filter((k) => k === hotkey).length % 2
-        )
-          ? hotkey
-          : hotkey + 0x80;
-        buttonRows.writeUInt8(hotkeyValue, dataOffset + index + 1);
+        buttonRows.writeUInt8(hotkey, dataOffset + index + 1);
       });
       break;
     case EAction.special_keys:
@@ -70,36 +51,27 @@ const writeAction = (
 
       break;
   }
-  if (writeChangePageData) {
-    const pageIndex = Math.max(
-      pages.sorted.findIndex((id) => {
-        console.log(id, db.button.leavePage.pageId);
-        return id === db.button.leavePage.pageId;
-      }),
-      0
-    );
-    buttonRows.writeUInt8(pageIndex, dataOffset + 8);
-  }
+  const pageIndex = pages.sorted.findIndex(
+    (id) =>
+      id === db.button[isSecondary ? "secondary" : "primary"].leavePage.pageId
+  );
+  buttonRows.writeUInt16LE(pageIndex + 1, dataOffset + ROW_SIZE / 2 - 2);
+
   return buttonRows;
 };
 
 export const createButtonBody = (pages: Pages) => {
   const buttonRowCount =
     pages.sorted.length * pages.byId[pages.sorted[0]].displayButtons.length;
-  let buttonRows = new Buffer(16 * buttonRowCount);
+  let buttonRows = new Buffer(ROW_SIZE * buttonRowCount);
   pages.sorted.forEach((pageId, pageIndex) => {
     const page = pages.byId[pageId];
     page.displayButtons.forEach((db, buttonIndex) => {
       const rowOffset =
-        page.displayButtons.length * 16 * pageIndex + buttonIndex * 16;
-      // add 16 if the longpress has any functionality
+        page.displayButtons.length * ROW_SIZE * pageIndex +
+        buttonIndex * ROW_SIZE;
       buttonRows = writeAction(buttonRows, db, pages, rowOffset, false);
-      if (
-        db.button.secondary.mode !== EAction.noop &&
-        !db.button.leavePage.enabled
-      ) {
-        buttonRows = writeAction(buttonRows, db, pages, rowOffset, true);
-      }
+      buttonRows = writeAction(buttonRows, db, pages, rowOffset, true);
     });
   });
   return buttonRows;

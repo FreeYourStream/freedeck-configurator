@@ -22,15 +22,13 @@ export const ButtonSettingsContainer: React.FC<{
           />
         </div>
         <div className="relative flex flex-col">
-          {!button.leavePage.enabled && (
-            <Action
-              primary={false}
-              title="Long press"
-              pageId={pageId}
-              buttonIndex={displayIndex}
-              buttonSettings={button.secondary}
-            />
-          )}
+          <Action
+            primary={false}
+            title="Long press"
+            pageId={pageId}
+            buttonIndex={displayIndex}
+            buttonSettings={button.secondary}
+          />
         </div>
       </div>
       {(button.primary.mode === "hotkeys" ||

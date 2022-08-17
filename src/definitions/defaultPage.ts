@@ -7,7 +7,6 @@ import { EAction, EImageMode, ETextPosition } from "./modes";
 
 const createDefaultButton: () => Button = () => {
   const button: Button = {
-    leavePage: { enabled: false },
     primary: {
       mode: EAction.noop,
       values: {
@@ -20,6 +19,7 @@ const createDefaultButton: () => Button = () => {
         [EAction.special_keys]: 0,
         [EAction.text]: "",
       },
+      leavePage: { enabled: false },
     },
     secondary: {
       mode: EAction.noop,
@@ -30,6 +30,7 @@ const createDefaultButton: () => Button = () => {
         [EAction.special_keys]: 0,
         [EAction.text]: "",
       },
+      leavePage: { enabled: false },
     },
   };
   return button;

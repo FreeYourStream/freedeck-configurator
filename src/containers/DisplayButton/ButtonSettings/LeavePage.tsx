@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, Pages } from "../../../generated";
+import { ButtonSetting, Pages } from "../../../generated";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
 import { FDSelect } from "../../../lib/components/SelectInput";
@@ -8,15 +8,15 @@ import { FDSwitch } from "../../../lib/components/Switch";
 import { getPageName } from "../../../lib/misc/util";
 
 export const LeavePage: React.FC<{
-  value: Button["leavePage"];
+  value: ButtonSetting["leavePage"];
   pages: Pages;
   primary: boolean;
-  setValue: (value: Button["leavePage"]) => void;
+  setValue: (value: ButtonSetting["leavePage"]) => void;
 }> = ({ value, pages, setValue, primary }) => {
   const startPage = pages.sorted[0];
   return (
     <>
-      {pages.sorted.length && primary ? (
+      {pages.sorted.length ? (
         <>
           <Row>
             <Label>Change Page after press</Label>

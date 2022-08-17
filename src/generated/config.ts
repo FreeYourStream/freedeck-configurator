@@ -34,6 +34,7 @@ export interface Config {
   oledSpeed: number;
   pages: Pages;
   preChargePeriod: number;
+  saveJson: boolean;
   screenSaverTimeout: number;
   width: number;
 }

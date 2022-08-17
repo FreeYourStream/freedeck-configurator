@@ -5,6 +5,7 @@ import { Divider } from "../lib/components/Divider";
 import { Label, Value } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
 import { FDSelect } from "../lib/components/SelectInput";
+import { FDSwitch } from "../lib/components/Switch";
 import { TitleBox } from "../lib/components/Title";
 import { AppStateContext } from "../states/appState";
 import {
@@ -95,6 +96,15 @@ export const Device: React.FC<{}> = () => {
               options={heightOptions}
             />
           </div>
+        </Row>
+        <Row>
+          <Label hint="Disable this to massively reduce save times but you will not be able to 'load from freedeck'">
+            Save JSON:
+          </Label>
+          <FDSwitch
+            onChange={(val) => configDispatch.setSaveJson(val)}
+            value={configState.saveJson}
+          />
         </Row>
       </TitleBox>
 

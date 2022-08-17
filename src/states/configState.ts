@@ -50,6 +50,7 @@ export const defaultConfig = async (): Promise<Config> => ({
   preChargePeriod: 0x11,
   clockFreq: 0xf,
   clockDiv: 0x2,
+  saveJson: true,
   width: 3,
   height: 2,
   pages: {
@@ -70,6 +71,7 @@ export interface IConfigReducer extends Actions<Config> {
   setPreChargePeriod(state: Config, pcp: number): Promise<Config>;
   setClockFreq(state: Config, freq: number): Promise<Config>;
   setClockDiv(state: Config, div: number): Promise<Config>;
+  setSaveJson(state: Config, save: boolean): Promise<Config>;
   setDimensions(
     state: Config,
     data: { width?: number; height?: number }
@@ -148,6 +150,7 @@ export interface IConfigReducer extends Actions<Config> {
       buttonIndex: number;
       targetPageId?: string;
       enabled: boolean;
+      primary: boolean;
     }
   ): Promise<Config>;
   setDisplaySettings(
@@ -230,6 +233,10 @@ export const configReducer: IConfigReducer = {
   },
   async setClockDiv(state, div) {
     state.clockDiv = div;
+    return saveConfigToLocalStorage(state);
+  },
+  async setSaveJson(state, save) {
+    state.saveJson = save;
     return saveConfigToLocalStorage(state);
   },
   async setDimensions(state, data) {
@@ -485,8 +492,13 @@ export const configReducer: IConfigReducer = {
       buttonSettings;
     return saveConfigToLocalStorage(state);
   },
-  async setLeavePage(state, { pageId, buttonIndex, targetPageId, enabled }) {
-    state.pages.byId[pageId].displayButtons[buttonIndex].button.leavePage = {
+  async setLeavePage(
+    state,
+    { pageId, buttonIndex, targetPageId, enabled, primary }
+  ) {
+    state.pages.byId[pageId].displayButtons[buttonIndex].button[
+      primary ? "primary" : "secondary"
+    ].leavePage = {
       pageId: targetPageId,
       enabled,
     };

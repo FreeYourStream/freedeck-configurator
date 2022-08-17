@@ -7,6 +7,7 @@ import { FDButton } from "../../../lib/components/Button";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
 import { FDSelect } from "../../../lib/components/SelectInput";
+import { ROW_SIZE } from "../../../lib/configFile/consts";
 import { useTranslateKeyboardLayout } from "../../../lib/localisation/keyboard";
 
 const HotkeyKeys: React.FC<{
@@ -43,7 +44,7 @@ export const Hotkeys: React.FC<{
   setValues: (values: ButtonSetting["values"]) => void;
 }> = ({ setValues, values }) => {
   const setKeys = (newValues: number[]) =>
-    newValues.length < 7 &&
+    newValues.length <= ROW_SIZE / 2 - 3 &&
     setValues({
       ...values,
       [EAction.hotkeys]: newValues,
@@ -54,11 +55,6 @@ export const Hotkeys: React.FC<{
       (key) => keys[key]?.js === e.nativeEvent.code
     );
     if (!key) return;
-    if (
-      !!values[EAction.hotkeys].find((k) => k === keys[key]?.hid) &&
-      keys[key]!.hid >= 0xe0
-    )
-      return;
     //ignore backspace
     if (keys[key]!.hid === 42 && values[EAction.hotkeys].length > 0) {
       setKeys([

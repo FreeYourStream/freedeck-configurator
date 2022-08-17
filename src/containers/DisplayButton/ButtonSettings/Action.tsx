@@ -107,26 +107,25 @@ export const Action: React.FC<{
               setValues={(values) => setValues(values)}
             />
           )}
-          {buttonSettings.mode !== EAction.text &&
-            buttonSettings.mode !== EAction.changePage &&
-            primary && (
-              <LeavePage
-                primary={primary}
-                value={
-                  configState.pages.byId[pageId].displayButtons[buttonIndex]
-                    .button.leavePage
-                }
-                pages={configState.pages}
-                setValue={(value) =>
-                  configDispatch.setLeavePage({
-                    buttonIndex,
-                    pageId,
-                    targetPageId: value.pageId,
-                    enabled: value.enabled,
-                  })
-                }
-              />
-            )}
+          {buttonSettings.mode !== EAction.changePage && (
+            <LeavePage
+              primary={primary}
+              value={
+                configState.pages.byId[pageId].displayButtons[buttonIndex]
+                  .button[primary ? "primary" : "secondary"].leavePage
+              }
+              pages={configState.pages}
+              setValue={(value) =>
+                configDispatch.setLeavePage({
+                  buttonIndex,
+                  pageId,
+                  targetPageId: value.pageId,
+                  enabled: value.enabled,
+                  primary: primary,
+                })
+              }
+            />
+          )}
         </>
       </TitleBox>
     </div>

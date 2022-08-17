@@ -10,6 +10,7 @@ export interface AppState {
   serialApi?: FDSerialAPI;
   availablePorts: string[];
   connectedPortIndex: number;
+  hasJson: boolean;
   alert: {
     isOpen: boolean;
     text: string;
@@ -32,6 +33,7 @@ export const defaultAppState: () => Promise<AppState> = async () => ({
       : undefined,
   availablePorts: [],
   connectedPortIndex: -1,
+  hasJson: true,
   alert: {
     isOpen: false,
     text: "",
@@ -48,6 +50,7 @@ export interface IAppReducer extends Actions<AppState> {
   setCtrl(state: AppState, ctrlDown: boolean): Promise<AppState>;
   toggleAutoPageSwitcher(state: AppState, enabled?: boolean): Promise<AppState>;
   closeAlert(state: AppState): Promise<AppState>;
+  setHasJson(state: AppState, hasJson: boolean): Promise<AppState>;
   openAlert(
     state: AppState,
     data: { text: string; title: string }
@@ -88,6 +91,10 @@ export const appReducer: IAppReducer = {
       apsState: enabled,
     });
     return { ...state, autoPageSwitcherEnabled: enabled };
+  },
+
+  async setHasJson(state: AppState, hasJson: boolean) {
+    return { ...state, hasJson };
   },
   async closeAlert(state) {
     return { ...state, alert: { ...state.alert, isOpen: false } };

@@ -3,6 +3,7 @@ import { Config, Display } from "../../generated";
 import { ConfigSchema } from "../../schemas/config";
 import { getBase64Image } from "../image/base64Encode";
 import { composeImage, composeText } from "../image/composeImage";
+import { ROW_SIZE } from "./consts";
 
 export const generateAdditionalImagery = async (
   display: Display
@@ -56,7 +57,7 @@ export const convertCurrentConfig = async (
 
 export const parseConfig = async (configBuffer: Buffer): Promise<Config> => {
   const displayButtonCount = configBuffer.readUInt16LE(2) - 1; // subtract 1 for the header row
-  const imageOffset = 16 * (displayButtonCount + 1);
+  const imageOffset = ROW_SIZE * (displayButtonCount + 1);
   const jsonOffset = imageOffset + 1024 * displayButtonCount;
 
   if (configBuffer.length === jsonOffset) {

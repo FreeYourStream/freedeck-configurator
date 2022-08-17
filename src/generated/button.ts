@@ -4,12 +4,12 @@
  */
 
 export interface Button {
-  leavePage: LeavePage;
   primary: ButtonSetting;
   secondary: ButtonSetting;
 }
 
 export interface ButtonSetting {
+  leavePage: LeavePage;
   mode: 'changePage' | 'hotkeys' | 'noop' | 'settings' | 'special_keys' | 'text';
   values: ButtonValues;
 }

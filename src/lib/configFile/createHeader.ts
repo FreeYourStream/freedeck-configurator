@@ -1,3 +1,5 @@
+import { ROW_SIZE } from "./consts";
+
 /**
  * @param width number of displays horizontal.
  * @param height number of displays vertical.
@@ -9,7 +11,12 @@
  * - 1: height
  * - 2-3: image data offset (numberOfPages * width * height + 1)
  * - 4: brightness
- * - 5-8: display timeout (0=always on)
+ * - 5-6: display timeout (0=always on)
+ * - 7: oled speed (used for freedeck pico)
+ * - 8: oled delay (used for freedeck ino)
+ * - 9: oled preChargePeriod (to adjust coil whine)
+ * - 10: oled refreshFrequency (to adjust coil whine and burn in)
+ * - 11: save json (is json is saved in the config file)
  * ```
  */
 export const createHeader = (
@@ -21,10 +28,11 @@ export const createHeader = (
   oledDelay: number,
   preChargePeriod: number,
   refreshFrequency: number,
+  saveJson: boolean,
   numberOfPages: number
 ): Buffer => {
   // const header = new Buffer(16);
-  const header = Buffer.alloc(16);
+  const header = Buffer.alloc(ROW_SIZE);
 
   // write width and height
   header.writeUInt8(width, 0);
@@ -45,6 +53,6 @@ export const createHeader = (
   header.writeUInt8(oledDelay, 8);
   header.writeUInt8(preChargePeriod, 9);
   header.writeUInt8(refreshFrequency, 10);
-  console.log(header);
+  header.writeUInt8(saveJson ? 1 : 0, 11);
   return header;
 };
