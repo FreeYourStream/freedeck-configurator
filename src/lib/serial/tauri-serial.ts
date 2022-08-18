@@ -60,8 +60,8 @@ export class TauriSerialConnector implements SerialConnector {
     await invoke("write", { data });
   }
 
-  flush() {
-    return;
+  async flush() {
+    await invoke("flush");
   }
 
   async read(timeout = 1000): Promise<number[]> {

@@ -8,8 +8,10 @@ import { TextInput } from "../lib/components/TextInput";
 import { TitleBox } from "../lib/components/Title";
 import { createToast } from "../lib/misc/createToast";
 import { AppDispatchContext, AppStateContext } from "../states/appState";
+import { ConfigStateContext } from "../states/configState";
 
 export const DeveloperSettings: React.FC = () => {
+  const config = useContext(ConfigStateContext);
   const { serialApi } = useContext(AppStateContext);
   const appDispatch = useContext(AppDispatchContext);
   return (
@@ -19,21 +21,7 @@ export const DeveloperSettings: React.FC = () => {
           <Label>Send text to screen:</Label>
           <TextInput onChange={(val) => serialApi?.writeToScreen(val)} />
         </Row>
-        <Row>
-          <Label>Get has json:</Label>
-          <FDButton
-            onClick={() =>
-              serialApi?.getHasJson().then((a) =>
-                appDispatch.openAlert({
-                  text: a.toString(),
-                  title: "Debug message",
-                })
-              )
-            }
-          >
-            get
-          </FDButton>
-        </Row>
+
         <Row>
           <Label>Make toast:</Label>
           <FDButton

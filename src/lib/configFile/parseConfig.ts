@@ -1,3 +1,5 @@
+import { inflate } from "pako";
+
 import { createDefaultDisplay } from "../../definitions/defaultPage";
 import { Config, Display } from "../../generated";
 import { ConfigSchema } from "../../schemas/config";
@@ -67,7 +69,7 @@ export const parseConfig = async (configBuffer: Buffer): Promise<Config> => {
     );
   }
   const jsonConfigSlice = configBuffer.slice(jsonOffset);
-  const rawConfig = JSON.parse(jsonConfigSlice.toString("utf-8"));
+  const rawConfig = JSON.parse(inflate(jsonConfigSlice, { to: "string" }));
   if (!rawConfig.configVersion) {
     throw new Error("legacy config. not compatible");
   }

@@ -64,7 +64,7 @@ export class FDSerialAPI {
     this.Serial.flush();
     await this.write([commands.init, commands.getHasJson]);
     const hasJson = await this.readAsciiLine();
-    console.log(hasJson);
+    console.log({ hasJson });
     return hasJson === "1";
   }
 
@@ -211,7 +211,10 @@ export class FDSerialAPI {
 
   private async readAsciiLine() {
     const result = await this.Serial.readLine(3000);
-    return String.fromCharCode(...result);
+
+    return String.fromCharCode(...result)
+      .replace("\r", "")
+      .replace("\n", "");
   }
   private async read(): Promise<number[]> {
     return this.Serial.read(1000);

@@ -25,6 +25,10 @@ pub fn close(state: State<Arc<Mutex<FDState>>>) {
     state.lock().unwrap().serial.disconnect();
 }
 #[command]
+pub fn flush(state: State<Arc<Mutex<FDState>>>) {
+    state.lock().unwrap().serial.data = Vec::new();
+}
+#[command]
 pub fn write(state: State<Arc<Mutex<FDState>>>, data: Vec<u8>) {
     state
         .lock()

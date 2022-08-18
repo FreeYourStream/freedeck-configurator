@@ -45,6 +45,7 @@ fn main() {
             commands::get_ports,
             commands::open,
             commands::close,
+            commands::flush,
             commands::write,
             commands::read,
             commands::read_line,
