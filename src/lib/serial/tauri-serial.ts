@@ -7,14 +7,13 @@ export class TauriSerialConnector implements SerialConnector {
   portsChangedCallback: PortsChangedCallback;
   port = "";
   ports: string[] = [];
-  initialFetchDone = false;
 
   constructor(portsChangedCallback: PortsChangedCallback) {
     this.portsChangedCallback = portsChangedCallback;
     this.port = "";
     this.refreshPorts(true).then(() =>
       listen<string[]>("ports_changed", ({ payload }) => {
-        this.refreshPorts(false, payload);
+        this.refreshPorts(true, payload);
       })
     );
   }
@@ -33,15 +32,14 @@ export class TauriSerialConnector implements SerialConnector {
     this.port = "";
     this.portsChangedCallback(this.ports, -1);
   }
-  async refreshPorts(initial: boolean, prePorts?: string[]) {
-    if (initial) this.initialFetchDone = true;
+  async refreshPorts(autoConnect: boolean, prePorts?: string[]) {
     const ports: string[] = prePorts?.length
       ? prePorts
       : await invoke("get_ports");
     this.ports = ports;
     if (this.ports.length === 0) return this.portsChangedCallback(ports, -1);
     const portIndex = this.ports.findIndex((port) => port === this.port);
-    if (portIndex === -1 && initial) {
+    if (portIndex === -1 && autoConnect) {
       let i = 0;
       do {
         try {
