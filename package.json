@@ -1,6 +1,6 @@
 {
   "name": "freedeck-configurator",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "configFileVersion": "1.3.0",
   "minFWVersion": "2.7.0",
   "private": true,
