@@ -97,7 +97,7 @@ export const Device: React.FC<{}> = () => {
             />
           </div>
         </Row>
-        {/* <Row>
+        <Row>
           <Label hint="Disable this to massively reduce save times but you will not be able to 'load from freedeck'">
             Save JSON:
           </Label>
@@ -105,7 +105,7 @@ export const Device: React.FC<{}> = () => {
             onChange={(val) => configDispatch.setSaveJson(val)}
             value={configState.saveJson}
           />
-        </Row> */}
+        </Row>
       </TitleBox>
 
       <Divider />
