@@ -32,7 +32,9 @@ export const Header: React.FC<{}> = () => {
   const { setState } = useContext(ConfigDispatchContext);
   const { serialApi, ctrlDown, availablePorts, connectedPortIndex } =
     useContext(AppStateContext);
+
   const nav = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState<number>(0);
   const loadConfigRef = useRef<HTMLInputElement | null>(null);
   const saveConfigFile = () => {
@@ -87,14 +89,15 @@ export const Header: React.FC<{}> = () => {
                 <FDButton
                   prefix={<UploadIcon className={iconSize} />}
                   size={3}
-                  disabled={!hasJson}
+                  disabled={!hasJson || isLoading}
                   title={
                     hasJson
                       ? "Load config over serial"
                       : "Cannot load config. FreeDeck stores no JSON. Change it in Settings -> Device"
                   }
-                  onClick={() =>
-                    serialApi!
+                  onClick={async () => {
+                    setIsLoading(true);
+                    await serialApi!
                       .readConfigFromSerial((rec, size) =>
                         setProgress(rec / size)
                       )
@@ -104,16 +107,19 @@ export const Header: React.FC<{}> = () => {
                           title: "Attention: Error",
                           text: e.message,
                         })
-                      )
-                  }
+                      );
+                    setIsLoading(false);
+                  }}
                 >
                   Load from FreeDeck
                 </FDButton>
                 <FDButton
                   prefix={<SaveIcon className={iconSize} />}
                   size={3}
-                  onClick={async () =>
-                    serialApi!
+                  disabled={isLoading}
+                  onClick={async () => {
+                    setIsLoading(true);
+                    await serialApi!
                       .writeConfigOverSerial(
                         createConfigBuffer(configState, false),
                         (rec, size) => setProgress(rec / size)
@@ -124,8 +130,9 @@ export const Header: React.FC<{}> = () => {
                           title: "Attention: Error",
                           text: e.message,
                         })
-                      )
-                  }
+                      );
+                    await setIsLoading(false);
+                  }}
                 >
                   Save to FreeDeck
                 </FDButton>

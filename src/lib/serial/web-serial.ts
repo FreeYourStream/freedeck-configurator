@@ -1,3 +1,4 @@
+import { TRANSMIT_BUFFER_SIZE } from "../configFile/consts";
 import { isMacOS } from "../misc/util";
 import { PortsChangedCallback, SerialConnector, connectionStatus } from ".";
 export class WebSerialConnector implements SerialConnector {
@@ -100,12 +101,13 @@ export class WebSerialConnector implements SerialConnector {
 
   async read(timeout = 1000): Promise<number[]> {
     const startTime = new Date().getTime();
-    while (!this.buffer.length && new Date().getTime() - startTime < timeout) {
+    while (!this.buffer.length && new Date().getTime() - startTime < 10000) {
       await this.sleep(10);
     }
     if (!this.buffer.length) return [];
+    // const data = [...this.buffer.splice(0, Math.min(this.buffer.length, 2560))];
+
     const data = [...this.buffer];
-    // this.buffer = this.buffer.slice(0, data.length);
     this.flush();
     return data;
   }
@@ -150,7 +152,7 @@ export class WebSerialConnector implements SerialConnector {
 
   private async openPort(port: SerialPort) {
     try {
-      await port.open({ baudRate: 4000000 });
+      await port.open({ baudRate: 4000000, bufferSize: TRANSMIT_BUFFER_SIZE });
     } catch (e) {
       return;
     }

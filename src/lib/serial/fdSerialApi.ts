@@ -1,5 +1,6 @@
 import { minFWVersion } from "../../../package.json";
-import { compareVersions } from "../misc/util";
+import { TRANSMIT_BUFFER_SIZE } from "../configFile/consts";
+import { compareVersions, timeout } from "../misc/util";
 import { TauriSerialConnector } from "./tauri-serial";
 import { WebSerialConnector } from "./web-serial";
 import { PortsChangedCallback, SerialConnector, connectionStatus } from ".";
@@ -23,9 +24,9 @@ export class FDSerialAPI {
   Serial: SerialConnector;
   connected: connectionStatus = connectionStatus.disconnect;
   portsChangedCallbacks: { [x: number]: PortsChangedCallback } = {};
-  blockCommunication: boolean = false;
   ports: string[] = [];
   connectedPortIndex: number = -1;
+  calls: Array<{ id: number; name?: string }> = [];
 
   constructor() {
     if ((window as any).__TAURI_IPC__)
@@ -46,50 +47,57 @@ export class FDSerialAPI {
   }
 
   async getFirmwareVersion() {
-    if (this.blockCommunication) throw new Error("reading is blocked");
+    await this.waitForTurn("getFirmwareVersion");
     if (this.connected === connectionStatus.disconnect)
-      throw new Error("not connected");
+      this.throwError("not connected");
     this.Serial.flush();
     await this.write([commands.init, commands.getFirmwareVersion]);
     const fwVersion = await this.readAsciiLine();
     // take care about legacy FWs
-    if (fwVersion === "") return "1.1.0";
-    else return fwVersion;
+    let result: string;
+    if (fwVersion === "")
+      return this.throwError("could not get firmware version");
+    else result = fwVersion;
+    this.nextCall();
+    return result;
   }
 
   async getHasJson() {
-    if (this.blockCommunication) throw new Error("reading is blocked");
+    await this.waitForTurn("getHasJson");
     if (this.connected === connectionStatus.disconnect)
-      throw new Error("not connected");
+      this.throwError("not connected");
     this.Serial.flush();
     await this.write([commands.init, commands.getHasJson]);
     const hasJson = await this.readAsciiLine();
-    console.log({ hasJson });
+    this.nextCall();
     return hasJson === "1";
   }
 
   async getCurrentPage(): Promise<number> {
-    if (this.blockCommunication) throw new Error("reading is blocked");
+    await this.waitForTurn("getCurrentPage");
     if (this.connected === connectionStatus.disconnect)
-      throw new Error("not connected");
+      this.throwError("not connected");
     this.Serial.flush();
     await this.write([commands.init, commands.getCurrentPage]);
     const currentPage = await this.readAsciiLine();
-    return parseInt(currentPage);
+    const result = parseInt(currentPage);
+    this.nextCall();
+    return result;
   }
 
   async setCurrentPage(goTo: number) {
-    if (this.blockCommunication) throw new Error("writing is blocked");
+    await this.waitForTurn("setCurrentPage");
     if (this.connected === connectionStatus.disconnect)
-      throw new Error("not connected");
+      this.throwError("not connected");
     this.Serial.flush();
     await this.write([commands.init, commands.setCurrentPage, goTo.toString()]);
+    this.nextCall();
   }
 
   async writeToScreen(text: string, screen = 0, size = 1) {
-    if (this.blockCommunication) throw new Error("reading is blocked");
+    await this.waitForTurn("writeToScreen");
     if (this.connected === connectionStatus.disconnect)
-      throw new Error("not connected");
+      this.throwError("not connected");
     this.Serial.flush();
     await this.write([commands.init, commands.oledClear, screen]);
     await this.write([
@@ -100,6 +108,7 @@ export class FDSerialAPI {
       size,
       text,
     ]);
+    this.nextCall();
   }
 
   registerOnPortsChanged(callback: PortsChangedCallback): number {
@@ -119,18 +128,17 @@ export class FDSerialAPI {
     ) => void
   ) {
     const fwVersion = await this.getFirmwareVersion();
+    await this.waitForTurn("readConfigFromSerial");
 
-    this.blockCommunication = true;
     if (fwVersion.split(".")[0] === "1") {
-      throw new Error("unsupported 1.x firmware");
+      this.throwError("unsupported 1.x firmware");
     } else {
       await this.write([0x3, commands.readConfig]);
     }
     const fileSizeStr = await this.readAsciiLine();
-    if (fileSizeStr === "unavailable") throw new Error("no config available");
+    if (fileSizeStr === "unavailable") this.throwError("no config available");
     if (!fileSizeStr.length) {
-      this.blockCommunication = false;
-      throw new Error("could not receive filesize");
+      this.throwError("could not receive filesize");
     }
     const fileSize = parseInt(fileSizeStr);
     const data: number[] = [];
@@ -146,8 +154,9 @@ export class FDSerialAPI {
       data.push(...received);
     }
     progressCallback?.(data.length, fileSize, transferStartedTime);
-    this.blockCommunication = false;
-    return Buffer.from(data.slice(0, fileSize));
+    const result = Buffer.from(data.slice(0, fileSize));
+    this.nextCall();
+    return result;
   }
 
   async writeConfigOverSerial(
@@ -159,27 +168,35 @@ export class FDSerialAPI {
     ) => void
   ) {
     const fwVersion = await this.getFirmwareVersion();
+    await this.waitForTurn("writeConfigOverSerial");
     if (compareVersions(fwVersion, minFWVersion) === -1)
-      throw new Error(
-        `Unsupported firmware. Please update to ${minFWVersion} or newer.`
+      this.throwError(
+        `${fwVersion}: Unsupported firmware. Please update to ${minFWVersion} or newer.`
       );
-    this.blockCommunication = true;
     const fileSize = config.length.toString();
 
     await this.write([0x3, commands.writeConfig]);
     await this.write([fileSize]);
     const transferStartedTime = new Date().getTime();
     let sent = 0;
+    console.time("transfer");
+    const sendAt = Math.pow(2, 13);
     while (sent < config.length) {
-      const end = Math.min(config.length, sent + 1024);
+      const end = Math.min(config.length, sent + TRANSMIT_BUFFER_SIZE);
       const chunk = config.slice(sent, end);
       const numberChunk = [...chunk];
       sent += numberChunk.length;
       await this.Serial.write([...numberChunk]);
-      progressCallback?.(sent, config.length, transferStartedTime);
+      if (sent % sendAt === 0)
+        progressCallback?.(sent, config.length, transferStartedTime);
     }
+    setTimeout(
+      () => progressCallback?.(sent, config.length, transferStartedTime),
+      0
+    );
+    console.timeEnd("transfer");
 
-    this.blockCommunication = false;
+    this.nextCall();
   }
 
   async testOledParameters(
@@ -189,9 +206,9 @@ export class FDSerialAPI {
     clockFreq: number,
     clockDivider: number
   ) {
-    if (this.blockCommunication) throw new Error("reading is blocked");
+    await this.waitForTurn("testOledParameters");
     if (this.connected === connectionStatus.disconnect)
-      throw new Error("not connected");
+      this.throwError("not connected");
     this.Serial.flush();
     const refreshFrequency =
       Math.min(15, clockFreq) * 16 + Math.min(15, clockDivider);
@@ -203,10 +220,14 @@ export class FDSerialAPI {
       preChargePeriod.toString(),
       refreshFrequency.toString(),
     ]);
+    this.nextCall();
   }
 
   async readSerialCommand() {
-    return this.Serial.readSerialCommand();
+    await this.waitForTurn("readSerialCommand");
+    let result = this.Serial.readSerialCommand();
+    this.nextCall();
+    return result;
   }
 
   private async readAsciiLine() {
@@ -248,5 +269,25 @@ export class FDSerialAPI {
     Object.values(this.portsChangedCallbacks).forEach((cb) =>
       cb(ports, connectedPortIndex)
     );
+  };
+
+  private waitForTurn = async (name?: string) => {
+    let callId: number;
+    if (this.calls.length) {
+      callId = this.calls[this.calls.length - 1].id + 1;
+    } else {
+      callId = 0;
+    }
+    this.calls.push({ id: callId, name });
+    while (this.calls[0].id !== callId) {
+      await timeout(100);
+    }
+  };
+  private nextCall = () => {
+    this.calls.shift();
+  };
+  private throwError = (message: string) => {
+    this.nextCall();
+    throw new Error(message);
   };
 }

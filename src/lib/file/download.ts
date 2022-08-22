@@ -7,6 +7,7 @@ export const download = async (data: Buffer) => {
     const path = await save({
       defaultPath: "config.bin",
     });
+    if (!path) return;
     await writeBinaryFile(path, data);
   } else {
     var a = document.createElement("a");

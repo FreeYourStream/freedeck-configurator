@@ -13,10 +13,9 @@ export const useBackgroundTasks = () => {
         appDispatch.current.setAvailablePorts(ports);
         appDispatch.current.setConnectedPortIndex(connectedPortIndex);
         if (connectedPortIndex > -1) {
-          console.log("Connected");
-          // serialApi
-          //   .getHasJson()
-          //   .then((hasJson) => appDispatch.current.setHasJson(hasJson));
+          serialApi
+            .getHasJson()
+            .then((hasJson) => appDispatch.current.setHasJson(hasJson));
         }
       }
     );
