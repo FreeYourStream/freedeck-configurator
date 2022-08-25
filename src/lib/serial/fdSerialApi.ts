@@ -124,7 +124,7 @@ export class FDSerialAPI {
     progressCallback?: (
       received: number,
       fileSize: number,
-      speed: number
+      startedAt: Date
     ) => void
   ) {
     const fwVersion = await this.getFirmwareVersion();
@@ -142,7 +142,7 @@ export class FDSerialAPI {
     }
     const fileSize = parseInt(fileSizeStr);
     const data: number[] = [];
-    const transferStartedTime = new Date().getTime();
+    const transferStartedTime = new Date();
     progressCallback?.(data.length, fileSize, transferStartedTime);
     let i = 0;
     while (data.length < fileSize) {
@@ -164,7 +164,7 @@ export class FDSerialAPI {
     progressCallback?: (
       received: number,
       fileSize: number,
-      speed: number
+      startedAt: Date
     ) => void
   ) {
     const fwVersion = await this.getFirmwareVersion();
@@ -177,9 +177,8 @@ export class FDSerialAPI {
 
     await this.write([0x3, commands.writeConfig]);
     await this.write([fileSize]);
-    const transferStartedTime = new Date().getTime();
+    const transferStartedTime = new Date();
     let sent = 0;
-    console.time("transfer");
     const sendAt = Math.pow(2, 13);
     while (sent < config.length) {
       const end = Math.min(config.length, sent + TRANSMIT_BUFFER_SIZE);
@@ -194,7 +193,6 @@ export class FDSerialAPI {
       () => progressCallback?.(sent, config.length, transferStartedTime),
       0
     );
-    console.timeEnd("transfer");
 
     this.nextCall();
   }

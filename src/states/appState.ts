@@ -10,6 +10,7 @@ export interface AppState {
   serialApi?: FDSerialAPI;
   availablePorts: string[];
   connectedPortIndex: number;
+  devLog: any;
   hasJson: boolean;
   alert: {
     isOpen: boolean;
@@ -31,6 +32,7 @@ export const defaultAppState: () => Promise<AppState> = async () => ({
     navigator.serial || (window as any).__TAURI_IPC__
       ? new FDSerialAPI()
       : undefined,
+  devLog: {},
   availablePorts: [],
   connectedPortIndex: -1,
   hasJson: true,
@@ -54,6 +56,10 @@ export interface IAppReducer extends Actions<AppState> {
   openAlert(
     state: AppState,
     data: { text: string; title: string }
+  ): Promise<AppState>;
+  setDevLog(
+    state: AppState,
+    data: { path: string; data: any }
   ): Promise<AppState>;
   closeConfirm(state: AppState, data: { value: boolean }): Promise<AppState>;
   openConfirm(
@@ -92,7 +98,11 @@ export const appReducer: IAppReducer = {
     });
     return { ...state, autoPageSwitcherEnabled: enabled };
   },
-
+  async setDevLog(state: AppState, { path, data }) {
+    const devLog = { ...state.devLog };
+    devLog[path] = data;
+    return { ...state, devLog };
+  },
   async setHasJson(state: AppState, hasJson: boolean) {
     return { ...state, hasJson };
   },

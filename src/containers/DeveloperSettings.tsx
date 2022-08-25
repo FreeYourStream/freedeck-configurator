@@ -12,7 +12,7 @@ import { ConfigStateContext } from "../states/configState";
 
 export const DeveloperSettings: React.FC = () => {
   const config = useContext(ConfigStateContext);
-  const { serialApi } = useContext(AppStateContext);
+  const { serialApi, devLog } = useContext(AppStateContext);
   const appDispatch = useContext(AppDispatchContext);
   return (
     <div className="flex flex-col w-full">
@@ -42,6 +42,7 @@ export const DeveloperSettings: React.FC = () => {
             invoke
           </FDButton>
         </Row>
+        <Row>{JSON.stringify(devLog, undefined, 2)}</Row>
       </TitleBox>
     </div>
   );

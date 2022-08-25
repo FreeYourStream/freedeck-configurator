@@ -27,7 +27,7 @@ import { LoginLogoutButtons } from "./LoginButton";
 export const Header: React.FC<{}> = () => {
   const configState = useContext(ConfigStateContext);
   const { hasJson } = useContext(AppStateContext);
-  const { setHasJson, openAlert } = useContext(AppDispatchContext);
+  const { setHasJson, openAlert, setDevLog } = useContext(AppDispatchContext);
   const { pages } = configState;
   const { setState } = useContext(ConfigDispatchContext);
   const { serialApi, ctrlDown, availablePorts, connectedPortIndex } =
@@ -98,9 +98,17 @@ export const Header: React.FC<{}> = () => {
                   onClick={async () => {
                     setIsLoading(true);
                     await serialApi!
-                      .readConfigFromSerial((rec, size) =>
-                        setProgress(rec / size)
-                      )
+                      .readConfigFromSerial((rec, size, start) => {
+                        setProgress(rec / size);
+                        if (rec === size)
+                          setDevLog({
+                            path: "lastReceiveSpeed",
+                            data:
+                              Math.round(
+                                size / (new Date().getTime() - start.getTime())
+                              ) + "kb/s",
+                          });
+                      })
                       .then((data) => loadConfigFile(data, setState))
                       .catch((e) =>
                         openAlert({
@@ -122,7 +130,18 @@ export const Header: React.FC<{}> = () => {
                     await serialApi!
                       .writeConfigOverSerial(
                         createConfigBuffer(configState, false),
-                        (rec, size) => setProgress(rec / size)
+                        (rec, size, start) => {
+                          setProgress(rec / size);
+                          if (rec === size)
+                            setDevLog({
+                              path: "lastTransmitSpeed",
+                              data:
+                                Math.round(
+                                  size /
+                                    (new Date().getTime() - start.getTime())
+                                ) + "kb/s",
+                            });
+                        }
                       )
                       .then(() => setHasJson(configState.saveJson))
                       .catch((e) =>
