@@ -11,14 +11,14 @@ export const HelpModal: React.FC<{}> = () => {
 
   return (
     <FDWindow
-      className="w-help h-auto"
+      className="w-help h-full"
       visible={true}
       setClose={() => {
         nav("/");
       }}
       title="Help"
     >
-      <div className="space-y-4 p-8 text-xl">
+      <div className="space-y-4 p-8 text-xl overflow-y-scroll">
         <TitleBox title="Tips and tricks">
           <p>
             You can hold <b>ctrl</b> (<b>cmd</b> on mac) to show more detailed
@@ -29,23 +29,38 @@ export const HelpModal: React.FC<{}> = () => {
             <p>Yaaaaay you did it! 👍</p>
           </CtrlDuo>
         </TitleBox>
-        <TitleBox title="FreeDeck App?">
+        <TitleBox title="FreeDeck App">
           You can download it{" "}
           <Anchor
             newTab
             href="https://github.com/FreeYourStream/freedeck-configurator/releases"
-            className="text-primary-500"
           >
             here
           </Anchor>
         </TitleBox>
-        <TitleBox title="Old Configurator?">
+        <TitleBox title="FreeDeck Firmware">
+          <ul className="list-disc list-inside">
+            <li>
+              <Anchor
+                newTab
+                href="https://github.com/FreeYourStream/freedeck-ino/archive/refs/heads/master.zip"
+              >
+                FreeDeck-micro
+              </Anchor>
+            </li>
+            <li>
+              <Anchor
+                newTab
+                href="https://github.com/FreeYourStream/freedeck-pico/releases"
+              >
+                FreeDeck-pico
+              </Anchor>
+            </li>
+          </ul>
+        </TitleBox>
+        <TitleBox title="Old Configurator">
           You can find it{" "}
-          <Anchor
-            newTab
-            href="https://fdold.freeyourstream.com"
-            className="text-primary-500"
-          >
+          <Anchor newTab href="https://fdold.freeyourstream.com">
             here
           </Anchor>
         </TitleBox>

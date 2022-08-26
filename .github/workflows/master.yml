@@ -11,7 +11,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  Deploy-to-production:
+  Deploy-to-fdconfig:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -46,15 +46,190 @@ jobs:
           # The local folder to copy, defaults to root project folder
           SOURCE: "build/"
 
-      - name: Actions for Discord
-        uses: Ilshidur/action-discord@0.0.2
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL_CONF_STABLE }}
-        with:
-          args: "🎉🎉🎉 A new stable Configurator version has been released and published! 🎉🎉🎉 https://fdconfig.freeyourstream.com"
-
       - name: Cloudflare Purge Cache
         uses: jakejarvis/cloudflare-purge-action@v0.3.0
         env:
           CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+
+  create-tauriconfjson:
+    outputs:
+      version: ${{ steps.getversion.outputs.PACKAGE_VERSION }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # - name: get version develop
+      #   id: getversion
+      #   shell: bash
+      #   run: echo "::set-output name=PACKAGE_VERSION::$(date -u +%y.%-m.%d)"
+      - name: setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: get version develop
+        id: getversion
+        shell: bash
+        run: echo "::set-output name=PACKAGE_VERSION::$(node -p "require('./package.json').version")"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: tauri.conf.json
+          path: src-tauri/tauri.conf.json
+
+  build-tauri:
+    needs: create-tauriconfjson
+    outputs:
+      macsig: ${{ steps.readmacsig.outputs.signature }}
+      winsig: ${{ steps.readwinsig.outputs.signature }}
+      linuxsig: ${{ steps.readlinuxsig.outputs.signature }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-tauri/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+            ${{ runner.os }}-cargo-
+      - name: delete previous bundles
+        run: rm -rf src-tauri/target/release/bundle
+        shell: bash
+      - uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+            ${{ runner.os }}-node-
+      - name: setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: install Rust stable
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf libudev-dev libgssapi-krb5-2 libxdo-dev
+      - name: remove tauri.conf.json
+        shell: bash
+        run: rm -f src-tauri/tauri.conf.json
+      - name: acquire modified tauri.conf.json
+        uses: actions/download-artifact@v3
+        with:
+          name: tauri.conf.json
+          path: src-tauri
+      - name: install app dependencies and build it
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_UPDATER_KEY }}
+          CI: false
+        run: npm install && npm run tauri:build
+      - name: read signatures
+        id: readmacsig
+        if: matrix.platform == 'macos-latest'
+        run: |
+          echo "::set-output name=signature::$(cat src-tauri/target/release/bundle/macos/freedeck-configurator.app.tar.gz.sig)"
+      - name: read signatures
+        id: readwinsig
+        if: matrix.platform == 'windows-latest'
+        shell: bash
+        run: |
+          echo "::set-output name=signature::$(cat src-tauri/target/release/bundle/msi/freedeck-configurator_${{ needs.create-tauriconfjson.outputs.version }}_x64_en-US.msi.zip.sig)"
+      - name: read signatures
+        id: readlinuxsig
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          echo "::set-output name=signature::$(cat src-tauri/target/release/bundle/appimage/freedeck-configurator_${{ needs.create-tauriconfjson.outputs.version }}_amd64.AppImage.tar.gz.sig)"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.platform }}
+          path: src-tauri/target/release/bundle/**/*
+
+  upload-release-artifact:
+    needs:
+      - build-tauri
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+      - name: debug
+        run: ls -R
+      - uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifacts: ubuntu-latest/appimage/*.AppImage.tar.gz,ubuntu-latest/appimage/*.AppImage.tar.gz.sig,ubuntu-latest/deb/*.deb,ubuntu-latest/deb/*.deb,macos-latest/dmg/*.dmg,macos-latest/macos/freedeck-configurator.app.tar.gz,macos-latest/macos/freedeck-configurator.app.tar.gz.sig,windows-latest/msi/*.msi.zip,windows-latest/msi/*.msi.zip.sig
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: always up-to-date. maybe unstable
+          tag: "dev"
+          commit: develop
+          removeArtifacts: true
+
+  deploy-update-json:
+    needs:
+      - build-tauri
+      - create-tauriconfjson
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: create timestamp
+        run: echo "NOW=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "updater.json"
+          json: |
+            {
+              "version": "${{ needs.create-tauriconfjson.outputs.version }}",
+              "pub_date": "${{ env.NOW }}",
+              "platforms": {
+                "darwin-x86_64": {
+                  "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/${{ needs.create-tauriconfjson.outputs.version }}/freedeck-configurator.app.tar.gz",
+                  "signature": "${{ needs.build-tauri.outputs.macsig }}"
+                },
+                "windows-x86_64": {
+                  "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/${{ needs.create-tauriconfjson.outputs.version }}/freedeck-configurator_${{ needs.create-tauriconfjson.outputs.version }}_x64_en-US.msi.zip",
+                  "signature": "${{ needs.build-tauri.outputs.winsig }}"
+                },
+                "linux-x86_64": {
+                  "url": "https://github.com/FreeYourStream/freedeck-configurator/releases/download/${{ needs.create-tauriconfjson.outputs.version }}/freedeck-configurator_${{ needs.create-tauriconfjson.outputs.version }}_amd64.AppImage.tar.gz",
+                  "signature": "${{ needs.build-tauri.outputs.linuxsig }}"
+                }
+              }
+            }
+          dir: "src-tauri/"
+      - name:
+          Deploy
+          # You may pin to the exact commit or the version.
+          # uses: SamKirkland/FTP-Deploy-Action@da0d77ff390a13097c60f9b9eb954e503a480d97
+        uses: easingthemes/ssh-deploy@v2.1.5
+        with:
+          REMOTE_HOST: "78.47.56.63"
+          REMOTE_USER: githubactions
+          TARGET: "/var/www/fdconfig.freeyourstream.com/updater.json"
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          # The local folder to copy, defaults to root project folder
+          SOURCE: "src-tauri/updater.json"
+
+  Notify-Discord:
+    needs:
+      - Deploy-to-fdconfig
+    runs-on: ubuntu-latest
+    steps:
+      - name: Actions for Discord
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL_CONF_STABLE }}
+        with:
+          args: "🎉🎉🎉 A new stable Configurator/App has been released (${{ needs.create-tauriconfjson.outputs.version }}) https://fdconfig.freeyourstream.com 🎉🎉🎉"

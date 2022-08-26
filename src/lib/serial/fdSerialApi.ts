@@ -171,7 +171,7 @@ export class FDSerialAPI {
     await this.waitForTurn("writeConfigOverSerial");
     if (compareVersions(fwVersion, minFWVersion) === -1)
       this.throwError(
-        `${fwVersion}: Unsupported firmware. Please update to ${minFWVersion} or newer.`
+        `${fwVersion}: Unsupported firmware. Please update to version ${minFWVersion} or newer. Check the help page for more information.`
       );
     const fileSize = config.length.toString();
 

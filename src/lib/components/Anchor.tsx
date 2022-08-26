@@ -9,7 +9,7 @@ export const Anchor: FC<{
 }> = ({ children, href, newTab = false, className }) => {
   return isTauri && newTab ? (
     <span
-      className={c("cursor-pointer", className)}
+      className={c("cursor-pointer text-primary-400", className)}
       onClick={() =>
         import("@tauri-apps/api/shell").then(({ open }) => open(href))
       }
@@ -18,7 +18,7 @@ export const Anchor: FC<{
     </span>
   ) : (
     <a
-      className={c("cursor-pointer", className)}
+      className={c("cursor-pointer text-primary-400", className)}
       target={newTab ? "_blank" : undefined}
       rel="noreferrer"
       href={href}

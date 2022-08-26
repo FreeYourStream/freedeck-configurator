@@ -37,7 +37,7 @@ export const Alert: React.FC<{
           leaveFrom="transform scale-100 opacity-70"
           leaveTo="transform scale-95 opacity-0"
         >
-          <div className="flex flex-col items-start justify-center z-50 rounded-xl shadow-2xl max-w-md break-words break-all">
+          <div className="flex flex-col items-start justify-center z-50 rounded-xl shadow-2xl max-w-md break-words">
             <Dialog.Title className="mb-2">
               <TitleBox title={title}>
                 <Dialog.Description className="text-lg mb-8">
