@@ -160,6 +160,7 @@ jobs:
   upload-release-artifact:
     needs:
       - build-tauri
+      - create-tauriconfjson
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
@@ -170,10 +171,7 @@ jobs:
           allowUpdates: true
           artifacts: ubuntu-latest/appimage/*.AppImage.tar.gz,ubuntu-latest/appimage/*.AppImage.tar.gz.sig,ubuntu-latest/deb/*.deb,ubuntu-latest/deb/*.deb,macos-latest/dmg/*.dmg,macos-latest/macos/freedeck-configurator.app.tar.gz,macos-latest/macos/freedeck-configurator.app.tar.gz.sig,windows-latest/msi/*.msi.zip,windows-latest/msi/*.msi.zip.sig
           token: ${{ secrets.GITHUB_TOKEN }}
-          body: always up-to-date. maybe unstable
-          tag: "dev"
-          commit: develop
-          removeArtifacts: true
+          tag: "${{ needs.create-tauriconfjson.outputs.version }}"
 
   deploy-update-json:
     needs:
@@ -225,6 +223,7 @@ jobs:
   Notify-Discord:
     needs:
       - Deploy-to-fdconfig
+      - create-tauriconfjson
     runs-on: ubuntu-latest
     steps:
       - name: Actions for Discord
