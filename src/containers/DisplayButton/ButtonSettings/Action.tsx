@@ -5,7 +5,7 @@ import { ButtonSetting } from "../../../generated";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
 import { FDSelect } from "../../../lib/components/SelectInput";
-import { Title } from "../../../lib/components/Title";
+import { TitleBox } from "../../../lib/components/Title";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -13,6 +13,7 @@ import {
 import { ChangePage } from "./ChangePage";
 import { FreeDeckSettings } from "./FreeDeckSettings";
 import { Hotkeys } from "./Hotkeys";
+import { LeavePage } from "./LeavePage";
 import { SpecialKeys } from "./SpecialKeys";
 import { Text } from "./Text";
 
@@ -54,57 +55,79 @@ export const Action: React.FC<{
 
   return (
     <div className="flex flex-col h-full">
-      <Title className="mb-2">{title}</Title>
-      <Row>
-        <Label>Mode</Label>
-        <FDSelect
-          className="w-48"
-          value={buttonSettings.mode}
-          onChange={(value) => setMode(value)}
-          options={[
-            { value: EAction.noop, text: "Do nothing" },
-            { value: EAction.changePage, text: "Change Page" },
-            { value: EAction.hotkeys, text: "Hot Key" },
-            { value: EAction.special_keys, text: "Special Keys" },
-            { value: EAction.text, text: "Text (Beta)" },
-            { value: EAction.settings, text: "Settings (Beta)" },
-          ]}
-        />
-      </Row>
-      {buttonSettings.mode === EAction.hotkeys && (
-        <Hotkeys
-          values={buttonSettings.values}
-          setValues={(values) => setValues(values)}
-        />
-      )}
-      {buttonSettings.mode === EAction.changePage && (
-        <ChangePage
-          values={buttonSettings.values}
-          previousPage={pageId}
-          pages={configState.pages}
-          previousDisplay={buttonIndex}
-          setValues={(values) => setValues(values)}
-          secondary={!primary}
-        />
-      )}
-      {buttonSettings.mode === EAction.special_keys && (
-        <SpecialKeys
-          values={buttonSettings.values}
-          setValues={(values) => setValues(values)}
-        />
-      )}
-      {buttonSettings.mode === EAction.text && (
-        <Text
-          values={buttonSettings.values}
-          setValues={(values) => setValues(values)}
-        />
-      )}
-      {buttonSettings.mode === EAction.settings && (
-        <FreeDeckSettings
-          values={buttonSettings.values}
-          setValues={(values) => setValues(values)}
-        />
-      )}
+      <TitleBox title={title} className="mb-2 h-full">
+        <>
+          <Row>
+            <Label>Mode</Label>
+            <FDSelect
+              className="w-48"
+              value={buttonSettings.mode}
+              onChange={(value) => setMode(value)}
+              options={[
+                { value: EAction.noop, text: "Do nothing" },
+                { value: EAction.changePage, text: "Change Page" },
+                { value: EAction.hotkeys, text: "Hot Key" },
+                { value: EAction.special_keys, text: "Special Keys" },
+                { value: EAction.text, text: "Text (App only)" },
+                { value: EAction.settings, text: "Settings" },
+              ]}
+            />
+          </Row>
+          {buttonSettings.mode === EAction.hotkeys && (
+            <Hotkeys
+              values={buttonSettings.values}
+              setValues={(values) => setValues(values)}
+            />
+          )}
+          {buttonSettings.mode === EAction.changePage && (
+            <ChangePage
+              values={buttonSettings.values}
+              previousPage={pageId}
+              pages={configState.pages}
+              previousDisplay={buttonIndex}
+              setValues={(values) => setValues(values)}
+              secondary={!primary}
+            />
+          )}
+          {buttonSettings.mode === EAction.special_keys && (
+            <SpecialKeys
+              values={buttonSettings.values}
+              setValues={(values) => setValues(values)}
+            />
+          )}
+          {buttonSettings.mode === EAction.text && (
+            <Text
+              values={buttonSettings.values}
+              setValues={(values) => setValues(values)}
+            />
+          )}
+          {buttonSettings.mode === EAction.settings && (
+            <FreeDeckSettings
+              values={buttonSettings.values}
+              setValues={(values) => setValues(values)}
+            />
+          )}
+          {buttonSettings.mode !== EAction.changePage && (
+            <LeavePage
+              primary={primary}
+              value={
+                configState.pages.byId[pageId].displayButtons[buttonIndex]
+                  .button[primary ? "primary" : "secondary"].leavePage
+              }
+              pages={configState.pages}
+              setValue={(value) =>
+                configDispatch.setLeavePage({
+                  buttonIndex,
+                  pageId,
+                  targetPageId: value.pageId,
+                  enabled: value.enabled,
+                  primary: primary,
+                })
+              }
+            />
+          )}
+        </>
+      </TitleBox>
     </div>
   );
 };

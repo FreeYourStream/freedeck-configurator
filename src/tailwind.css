@@ -6,6 +6,10 @@
   box-sizing: border-box;
 }
 
+p {
+  @apply py-4;
+}
+
 @layer base {
   body {
     @apply bg-gray-900 text-white font-sans;

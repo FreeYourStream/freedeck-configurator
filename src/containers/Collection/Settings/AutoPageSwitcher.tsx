@@ -2,8 +2,9 @@ import React, { useContext } from "react";
 
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
-import { Switch } from "../../../lib/components/Switch";
-import { TextInput } from "../../../lib/components/TextInput";
+import { FDSwitch } from "../../../lib/components/Switch";
+import { TextArea } from "../../../lib/components/TextArea";
+import { TitleBox } from "../../../lib/components/Title";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -18,26 +19,34 @@ export const AutoPageSwitcherSettings: React.FC<{ collectionId: string }> = ({
   const collection = configState.collections.byId[collectionId];
 
   return (
-    <div className="p-8 w-full">
-      <Row className="h-8">
-        <Label>Use Page name</Label>
-        <Switch
-          onChange={(value) => setUseCollectionName({ collectionId, value })}
-          value={collection.usePageNameAsWindowName}
-        />
-      </Row>
-      <Row className="h-8">
-        <Label>Window Name</Label>
-        <TextInput
-          className="w-44"
-          placeholder="Enter window name..."
-          disabled={collection.usePageNameAsWindowName}
-          value={collection.windowName ?? ""}
-          onChange={(windowName) =>
-            changeCollectionWindowName({ collectionId, windowName })
-          }
-        />
-      </Row>
+    <div className="w-full">
+      <TitleBox title="Auto page-switcher">
+        <Row className="h-8">
+          <Label>Use Page name as window name</Label>
+          <FDSwitch
+            onChange={(value) => setUseCollectionName({ collectionId, value })}
+            value={collection.useCollectionNameAsWindowName}
+          />
+        </Row>
+        <Row mode="top">
+          <Label hint="One window name per line or comma seperated">
+            Window name
+          </Label>
+          <TextArea
+            className="w-64 h-64"
+            placeholder={
+              collection.useCollectionNameAsWindowName
+                ? collection.name
+                : "Enter window name..."
+            }
+            disabled={collection.useCollectionNameAsWindowName}
+            value={collection.windowName}
+            onChange={(windowName) =>
+              changeCollectionWindowName({ collectionId, windowName })
+            }
+          />
+        </Row>
+      </TitleBox>
     </div>
   );
 };

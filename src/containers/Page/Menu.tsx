@@ -6,15 +6,14 @@ import {
   TrashIcon,
 } from "@heroicons/react/outline";
 import c from "clsx";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router";
 
 import { iconSize } from "../../definitions/iconSizes";
 import { useMeQuery } from "../../generated/types-and-hooks";
 import { CtrlDuo } from "../../lib/components/CtrlDuo";
 import { FDMenu } from "../../lib/components/Menu";
-import { Modal } from "../../lib/components/Modal";
-import { AppStateContext } from "../../states/appState";
+import { AppDispatchContext } from "../../states/appState";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -22,23 +21,12 @@ import {
 
 export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
   const nav = useNavigate();
-  const appState = useContext(AppStateContext);
+  const appDispatch = useContext(AppDispatchContext);
   const configDispatch = useContext(ConfigDispatchContext);
   const configState = useContext(ConfigStateContext);
   const { data } = useMeQuery();
-  const [deleteOpen, setDeleteOpen] = useState(false);
   return (
     <div className="flex items-center justify-center w-9 h-9  cursor-pointer shadow-lg">
-      <Modal
-        isOpen={deleteOpen}
-        onAccept={() => {
-          configDispatch.deletePage(pageId);
-          setDeleteOpen(false);
-        }}
-        onAbort={() => setDeleteOpen(false)}
-        title="Delete this page?"
-        text="Do you want to delete this page? It will be gone forever"
-      />
       <CtrlDuo>
         <FDMenu
           className="z-20"
@@ -51,7 +39,12 @@ export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
             {
               title: "Delete",
               prefix: <TrashIcon className={c(iconSize, "text-danger-400")} />,
-              onClick: () => setDeleteOpen(true),
+              onClick: () =>
+                appDispatch.openConfirm({
+                  title: "Delete this page?",
+                  text: "Do you want to delete this page? It will be gone forever",
+                  onAccept: () => configDispatch.deletePage(pageId),
+                }),
             },
             {
               title: "Make start page",
@@ -75,8 +68,7 @@ export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
         </FDMenu>
         <TrashIcon
           onClick={async () => {
-            if (appState.ctrlDown) configDispatch.deletePage(pageId);
-            else setDeleteOpen(true);
+            configDispatch.deletePage(pageId);
           }}
           className="w-9 h-9 p-1.5 rounded-full bg-danger-600 hover:bg-danger-400"
         />

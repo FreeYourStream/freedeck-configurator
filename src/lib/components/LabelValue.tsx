@@ -1,11 +1,17 @@
-import React from "react";
 import c from "clsx";
+import React from "react";
 
-export const Label: React.FC<{ className?: string }> = ({
+export const Label: React.FC<{ className?: string; hint?: string }> = ({
   className,
   children,
+  hint,
 }) => {
-  return <div className={c("text-xl mr-4", className)}>{children}</div>;
+  return (
+    <div>
+      <div className={c("text-xl mr-4", className)}>{children}</div>
+      {hint && <div className="text-sm text-gray-300 ">{hint}</div>}
+    </div>
+  );
 };
 
 export const Value: React.FC<{ className?: string }> = ({

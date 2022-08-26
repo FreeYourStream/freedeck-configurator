@@ -57,7 +57,7 @@ export const GlobalSettings: React.FC<{}> = () => {
       }}
       title="General settings"
     >
-      <TabView tabs={tabs} className="h-dp-settings" />
+      <TabView tabs={tabs} className="h-settings" />
     </FDWindow>
   );
 };

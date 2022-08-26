@@ -5,12 +5,11 @@ import { v4 } from "uuid";
 
 import { createDefaultBackDisplay } from "../definitions/defaultBackImage";
 import {
-  createDefaultDisplay,
   createDefaultDisplayButton,
   createDefaultPage,
 } from "../definitions/defaultPage";
 import { EAction } from "../definitions/modes";
-import { ButtonSetting, Collections, Display, Page, Pages } from "../generated";
+import { ButtonSetting, Config, Display, Page } from "../generated";
 import {
   PageDocument,
   PageQuery,
@@ -21,7 +20,7 @@ import { PageSchema } from "../schemas/config";
 import { Actions, FunctionForFirstParamType } from "./interfaces";
 import { client } from "..";
 
-const saveConfigToLocalStorage = (state: ConfigState) => {
+const saveConfigToLocalStorage = (state: Config) => {
   setTimeout(() => localStorage.setItem("config", JSON.stringify(state)));
   return { ...state };
 };
@@ -42,20 +41,16 @@ const changePageDimension = async (
   return { ...page };
 };
 
-export interface ConfigState {
-  configVersion: string;
-  brightness: number;
-  screenSaverTimeout: number;
-  width: number;
-  height: number;
-  pages: Pages;
-  collections: Collections;
-  defaultBackDisplay: Display;
-}
-export const defaultConfigState = async (): Promise<ConfigState> => ({
+export const defaultConfig = async (): Promise<Config> => ({
   configVersion: (await import("../../package.json")).configFileVersion,
   brightness: 100,
   screenSaverTimeout: 1 * 60 * 1000, // in milliseconds
+  oledSpeed: 50,
+  oledDelay: 2,
+  preChargePeriod: 0x11,
+  clockFreq: 0xf,
+  clockDiv: 0x2,
+  saveJson: true,
   width: 3,
   height: 2,
   pages: {
@@ -69,138 +64,150 @@ export const defaultConfigState = async (): Promise<ConfigState> => ({
   defaultBackDisplay: await createDefaultBackDisplay(),
 });
 
-export interface IConfigReducer extends Actions<ConfigState> {
-  setBrightness(state: ConfigState, brightness: number): Promise<ConfigState>;
-  setScreenSaver(state: ConfigState, timeout: number): Promise<ConfigState>;
+export interface IConfigReducer extends Actions<Config> {
+  setBrightness(state: Config, brightness: number): Promise<Config>;
+  setScreenSaver(state: Config, timeout: number): Promise<Config>;
+  setOledSpeed(state: Config, speed: number): Promise<Config>;
+  setPreChargePeriod(state: Config, pcp: number): Promise<Config>;
+  setClockFreq(state: Config, freq: number): Promise<Config>;
+  setClockDiv(state: Config, div: number): Promise<Config>;
+  setSaveJson(state: Config, save: boolean): Promise<Config>;
   setDimensions(
-    state: ConfigState,
+    state: Config,
     data: { width?: number; height?: number }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   addPage(
-    state: ConfigState,
+    state: Config,
     data: {
       previousPage?: string;
       previousDisplay?: number;
       secondary?: boolean;
       startPage?: boolean;
     }
-  ): Promise<ConfigState>;
-  setStartPage(
-    state: ConfigState,
-    data: { pageId: string }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
+  setStartPage(state: Config, data: { pageId: string }): Promise<Config>;
   downloadPage(
-    state: ConfigState,
+    state: Config,
     data: {
       id: string;
     }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   renamePage(
-    state: ConfigState,
+    state: Config,
     data: { pageId: string; name: string }
-  ): Promise<ConfigState>;
-  deletePage(state: ConfigState, pageId: string): Promise<ConfigState>;
+  ): Promise<Config>;
+  deletePage(state: Config, pageId: string): Promise<Config>;
   deleteDisplayButton(
-    state: ConfigState,
+    state: Config,
     data: { pageId: string; buttonIndex: number }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   setPagePublished(
-    state: ConfigState,
+    state: Config,
     data: { pageId: string; forkedId?: string }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   changePageWindowName(
-    state: ConfigState,
+    state: Config,
     data: { pageId: string; windowName: string }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   setPageCollection(
-    state: ConfigState,
+    state: Config,
     data: { pageId: string; collectionId: string }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   setUsePageName(
-    state: ConfigState,
+    state: Config,
     data: { pageId: string; value: boolean }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   renameCollection(
-    state: ConfigState,
+    state: Config,
     data: { collectionId: string; name: string }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   changeCollectionWindowName(
-    state: ConfigState,
+    state: Config,
     data: { collectionId: string; windowName: string }
-  ): Promise<ConfigState>;
-  createCollection(state: ConfigState, data: {}): Promise<ConfigState>;
+  ): Promise<Config>;
+  createCollection(state: Config, data: {}): Promise<Config>;
   deleteCollection(
-    state: ConfigState,
+    state: Config,
     data: { collectionId: string }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   setUseCollectionName(
-    state: ConfigState,
+    state: Config,
     data: { collectionId: string; value: boolean }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   setButtonSettings(
-    state: ConfigState,
+    state: Config,
     data: {
       buttonSettings: ButtonSetting;
       priOrSec: "primary" | "secondary";
       pageId: string;
       buttonIndex: number;
     }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
+  setLeavePage(
+    state: Config,
+    data: {
+      pageId: string;
+      buttonIndex: number;
+      targetPageId?: string;
+      enabled: boolean;
+      primary: boolean;
+    }
+  ): Promise<Config>;
   setDisplaySettings(
-    state: ConfigState,
+    state: Config,
     data: {
       displaySettings: Display;
       pageId: string;
       buttonIndex: number;
     }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   setOriginalImage(
-    state: ConfigState,
+    state: Config,
     data: {
       pageId: string;
       buttonIndex: number;
       originalImage: Buffer;
     }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   deleteImage(
-    state: ConfigState,
+    state: Config,
     data: {
       pageId: string;
       buttonIndex: number;
     }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   switchButtons(
-    state: ConfigState,
+    state: Config,
     data: {
       pageAId: string;
       buttonAIndex: number;
       pageBId: string;
       buttonBIndex: number;
     }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   copyButton(
-    state: ConfigState,
+    state: Config,
     data: {
       pageSrcId: string;
       pageDestId: string;
       buttonSrcIndex: number;
       buttonDestIndex: number;
     }
-  ): Promise<ConfigState>;
+  ): Promise<Config>;
   switchPages(
-    state: ConfigState,
+    state: Config,
     data: {
       pageAId: string;
       pageBId: string;
     }
-  ): Promise<ConfigState>;
-  updateAllDefaultBackImages(state: ConfigState): Promise<ConfigState>;
+  ): Promise<Config>;
+  updateAllDefaultBackImages(state: Config): Promise<Config>;
   makeDefaultBackButton(
-    state: ConfigState,
+    state: Config,
     data: { pageId: string; buttonIndex: number }
-  ): Promise<ConfigState>;
-  resetDefaultBackButton(state: ConfigState): Promise<ConfigState>;
-  setState(state: ConfigState, newState: ConfigState): Promise<ConfigState>;
+  ): Promise<Config>;
+  resetDefaultBackButton(state: Config): Promise<Config>;
+  setState(state: Config, newState: Config): Promise<Config>;
 }
 
 export const configReducer: IConfigReducer = {
@@ -210,6 +217,26 @@ export const configReducer: IConfigReducer = {
   },
   async setScreenSaver(state, timeout) {
     state.screenSaverTimeout = timeout;
+    return saveConfigToLocalStorage(state);
+  },
+  async setOledSpeed(state, speed) {
+    state.oledSpeed = speed;
+    return saveConfigToLocalStorage(state);
+  },
+  async setPreChargePeriod(state, pcp) {
+    state.preChargePeriod = pcp;
+    return saveConfigToLocalStorage(state);
+  },
+  async setClockFreq(state, freq) {
+    state.clockFreq = freq;
+    return saveConfigToLocalStorage(state);
+  },
+  async setClockDiv(state, div) {
+    state.clockDiv = div;
+    return saveConfigToLocalStorage(state);
+  },
+  async setSaveJson(state, save) {
+    state.saveJson = save;
     return saveConfigToLocalStorage(state);
   },
   async setDimensions(state, data) {
@@ -258,7 +285,7 @@ export const configReducer: IConfigReducer = {
     state.pages.sorted.unshift(pageId);
     return saveConfigToLocalStorage(state);
   },
-  async downloadPage(state: ConfigState, { id }) {
+  async downloadPage(state: Config, { id }) {
     const response = await client?.query<PageQuery>({
       query: PageDocument,
       variables: { id },
@@ -309,11 +336,11 @@ export const configReducer: IConfigReducer = {
     if (!alreadyDownloaded) state.pages.sorted.push(id);
     return saveConfigToLocalStorage(state);
   },
-  async renamePage(state: ConfigState, { pageId, name }) {
+  async renamePage(state: Config, { pageId, name }) {
     state.pages.byId[pageId].name = name;
     return saveConfigToLocalStorage(state);
   },
-  async changePageWindowName(state: ConfigState, { pageId, windowName }) {
+  async changePageWindowName(state: Config, { pageId, windowName }) {
     state.pages.byId[pageId].windowName = windowName;
     return saveConfigToLocalStorage(state);
   },
@@ -428,16 +455,16 @@ export const configReducer: IConfigReducer = {
     }
     return saveConfigToLocalStorage(state);
   },
-  async createCollection(state: ConfigState) {
+  async createCollection(state: Config) {
     const newId = v4();
     state.collections.byId[newId] = {
       pages: [],
-      usePageNameAsWindowName: true,
+      useCollectionNameAsWindowName: true,
     };
     state.collections.sorted.push(newId);
     return saveConfigToLocalStorage(state);
   },
-  async deleteCollection(state: ConfigState, { collectionId }) {
+  async deleteCollection(state: Config, { collectionId }) {
     state.collections.byId[collectionId].pages.forEach(
       (pageId) => (state.pages.byId[pageId].isInCollection = undefined)
     );
@@ -448,7 +475,7 @@ export const configReducer: IConfigReducer = {
     return saveConfigToLocalStorage(state);
   },
   async setUseCollectionName(state, { collectionId, value }) {
-    state.collections.byId[collectionId].usePageNameAsWindowName = value;
+    state.collections.byId[collectionId].useCollectionNameAsWindowName = value;
     return saveConfigToLocalStorage(state);
   },
   async renameCollection(state, { collectionId, name }) {
@@ -463,6 +490,18 @@ export const configReducer: IConfigReducer = {
     const { pageId, buttonIndex, priOrSec, buttonSettings } = data;
     state.pages.byId[pageId].displayButtons[buttonIndex].button[priOrSec] =
       buttonSettings;
+    return saveConfigToLocalStorage(state);
+  },
+  async setLeavePage(
+    state,
+    { pageId, buttonIndex, targetPageId, enabled, primary }
+  ) {
+    state.pages.byId[pageId].displayButtons[buttonIndex].button[
+      primary ? "primary" : "secondary"
+    ].leavePage = {
+      pageId: targetPageId,
+      enabled,
+    };
     return saveConfigToLocalStorage(state);
   },
   async setDisplaySettings(state, data) {
@@ -518,8 +557,12 @@ export const configReducer: IConfigReducer = {
   },
   async deleteImage(state, data) {
     const { buttonIndex, pageId } = data;
+    delete state.pages.byId[pageId].displayButtons[buttonIndex].display
+      .originalImage;
     state.pages.byId[pageId].displayButtons[buttonIndex].display =
-      createDefaultDisplay();
+      await generateAdditionalImagery(
+        state.pages.byId[pageId].displayButtons[buttonIndex].display
+      );
     return saveConfigToLocalStorage(state);
   },
   async switchButtons(state, data) {
@@ -559,20 +602,17 @@ export const configReducer: IConfigReducer = {
     return saveConfigToLocalStorage(state);
   },
   async setState(state, newState) {
-    console.log("NEWSTATE", newState);
     return saveConfigToLocalStorage(newState);
   },
 };
 
-type IDispatch = {
+export type IConfigDispatch = {
   [PropertyType in keyof IConfigReducer]: FunctionForFirstParamType<
     Parameters<IConfigReducer[PropertyType]>[1]
   >;
 };
 
-export const ConfigStateContext = createContext<ConfigState>(
-  {} as unknown as any
-);
-export const ConfigDispatchContext = createContext<IDispatch>(
-  configReducer as unknown as IDispatch
+export const ConfigStateContext = createContext<Config>({} as unknown as any);
+export const ConfigDispatchContext = createContext<IConfigDispatch>(
+  configReducer as unknown as IConfigDispatch
 );

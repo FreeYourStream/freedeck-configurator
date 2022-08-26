@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { TabView } from "../../lib/components/TabView";
 import { FDWindow } from "../../lib/components/Window";
-import { getPageName } from "../../lib/util";
+import { getPageName } from "../../lib/misc/util";
 import { ConfigStateContext } from "../../states/configState";
 import { ButtonSettingsContainer } from "./ButtonSettings";
 import { DisplaySettingsContainer } from "./DisplaySettings";

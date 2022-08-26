@@ -1,12 +1,13 @@
 import { useSimpleReducer } from "@bitovi/use-simple-reducer";
-import React, { useEffect } from "react";
+import React from "react";
 import { DndProvider } from "react-dnd";
-import Backend from "react-dnd-html5-backend";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { HashRouter } from "react-router-dom";
 
 import { Body } from "./Body";
-import { convertCurrentConfig } from "./lib/configFile/parseConfig";
-import { AddEventListeners } from "./lib/eventListeners";
+import { Config } from "./generated";
+import { useStartupHooks } from "./lib/hooks/startup";
+import { AddEventListeners } from "./lib/misc/eventListeners";
 import { ModalBody } from "./ModalBody";
 import {
   AppDispatchContext,
@@ -17,18 +18,17 @@ import {
 } from "./states/appState";
 import {
   ConfigDispatchContext,
-  ConfigState,
   ConfigStateContext,
   IConfigReducer,
   configReducer,
 } from "./states/configState";
 
 const App: React.FC<{
-  defaultConfigState: ConfigState;
+  defaultConfigState: Config;
   defaultAppState: AppState;
 }> = ({ defaultConfigState, defaultAppState }) => {
   const [configState, configDispatch] = useSimpleReducer<
-    ConfigState,
+    Config,
     IConfigReducer
   >(defaultConfigState, configReducer);
 
@@ -36,22 +36,12 @@ const App: React.FC<{
     defaultAppState,
     appReducer
   );
-  useEffect(() => {
-    (async () => {
-      const config = localStorage.getItem("config");
-      if (config) {
-        const converted = await convertCurrentConfig(JSON.parse(config));
-        console.log(converted);
-        configDispatch.setState(converted);
-      }
-    })();
-    // eslint-disable-next-line
-  }, []);
+  useStartupHooks(configState, configDispatch, appState, appDispatch);
   AddEventListeners({ appDispatchContext: appDispatch });
 
   return (
     <HashRouter>
-      <DndProvider backend={Backend}>
+      <DndProvider backend={HTML5Backend}>
         <ConfigStateContext.Provider value={configState}>
           <ConfigDispatchContext.Provider value={configDispatch}>
             <AppStateContext.Provider value={appState}>

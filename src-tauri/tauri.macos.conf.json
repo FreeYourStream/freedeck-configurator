@@ -1,0 +1,9 @@
+{
+    "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+    "tauri": {
+      "systemTray": {
+        "iconPath": "icons/macos_template.png",
+        "iconAsTemplate": true
+      }
+    }
+  }

@@ -1,59 +1,35 @@
 import React from "react";
 
-import { keys } from "../../../definitions/keys";
 import { EAction } from "../../../definitions/modes";
 import { ButtonSetting } from "../../../generated/button";
-import { FDSelect } from "../../../lib/components/SelectInput";
-import { useTranslateKeyboardLayout } from "../../../lib/localisation/keyboard";
 
 export const Text: React.FC<{
   values: ButtonSetting["values"];
   setValues: (values: ButtonSetting["values"]) => void;
 }> = ({ values, setValues }) => {
-  const translatedKeys = useTranslateKeyboardLayout(values[EAction.text]);
-  const setKeys = (newValues: number[]) =>
-    newValues.length < 15 &&
+  const setKeys = (newValues: string) =>
     setValues({
       ...values,
       [EAction.text]: newValues,
     });
-  const onKey = (e: React.KeyboardEvent<any>, lengthLimit = 7) => {
-    if (e.repeat) return;
-    const key = Object.keys(keys).find(
-      (key) => keys[key]?.js === e.nativeEvent.code
-    );
-    if (!key) return;
-    //ignore backspace
-    if (keys[key]!.hid === 42 && values[EAction.text].length > 0) {
-      setKeys([
-        ...values[EAction.text].slice(0, values[EAction.text].length - 1),
-      ]);
-    } else setKeys([...values[EAction.text], keys[key]!.hid]);
+  const onKey = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+    lengthLimit = 7
+  ) => {
+    setKeys(e.target.value);
   };
   return (
     <>
-      <FDSelect
-        className="w-full my-2"
-        value={0}
-        onChange={(value) =>
-          setKeys([...values[EAction.hotkeys], parseInt(value)])
-        }
-        options={[
-          { value: 0, text: "Choose key" },
-          ...Object.keys(keys).map((keyName) => ({
-            text: keyName,
-            value: keys[keyName]?.hid,
-          })),
-        ]}
-      />
       <textarea
+        placeholder="Enter your text here"
         className="bg-gray-400 my-2 rounded-lg resize-none p-2 w-full h-60"
         rows={12}
-        onKeyDown={(e) => {
+        onChange={(e) => {
           onKey(e, 15);
         }}
-        value={translatedKeys.reduce((acc, value) => `${acc}[${value}]`, "")}
+        value={values[EAction.text]}
       />
+      <span>This only works with the configurator app installed and running. Check the help to find the download</span>
     </>
   );
 };

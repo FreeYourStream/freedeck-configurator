@@ -17,8 +17,9 @@ const createDefaultButton: () => Button = () => {
           value: 128,
         },
         [EAction.special_keys]: 0,
-        [EAction.text]: [],
+        [EAction.text]: "",
       },
+      leavePage: { enabled: false },
     },
     secondary: {
       mode: EAction.noop,
@@ -27,8 +28,9 @@ const createDefaultButton: () => Button = () => {
         [EAction.hotkeys]: [],
         [EAction.settings]: { setting: 0, value: 128 },
         [EAction.special_keys]: 0,
-        [EAction.text]: [],
+        [EAction.text]: "",
       },
+      leavePage: { enabled: false },
     },
   };
   return button;

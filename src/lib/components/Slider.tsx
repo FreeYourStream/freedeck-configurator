@@ -25,7 +25,7 @@ export const FDSlider: React.FC<{
   <CtrlDuo>
     <input
       className={c(
-        `rounded-md overflow-hidden appearance-none h-6 w-44 p-1`,
+        `rounded-md overflow-hidden appearance-none h-6 w-44 flex-shrink-0 p-1`,
         disabled ? "bg-primary-100" : "bg-primary-500",
         className
       )}

@@ -10,7 +10,7 @@ import { EAction, FDSettings } from "../../definitions/modes";
 import { ButtonSetting, Page } from "../../generated";
 import { ConfigStateContext } from "../../states/configState";
 import { useTranslateKeyboardLayout } from "../localisation/keyboard";
-import { getPageName } from "../util";
+import { getPageName } from "../misc/util";
 import { CtrlDuo } from "./CtrlDuo";
 
 const Pill: React.FC<{
@@ -20,13 +20,9 @@ const Pill: React.FC<{
 }> = ({ className, button, hideChangePage: genericBackButton = false }) => {
   const configState = useContext(ConfigStateContext);
   const { pages } = configState;
-  const keys = useTranslateKeyboardLayout(
-    button.mode === EAction.hotkeys
-      ? button.values[EAction.hotkeys]
-      : button.values[EAction.text]
-  );
+  const keys = useTranslateKeyboardLayout(button.values[EAction.hotkeys]);
   const pillClassName =
-    "flex px-2 justify-center items-center gap-1 align-middle h-6 text-base shadow-lg rounded-md overflow-hidden";
+    "flex px-2 justify-center items-center gap-1 align-middle text-base shadow-lg rounded-md overflow-hidden";
   return (
     <div className={c("flex justify-center whitespace-nowrap", className)}>
       {button.mode === EAction.changePage &&
@@ -36,8 +32,8 @@ const Pill: React.FC<{
             <ArrowCircleRightIcon className="w-4 h-4" />
             <span className="overflow-ellipsis overflow-hidden">
               {getPageName(
-                button.values[EAction.changePage],
-                pages.byId[button.values[EAction.changePage]]
+                button.values[EAction.changePage]!,
+                pages.byId[button.values[EAction.changePage]!]
               )}
             </span>
           </div>
@@ -48,9 +44,11 @@ const Pill: React.FC<{
             <span>{keys.join("+")}</span>
           </div>
         )}
-      {button.mode === EAction.text && !!button.values[EAction.text].length && (
+      {button.mode === EAction.text && !!button.values[EAction.text]?.length && (
         <div className={c(pillClassName, "bg-gray-500")}>
-          <span>{keys.join("+")}</span>
+          <span className="min-w-0 overflow-ellipsis overflow-hidden">
+            {button.values[EAction.text]}
+          </span>
         </div>
       )}
       {button.mode === EAction.special_keys &&

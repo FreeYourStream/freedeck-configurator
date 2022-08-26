@@ -11,11 +11,11 @@ import ReactDOM from "react-dom";
 
 import App from "./App";
 import { FDButton } from "./lib/components/Button";
-import { createToast } from "./lib/createToast";
+import { createToast } from "./lib/misc/createToast";
 import reportWebVitals from "./reportWebVitals";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { defaultAppState } from "./states/appState";
-import { defaultConfigState } from "./states/configState";
+import { defaultConfig } from "./states/configState";
 
 export let client: ApolloClient<NormalizedCacheObject> | undefined;
 const main = async () => {
@@ -23,7 +23,7 @@ const main = async () => {
   //   window.onbeforeunload = function () {
   //     return "Data will be lost if you leave the page, are you sure?";
   //   };
-  const awaitedDefaultConfigState = await defaultConfigState();
+  const awaitedDefaultConfigState = await defaultConfig();
   const awaitedDefaultAppState = await defaultAppState();
   client = new ApolloClient({
     cache: new InMemoryCache(),

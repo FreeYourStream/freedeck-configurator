@@ -5,8 +5,8 @@ import { Divider } from "../lib/components/Divider";
 import { Label, Value } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
 import { FDSelect } from "../lib/components/SelectInput";
-import { Title } from "../lib/components/Title";
-import { connectionStatus } from "../lib/serial";
+import { FDSwitch } from "../lib/components/Switch";
+import { TitleBox } from "../lib/components/Title";
 import { AppStateContext } from "../states/appState";
 import {
   ConfigDispatchContext,
@@ -42,15 +42,17 @@ export const Device: React.FC<{}> = () => {
 
   useEffect(() => {
     if (!serialApi) return;
-    serialApi.registerOnConStatusChange(async (type) => {
-      if (type === connectionStatus.connect) {
+    const id = serialApi.registerOnPortsChanged(async (ports) => {
+      if (serialApi.connected) {
         const fw = await serialApi.getFirmwareVersion();
         setFwVersion(fw);
       } else {
         setFwVersion(FW_UNKNOWN);
       }
     });
-  }, [serialApi]);
+    return () => serialApi.clearOnPortsChanged(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serialApi?.connected]);
 
   useEffect(() => {
     const wArray = [];
@@ -70,41 +72,53 @@ export const Device: React.FC<{}> = () => {
 
   return (
     <div className="w-full">
-      <Title>Device Settings</Title>
-      <Row>
-        <Label>FreeDeck Layout:</Label>
-        <div className="flex items-center">
-          <DisplayCountDropDown
-            onChange={(width) => {
-              if (width < configState.width)
-                window.advancedConfirm(
-                  "Warning",
-                  "If you accept, we will delete all displays that won't fit into the lesser amount of screens",
-                  () => configDispatch.setDimensions({ width })
-                );
-              else configDispatch.setDimensions({ width });
-            }}
-            value={configState.width}
-            options={widthOptions}
+      <TitleBox title="Device Settings">
+        <Row>
+          <Label>FreeDeck Layout:</Label>
+          <div className="flex items-center">
+            <DisplayCountDropDown
+              onChange={(width) => {
+                if (width < configState.width)
+                  window.advancedConfirm(
+                    "Warning",
+                    "If you accept, we will delete all displays that won't fit into the lesser amount of screens",
+                    () => configDispatch.setDimensions({ width })
+                  );
+                else configDispatch.setDimensions({ width });
+              }}
+              value={configState.width}
+              options={widthOptions}
+            />
+            <XIcon className="w-5 h-5 mx-2" />
+            <DisplayCountDropDown
+              onChange={(height) => configDispatch.setDimensions({ height })}
+              value={configState.height}
+              options={heightOptions}
+            />
+          </div>
+        </Row>
+        <Row>
+          <Label hint="Disable this to massively reduce save times but you will not be able to 'load from freedeck'">
+            Save JSON:
+          </Label>
+          <FDSwitch
+            onChange={(val) => configDispatch.setSaveJson(val)}
+            value={configState.saveJson}
           />
-          <XIcon className="w-5 h-5 mx-2" />
-          <DisplayCountDropDown
-            onChange={(height) => configDispatch.setDimensions({ height })}
-            value={configState.height}
-            options={heightOptions}
-          />
-        </div>
-      </Row>
+        </Row>
+      </TitleBox>
+
       <Divider />
-      <Title>Device Info</Title>
-      <Row>
-        <Label>Firmware version:</Label>
-        <Value>{fwVersion}</Value>
-      </Row>
-      <Row>
-        <Label>Config version:</Label>
-        <Value>{configState.configVersion || "1.0.0"}</Value>
-      </Row>
+      <TitleBox title="Device Info">
+        <Row>
+          <Label>Firmware version:</Label>
+          <Value>{fwVersion}</Value>
+        </Row>
+        <Row>
+          <Label>Config version:</Label>
+          <Value>{configState.configVersion || "1.0.0"}</Value>
+        </Row>
+      </TitleBox>
     </div>
   );
 };

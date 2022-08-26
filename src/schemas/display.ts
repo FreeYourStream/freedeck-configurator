@@ -1,5 +1,6 @@
 import Joi from "joi";
 
+import { getEmptyConvertedImage } from "../definitions/emptyConvertedImage";
 import {
   fontLarge,
   fontMedium,
@@ -7,9 +8,10 @@ import {
   fontSmaller,
 } from "../definitions/fonts";
 import { EImageMode, ETextPosition } from "../definitions/modes";
+import { getBase64Image } from "../lib/image/base64Encode";
 
 export const TextWithIconSettingsSchema = Joi.object({
-  iconWidthMultiplier: Joi.number().min(0).max(1).default(0.35).required(),
+  iconWidthMultiplier: Joi.number().min(0).max(1).failover(0.35).required(),
 }).meta({
   className: "TextWithIconSettings",
 });
@@ -44,13 +46,17 @@ export const ImageSettingsSchema = Joi.object({
 export const DisplaySchema = Joi.object({
   // @ts-ignore
   convertedImage: Joi.any(),
-  imageSettings: ImageSettingsSchema.required(),
-  isGeneratedFromDefaultBackImage: Joi.bool().required(),
+  imageSettings: ImageSettingsSchema.required().failover(ImageSettingsSchema),
+  isGeneratedFromDefaultBackImage: Joi.bool().required().failover(false),
   // @ts-ignore
   originalImage: Joi.any(),
-  previewImage: Joi.string().required(),
-  textSettings: TextSettingsSchema.required(),
-  textWithIconSettings: TextWithIconSettingsSchema.required(),
+  previewImage: Joi.string()
+    .required()
+    .failover(getBase64Image(getEmptyConvertedImage())),
+  textSettings: TextSettingsSchema.required().failover(TextSettingsSchema),
+  textWithIconSettings: TextWithIconSettingsSchema.required().failover(
+    TextWithIconSettingsSchema
+  ),
 }).meta({
   className: "Display",
 });

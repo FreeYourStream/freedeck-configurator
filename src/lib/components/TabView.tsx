@@ -38,7 +38,7 @@ export const TabView: React.FC<{
         </Tab.List>
         <Tab.Panels as={Fragment}>
           {tabs.map((tab, index) => (
-            <Tab.Panel key={index} className="w-full flex p-4">
+            <Tab.Panel key={index} className="w-full flex p-8 overflow-y-auto">
               {tab.content}
             </Tab.Panel>
           ))}
@@ -46,39 +46,4 @@ export const TabView: React.FC<{
       </div>
     </Tab.Group>
   );
-  // const [activeTabIndex, setActiveTabIndex] = useState(0);
-  // return (
-  //   <div className="flex h-full">
-  //     <div className="flex flex-col gap-1 bg-gray-800 p-2">
-  //       {tabs.map((tab, index) => (
-  // <div
-  //   className={c(
-  //     "w-full inline-flex items-center font-normal text-lg tracking-wide rounded-lg  whitespace-nowrap  p-3  cursor-pointer select-none ",
-  //     activeTabIndex === index
-  //       ? "text-white bg-primary-600 shadow-xl "
-  //       : "text-white hover:bg-gray-400"
-  //   )}
-  //   onClick={() => setActiveTabIndex(index)}
-  //   key={index}
-  // >
-  //   <span className="mr-2">{tab.prefix}</span>
-  //   {tab.title}
-  // </div>
-  //       ))}
-  //     </div>
-  //     <div className="flex justify-center w-full p-8 h-dp-settings">
-  //       {tabs.map((tab, index) => (
-  //         <div
-  //           key={index}
-  //           className={c(
-  //             "w-full",
-  //             activeTabIndex === index ? "flex" : "hidden"
-  //           )}
-  //         >
-  //           {tab.content}
-  //         </div>
-  //       ))}
-  //     </div>
-  //   </div>
-  // );
 };

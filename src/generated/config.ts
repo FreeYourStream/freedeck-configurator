@@ -8,7 +8,7 @@ import { Display, Button } from '.';
 export interface Collection {
   name?: string;
   pages: string[];
-  usePageNameAsWindowName: boolean;
+  useCollectionNameAsWindowName: boolean;
   windowName?: string;
 }
 
@@ -24,11 +24,17 @@ export interface Collections {
 
 export interface Config {
   brightness: number;
+  clockDiv: number;
+  clockFreq: number;
   collections: Collections;
   configVersion: string;
   defaultBackDisplay: Display;
   height: number;
+  oledDelay: number;
+  oledSpeed: number;
   pages: Pages;
+  preChargePeriod: number;
+  saveJson: boolean;
   screenSaverTimeout: number;
   width: number;
 }

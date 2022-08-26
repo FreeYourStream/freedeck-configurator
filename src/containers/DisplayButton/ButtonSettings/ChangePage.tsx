@@ -7,8 +7,8 @@ import { FDButton } from "../../../lib/components/Button";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
 import { FDSelect } from "../../../lib/components/SelectInput";
-import { scrollToPage } from "../../../lib/scrollToPage";
-import { getPageName } from "../../../lib/util";
+import { scrollToPage } from "../../../lib/misc/scrollToPage";
+import { getPageName } from "../../../lib/misc/util";
 import { ConfigDispatchContext } from "../../../states/configState";
 
 export const ChangePage: React.FC<{
@@ -40,16 +40,16 @@ export const ChangePage: React.FC<{
             }
             options={[
               { text: "Select Page", value: "" },
-              ...Object.entries(pages.byId).map(([id, page]) => ({
-                value: id,
-                text: `Go to ${getPageName(id, page)}`,
-              })),
+              ...pages.sorted.map((id) => {
+                const page = pages.byId[id];
+                return { value: id, text: `Go to ${getPageName(id, page)}` };
+              }),
             ]}
           />
         </Row>
       ) : null}
       <div className="flex justify-center my-2">
-        {values[EAction.changePage] === "" ? (
+        {["", undefined].includes(values[EAction.changePage]) ? (
           <FDButton
             prefix={<PlusCircleIcon className="h-5 w-5" />}
             size={2}
@@ -67,12 +67,12 @@ export const ChangePage: React.FC<{
           <FDButton
             prefix={<LogoutIcon className="h-5 w-5" />}
             size={2}
-            onClick={() => scrollToPage(values[EAction.changePage])}
+            onClick={() => scrollToPage(values[EAction.changePage]!)}
           >
             Scroll To{" "}
             {getPageName(
-              values[EAction.changePage],
-              pages.byId[values[EAction.changePage]]
+              values[EAction.changePage]!,
+              pages.byId[values[EAction.changePage]!]
             )}
           </FDButton>
         )}

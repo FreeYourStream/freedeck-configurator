@@ -7,5 +7,7 @@ module.exports = {
   },
   devServer: {
     open: false,
+    // hot: false,
+    // liveReload: true,
   },
 };

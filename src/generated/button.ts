@@ -9,17 +9,23 @@ export interface Button {
 }
 
 export interface ButtonSetting {
+  leavePage: LeavePage;
   mode: 'changePage' | 'hotkeys' | 'noop' | 'settings' | 'special_keys' | 'text';
   values: ButtonValues;
 }
 
 export interface ButtonValues {
-  changePage: string;
+  changePage?: string;
   hotkeys: number[];
   settings: {
     setting: 0 | 1;
     value: number;
   };
   special_keys: number;
-  text: number[];
+  text?: string;
+}
+
+export interface LeavePage {
+  enabled: boolean;
+  pageId?: string;
 }

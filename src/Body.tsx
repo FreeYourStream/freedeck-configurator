@@ -13,8 +13,7 @@ import { FirstPage } from "./containers/FirstTime";
 import { Header } from "./containers/Header";
 import { Pages } from "./containers/Page/Pages";
 import { FDButton } from "./lib/components/Button";
-import { usePageSwitcher } from "./lib/hooks/pageSwitcherHook";
-import { AppStateContext } from "./states/appState";
+import { useBackgroundTasks } from "./lib/hooks/backgroundTasks";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -23,13 +22,11 @@ import {
 export const Body = () => {
   const nav = useNavigate();
   const configState = useContext(ConfigStateContext);
-  const appState = useContext(AppStateContext);
   const { createCollection, addPage, setPageCollection } = useContext(
     ConfigDispatchContext
   );
-  usePageSwitcher({ appState, configState });
-  const [, drop] = useDrop({
-    options: {},
+  useBackgroundTasks();
+  const [, drop] = useDrop<{ pageId: string; collectionId: string }>({
     accept: "page",
     drop: (item, monitor) => {
       if (!!monitor.getItem().collectionId && monitor.isOver()) {
@@ -48,9 +45,8 @@ export const Body = () => {
           (p) => !p.isInCollection
         ).length && <Pages />}
         {!Object.values(configState.pages.sorted).length && <FirstPage />}
-        {!!Object.keys(configState.collections.sorted).length && (
-          <Collections />
-        )}
+        {!!Object.keys(configState.collections.sorted).length &&
+          !!configState.pages.sorted.length && <Collections />}
       </ContentBody>
       <Toaster />
       <div className="fixed bottom-5 left-6 z-30">

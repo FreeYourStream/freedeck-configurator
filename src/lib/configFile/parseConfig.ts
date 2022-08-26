@@ -1,9 +1,11 @@
+import { inflate } from "pako";
+
 import { createDefaultDisplay } from "../../definitions/defaultPage";
-import { Display } from "../../generated";
+import { Config, Display } from "../../generated";
 import { ConfigSchema } from "../../schemas/config";
-import { ConfigState } from "../../states/configState";
 import { getBase64Image } from "../image/base64Encode";
 import { composeImage, composeText } from "../image/composeImage";
+import { ROW_SIZE } from "./consts";
 
 export const generateAdditionalImagery = async (
   display: Display
@@ -26,8 +28,8 @@ export const generateAdditionalImagery = async (
 };
 
 export const convertCurrentConfig = async (
-  rawConfig: ConfigState
-): Promise<ConfigState> => {
+  rawConfig: Config
+): Promise<Config> => {
   for (let outer = 0; outer < rawConfig.pages.sorted.length; outer++) {
     const id = rawConfig.pages.sorted[outer];
     const page = rawConfig.pages.byId[id];
@@ -48,14 +50,16 @@ export const convertCurrentConfig = async (
     { stripUnknown: true }
   );
   if (validated.error) throw new Error(validated.error.message);
-  return validated.value;
+  const config = validated.value;
+  config.configVersion = (
+    await import("../../../package.json")
+  ).configFileVersion;
+  return config;
 };
 
-export const parseConfig = async (
-  configBuffer: Buffer
-): Promise<ConfigState> => {
+export const parseConfig = async (configBuffer: Buffer): Promise<Config> => {
   const displayButtonCount = configBuffer.readUInt16LE(2) - 1; // subtract 1 for the header row
-  const imageOffset = 16 * (displayButtonCount + 1);
+  const imageOffset = ROW_SIZE * (displayButtonCount + 1);
   const jsonOffset = imageOffset + 1024 * displayButtonCount;
 
   if (configBuffer.length === jsonOffset) {
@@ -65,9 +69,16 @@ export const parseConfig = async (
     );
   }
   const jsonConfigSlice = configBuffer.slice(jsonOffset);
-  const rawConfig = JSON.parse(jsonConfigSlice.toString());
+  console.log("before");
+  console.log(jsonConfigSlice.length);
+  const rawConfig = JSON.parse(inflate(jsonConfigSlice, { to: "string" }));
+  console.log("after");
   if (!rawConfig.configVersion) {
     throw new Error("legacy config. not compatible");
   }
-  return await convertCurrentConfig(rawConfig);
+  const config = await convertCurrentConfig(rawConfig);
+  config.configVersion = (
+    await import("../../../package.json")
+  ).configFileVersion;
+  return config;
 };

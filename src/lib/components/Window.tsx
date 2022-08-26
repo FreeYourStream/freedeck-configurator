@@ -46,7 +46,7 @@ export const FDWindow: React.FC<{
           >
             <div
               className={c(
-                "h-11 flex items-center justify-center font-medium text-xl text-white bg-gray-700 rounded-t-2xl",
+                "h-10 flex  flex-shrink-0 items-center justify-center font-medium text-xl text-white bg-gray-700 rounded-t-2xl",
                 !title?.length && "hidden"
               )}
             >
@@ -59,7 +59,6 @@ export const FDWindow: React.FC<{
                 }
                 onClick={() => setClose()}
               >
-                {/* <Icon icon="ri/RiCloseCircleFill" size={32} color="white" /> */}
                 <XCircleIcon className="h-7 w-7 hover:text-danger-500" />
               </div>
             </div>

@@ -50,9 +50,9 @@ export const FDButton = ({
 
   return (
     <div
-      onClick={onClick}
+      onClick={disabled ? () => {} : onClick}
       title={title}
-      className={`inline-flex items-center text-lg font-normal tracking-wider rounded-md select-none min-w-0 ${sizeClasses} ${typeClasses} ${className}`}
+      className={`cursor-pointer inline-flex items-center text-lg font-normal tracking-wider rounded-md select-none min-w-0 ${sizeClasses} ${typeClasses} ${className}`}
     >
       {!!prefix && <span>{prefix}</span>}
       <span className="overflow-hidden overflow-ellipsis whitespace-nowrap">

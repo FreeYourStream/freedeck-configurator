@@ -2,23 +2,22 @@ import {
   CheckIcon,
   CogIcon,
   DownloadIcon,
-  LightningBoltIcon,
   SaveIcon,
   UploadIcon,
 } from "@heroicons/react/outline";
 import c from "clsx";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { iconSize } from "../definitions/iconSizes";
 import { FDButton } from "../lib/components/Button";
 import { Value } from "../lib/components/LabelValue";
+import { FDSelect } from "../lib/components/SelectInput";
 import { createConfigBuffer } from "../lib/configFile/createBuffer";
 import { loadConfigFile } from "../lib/configFile/loadConfigFile";
-import { download } from "../lib/download";
-import { connectionStatus } from "../lib/serial";
-import { isMacOS } from "../lib/util";
-import { AppStateContext } from "../states/appState";
+import { download } from "../lib/file/download";
+import { isMacOS } from "../lib/misc/util";
+import { AppDispatchContext, AppStateContext } from "../states/appState";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -27,28 +26,32 @@ import { LoginLogoutButtons } from "./LoginButton";
 
 export const Header: React.FC<{}> = () => {
   const configState = useContext(ConfigStateContext);
+  const { hasJson } = useContext(AppStateContext);
+  const { setHasJson, openAlert, setDevLog } = useContext(AppDispatchContext);
   const { pages } = configState;
   const { setState } = useContext(ConfigDispatchContext);
-  const { serialApi, ctrlDown } = useContext(AppStateContext);
+  const { serialApi, ctrlDown, availablePorts, connectedPortIndex } =
+    useContext(AppStateContext);
+
   const nav = useNavigate();
-  const [connected, setConnected] = useState<boolean>(!!serialApi?.connected);
+  const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState<number>(0);
   const loadConfigRef = useRef<HTMLInputElement | null>(null);
-  useEffect(() => {
-    if (!serialApi) return;
-    const id = serialApi.registerOnConStatusChange((type) => {
-      setConnected(type === connectionStatus.connect);
-    });
-
-    return () => serialApi.clearOnConStatusChange(id);
-  }, [serialApi]);
-
   const saveConfigFile = () => {
     if (Object.keys(pages.byId).length === 0) return;
-    const completeBuffer = createConfigBuffer(configState);
+    const completeBuffer = createConfigBuffer(configState, true);
 
     completeBuffer && download(completeBuffer);
   };
+  const deviceEntries = [
+    { text: "Disconnected", value: -1 },
+    ...availablePorts.map((port, index) => ({
+      text: port.replace(";", " "),
+      value: index,
+    })),
+  ];
+  if (!(window as any).__TAURI_IPC__)
+    deviceEntries.push({ text: "Connect new...", value: -2 });
   return (
     <div
       id="header"
@@ -80,33 +83,75 @@ export const Header: React.FC<{}> = () => {
                 loadConfigFile(event.currentTarget.files, setState);
             }}
           ></input>
-          <div
-            className={c("flex items-center space-x-4 h-auto overflow-hidden")}
-          >
-            {connected && !ctrlDown ? (
+          <div className={c("flex items-center space-x-4")}>
+            {serialApi?.connected && !ctrlDown ? (
               <>
                 <FDButton
                   prefix={<UploadIcon className={iconSize} />}
                   size={3}
-                  onClick={() =>
-                    serialApi!
-                      .readConfigFromSerial((rec, size) =>
-                        setProgress(rec / size)
-                      )
-                      .then((data) => loadConfigFile(data, setState))
+                  disabled={!hasJson || isLoading}
+                  title={
+                    hasJson
+                      ? "Load config over serial"
+                      : "Cannot load config. FreeDeck stores no JSON. Change it in Settings -> Device"
                   }
+                  onClick={async () => {
+                    setIsLoading(true);
+                    await serialApi!
+                      .readConfigFromSerial((rec, size, start) => {
+                        setProgress(rec / size);
+                        if (rec === size)
+                          setDevLog({
+                            path: "lastReceiveSpeed",
+                            data:
+                              Math.round(
+                                size / (new Date().getTime() - start.getTime())
+                              ) + "kb/s",
+                          });
+                      })
+                      .then((data) => loadConfigFile(data, setState))
+                      .catch((e) =>
+                        openAlert({
+                          title: "Attention: Error",
+                          text: e.message,
+                        })
+                      );
+                    setIsLoading(false);
+                  }}
                 >
                   Load from FreeDeck
                 </FDButton>
                 <FDButton
                   prefix={<SaveIcon className={iconSize} />}
                   size={3}
-                  onClick={async () =>
-                    serialApi!.writeConfigOverSerial(
-                      createConfigBuffer(configState),
-                      (rec, size) => setProgress(rec / size)
-                    )
-                  }
+                  disabled={isLoading}
+                  onClick={async () => {
+                    setIsLoading(true);
+                    await serialApi!
+                      .writeConfigOverSerial(
+                        createConfigBuffer(configState, false),
+                        (rec, size, start) => {
+                          setProgress(rec / size);
+                          if (rec === size)
+                            setDevLog({
+                              path: "lastTransmitSpeed",
+                              data:
+                                Math.round(
+                                  size /
+                                    (new Date().getTime() - start.getTime())
+                                ) + "kb/s",
+                            });
+                        }
+                      )
+                      .then(() => setHasJson(configState.saveJson))
+                      .catch((e) =>
+                        openAlert({
+                          title: "Attention: Error",
+                          text: e.message,
+                        })
+                      );
+                    await setIsLoading(false);
+                  }}
                 >
                   Save to FreeDeck
                 </FDButton>
@@ -155,18 +200,26 @@ export const Header: React.FC<{}> = () => {
                     Save Config
                   </FDButton>
                 )}
-                {serialApi && !serialApi.connected && (
-                  <FDButton
-                    prefix={<LightningBoltIcon className={iconSize} />}
-                    size={3}
-                    onClick={() =>
-                      serialApi.connect().catch((e) => console.log(e))
-                    }
-                  >
-                    Connect to FreeDeck
-                  </FDButton>
-                )}
               </>
+            )}
+            {serialApi && (
+              <FDSelect
+                options={deviceEntries}
+                value={connectedPortIndex ?? -1}
+                onChange={(value) => {
+                  switch (value) {
+                    case -1:
+                      serialApi?.disconnect();
+                      break;
+                    case -2:
+                      serialApi?.requestNewPort().catch((e) => console.log(e));
+                      break;
+                    default:
+                      serialApi?.connect(value);
+                      break;
+                  }
+                }}
+              />
             )}
           </div>
         </form>

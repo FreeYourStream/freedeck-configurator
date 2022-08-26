@@ -7,6 +7,7 @@ import { FDButton } from "../../../lib/components/Button";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
 import { FDSelect } from "../../../lib/components/SelectInput";
+import { ROW_SIZE } from "../../../lib/configFile/consts";
 import { useTranslateKeyboardLayout } from "../../../lib/localisation/keyboard";
 
 const HotkeyKeys: React.FC<{
@@ -26,7 +27,12 @@ const HotkeyKeys: React.FC<{
             setKeys(newKeys.slice(0, 7));
           }}
         >
-          {key}
+          {!!(
+            translatedKeys.slice(0, index + 1).filter((k) => k === key).length %
+            2
+          )
+            ? key
+            : `^${key}`}
         </FDButton>
       ))}
     </div>
@@ -38,7 +44,7 @@ export const Hotkeys: React.FC<{
   setValues: (values: ButtonSetting["values"]) => void;
 }> = ({ setValues, values }) => {
   const setKeys = (newValues: number[]) =>
-    newValues.length < 7 &&
+    newValues.length <= ROW_SIZE / 2 - 3 &&
     setValues({
       ...values,
       [EAction.hotkeys]: newValues,
@@ -65,6 +71,11 @@ export const Hotkeys: React.FC<{
           className="w-48"
           value={0}
           onChange={(value) => {
+            if (
+              !!values[EAction.hotkeys].find((k) => k === value) &&
+              value >= 0xe0
+            )
+              return;
             setKeys([...values[EAction.hotkeys], parseInt(value)]);
           }}
           options={[

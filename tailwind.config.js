@@ -117,10 +117,12 @@ module.exports = {
     extend: {
       height: {
         "dp-settings": "600px",
+        settings: "600px",
       },
       width: {
         "publish-page": "336px",
         "dp-settings": "1000px",
+        help: "500px",
       },
       gap: {
         "1px": "1px",

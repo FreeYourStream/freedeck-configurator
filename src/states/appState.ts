@@ -1,11 +1,17 @@
+import { invoke } from "@tauri-apps/api";
 import { createContext } from "react";
 
-import { FDSerialAPI } from "../lib/fdSerialApi";
+import { FDSerialAPI } from "../lib/serial/fdSerialApi";
 import { Actions, FunctionForFirstParamType } from "./interfaces";
 
 export interface AppState {
+  autoPageSwitcherEnabled: boolean;
   ctrlDown: boolean;
   serialApi?: FDSerialAPI;
+  availablePorts: string[];
+  connectedPortIndex: number;
+  devLog: any;
+  hasJson: boolean;
   alert: {
     isOpen: boolean;
     text: string;
@@ -20,8 +26,16 @@ export interface AppState {
   };
 }
 export const defaultAppState: () => Promise<AppState> = async () => ({
+  autoPageSwitcherEnabled: true,
   ctrlDown: false,
-  serialApi: (navigator as any).serial ? new FDSerialAPI() : undefined,
+  serialApi:
+    navigator.serial || (window as any).__TAURI_IPC__
+      ? new FDSerialAPI()
+      : undefined,
+  devLog: {},
+  availablePorts: [],
+  connectedPortIndex: -1,
+  hasJson: true,
   alert: {
     isOpen: false,
     text: "",
@@ -36,10 +50,16 @@ export const defaultAppState: () => Promise<AppState> = async () => ({
 
 export interface IAppReducer extends Actions<AppState> {
   setCtrl(state: AppState, ctrlDown: boolean): Promise<AppState>;
+  toggleAutoPageSwitcher(state: AppState, enabled?: boolean): Promise<AppState>;
   closeAlert(state: AppState): Promise<AppState>;
+  setHasJson(state: AppState, hasJson: boolean): Promise<AppState>;
   openAlert(
     state: AppState,
     data: { text: string; title: string }
+  ): Promise<AppState>;
+  setDevLog(
+    state: AppState,
+    data: { path: string; data: any }
   ): Promise<AppState>;
   closeConfirm(state: AppState, data: { value: boolean }): Promise<AppState>;
   openConfirm(
@@ -51,11 +71,40 @@ export interface IAppReducer extends Actions<AppState> {
       onAbort?: () => any;
     }
   ): Promise<AppState>;
+  setAvailablePorts(
+    state: AppState,
+    availablePorts: string[]
+  ): Promise<AppState>;
+  setConnectedPortIndex(
+    state: AppState,
+    connectedPortIndex: number
+  ): Promise<AppState>;
 }
 
 export const appReducer: IAppReducer = {
   async setCtrl(state, ctrlDown) {
     return { ...state, ctrlDown };
+  },
+  async toggleAutoPageSwitcher(state, maybeEnabled) {
+    const enabled =
+      maybeEnabled === undefined
+        ? !state.autoPageSwitcherEnabled
+        : maybeEnabled;
+    setTimeout(() =>
+      localStorage.setItem("autoPageSwitcherEnabled", enabled.toString())
+    );
+    invoke("set_aps_state", {
+      apsState: enabled,
+    });
+    return { ...state, autoPageSwitcherEnabled: enabled };
+  },
+  async setDevLog(state: AppState, { path, data }) {
+    const devLog = { ...state.devLog };
+    devLog[path] = data;
+    return { ...state, devLog };
+  },
+  async setHasJson(state: AppState, hasJson: boolean) {
+    return { ...state, hasJson };
   },
   async closeAlert(state) {
     return { ...state, alert: { ...state.alert, isOpen: false } };
@@ -75,6 +124,12 @@ export const appReducer: IAppReducer = {
   },
   async openConfirm(state, data) {
     return { ...state, confirm: { ...data, isOpen: true } };
+  },
+  async setAvailablePorts(state, availablePorts) {
+    return { ...state, availablePorts };
+  },
+  async setConnectedPortIndex(state, connectedPortIndex) {
+    return { ...state, connectedPortIndex };
   },
 };
 

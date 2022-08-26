@@ -1,7 +1,8 @@
 import { Dialog, Transition } from "@headlessui/react";
 import React, { Fragment } from "react";
+
 import { FDButton } from "./Button";
-import { Title } from "./Title";
+import { TitleBox } from "./Title";
 
 export const Modal: React.FC<{
   title: string;
@@ -39,11 +40,13 @@ export const Modal: React.FC<{
         >
           <div className="flex flex-col items-start justify-center p-6 bg-gray-600 z-50 rounded-xl shadow-2xl">
             <Dialog.Title className="mb-2">
-              <Title>{title}</Title>
+              <TitleBox title={title}>
+                <Dialog.Description className="text-lg mb-8">
+                  {text}
+                </Dialog.Description>
+              </TitleBox>
             </Dialog.Title>
-            <Dialog.Description className="text-lg mb-8">
-              {text}
-            </Dialog.Description>
+
             <div className="flex w-full justify-end gap-2">
               <FDButton type="danger" onClick={() => onAccept()}>
                 Yes
