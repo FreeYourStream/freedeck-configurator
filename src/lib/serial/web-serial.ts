@@ -105,10 +105,8 @@ export class WebSerialConnector implements SerialConnector {
       await this.sleep(10);
     }
     if (!this.buffer.length) return [];
-    // const data = [...this.buffer.splice(0, Math.min(this.buffer.length, 2560))];
+    const data = [...this.buffer.splice(0, Math.min(this.buffer.length, 2560))];
 
-    const data = [...this.buffer];
-    this.flush();
     return data;
   }
 
@@ -178,6 +176,7 @@ export class WebSerialConnector implements SerialConnector {
 
   private async closePort() {
     // thx w3c for this
+    this.connectedPortIndex = -1;
     await this.writer?.releaseLock();
     this.abortController?.abort();
     await this.writer?.abort().catch(() => {});
@@ -190,10 +189,9 @@ export class WebSerialConnector implements SerialConnector {
     await this.bufferWrite?.close().catch(() => {});
     await this.reader?.catch(() => {});
     this.port?.close().catch(() => {});
-    this.reader = undefined;
-    this.connectedPortIndex = -1;
-    this.port = undefined;
     this.buffer = [];
+    this.port = undefined;
+    this.reader = undefined;
   }
 
   private async sleep(ms: number) {
