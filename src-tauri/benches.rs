@@ -2,6 +2,7 @@ extern crate criterion;
 use criterion::{criterion_group, criterion_main, Criterion};
 
 use fd_lib::os::refresh_ports;
+use fd_lib::system::SystemInfo;
 
 use std::sync::{Arc, Mutex};
 
@@ -12,6 +13,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         let state = Arc::new(Mutex::new(FDState {
             current_window: "".into(),
             serial: FDSerial::new(),
+            system_info: SystemInfo::new(),
         }));
         b.iter(|| refresh_ports(&state, 0, |_ports| ()));
     });

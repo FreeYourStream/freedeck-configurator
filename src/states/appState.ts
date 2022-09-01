@@ -24,6 +24,9 @@ export interface AppState {
     onAccept?: () => any;
     onAbort?: () => any;
   };
+  system: {
+    cpuTemp: number;
+  };
 }
 export const defaultAppState: () => Promise<AppState> = async () => ({
   autoPageSwitcherEnabled: true,
@@ -45,6 +48,9 @@ export const defaultAppState: () => Promise<AppState> = async () => ({
     isOpen: false,
     text: "",
     title: "",
+  },
+  system: {
+    cpuTemp: 0,
   },
 });
 
@@ -79,6 +85,7 @@ export interface IAppReducer extends Actions<AppState> {
     state: AppState,
     connectedPortIndex: number
   ): Promise<AppState>;
+  setCPUTemp(state: AppState, cpuTemp: number): Promise<AppState>;
 }
 
 export const appReducer: IAppReducer = {
@@ -130,6 +137,9 @@ export const appReducer: IAppReducer = {
   },
   async setConnectedPortIndex(state, connectedPortIndex) {
     return { ...state, connectedPortIndex };
+  },
+  async setCPUTemp(state, cpuTemp) {
+    return { ...state, system: { ...state.system, cpuTemp } };
   },
 };
 

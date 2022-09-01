@@ -4,7 +4,7 @@
 )]
 mod modules;
 
-use fd_lib::{serial::FDSerial, state::FDState};
+use fd_lib::{serial::FDSerial, state::FDState, system::SystemInfo};
 use modules::{commands, event_handlers, plugins::single_instance, threads};
 
 use std::sync::{Arc, Mutex};
@@ -33,6 +33,7 @@ fn main() {
     let state = Arc::new(Mutex::new(FDState {
         serial: FDSerial::new(),
         current_window: "".to_string(),
+        system_info: SystemInfo::new(),
     }));
 
     #[allow(unused_mut)] // needed for macos
@@ -50,6 +51,7 @@ fn main() {
             commands::read,
             commands::read_line,
             commands::get_current_window,
+            commands::get_cpu_temp,
             commands::set_aps_state,
             commands::press_keys
         ))

@@ -152,8 +152,9 @@ export const _composeImage = async (display: Display): Promise<Buffer> => {
   return await colorBitmapToMonochromeBitmap(bitmapBuffer, 128, 64);
 };
 
-export const _composeText = async (settings: Display): Promise<Buffer> => {
-  const { textSettings } = settings;
+export const _composeText = async (
+  textSettings: Display["textSettings"]
+): Promise<Buffer> => {
   const image = await import("jimp").then((jimp) =>
     jimp.default.create(128, 64, "black")
   );
@@ -191,7 +192,11 @@ export const composeImage = debounce(_composeImage, 1, {
   leading: true,
   maxWait: 16,
 });
-export const composeText = debounce(_composeText, 1, {
-  leading: true,
-  maxWait: 16,
-});
+export const composeText = debounce(
+  (settings: Display) => _composeText(settings.textSettings),
+  1,
+  {
+    leading: true,
+    maxWait: 16,
+  }
+);

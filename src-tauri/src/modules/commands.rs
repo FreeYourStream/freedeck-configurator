@@ -63,6 +63,12 @@ pub fn press_keys(_state: State<Arc<Mutex<FDState>>>, key_string: String) {
 pub fn get_current_window(state: State<Arc<Mutex<FDState>>>) -> String {
     state.lock().unwrap().current_window.clone()
 }
+
+#[command]
+pub fn get_cpu_temp(state: State<Arc<Mutex<FDState>>>) -> f32 {
+    state.lock().unwrap().system_info.cpu_temp()
+}
+
 #[command]
 pub fn set_aps_state(window: Window, aps_state: bool) {
     let aps_item = window.app_handle().tray_handle().get_item("aps");

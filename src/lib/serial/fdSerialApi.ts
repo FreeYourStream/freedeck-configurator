@@ -1,5 +1,7 @@
 import { minFWVersion } from "../../../package.json";
 import { TRANSMIT_BUFFER_SIZE } from "../configFile/consts";
+import { optimizeForSSD1306 } from "../configFile/ssd1306";
+import { _composeText, composeText } from "../image/composeImage";
 import { compareVersions, timeout } from "../misc/util";
 import { TauriSerialConnector } from "./tauri-serial";
 import { WebSerialConnector } from "./web-serial";
@@ -99,15 +101,15 @@ export class FDSerialAPI {
     if (this.connected === connectionStatus.disconnect)
       this.throwError("not connected");
     this.Serial.flush();
-    await this.write([commands.init, commands.oledClear, screen]);
-    await this.write([
-      commands.init,
-      commands.oledWriteLine,
-      screen,
-      0,
-      size,
+    // await this.write([commands.init, commands.oledClear, screen]);
+    const image = await _composeText({
+      font: "fonts/medium.fnt",
       text,
-    ]);
+      position: "bottom",
+    });
+    const optimizedImage = optimizeForSSD1306(image.slice(130));
+    await this.write([commands.init, commands.oledWriteData, screen]);
+    await this.Serial.write([...optimizedImage]);
     this.nextCall();
   }
 
@@ -252,6 +254,7 @@ export class FDSerialAPI {
       mappedData.push(0xa);
     });
     // console.log("sending to freedeck", mappedData);
+    console.log(mappedData);
     await this.Serial.write(mappedData);
   }
 

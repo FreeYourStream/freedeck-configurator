@@ -1,9 +1,8 @@
+use crate::{serial::Port, state::FDState};
 use std::{
     path::PathBuf,
     sync::{Arc, Mutex},
 };
-
-use crate::{serial::Port, state::FDState};
 
 #[cfg(target_os = "macos")]
 pub fn get_current_window<F: FnOnce(&str) -> Option<PathBuf>>(

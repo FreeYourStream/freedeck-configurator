@@ -83,6 +83,7 @@ export const createImageBody = (pages: Pages) => {
     pages.byId[
       pages.sorted[0]
     ].displayButtons[0].display.convertedImage.readUInt32LE(10);
+  console.log(bmpHeaderSize);
   pages.sorted.forEach((id) => {
     const page = pages.byId[id];
     page.displayButtons.forEach((db) => {
