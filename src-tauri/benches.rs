@@ -20,6 +20,10 @@ fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("get current window", |b| {
         b.iter(|| get_current_window(|path| Some(path.into())))
     });
+    c.bench_function("get cpu temp", |b| {
+        let mut system = SystemInfo::new();
+        b.iter(|| system.cpu_temp())
+    });
 }
 
 criterion_group!(all, criterion_benchmark);
