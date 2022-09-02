@@ -1,26 +1,27 @@
 import { MutableRefObject, useRef } from "react";
 
+import { RefState, StateRef } from "../../../App";
 import { Config } from "../../../generated";
 import { AppState, IAppDispatch } from "../../../states/appState";
 import { IConfigDispatch } from "../../../states/configState";
+import { useOnce } from "../once";
 import { useLiveData } from "./liveData";
 import { usePageSwitcher } from "./pageSwitcher";
 import { usePersistentConfig } from "./persistentConfig";
 import { useSerialCommand } from "./serialCommand";
 import { useSystemInfo } from "./systemInfo";
 
-export type RefState = MutableRefObject<Map<string, any>>;
-export const useStartupHooks = (
+export const useBackgroundTasks = (
   configState: Config,
   configDispatch: IConfigDispatch,
   appState: AppState,
-  appDispatch: IAppDispatch
+  appDispatch: IAppDispatch,
+  refState: StateRef
 ) => {
   usePersistentConfig(configDispatch, appDispatch);
   usePageSwitcher(configState, appState);
 
-  const refData = useRef<Map<string, any>>(new Map());
-  useSerialCommand(configState, appState, appDispatch, refData);
-  useSystemInfo(configState, appDispatch, refData);
-  useLiveData(configState, appState, refData);
+  useSerialCommand(configState, appState, appDispatch, refState);
+  useSystemInfo(configState, appDispatch, refState);
+  useLiveData(configState, appState, refState);
 };

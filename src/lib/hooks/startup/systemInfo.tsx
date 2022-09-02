@@ -1,15 +1,15 @@
 import { invoke } from "@tauri-apps/api";
 import { useEffect } from "react";
 
+import { StateRef } from "../../../App";
 import { Config } from "../../../generated";
 import { AppState, IAppDispatch } from "../../../states/appState";
 import { timeout } from "../../misc/util";
-import { RefState } from ".";
 
 export const useSystemInfo = (
   configState: Config,
   appDispatch: IAppDispatch,
-  refData: RefState
+  refData: StateRef
 ) => {
   useEffect(() => {
     if (!(window as any).__TAURI_IPC__) return;
@@ -25,7 +25,7 @@ export const useSystemInfo = (
         const temps = await invoke<{ cpuTemp: number; gpuTemp: number }>(
           "get_temps"
         );
-        refData.current.set("system", temps);
+        refData.current.system = temps;
         appDispatch.setTemps(temps);
       }, 100) as unknown as number;
     };

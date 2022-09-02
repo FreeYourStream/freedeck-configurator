@@ -1,17 +1,17 @@
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import { useEffect } from "react";
 
+import { StateRef } from "../../../App";
 import { Config } from "../../../generated";
 import { AppState, IAppDispatch } from "../../../states/appState";
 import { timeout } from "../../misc/util";
 import { runCommand } from "../../serial/commands";
-import { RefState } from ".";
 
 export const useSerialCommand = (
   configState: Config,
   appState: AppState,
   appDispatch: IAppDispatch,
-  refData: RefState
+  refData: StateRef
 ) => {
   useEffect(() => {
     if (!(window as any).__TAURI_IPC__) return;

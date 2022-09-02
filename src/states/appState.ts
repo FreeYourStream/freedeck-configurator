@@ -30,6 +30,7 @@ export interface AppState {
   };
   system: {
     cpuTemp: number;
+    gpuTemp: number;
   };
 }
 export const defaultAppState: () => Promise<AppState> = async () => ({

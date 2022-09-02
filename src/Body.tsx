@@ -13,7 +13,7 @@ import { FirstPage } from "./containers/FirstTime";
 import { Header } from "./containers/Header";
 import { Pages } from "./containers/Page/Pages";
 import { FDButton } from "./lib/components/Button";
-import { useBackgroundTasks } from "./lib/hooks/backgroundTasks";
+import { useOnce } from "./lib/hooks/once";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -25,7 +25,6 @@ export const Body = () => {
   const { createCollection, addPage, setPageCollection } = useContext(
     ConfigDispatchContext
   );
-  useBackgroundTasks();
   const [, drop] = useDrop<{ pageId: string; collectionId: string }>({
     accept: "page",
     drop: (item, monitor) => {

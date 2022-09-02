@@ -1,17 +1,17 @@
-import { invoke } from "@tauri-apps/api";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
+import { StateRef } from "../../../App";
 import { Config } from "../../../generated";
 import { AppState } from "../../../states/appState";
-import { timeout } from "../../misc/util";
-import { convertData } from "./pollPage";
-import { RefState } from ".";
 
-const action = (configState: Config, appState: AppState, refData: RefState) => {
-  let deck = refData.current.get("deck") as
-    | { currentPage: number; dontSwitchPage: boolean }
-    | undefined;
-  if (deck === undefined || deck.dontSwitchPage) return;
+const updateLiveDisplays = async (
+  configState: Config,
+  appState: AppState,
+  refData: StateRef
+) => {
+  let deck = refData.current.deck;
+  if (deck === undefined || deck.dontSwitchPage || deck.currentPage === null)
+    return;
   const pageId = configState.pages.sorted[deck.currentPage];
   const page = configState.pages.byId[pageId];
   if (!page) return;
@@ -19,19 +19,19 @@ const action = (configState: Config, appState: AppState, refData: RefState) => {
   for (const db of page.displayButtons) {
     if (db.live) {
       if (db.live === "cpu_temp")
-        appState.serialApi?.writeToScreen(
-          `CPU: ${refData.current.get("system").cpuTemp.toFixed(0)}C`,
+        await appState.serialApi?.writeToScreen(
+          `CPU: ${refData.current.system.cpuTemp.toFixed(0)}C`,
           dbIndex
         );
       if (db.live === "gpu_temp")
-        appState.serialApi?.writeToScreen(
-          `GPU: ${refData.current.get("system").gpuTemp.toFixed(0)}C`,
+        await appState.serialApi?.writeToScreen(
+          `GPU: ${refData.current.system.gpuTemp.toFixed(0)}C`,
           dbIndex
         );
       if (db.live === "cpu_gpu_temp")
-        appState.serialApi?.writeToScreen(
-          `CPU: ${refData.current.get("system").cpuTemp.toFixed(0)}C
-GPU: ${refData.current.get("system").gpuTemp.toFixed(0)}C`,
+        await appState.serialApi?.writeToScreen(
+          `CPU: ${refData.current.system.cpuTemp.toFixed(0)}C
+GPU: ${refData.current.system.gpuTemp.toFixed(0)}C`,
           dbIndex
         );
     }
@@ -41,7 +41,7 @@ GPU: ${refData.current.get("system").gpuTemp.toFixed(0)}C`,
 export const useLiveData = (
   configState: Config,
   appState: AppState,
-  refData: RefState
+  refData: StateRef
 ) => {
   useEffect(() => {
     if (!(window as any).__TAURI_IPC__) return;
@@ -50,10 +50,9 @@ export const useLiveData = (
     let unlistenSerialCommand: number | undefined;
     const startListen = async () => {
       if (isCancelled) return;
-
-      action(configState, appState, refData);
+      updateLiveDisplays(configState, appState, refData);
       unlistenSerialCommand = setInterval(async () => {
-        action(configState, appState, refData);
+        updateLiveDisplays(configState, appState, refData);
       }, 1000) as unknown as number;
     };
 
