@@ -51,7 +51,7 @@ fn main() {
             commands::read,
             commands::read_line,
             commands::get_current_window,
-            commands::get_cpu_temp,
+            commands::get_temps,
             commands::set_aps_state,
             commands::press_keys
         ))

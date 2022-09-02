@@ -9,7 +9,13 @@ import {
   createDefaultPage,
 } from "../definitions/defaultPage";
 import { EAction } from "../definitions/modes";
-import { ButtonSetting, Config, Display, Page } from "../generated";
+import {
+  ButtonSetting,
+  Config,
+  Display,
+  DisplayButton,
+  Page,
+} from "../generated";
 import {
   PageDocument,
   PageQuery,
@@ -207,6 +213,10 @@ export interface IConfigReducer extends Actions<Config> {
     data: { pageId: string; buttonIndex: number }
   ): Promise<Config>;
   resetDefaultBackButton(state: Config): Promise<Config>;
+  setLive(
+    state: Config,
+    data: { pageId: string; buttonIndex: number; live: DisplayButton["live"] }
+  ): Promise<Config>;
   setState(state: Config, newState: Config): Promise<Config>;
 }
 
@@ -599,6 +609,11 @@ export const configReducer: IConfigReducer = {
   },
   async resetDefaultBackButton(state) {
     state.defaultBackDisplay = await createDefaultBackDisplay("dbd");
+    return saveConfigToLocalStorage(state);
+  },
+  async setLive(state, data) {
+    state.pages.byId[data.pageId].displayButtons[data.buttonIndex].live =
+      data.live;
     return saveConfigToLocalStorage(state);
   },
   async setState(state, newState) {

@@ -19,4 +19,14 @@ impl SystemInfo {
         cpu.refresh();
         cpu.temperature()
     }
+    pub fn gpu_temp(&mut self) -> f32 {
+        let gpu = self
+            .sys
+            .components_mut()
+            .iter_mut()
+            .find(|c| ["edge"].contains(&c.label()))
+            .unwrap();
+        gpu.refresh();
+        gpu.temperature()
+    }
 }

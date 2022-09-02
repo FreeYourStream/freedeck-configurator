@@ -65,8 +65,11 @@ pub fn get_current_window(state: State<Arc<Mutex<FDState>>>) -> String {
 }
 
 #[command]
-pub fn get_cpu_temp(state: State<Arc<Mutex<FDState>>>) -> f32 {
-    state.lock().unwrap().system_info.cpu_temp()
+pub fn get_temps(state: State<Arc<Mutex<FDState>>>) -> serde_json::Value {
+    serde_json::json!({
+        "cpuTemp": state.lock().unwrap().system_info.cpu_temp(),
+        "gpuTemp": state.lock().unwrap().system_info.gpu_temp()
+    })
 }
 
 #[command]

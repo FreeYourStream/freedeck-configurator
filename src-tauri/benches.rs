@@ -24,6 +24,10 @@ fn criterion_benchmark(c: &mut Criterion) {
         let mut system = SystemInfo::new();
         b.iter(|| system.cpu_temp())
     });
+    c.bench_function("get gpu temp", |b| {
+        let mut system = SystemInfo::new();
+        b.iter(|| system.gpu_temp())
+    });
 }
 
 criterion_group!(all, criterion_benchmark);

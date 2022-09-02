@@ -2,10 +2,15 @@ import { invoke } from "@tauri-apps/api";
 import { useEffect } from "react";
 
 import { Config } from "../../../generated";
-import { AppState } from "../../../states/appState";
+import { AppState, IAppDispatch } from "../../../states/appState";
 import { timeout } from "../../misc/util";
+import { RefState } from ".";
 
-export const useSystemInfo = (configState: Config, appState: AppState) => {
+export const useSystemInfo = (
+  configState: Config,
+  appDispatch: IAppDispatch,
+  refData: RefState
+) => {
   useEffect(() => {
     if (!(window as any).__TAURI_IPC__) return;
 
@@ -17,10 +22,12 @@ export const useSystemInfo = (configState: Config, appState: AppState) => {
       if (isCancelled) return;
 
       unlistenSerialCommand = setInterval(async () => {
-        const temp = await invoke<number>("get_cpu_temp");
-        // appState.serialApi?.writeToScreen(`CPU: ${temp.toFixed(0)}C`);
-        // appDispatch.setCPUTemp();
-      }, 1000) as unknown as number;
+        const temps = await invoke<{ cpuTemp: number; gpuTemp: number }>(
+          "get_temps"
+        );
+        refData.current.set("system", temps);
+        appDispatch.setTemps(temps);
+      }, 100) as unknown as number;
     };
 
     startListen();
@@ -30,5 +37,5 @@ export const useSystemInfo = (configState: Config, appState: AppState) => {
       clearInterval(unlistenSerialCommand);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [configState, appState]);
+  }, [configState, appDispatch]);
 };

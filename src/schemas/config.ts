@@ -7,6 +7,7 @@ import { DisplaySchema } from "./display";
 export const DisplayButtonSchema = Joi.object({
   button: ButtonSchema.required().failover(ButtonSchema),
   display: DisplaySchema.required().failover(DisplaySchema),
+  live: Joi.string().allow("cpu_temp", "gpu_temp", "cpu_gpu_temp").failover([]),
 }).meta({ className: "DisplayButton" });
 
 export const PublishData = Joi.object({

@@ -42,6 +42,7 @@ export interface Config {
 export interface DisplayButton {
   button: Button;
   display: Display;
+  live?: 'cpu_temp' | 'gpu_temp' | 'cpu_gpu_temp';
 }
 
 export interface Page {

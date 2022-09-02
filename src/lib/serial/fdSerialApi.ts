@@ -107,7 +107,8 @@ export class FDSerialAPI {
       text,
       position: "bottom",
     });
-    const optimizedImage = optimizeForSSD1306(image.slice(130));
+    const headerSize = image.readUInt32LE(10); // 130
+    const optimizedImage = optimizeForSSD1306(image.slice(headerSize));
     await this.write([commands.init, commands.oledWriteData, screen]);
     await this.Serial.write([...optimizedImage]);
     this.nextCall();
@@ -254,7 +255,6 @@ export class FDSerialAPI {
       mappedData.push(0xa);
     });
     // console.log("sending to freedeck", mappedData);
-    console.log(mappedData);
     await this.Serial.write(mappedData);
   }
 

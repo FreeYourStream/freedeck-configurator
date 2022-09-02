@@ -24,6 +24,10 @@ export interface AppState {
     onAccept?: () => any;
     onAbort?: () => any;
   };
+  deck: {
+    currentPage: number | null;
+    dontSwitchPage: boolean;
+  };
   system: {
     cpuTemp: number;
   };
@@ -49,13 +53,19 @@ export const defaultAppState: () => Promise<AppState> = async () => ({
     text: "",
     title: "",
   },
+  deck: { currentPage: null, dontSwitchPage: false },
   system: {
     cpuTemp: 0,
+    gpuTemp: 0,
   },
 });
 
 export interface IAppReducer extends Actions<AppState> {
   setCtrl(state: AppState, ctrlDown: boolean): Promise<AppState>;
+  setDeck(
+    state: AppState,
+    data: { currentPage: number | null; dontSwitchPage: boolean }
+  ): Promise<AppState>;
   toggleAutoPageSwitcher(state: AppState, enabled?: boolean): Promise<AppState>;
   closeAlert(state: AppState): Promise<AppState>;
   setHasJson(state: AppState, hasJson: boolean): Promise<AppState>;
@@ -85,12 +95,21 @@ export interface IAppReducer extends Actions<AppState> {
     state: AppState,
     connectedPortIndex: number
   ): Promise<AppState>;
-  setCPUTemp(state: AppState, cpuTemp: number): Promise<AppState>;
+  setTemps(
+    state: AppState,
+    data: { cpuTemp: number; gpuTemp: number }
+  ): Promise<AppState>;
 }
 
 export const appReducer: IAppReducer = {
   async setCtrl(state, ctrlDown) {
     return { ...state, ctrlDown };
+  },
+  async setDeck(state, { currentPage, dontSwitchPage }) {
+    return { ...state, deck: { currentPage, dontSwitchPage } };
+  },
+  async setTemps(state, { cpuTemp, gpuTemp }) {
+    return { ...state, system: { ...state.system, cpuTemp, gpuTemp } };
   },
   async toggleAutoPageSwitcher(state, maybeEnabled) {
     const enabled =
@@ -137,9 +156,6 @@ export const appReducer: IAppReducer = {
   },
   async setConnectedPortIndex(state, connectedPortIndex) {
     return { ...state, connectedPortIndex };
-  },
-  async setCPUTemp(state, cpuTemp) {
-    return { ...state, system: { ...state.system, cpuTemp } };
   },
 };
 
