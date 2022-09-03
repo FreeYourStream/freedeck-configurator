@@ -1,4 +1,4 @@
-use sysinfo::{ComponentExt, System, SystemExt};
+use sysinfo::{Component, ComponentExt, System, SystemExt};
 
 pub struct SystemInfo {
     sys: System,
@@ -10,23 +10,33 @@ impl SystemInfo {
         SystemInfo { sys }
     }
     pub fn cpu_temp(&mut self) -> f32 {
-        let cpu = self
-            .sys
+        self.sys
             .components_mut()
-            .iter_mut()
-            .find(|c| ["Tdie", "Tctl", "Package id 0", "Computer"].contains(&c.label()))
-            .unwrap();
-        cpu.refresh();
-        cpu.temperature()
+            .iter()
+            .for_each(|c| println!("{:?}", c.label()));
+        let cpu: Option<&mut Component> = self.sys.components_mut().iter_mut().find(|c| {
+            ["Tdie", "Tctl", "Package id 0", "Computer", "PECI CPU"].contains(&c.label())
+        });
+        match cpu {
+            Some(c) => {
+                c.refresh();
+                c.temperature()
+            }
+            None => 0.0,
+        }
     }
     pub fn gpu_temp(&mut self) -> f32 {
-        let gpu = self
+        let gpu: Option<&mut Component> = self
             .sys
             .components_mut()
             .iter_mut()
-            .find(|c| ["edge"].contains(&c.label()))
-            .unwrap();
-        gpu.refresh();
-        gpu.temperature()
+            .find(|c| ["edge", "GPU"].contains(&c.label()));
+        match gpu {
+            Some(g) => {
+                g.refresh();
+                g.temperature()
+            }
+            None => 0.0,
+        }
     }
 }

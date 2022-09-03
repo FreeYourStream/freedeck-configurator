@@ -88,3 +88,22 @@ pub fn current_window_thread(
         }
     })
 }
+
+pub fn system_temps_thread(
+    app_handle_ref: &AppHandle<Wry>,
+    state: &Arc<Mutex<FDState>>,
+) -> JoinHandle<()> {
+    let app_clone = app_handle_ref.clone();
+    let state = state.clone();
+    thread::spawn(move || loop {
+        thread::sleep(Duration::from_millis(500));
+        let temps = serde_json::json!({
+            "cpuTemp": state.lock().unwrap().system_info.cpu_temp(),
+            "gpuTemp": state.lock().unwrap().system_info.gpu_temp()
+        });
+        app_clone
+            .app_handle()
+            .emit_all("system_temps", temps)
+            .unwrap();
+    })
+}

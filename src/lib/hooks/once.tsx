@@ -1,3 +1,4 @@
+import { listen } from "@tauri-apps/api/event";
 import { useContext, useEffect, useRef } from "react";
 
 import { RefState, StateRef } from "../../App";
@@ -16,6 +17,10 @@ export const useOnce = (
 ) => {
   const serialApi = appState.serialApi;
   useEffect(() => {
+    listen<{ cpuTemp: number; gpuTemp: number }>("system_temps", (event) => {
+      stateRef.current.system = event.payload;
+      appDispatch.setTemps(event.payload);
+    });
     if (!serialApi) return;
     const portsId = serialApi.registerOnPortsChanged(
       (ports, connectedPortIndex) => {

@@ -51,7 +51,6 @@ fn main() {
             commands::read,
             commands::read_line,
             commands::get_current_window,
-            commands::get_temps,
             commands::set_aps_state,
             commands::press_keys
         ))
@@ -76,9 +75,12 @@ fn main() {
     let ports_join = threads::ports_thread(&app.handle(), &state);
     let read_join = threads::read_thread(&app.handle(), &state);
     let current_window_join = threads::current_window_thread(&app.handle(), &state);
+    let system_temps_join = threads::system_temps_thread(&app.handle(), &state);
 
     app.run(event_handlers::handle_tauri_event);
+
     ports_join.join().unwrap();
     read_join.join().unwrap();
     current_window_join.join().unwrap();
+    system_temps_join.join().unwrap();
 }

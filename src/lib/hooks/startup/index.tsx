@@ -22,6 +22,5 @@ export const useBackgroundTasks = (
   usePageSwitcher(configState, appState);
 
   useSerialCommand(configState, appState, appDispatch, refState);
-  useSystemInfo(configState, appDispatch, refState);
   useLiveData(configState, appState, refState);
 };

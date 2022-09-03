@@ -30,16 +30,14 @@ pub fn flush(state: State<Arc<Mutex<FDState>>>) {
 }
 #[command]
 pub fn write(state: State<Arc<Mutex<FDState>>>, data: Vec<u8>) {
-    state
-        .lock()
-        .unwrap()
-        .serial
-        .write(data)
-        .expect("failed to send command");
+    println!("write {:?}", data);
+    state.lock().unwrap().serial.write(data).unwrap_or(());
+    println!("write done");
 }
 
 #[command]
 pub fn read(state: State<Arc<Mutex<FDState>>>) -> Vec<u8> {
+    println!("read");
     state
         .lock()
         .unwrap()
@@ -50,6 +48,7 @@ pub fn read(state: State<Arc<Mutex<FDState>>>) -> Vec<u8> {
 
 #[command]
 pub fn read_line(state: State<Arc<Mutex<FDState>>>) -> Result<Vec<u8>, String> {
+    println!("read line");
     state.lock().unwrap().serial.read_line()
 }
 
@@ -62,14 +61,6 @@ pub fn press_keys(_state: State<Arc<Mutex<FDState>>>, key_string: String) {
 #[command]
 pub fn get_current_window(state: State<Arc<Mutex<FDState>>>) -> String {
     state.lock().unwrap().current_window.clone()
-}
-
-#[command]
-pub fn get_temps(state: State<Arc<Mutex<FDState>>>) -> serde_json::Value {
-    serde_json::json!({
-        "cpuTemp": state.lock().unwrap().system_info.cpu_temp(),
-        "gpuTemp": state.lock().unwrap().system_info.gpu_temp()
-    })
 }
 
 #[command]

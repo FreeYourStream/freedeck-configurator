@@ -15,25 +15,32 @@ const updateLiveDisplays = async (
   const pageId = configState.pages.sorted[deck.currentPage];
   const page = configState.pages.byId[pageId];
   if (!page) return;
+  if (!appState.serialApi?.connected) return;
   let dbIndex = 0;
   for (const db of page.displayButtons) {
     if (db.live) {
       if (db.live === "cpu_temp")
-        await appState.serialApi?.writeToScreen(
-          `CPU: ${refData.current.system.cpuTemp.toFixed(0)}C`,
-          dbIndex
-        );
+        await appState.serialApi
+          ?.writeToScreen(
+            `CPU: ${refData.current.system.cpuTemp.toFixed(0)}C`,
+            dbIndex
+          )
+          .catch(() => {});
       if (db.live === "gpu_temp")
-        await appState.serialApi?.writeToScreen(
-          `GPU: ${refData.current.system.gpuTemp.toFixed(0)}C`,
-          dbIndex
-        );
+        await appState.serialApi
+          ?.writeToScreen(
+            `GPU: ${refData.current.system.gpuTemp.toFixed(0)}C`,
+            dbIndex
+          )
+          .catch(() => {});
       if (db.live === "cpu_gpu_temp")
-        await appState.serialApi?.writeToScreen(
-          `CPU: ${refData.current.system.cpuTemp.toFixed(0)}C
+        await appState.serialApi
+          ?.writeToScreen(
+            `CPU: ${refData.current.system.cpuTemp.toFixed(0)}C
 GPU: ${refData.current.system.gpuTemp.toFixed(0)}C`,
-          dbIndex
-        );
+            dbIndex
+          )
+          .catch(() => {});
     }
     dbIndex++;
   }
