@@ -12,6 +12,7 @@ export class WebSerialConnector implements SerialConnector {
   readLoop?: number;
   connectedPortIndex: number = -1;
   ports: SerialPort[] = [];
+  commandCallback?: () => void;
   constructor(portsChangedCallback: PortsChangedCallback) {
     this.buffer = [];
     this.portsChangedCallback = portsChangedCallback;
@@ -94,9 +95,11 @@ export class WebSerialConnector implements SerialConnector {
     }
   }
 
-  flush() {
-    this.buffer = [];
-    return;
+  async flush() {
+    // const temp = [...this.buffer];
+    // this.buffer = [];
+    // return temp;
+    return [];
   }
 
   async read(timeout = 1000): Promise<number[]> {
@@ -111,7 +114,20 @@ export class WebSerialConnector implements SerialConnector {
   }
 
   async readSerialCommand(): Promise<{ command: number; args: number[] }> {
-    throw new Error("not implemented");
+    let start = (await this.readLine()).filter((x) => x !== 13 && x !== 10);
+    if (start[0] !== 3) {
+      console.log("start", start, await this.readLine());
+      throw new Error("wrong start byte");
+    }
+    let command = (await this.readLine()).filter(
+      (x) => x !== 13 && x !== 10
+    )[0];
+    if (command < 16) throw new Error("invalid command");
+    const data = (await this.readLine()).filter((x) => x !== 13 && x !== 10);
+    const args = String.fromCharCode(...data)
+      .split("\t")
+      .map((x) => parseInt(x));
+    return { command, args };
   }
 
   async readLine(timeout = 1000): Promise<number[]> {
@@ -133,6 +149,10 @@ export class WebSerialConnector implements SerialConnector {
     return line;
   }
 
+  setCommandCallback = (commandCallback: () => void) => {
+    this.commandCallback = commandCallback;
+  };
+
   private async filterPorts() {
     let ports: string[] = [];
     let i = 0;
@@ -151,6 +171,7 @@ export class WebSerialConnector implements SerialConnector {
   private async openPort(port: SerialPort) {
     try {
       await port.open({ baudRate: 4000000, bufferSize: TRANSMIT_BUFFER_SIZE });
+      // await port.setSignals({ dataTerminalReady: true });
     } catch (e) {
       return;
     }
@@ -158,7 +179,6 @@ export class WebSerialConnector implements SerialConnector {
     this.port = port;
     this.writer = port.writable.getWriter();
     this.buffer = [];
-
     const self = this;
 
     this.abortController = new AbortController();
@@ -166,6 +186,13 @@ export class WebSerialConnector implements SerialConnector {
       write(chunk) {
         // console.log(String.fromCharCode.apply(null, chunk));
         self.buffer = [...self.buffer, ...chunk];
+        if (
+          self.buffer[0] === 3 &&
+          self.buffer[1] === 13 &&
+          self.buffer[2] === 10
+        ) {
+          self.commandCallback?.();
+        }
       },
     });
     if (!port.readable) throw new Error("port is not readable");

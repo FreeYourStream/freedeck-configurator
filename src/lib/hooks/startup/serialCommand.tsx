@@ -14,17 +14,13 @@ export const useSerialCommand = (
   refData: StateRef
 ) => {
   useEffect(() => {
-    if (!(window as any).__TAURI_IPC__) return;
-
     let isCancelled = false;
-    let unlistenSerialCommand: UnlistenFn | undefined;
 
     const startListen = async () => {
       await timeout(250);
       if (isCancelled) return;
-
-      unlistenSerialCommand = await listen<null>("serial_command", async () => {
-        const { command, args } = await appState.serialApi!.readSerialCommand();
+      appState.serialApi?.setCommandCallback(async (serial) => {
+        const { command, args } = await serial.readSerialCommand();
         runCommand(command, args, configState, appDispatch, refData);
       });
     };
@@ -33,7 +29,7 @@ export const useSerialCommand = (
 
     return () => {
       isCancelled = true;
-      unlistenSerialCommand?.();
+      appState.serialApi?.setCommandCallback(undefined);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [configState]);

@@ -7,6 +7,7 @@ export class TauriSerialConnector implements SerialConnector {
   portsChangedCallback: PortsChangedCallback;
   port = "";
   ports: string[] = [];
+  commandCallback?: () => void;
 
   constructor(portsChangedCallback: PortsChangedCallback) {
     this.portsChangedCallback = portsChangedCallback;
@@ -16,6 +17,7 @@ export class TauriSerialConnector implements SerialConnector {
         this.refreshPorts(true, payload);
       })
     );
+    listen<null>("serial_command", () => this.commandCallback?.());
   }
   async connect(portIndex: number, showError = false): Promise<void> {
     try {
@@ -60,6 +62,7 @@ export class TauriSerialConnector implements SerialConnector {
 
   async flush() {
     await invoke("flush");
+    return [];
   }
 
   async read(timeout = 1000): Promise<number[]> {
@@ -93,5 +96,8 @@ export class TauriSerialConnector implements SerialConnector {
       .split("\t")
       .map((x) => parseInt(x));
     return { command, args };
+  }
+  setCommandCallback(commandCallback: () => void) {
+    this.commandCallback = commandCallback;
   }
 }

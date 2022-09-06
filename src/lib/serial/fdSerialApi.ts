@@ -29,6 +29,7 @@ export class FDSerialAPI {
   ports: string[] = [];
   connectedPortIndex: number = -1;
   calls: Array<{ id: number; name?: string }> = [];
+  commandCallback?: (fdSerial: FDSerialAPI) => void;
 
   constructor() {
     if ((window as any).__TAURI_IPC__)
@@ -68,9 +69,10 @@ export class FDSerialAPI {
     await this.waitForTurn("getHasJson");
     if (this.connected === connectionStatus.disconnect)
       this.throwError("not connected");
-    this.Serial.flush();
+    console.log(await this.Serial.flush());
     await this.write([commands.init, commands.getHasJson]);
     const hasJson = await this.readAsciiLine();
+    console.log({ hasJson });
     this.nextCall();
     return hasJson === "1";
   }
@@ -114,6 +116,10 @@ export class FDSerialAPI {
     this.nextCall();
   }
 
+  setCommandCallback = (commandCallback?: (fdSerial: FDSerialAPI) => void) => {
+    this.Serial.setCommandCallback(() => commandCallback?.(this));
+  };
+
   registerOnPortsChanged(callback: PortsChangedCallback): number {
     const id = Object.keys(this.portsChangedCallbacks).length;
     this.portsChangedCallbacks[id] = callback;
@@ -130,6 +136,7 @@ export class FDSerialAPI {
       startedAt: Date
     ) => void
   ) {
+    await this.flush();
     const fwVersion = await this.getFirmwareVersion();
     await this.waitForTurn("readConfigFromSerial");
 
@@ -225,9 +232,9 @@ export class FDSerialAPI {
   }
 
   async readSerialCommand() {
-    await this.waitForTurn("readSerialCommand");
+    // await this.waitForTurn("readSerialCommand");
     let result = this.Serial.readSerialCommand();
-    this.nextCall();
+    // this.nextCall();
     return result;
   }
 
@@ -258,6 +265,10 @@ export class FDSerialAPI {
     await this.Serial.write(mappedData);
   }
 
+  private async flush() {
+    await this.Serial.flush();
+  }
+
   private onPortsChanged = async (
     ports: string[],
     connectedPortIndex: number
@@ -273,6 +284,7 @@ export class FDSerialAPI {
   };
 
   private waitForTurn = async (name?: string) => {
+    console.log("waiting for turn", name);
     let callId: number;
     if (this.calls.length) {
       callId = this.calls[this.calls.length - 1].id + 1;

@@ -9,12 +9,14 @@ export type PortsChangedCallback = (
   connectedPortIndex: number
 ) => void;
 export interface SerialConnector {
+  setCommandCallback: (commandCallback: () => void) => void;
   requestNewPort: () => Promise<void>;
   connect: (portIndex: number, showError?: boolean) => Promise<void>;
   disconnect: () => Promise<void>;
   write: (data: number[]) => Promise<void>;
-  flush: () => void;
+  flush: () => Promise<number[]>;
   read: (timeout?: number) => Promise<number[]>;
   readLine: (timeout?: number) => Promise<number[]>;
-  readSerialCommand: () => Promise<{ command: number; args: number[] }>;
+  readSerialCommand: () => // data: number[]
+  Promise<{ command: number; args: number[] }>;
 }

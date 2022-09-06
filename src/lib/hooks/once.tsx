@@ -17,10 +17,12 @@ export const useOnce = (
 ) => {
   const serialApi = appState.serialApi;
   useEffect(() => {
-    listen<{ cpuTemp: number; gpuTemp: number }>("system_temps", (event) => {
-      stateRef.current.system = event.payload;
-      appDispatch.setTemps(event.payload);
-    });
+    if ("__TAURI_IPC__" in window) {
+      listen<{ cpuTemp: number; gpuTemp: number }>("system_temps", (event) => {
+        stateRef.current.system = event.payload;
+        appDispatch.setTemps(event.payload);
+      });
+    }
     if (!serialApi) return;
     const portsId = serialApi.registerOnPortsChanged(
       (ports, connectedPortIndex) => {
