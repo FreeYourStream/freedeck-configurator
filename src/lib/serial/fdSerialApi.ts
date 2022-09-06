@@ -161,6 +161,7 @@ export class FDSerialAPI {
         progressCallback?.(data.length, fileSize, transferStartedTime);
       }
       if (received.length === 0) break;
+      console.log("received length", received.length);
       data.push(...received);
     }
     progressCallback?.(data.length, fileSize, transferStartedTime);
@@ -246,6 +247,7 @@ export class FDSerialAPI {
       .replace("\n", "");
   }
   private async read(): Promise<number[]> {
+    console.log("READ FD");
     return this.Serial.read(1000);
   }
 

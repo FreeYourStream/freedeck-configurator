@@ -103,10 +103,13 @@ export class WebSerialConnector implements SerialConnector {
   }
 
   async read(timeout = 1000): Promise<number[]> {
+    console.log("READ WEB1");
     const startTime = new Date().getTime();
     while (!this.buffer.length && new Date().getTime() - startTime < 10000) {
+      console.log("READ WEB2", this.buffer.length);
       await this.sleep(10);
     }
+    console.log("READ WEB3");
     if (!this.buffer.length) return [];
     const data = [...this.buffer.splice(0, Math.min(this.buffer.length, 2560))];
 
@@ -184,15 +187,18 @@ export class WebSerialConnector implements SerialConnector {
     this.abortController = new AbortController();
     this.bufferWrite = new WritableStream({
       write(chunk) {
-        // console.log(String.fromCharCode.apply(null, chunk));
-        self.buffer = [...self.buffer, ...chunk];
-        if (
-          self.buffer[0] === 3 &&
-          self.buffer[1] === 13 &&
-          self.buffer[2] === 10
-        ) {
-          self.commandCallback?.();
-        }
+        setTimeout(() => {
+          console.log("chunk length", chunk.length);
+          // console.log(String.fromCharCode.apply(null, chunk));
+          self.buffer = [...self.buffer, ...chunk];
+          if (
+            self.buffer[0] === 3 &&
+            self.buffer[1] === 13 &&
+            self.buffer[2] === 10
+          ) {
+            self.commandCallback?.();
+          }
+        });
       },
     });
     if (!port.readable) throw new Error("port is not readable");
