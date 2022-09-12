@@ -74,6 +74,7 @@ export interface IConfigReducer extends Actions<Config> {
   setBrightness(state: Config, brightness: number): Promise<Config>;
   setScreenSaver(state: Config, timeout: number): Promise<Config>;
   setOledSpeed(state: Config, speed: number): Promise<Config>;
+  setOledDelay(state: Config, delay: number): Promise<Config>;
   setPreChargePeriod(state: Config, pcp: number): Promise<Config>;
   setClockFreq(state: Config, freq: number): Promise<Config>;
   setClockDiv(state: Config, div: number): Promise<Config>;
@@ -231,6 +232,10 @@ export const configReducer: IConfigReducer = {
   },
   async setOledSpeed(state, speed) {
     state.oledSpeed = speed;
+    return saveConfigToLocalStorage(state);
+  },
+  async setOledDelay(state, delay) {
+    state.oledDelay = delay;
     return saveConfigToLocalStorage(state);
   },
   async setPreChargePeriod(state, pcp) {
