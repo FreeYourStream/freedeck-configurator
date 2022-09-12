@@ -68,3 +68,8 @@ pub fn set_aps_state(window: Window, aps_state: bool) {
     let aps_item = window.app_handle().tray_handle().get_item("aps");
     aps_item.set_selected(aps_state).unwrap();
 }
+
+#[command]
+pub fn list_sensors(state: State<Arc<Mutex<FDState>>>) -> Vec<String> {
+    state.lock().unwrap().system_info.list_sensors()
+}

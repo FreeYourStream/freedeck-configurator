@@ -39,4 +39,16 @@ impl SystemInfo {
             None => 0.0,
         }
     }
+    pub fn list_sensors(&mut self) -> Vec<String> {
+        self.sys.refresh_components_list();
+        self.sys.refresh_components();
+        let sensors = self
+            .sys
+            .components()
+            .iter()
+            .map(|c| c.label().to_string())
+            .collect();
+        println!("{:?}", sensors);
+        sensors
+    }
 }

@@ -52,7 +52,8 @@ fn main() {
             commands::read_line,
             commands::get_current_window,
             commands::set_aps_state,
-            commands::press_keys
+            commands::press_keys,
+            commands::list_sensors,
         ))
         .build(tauri::generate_context!())
         .expect("error while running tauri application");
