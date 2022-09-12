@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { StateRef } from "../../../App";
 import { Config } from "../../../generated";
 import { AppState, IAppDispatch } from "../../../states/appState";
-import { timeout } from "../../misc/util";
+import { sleep } from "../../misc/util";
 import { runCommand } from "../../serial/commands";
 
 export const useSerialCommand = (
@@ -20,7 +20,7 @@ export const useSerialCommand = (
     let unlistenSerialCommand: UnlistenFn | undefined;
 
     const startListen = async () => {
-      await timeout(250);
+      await sleep(250);
       if (isCancelled) return;
 
       unlistenSerialCommand = await listen<null>("serial_command", async () => {

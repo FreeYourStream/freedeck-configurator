@@ -2,7 +2,7 @@ import { minFWVersion } from "../../../package.json";
 import { TRANSMIT_BUFFER_SIZE } from "../configFile/consts";
 import { optimizeForSSD1306 } from "../configFile/ssd1306";
 import { _composeText, composeText } from "../image/composeImage";
-import { compareVersions, timeout } from "../misc/util";
+import { compareVersions, sleep } from "../misc/util";
 import { TauriSerialConnector } from "./tauri-serial";
 import { WebSerialConnector } from "./web-serial";
 import { PortsChangedCallback, SerialConnector, connectionStatus } from ".";
@@ -281,7 +281,7 @@ export class FDSerialAPI {
     }
     this.calls.push({ id: callId, name });
     while (this.calls[0].id !== callId) {
-      await timeout(100);
+      await sleep(100);
     }
   };
   private nextCall = () => {

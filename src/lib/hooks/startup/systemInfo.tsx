@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { StateRef } from "../../../App";
 import { Config } from "../../../generated";
 import { AppState, IAppDispatch } from "../../../states/appState";
-import { timeout } from "../../misc/util";
+import { sleep } from "../../misc/util";
 
 export const useSystemInfo = (
   configState: Config,
@@ -18,7 +18,7 @@ export const useSystemInfo = (
     let unlistenSerialCommand: number | undefined;
 
     const startListen = async () => {
-      await timeout(250);
+      await sleep(250);
       if (isCancelled) return;
 
       unlistenSerialCommand = setInterval(async () => {
