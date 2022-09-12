@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "freedeck-configurator",
-    "version": "2.8.5"
+    "version": "2.8.6"
   },
   "tauri": {
     "allowlist": {
@@ -38,9 +38,7 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": [
-        "src/assets/macos_active_window.as"
-      ],
+      "resources": ["src/assets/macos_active_window.as"],
       "shortDescription": "",
       "targets": "all",
       "windows": {
@@ -58,9 +56,7 @@
     "updater": {
       "active": true,
       "dialog": false,
-      "endpoints": [
-        "https://fdconfig.freeyourstream.com/updater.json"
-      ],
+      "endpoints": ["https://fdconfig.freeyourstream.com/updater.json"],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlFNTk1ODc4NzcwQUYyNgpSV1FtcjNDSGg1WGxDZThFbmVIdGh0YTdoV21xTkZ6ODRHSmNXR0JrQ0V5aGJyZVJJS3M1NE5wVQo="
     },
     "windows": [
