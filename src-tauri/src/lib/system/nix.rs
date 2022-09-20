@@ -5,9 +5,9 @@ pub struct SystemInfo {
 }
 
 impl SystemInfo {
-    pub fn new() -> SystemInfo {
+    pub fn new() -> Option<SystemInfo> {
         let sys = System::new_all();
-        SystemInfo { sys }
+        Some(SystemInfo { sys })
     }
     pub fn cpu_temp(&mut self) -> f32 {
         self.sys

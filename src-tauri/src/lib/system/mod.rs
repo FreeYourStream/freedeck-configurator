@@ -3,7 +3,7 @@ pub mod win;
 #[cfg(target_family = "windows")]
 pub use win::SystemInfo;
 
-#[cfg(target_os = "unix")]
+#[cfg(not(target_os = "windows"))]
 pub mod nix;
-#[cfg(target_os = "unix")]
+#[cfg(not(target_os = "windows"))]
 pub use nix::SystemInfo;
