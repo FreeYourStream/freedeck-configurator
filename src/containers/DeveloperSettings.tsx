@@ -42,21 +42,6 @@ export const DeveloperSettings: React.FC = () => {
             invoke
           </FDButton>
         </Row>
-        <Row>
-          <Label>list sensors</Label>
-          <FDButton
-            onClick={() =>
-              invoke<string[]>("list_sensors").then((value) =>
-                appDispatch.openAlert({
-                  text: value.join(", "),
-                  title: "debug " + value.length,
-                })
-              )
-            }
-          >
-            invoke
-          </FDButton>
-        </Row>
         <Row>{JSON.stringify(devLog, undefined, 2)}</Row>
       </TitleBox>
     </div>

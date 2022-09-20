@@ -4,10 +4,11 @@
 )]
 mod modules;
 
-use fd_lib::{serial::FDSerial, state::FDState, system::SystemInfo};
+use std::sync::{Arc, Mutex};
+
+use fd_lib::{serial::FDSerial, state::FDState};
 use modules::{commands, event_handlers, plugins::single_instance, threads};
 
-use std::sync::{Arc, Mutex};
 use tauri::{CustomMenuItem, Manager, SystemTray, SystemTrayMenu, SystemTrayMenuItem};
 
 use tauri_macros::generate_handler;
@@ -33,7 +34,6 @@ fn main() {
     let state = Arc::new(Mutex::new(FDState {
         serial: FDSerial::new(),
         current_window: "".to_string(),
-        system_info: SystemInfo::new(),
     }));
 
     #[allow(unused_mut)] // needed for macos
@@ -52,8 +52,7 @@ fn main() {
             commands::read_line,
             commands::get_current_window,
             commands::set_aps_state,
-            commands::press_keys,
-            commands::list_sensors,
+            commands::press_keys
         ))
         .build(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -76,7 +75,7 @@ fn main() {
     let ports_join = threads::ports_thread(&app.handle(), &state);
     let read_join = threads::read_thread(&app.handle(), &state);
     let current_window_join = threads::current_window_thread(&app.handle(), &state);
-    let system_temps_join = threads::system_temps_thread(&app.handle(), &state);
+    let system_temps_join = threads::system_temps_thread(&app.handle());
 
     app.run(event_handlers::handle_tauri_event);
 

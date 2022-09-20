@@ -13,7 +13,6 @@ fn criterion_benchmark(c: &mut Criterion) {
         let state = Arc::new(Mutex::new(FDState {
             current_window: "".into(),
             serial: FDSerial::new(),
-            system_info: SystemInfo::new(),
         }));
         b.iter(|| refresh_ports(&state, 0, |_ports| ()));
     });
@@ -21,11 +20,11 @@ fn criterion_benchmark(c: &mut Criterion) {
         b.iter(|| get_current_window(|path| Some(path.into())))
     });
     c.bench_function("get cpu temp", |b| {
-        let mut system = SystemInfo::new();
+        let mut system = SystemInfo::new().unwrap();
         b.iter(|| system.cpu_temp())
     });
     c.bench_function("get gpu temp", |b| {
-        let mut system = SystemInfo::new();
+        let mut system = SystemInfo::new().unwrap();
         b.iter(|| system.gpu_temp())
     });
 }
