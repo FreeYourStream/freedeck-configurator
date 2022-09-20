@@ -70,5 +70,5 @@ export const useLiveData = (
       clearInterval(unlistenSerialCommand);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [configState, appState.serialApi, appState.deck.currentPage]);
+  }, [configState, appState.serialApi, appState.deck]);
 };
