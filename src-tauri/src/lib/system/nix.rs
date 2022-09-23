@@ -10,10 +10,6 @@ impl SystemInfo {
         Some(SystemInfo { sys })
     }
     pub fn cpu_temp(&mut self) -> f32 {
-        self.sys
-            .components_mut()
-            .iter()
-            .for_each(|c| println!("{:?}", c.label()));
         let cpu: Option<&mut Component> = self.sys.components_mut().iter_mut().find(|c| {
             ["Tdie", "Tctl", "Package id 0", "Computer", "PECI CPU"].contains(&c.label())
         });

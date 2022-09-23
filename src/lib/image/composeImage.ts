@@ -6,7 +6,11 @@ import { EImageMode, ETextPosition } from "../../definitions/modes";
 import { Display } from "../../generated";
 import { colorBitmapToMonochromeBitmap } from "./colorToMonoBitmap";
 
-export const _composeImage = async (display: Display): Promise<Buffer> => {
+export const _composeImage = async (
+  display: Display,
+  width = 128,
+  height = 64
+): Promise<Buffer> => {
   const jimp = (await import("jimp")).default;
   const { imageSettings, textWithIconSettings, textSettings, originalImage } =
     display;
@@ -19,7 +23,7 @@ export const _composeImage = async (display: Display): Promise<Buffer> => {
   } catch {
     console.log("image is corrupted");
     jimpImage = await import("jimp").then((jimp) =>
-      jimp.default.create(128, 64, "black")
+      jimp.default.create(width, height, "black")
     );
   }
 
@@ -29,7 +33,7 @@ export const _composeImage = async (display: Display): Promise<Buffer> => {
       imageSettings.contrast * brightnessMultiplier * -1
     );
     await jimpImage.brightness(imageSettings.brightness * brightnessMultiplier);
-    jimpImage.scaleToFit(128, 64);
+    jimpImage.scaleToFit(width, height);
     jimpImage.bitmap = fs(jimpImage.bitmap);
     if (imageSettings.invert) jimpImage.invert();
   } else if (imageSettings.imageMode === EImageMode.hybrid) {
@@ -42,25 +46,25 @@ export const _composeImage = async (display: Display): Promise<Buffer> => {
     await ditherImage.brightness(
       imageSettings.brightness * brightnessMultiplier
     );
-    ditherImage.scaleToFit(128, 64);
+    ditherImage.scaleToFit(width, height);
     ditherImage.bitmap = fs(ditherImage.bitmap);
     if (imageSettings.invert) ditherImage.invert();
     // end dither part
 
     await jimpImage.grayscale();
-    await jimpImage.scaleToFit(128, 64);
+    await jimpImage.scaleToFit(width, height);
     await jimpImage.contrast(imageSettings.contrast);
     await jimpImage.brightness(imageSettings.brightness);
     const factor = 50; // imageSettings.edgeSensitivity;
     const background = await jimp.create(
-      128 + 3,
-      64 + 3,
+      width + 3,
+      height + 3,
       imageSettings.invert ? "white" : "black"
     );
     jimpImage = background.composite(
       jimpImage,
-      (128 - jimpImage.getWidth()) / 2 + 3,
-      (64 - jimpImage.getHeight()) / 2 + 3
+      (width - jimpImage.getWidth()) / 2 + 3,
+      (height - jimpImage.getHeight()) / 2 + 3
     );
     // makes thicker edges
     // await jimpImage.convolute([
@@ -79,8 +83,8 @@ export const _composeImage = async (display: Display): Promise<Buffer> => {
     // dither part
     jimpImage.composite(
       ditherImage,
-      (128 - ditherImage.getWidth()) / 2,
-      (64 - ditherImage.getHeight()) / 2,
+      (width - ditherImage.getWidth()) / 2,
+      (height - ditherImage.getHeight()) / 2,
       {
         mode: jimp.BLEND_ADD,
         opacityDest: 1,
@@ -99,7 +103,7 @@ export const _composeImage = async (display: Display): Promise<Buffer> => {
   await jimpImage.autocrop();
 
   const background = await import("jimp").then(
-    (jimp) => new jimp.default(128, 64, "black")
+    (jimp) => new jimp.default(width, height, "black")
   );
 
   if (textSettings.text?.length) {
@@ -108,19 +112,22 @@ export const _composeImage = async (display: Display): Promise<Buffer> => {
     const fontSize = font.common.lineHeight - 2;
     let lines = textSettings.text.split(/\r?\n/).filter((line) => line);
     if (textSettings.position === ETextPosition.right) {
-      jimpImage.scaleToFit(128 * textWithIconSettings.iconWidthMultiplier, 64);
+      jimpImage.scaleToFit(
+        width * textWithIconSettings.iconWidthMultiplier,
+        height
+      );
     } else {
-      jimpImage.scaleToFit(128, 64 - fontSize * lines.length);
+      jimpImage.scaleToFit(width, height - fontSize * lines.length);
     }
     const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
-    const offset = (64 - overAllLineHeight) / 2;
+    const offset = (height - overAllLineHeight) / 2;
     await Promise.all(
       lines.map(async (line, index) => {
         if (textSettings.position === ETextPosition.bottom) {
           await background.print(
             font,
-            (128 - (fontSize / 2) * line.length) / 2,
-            64 - fontSize * (lines.length - index),
+            (width - (fontSize / 2) * line.length) / 2,
+            height - fontSize * (lines.length - index),
             line
           );
         } else {
@@ -128,7 +135,7 @@ export const _composeImage = async (display: Display): Promise<Buffer> => {
           const xOffset = jimpImage.getWidth() + 1;
           await background.print(
             font,
-            (128 - xOffset - (fontSize / 2) * line.length) / 2 + xOffset,
+            (width - xOffset - (fontSize / 2) * line.length) / 2 + xOffset,
             lineOffset,
             line
           );
@@ -136,27 +143,33 @@ export const _composeImage = async (display: Display): Promise<Buffer> => {
       })
     );
     if (textSettings.position === ETextPosition.bottom) {
-      background.composite(jimpImage, 128 / 2 - jimpImage.getWidth() / 2, 0);
+      background.composite(jimpImage, width / 2 - jimpImage.getWidth() / 2, 0);
     } else {
-      background.composite(jimpImage, 0, 64 / 2 - jimpImage.getHeight() / 2);
+      background.composite(
+        jimpImage,
+        0,
+        height / 2 - jimpImage.getHeight() / 2
+      );
     }
   } else {
-    jimpImage.scaleToFit(128, 64);
+    jimpImage.scaleToFit(width, height);
     background.composite(
       jimpImage,
-      128 / 2 - jimpImage.getWidth() / 2,
-      64 / 2 - jimpImage.getHeight() / 2
+      width / 2 - jimpImage.getWidth() / 2,
+      height / 2 - jimpImage.getHeight() / 2
     );
   }
   const bitmapBuffer = await background.getBufferAsync("image/bmp");
-  return await colorBitmapToMonochromeBitmap(bitmapBuffer, 128, 64);
+  return await colorBitmapToMonochromeBitmap(bitmapBuffer, width, height);
 };
 
 export const _composeText = async (
-  textSettings: Display["textSettings"]
+  textSettings: Display["textSettings"],
+  width = 128,
+  height = 64
 ): Promise<Buffer> => {
   const image = await import("jimp").then((jimp) =>
-    jimp.default.create(128, 64, "black")
+    jimp.default.create(width, height, "black")
   );
   const font = await import("jimp").then((jimp) =>
     jimp.default.loadFont(textSettings.font)
@@ -164,28 +177,28 @@ export const _composeText = async (
   const fontSize = font.common.lineHeight - 2;
   let lines = textSettings.text?.split(/\r?\n/).filter((line) => line) ?? [];
   const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
-  const offset = (64 - overAllLineHeight) / 2;
+  const offset = (height - overAllLineHeight) / 2;
   await Promise.all(
     lines.map(async (line, index) => {
       const lineOffset = offset + fontSize * index;
       await image.print(
         font,
-        (128 - (line.length * fontSize) / 2) / 2,
+        (width - (line.length * fontSize) / 2) / 2,
         lineOffset,
         line
       );
     })
   );
   const background = await import("jimp").then((jimp) =>
-    jimp.default.create(128, 64, "black")
+    jimp.default.create(width, height, "black")
   );
   background.composite(
     image,
-    (128 - image.getWidth()) / 2,
-    (64 - image.getHeight()) / 2
+    (width - image.getWidth()) / 2,
+    (height - image.getHeight()) / 2
   );
   const bitmapBuffer = await background.getBufferAsync("image/bmp");
-  return await colorBitmapToMonochromeBitmap(bitmapBuffer, 128, 64);
+  return await colorBitmapToMonochromeBitmap(bitmapBuffer, width, height);
 };
 
 export const composeImage = debounce(_composeImage, 1, {

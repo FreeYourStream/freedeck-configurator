@@ -2,7 +2,7 @@ import { listen } from "@tauri-apps/api/event";
 import { useEffect } from "react";
 
 import { StateRef } from "../../App";
-import { AppState, IAppDispatch, modifyTemps } from "../../states/appState";
+import { AppState, IAppDispatch } from "../../states/appState";
 import { saveCurrentPage } from "../serial/commands";
 
 export const useOnce = (
@@ -13,10 +13,6 @@ export const useOnce = (
   const serialApi = appState.serialApi;
   useEffect(() => {
     listen<{ cpuTemp: number; gpuTemp: number }>("system_temps", (event) => {
-      stateRef.current.system = modifyTemps(
-        stateRef.current,
-        event.payload
-      ).system;
       appDispatch.setTemps(event.payload);
     });
     if (!serialApi) return;
@@ -43,5 +39,5 @@ export const useOnce = (
       serialApi.clearOnPortsChanged(portsId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [serialApi]);
+  }, []);
 };

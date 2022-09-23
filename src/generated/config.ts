@@ -42,8 +42,15 @@ export interface Config {
 export interface DisplayButton {
   button: Button;
   display: Display;
-  live?: 'cpu_temp' | 'gpu_temp' | 'cpu_gpu_temp';
+  live: Live;
 }
+
+export interface Live {
+  bottom: LiveMode | 'cpu_temp' | 'gpu_temp' | 'cpu_temp_graph' | 'gpu_temp_graph' | 'cpu_temp_line' | 'gpu_temp_line' | 'none';
+  top: LiveMode | 'cpu_temp' | 'gpu_temp' | 'cpu_temp_graph' | 'gpu_temp_graph' | 'cpu_temp_line' | 'gpu_temp_line' | 'none';
+}
+
+export type LiveMode = 'cpu_temp' | 'gpu_temp' | 'cpu_temp_graph' | 'gpu_temp_graph' | 'cpu_temp_line' | 'gpu_temp_line' | 'none';
 
 export interface Page {
   displayButtons: DisplayButton[];

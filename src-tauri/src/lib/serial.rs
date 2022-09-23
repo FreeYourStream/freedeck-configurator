@@ -22,6 +22,25 @@ impl FDSerial {
     pub fn new() -> Self {
         Self::default()
     }
+    pub fn refresh_ports<CB: FnOnce(Vec<String>)>(
+        &mut self,
+        port_len: usize,
+        on_change: CB,
+    ) -> Vec<Port> {
+        let new_ports = self.get_ports();
+        if new_ports.len() != port_len {
+            let new_ports_str = new_ports.iter().map(|p| p.into()).collect::<Vec<String>>();
+            on_change(new_ports_str);
+            if let Some(port) = self.port.as_ref() {
+                let old_name = port.name().unwrap();
+                let found = new_ports.iter().find(|port| port.path == old_name);
+                if found.is_none() {
+                    self.data.truncate(0);
+                }
+            }
+        }
+        new_ports
+    }
     pub fn get_ports(&self) -> Vec<Port> // returns vector of all avaliable serial ports
     {
         let mut ports: Vec<Port> = Vec::new();

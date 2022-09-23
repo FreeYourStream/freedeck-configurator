@@ -4,10 +4,28 @@ import package_json from "../../package.json";
 import { ButtonSchema } from "./button";
 import { DisplaySchema } from "./display";
 
+export const LiveModeSchema = Joi.string()
+  .required()
+  .allow(
+    "cpu_temp",
+    "gpu_temp",
+    "cpu_temp_graph",
+    "gpu_temp_graph",
+    "cpu_temp_line",
+    "gpu_temp_line",
+    "none"
+  )
+  .failover("none")
+  .meta({ className: "LiveMode" });
+export const LiveSchema = Joi.object({
+  top: LiveModeSchema,
+  bottom: LiveModeSchema,
+}).meta({ className: "Live" });
+
 export const DisplayButtonSchema = Joi.object({
   button: ButtonSchema.required().failover(ButtonSchema),
   display: DisplaySchema.required().failover(DisplaySchema),
-  live: Joi.string().allow("cpu_temp", "gpu_temp", "cpu_gpu_temp").failover([]),
+  live: LiveSchema.required().failover(LiveSchema),
 }).meta({ className: "DisplayButton" });
 
 export const PublishData = Joi.object({

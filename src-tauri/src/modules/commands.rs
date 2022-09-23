@@ -1,8 +1,9 @@
-use crate::FDState;
 use enigo::{Enigo, KeyboardControllable};
 use std::sync::{Arc, Mutex};
 use tauri::{Manager, State, Window};
 use tauri_macros::command;
+
+use super::state::FDState;
 
 #[command]
 pub fn get_ports(state: State<Arc<Mutex<FDState>>>) -> Vec<String> {
@@ -30,14 +31,11 @@ pub fn flush(state: State<Arc<Mutex<FDState>>>) {
 }
 #[command]
 pub fn write(state: State<Arc<Mutex<FDState>>>, data: Vec<u8>) {
-    println!("write {:?}", data);
     state.lock().unwrap().serial.write(data).unwrap_or(());
-    println!("write done");
 }
 
 #[command]
 pub fn read(state: State<Arc<Mutex<FDState>>>) -> Vec<u8> {
-    println!("read");
     state
         .lock()
         .unwrap()
@@ -48,7 +46,6 @@ pub fn read(state: State<Arc<Mutex<FDState>>>) -> Vec<u8> {
 
 #[command]
 pub fn read_line(state: State<Arc<Mutex<FDState>>>) -> Result<Vec<u8>, String> {
-    println!("read line");
     state.lock().unwrap().serial.read_line()
 }
 
@@ -61,6 +58,11 @@ pub fn press_keys(_state: State<Arc<Mutex<FDState>>>, key_string: String) {
 #[command]
 pub fn get_current_window(state: State<Arc<Mutex<FDState>>>) -> String {
     state.lock().unwrap().current_window.clone()
+}
+
+#[command]
+pub fn list_sensors(state: State<Arc<Mutex<FDState>>>) -> Vec<String> {
+    state.lock().unwrap().sensors.clone()
 }
 
 #[command]

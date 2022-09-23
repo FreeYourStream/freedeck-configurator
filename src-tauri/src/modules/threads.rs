@@ -4,11 +4,10 @@ use std::{
     time::Duration,
 };
 
-use fd_lib::{
-    os::{get_current_window, refresh_ports},
-    state::FDState,
-};
+use fd_lib::os::get_current_window;
 use tauri::{AppHandle, Manager, Wry};
+
+use super::state::FDState;
 pub fn ports_thread(
     app_handle_ref: &AppHandle<Wry>,
     state_ref: &Arc<Mutex<FDState>>,
@@ -19,12 +18,15 @@ pub fn ports_thread(
         let mut ports = Vec::new();
         loop {
             thread::sleep(Duration::from_millis(500));
-            ports = refresh_ports(&state_ref, ports.len(), |ports_string| {
-                app_clone
-                    .app_handle()
-                    .emit_all("ports_changed", ports_string)
-                    .unwrap();
-            });
+            ports = state_ref.lock().as_mut().unwrap().serial.refresh_ports(
+                ports.len(),
+                |ports_string| {
+                    app_clone
+                        .app_handle()
+                        .emit_all("ports_changed", ports_string)
+                        .unwrap();
+                },
+            );
         }
     })
 }
@@ -89,12 +91,18 @@ pub fn current_window_thread(
     })
 }
 
-pub fn system_temps_thread(app_handle_ref: &AppHandle<Wry>) -> JoinHandle<()> {
+pub fn system_temps_thread(
+    app_handle_ref: &AppHandle<Wry>,
+    state_ref: &Arc<Mutex<FDState>>,
+) -> JoinHandle<()> {
+    let state = state_ref.clone();
     let app_clone = app_handle_ref.clone();
     thread::spawn(move || {
         let mut sys = fd_lib::system::SystemInfo::new().unwrap();
+        state.lock().unwrap().sensors = sys.list_sensors();
+
         loop {
-            thread::sleep(Duration::from_millis(500));
+            thread::sleep(Duration::from_millis(1000));
             let temps = serde_json::json!({
                 "cpuTemp": sys.cpu_temp(),
                 "gpuTemp": sys.gpu_temp()

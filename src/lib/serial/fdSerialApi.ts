@@ -96,6 +96,15 @@ export class FDSerialAPI {
     this.nextCall();
   }
 
+  async sendImageToScreen(image: Buffer, screen = 0) {
+    await this.waitForTurn("imageToScreen");
+    const headerSize = image.readUInt32LE(10); // 130
+    const optimizedImage = optimizeForSSD1306(image.slice(headerSize));
+    await this.write([commands.init, commands.oledWriteData, screen]);
+    await this.Serial.write([...optimizedImage]);
+    await this.nextCall();
+  }
+
   async writeToScreen(text: string, screen = 0, size = 1) {
     await this.waitForTurn("writeToScreen");
     if (this.connected === connectionStatus.disconnect)
@@ -107,11 +116,8 @@ export class FDSerialAPI {
       text,
       position: "bottom",
     });
-    const headerSize = image.readUInt32LE(10); // 130
-    const optimizedImage = optimizeForSSD1306(image.slice(headerSize));
-    await this.write([commands.init, commands.oledWriteData, screen]);
-    await this.Serial.write([...optimizedImage]);
     this.nextCall();
+    await this.sendImageToScreen(image, screen);
   }
 
   registerOnPortsChanged(callback: PortsChangedCallback): number {

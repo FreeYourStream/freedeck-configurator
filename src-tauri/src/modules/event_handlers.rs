@@ -4,9 +4,9 @@ use tauri::{
     api::dialog, AppHandle, Manager, RunEvent, SystemTrayEvent, UpdaterEvent, Window, WindowEvent,
 };
 
-use fd_lib::state::FDState;
-
 use crate::modules::window;
+
+use super::state::FDState;
 
 async fn handle_update(app_handle: AppHandle, window: Window, initial: bool) {
     match app_handle.updater().check().await {

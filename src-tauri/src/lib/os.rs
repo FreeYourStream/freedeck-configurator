@@ -1,8 +1,4 @@
-use crate::{serial::Port, state::FDState};
-use std::{
-    path::PathBuf,
-    sync::{Arc, Mutex},
-};
+use std::path::PathBuf;
 
 #[cfg(target_os = "macos")]
 pub fn get_current_window<F: FnOnce(&str) -> Option<PathBuf>>(
@@ -67,25 +63,4 @@ pub fn get_current_window<F: FnOnce(&str) -> Option<PathBuf>>(
         }
     }
     None
-}
-
-pub fn refresh_ports<CB: FnOnce(Vec<String>)>(
-    state: &Arc<Mutex<FDState>>,
-    port_len: usize,
-    on_change: CB,
-) -> Vec<Port> {
-    let mut state = state.lock().unwrap();
-    let new_ports = state.serial.get_ports();
-    if new_ports.len() != port_len {
-        let new_ports_str = new_ports.iter().map(|p| p.into()).collect::<Vec<String>>();
-        on_change(new_ports_str);
-        if let Some(port) = state.serial.port.as_ref() {
-            let old_name = port.name().unwrap();
-            let found = new_ports.iter().find(|port| port.path == old_name);
-            if found.is_none() {
-                state.serial.data.truncate(0);
-            }
-        }
-    }
-    new_ports
 }

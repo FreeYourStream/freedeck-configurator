@@ -62,6 +62,10 @@ export const createDefaultDisplayButton = async (): Promise<DisplayButton> => {
   return {
     button: createDefaultButton(),
     display: createDefaultDisplay(),
+    live: {
+      bottom: "none",
+      top: "none",
+    },
   };
 };
 
