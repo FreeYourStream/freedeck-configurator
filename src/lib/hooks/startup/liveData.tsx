@@ -22,22 +22,22 @@ const updateLiveDisplays = async (
       if (db.live === "cpu_temp")
         await appState.serialApi
           ?.writeToScreen(
-            `CPU: ${refData.current.system.cpuTemp.toFixed(0)}C`,
+            `CPU: ${refData.current.system.cpuTemp[0].toFixed(0)}C`,
             dbIndex
           )
           .catch(() => {});
       if (db.live === "gpu_temp")
         await appState.serialApi
           ?.writeToScreen(
-            `GPU: ${refData.current.system.gpuTemp.toFixed(0)}C`,
+            `GPU: ${refData.current.system.gpuTemp[0].toFixed(0)}C`,
             dbIndex
           )
           .catch(() => {});
       if (db.live === "cpu_gpu_temp")
         await appState.serialApi
           ?.writeToScreen(
-            `CPU: ${refData.current.system.cpuTemp.toFixed(0)}C
-GPU: ${refData.current.system.gpuTemp.toFixed(0)}C`,
+            `CPU: ${refData.current.system.cpuTemp[0].toFixed(0)}C
+GPU: ${refData.current.system.gpuTemp[0].toFixed(0)}C`,
             dbIndex
           )
           .catch(() => {});

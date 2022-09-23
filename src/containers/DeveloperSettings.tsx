@@ -8,10 +8,8 @@ import { TextInput } from "../lib/components/TextInput";
 import { TitleBox } from "../lib/components/Title";
 import { createToast } from "../lib/misc/createToast";
 import { AppDispatchContext, AppStateContext } from "../states/appState";
-import { ConfigStateContext } from "../states/configState";
 
 export const DeveloperSettings: React.FC = () => {
-  const config = useContext(ConfigStateContext);
   const { serialApi, devLog } = useContext(AppStateContext);
   const appDispatch = useContext(AppDispatchContext);
   return (

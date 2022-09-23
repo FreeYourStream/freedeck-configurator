@@ -2,7 +2,7 @@ import {
   PlusCircleIcon,
   QuestionMarkCircleIcon,
 } from "@heroicons/react/outline";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { useDrop } from "react-dnd";
 import { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +13,6 @@ import { FirstPage } from "./containers/FirstTime";
 import { Header } from "./containers/Header";
 import { Pages } from "./containers/Page/Pages";
 import { FDButton } from "./lib/components/Button";
-import { useOnce } from "./lib/hooks/once";
 import {
   ConfigDispatchContext,
   ConfigStateContext,

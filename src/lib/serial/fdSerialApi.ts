@@ -1,7 +1,7 @@
 import { minFWVersion } from "../../../package.json";
 import { TRANSMIT_BUFFER_SIZE } from "../configFile/consts";
 import { optimizeForSSD1306 } from "../configFile/ssd1306";
-import { _composeText, composeText } from "../image/composeImage";
+import { _composeText } from "../image/composeImage";
 import { compareVersions, sleep } from "../misc/util";
 import { TauriSerialConnector } from "./tauri-serial";
 import { WebSerialConnector } from "./web-serial";
