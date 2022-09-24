@@ -1,5 +1,6 @@
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 
+import { LiveMode } from "../../../generated";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
 import { FDSelect } from "../../../lib/components/SelectInput";
@@ -29,8 +30,23 @@ export const LiveDataSettingsContainer: React.FC<{
 }> = ({ pageId, displayIndex }) => {
   const { pages } = useContext(ConfigStateContext);
   const { setLive } = useContext(ConfigDispatchContext);
-  const { system } = useContext(AppStateContext);
+  const { system, serialApi } = useContext(AppStateContext);
   const liveSettings = pages.byId[pageId].displayButtons[displayIndex].live;
+  const setLiveCallback = useCallback(
+    (data: {
+      pageId: string;
+      buttonIndex: number;
+      mode: LiveMode;
+      position: "top" | "bottom";
+    }) => {
+      const state = { ...liveSettings, [data.position]: data.mode };
+      setLive(data);
+      if (state.top === "none" && state.bottom === "none" && !!serialApi) {
+        serialApi.setCurrentPage(pages.sorted.indexOf(pageId));
+      }
+    },
+    [setLive, serialApi, liveSettings, pageId, pages.sorted]
+  );
   return (
     <div className="w-full">
       <TitleBox title="Sensors">
@@ -61,7 +77,7 @@ export const LiveDataSettingsContainer: React.FC<{
               value={liveSettings.top}
               options={options}
               onChange={(value) =>
-                setLive({
+                setLiveCallback({
                   pageId,
                   buttonIndex: displayIndex,
                   mode: value,
@@ -77,7 +93,7 @@ export const LiveDataSettingsContainer: React.FC<{
               value={liveSettings.bottom}
               options={options}
               onChange={(value) =>
-                setLive({
+                setLiveCallback({
                   pageId,
                   buttonIndex: displayIndex,
                   mode: value,

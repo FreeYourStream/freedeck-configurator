@@ -162,7 +162,9 @@ export const useLiveData = (
     let unlistenSerialCommand: number | undefined;
     const startListen = async () => {
       if (isCancelled) return;
-      updateLiveDisplays(configState, appState, refData);
+      setTimeout(() => {
+        updateLiveDisplays(configState, appState, refData);
+      });
       unlistenSerialCommand = setInterval(async () => {
         updateLiveDisplays(configState, appState, refData);
       }, 1000) as unknown as number;
