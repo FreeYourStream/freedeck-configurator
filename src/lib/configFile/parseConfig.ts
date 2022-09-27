@@ -5,7 +5,7 @@ import { createDefaultDisplay } from "../../definitions/defaultPage";
 import { Config, DefaultBackDisplay, Display } from "../../generated";
 import { ConfigSchema } from "../../schemas/config";
 import { getBase64Image } from "../image/base64Encode";
-import { composeImage, composeText } from "../image/composeImage";
+import { _composeImage, _composeText } from "../image/composeImage";
 import { ROW_SIZE } from "./consts";
 
 export const generateAdditionalImagery = async (
@@ -21,8 +21,8 @@ export const generateAdditionalImagery = async (
       display.originalImage && Buffer.from(display.originalImage as any),
   };
   newDisplay.convertedImage = newDisplay.originalImage
-    ? await composeImage(newDisplay)
-    : await composeText(newDisplay);
+    ? await _composeImage(newDisplay)
+    : await _composeText(newDisplay.textSettings);
   newDisplay.previewImage = getBase64Image(newDisplay.convertedImage);
   return newDisplay;
 };
