@@ -31,7 +31,7 @@ export const DisplayButton: React.FC<{
 
   const display =
     pageId === "dbd"
-      ? configState.defaultBackDisplay
+      ? configState.defaultBackDisplay.display
       : configState.pages.byId[pageId].displayButtons[displayIndex].display;
 
   const [{ isDragging }, dragRef] = useDrag<

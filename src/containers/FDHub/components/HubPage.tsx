@@ -69,7 +69,7 @@ export const HubPage: React.FC<{
                 size={1}
                 previewImage={
                   db.display.isGeneratedFromDefaultBackImage
-                    ? defaultBackDisplay.previewImage
+                    ? defaultBackDisplay.display.previewImage
                     : db.display.previewImage
                 }
               />

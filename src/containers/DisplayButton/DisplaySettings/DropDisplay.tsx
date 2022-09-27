@@ -33,7 +33,7 @@ export const DropDisplay = ({
   const configState = useContext(ConfigStateContext);
   const display =
     pageId === "dbd"
-      ? configState.defaultBackDisplay
+      ? configState.defaultBackDisplay.display
       : configState.pages.byId[pageId].displayButtons[displayIndex].display;
   const configDispatch = useContext(ConfigDispatchContext);
   const entries: MenuEntry[] = [];

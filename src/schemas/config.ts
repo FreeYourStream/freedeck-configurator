@@ -22,6 +22,11 @@ export const LiveSchema = Joi.object({
   bottom: LiveModeSchema,
 }).meta({ className: "Live" });
 
+export const DefaultBackDisplaySchema = Joi.object({
+  display: DisplaySchema.required().failover(DisplaySchema),
+  live: LiveSchema.required().failover(LiveSchema),
+}).meta({ className: "DefaultBackDisplay" });
+
 export const DisplayButtonSchema = Joi.object({
   button: ButtonSchema.required().failover(ButtonSchema),
   display: DisplaySchema.required().failover(DisplaySchema),
@@ -102,7 +107,9 @@ export const ConfigSchema = Joi.object({
     .required(),
   screenSaverTimeout: Joi.number().min(0).failover(0).required(),
   collections: CollectionsSchema.required().failover(CollectionsSchema),
-  defaultBackDisplay: DisplaySchema.required().failover(DisplaySchema),
+  defaultBackDisplay: DefaultBackDisplaySchema.required().failover(
+    DefaultBackDisplaySchema
+  ),
 })
   .required()
   .meta({ className: "Config" })

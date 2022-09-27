@@ -1,7 +1,8 @@
 import { inflate } from "pako";
 
+import { createDefaultBackDisplay } from "../../definitions/defaultBackImage";
 import { createDefaultDisplay } from "../../definitions/defaultPage";
-import { Config, Display } from "../../generated";
+import { Config, DefaultBackDisplay, Display } from "../../generated";
 import { ConfigSchema } from "../../schemas/config";
 import { getBase64Image } from "../image/base64Encode";
 import { composeImage, composeText } from "../image/composeImage";
@@ -19,7 +20,6 @@ export const generateAdditionalImagery = async (
     originalImage:
       display.originalImage && Buffer.from(display.originalImage as any),
   };
-
   newDisplay.convertedImage = newDisplay.originalImage
     ? await composeImage(newDisplay)
     : await composeText(newDisplay);
@@ -40,12 +40,16 @@ export const convertCurrentConfig = async (
       );
     }
   }
+  const defaultBackDisplay: DefaultBackDisplay = {
+    live: rawConfig.defaultBackDisplay.live,
+    display: rawConfig.defaultBackDisplay.display
+      ? await generateAdditionalImagery(rawConfig.defaultBackDisplay.display)
+      : await createDefaultBackDisplay(),
+  };
   const validated = ConfigSchema.validate(
     {
       ...rawConfig,
-      defaultBackDisplay: await generateAdditionalImagery(
-        rawConfig.defaultBackDisplay
-      ),
+      defaultBackDisplay,
     },
     { stripUnknown: true }
   );

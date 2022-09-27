@@ -28,7 +28,7 @@ export interface Config {
   clockFreq: number;
   collections: Collections;
   configVersion: string;
-  defaultBackDisplay: Display;
+  defaultBackDisplay: DefaultBackDisplay;
   height: number;
   oledDelay: number;
   oledSpeed: number;
@@ -37,6 +37,11 @@ export interface Config {
   saveJson: boolean;
   screenSaverTimeout: number;
   width: number;
+}
+
+export interface DefaultBackDisplay {
+  display: Display;
+  live: Live;
 }
 
 export interface DisplayButton {

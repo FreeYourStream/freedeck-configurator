@@ -61,7 +61,10 @@ export const defaultConfig = async (): Promise<Config> => ({
     byId: {},
     sorted: [],
   },
-  defaultBackDisplay: await createDefaultBackDisplay(),
+  defaultBackDisplay: {
+    display: await createDefaultBackDisplay(),
+    live: { bottom: "none", top: "none" },
+  },
 });
 
 export interface IConfigReducer extends Actions<Config> {
@@ -337,7 +340,7 @@ export const configReducer: IConfigReducer = {
           .isGeneratedFromDefaultBackImage
       ) {
         state.pages.byId[id].displayButtons[i].display = cloneDeep(
-          state.defaultBackDisplay
+          state.defaultBackDisplay.display
         );
       } else {
         state.pages.byId[id].displayButtons[i].display =
@@ -521,11 +524,11 @@ export const configReducer: IConfigReducer = {
   async setDisplaySettings(state, data) {
     const { pageId, buttonIndex, displaySettings } = data;
     if (pageId === "dbd") {
-      state.defaultBackDisplay = { ...displaySettings };
-      state.defaultBackDisplay = await generateAdditionalImagery(
-        state.defaultBackDisplay
+      state.defaultBackDisplay.display = { ...displaySettings };
+      state.defaultBackDisplay.display = await generateAdditionalImagery(
+        state.defaultBackDisplay.display
       );
-      state.defaultBackDisplay.isGeneratedFromDefaultBackImage = true;
+      state.defaultBackDisplay.display.isGeneratedFromDefaultBackImage = true;
       localStorage.setItem(
         "defaultBackDisplay",
         JSON.stringify(state.defaultBackDisplay)
@@ -549,9 +552,9 @@ export const configReducer: IConfigReducer = {
     const { buttonIndex, pageId, originalImage } = data;
 
     if (pageId === "dbd") {
-      state.defaultBackDisplay.originalImage = originalImage;
-      state.defaultBackDisplay = await generateAdditionalImagery(
-        state.defaultBackDisplay
+      state.defaultBackDisplay.display.originalImage = originalImage;
+      state.defaultBackDisplay.display = await generateAdditionalImagery(
+        state.defaultBackDisplay.display
       );
     } else {
       state.pages.byId[pageId].displayButtons[
@@ -598,9 +601,12 @@ export const configReducer: IConfigReducer = {
   async updateAllDefaultBackImages(state) {
     Object.entries(state.pages.byId).forEach(([pageId, page]) => {
       page.displayButtons.forEach((displayButton, displayIndex) => {
-        if (displayButton.display.isGeneratedFromDefaultBackImage)
+        if (displayButton.display.isGeneratedFromDefaultBackImage) {
           state.pages.byId[pageId].displayButtons[displayIndex].display =
-            cloneDeep(state.defaultBackDisplay);
+            cloneDeep(state.defaultBackDisplay.display);
+          state.pages.byId[pageId].displayButtons[displayIndex].live =
+            cloneDeep(state.defaultBackDisplay.live);
+        }
       });
     });
     return saveConfigToLocalStorage(state);
@@ -608,11 +614,13 @@ export const configReducer: IConfigReducer = {
   async makeDefaultBackButton(state, data) {
     const { buttonIndex, pageId } = data;
     state.pages.byId[pageId].displayButtons[buttonIndex].display =
-      state.defaultBackDisplay;
+      state.defaultBackDisplay.display;
+    state.pages.byId[pageId].displayButtons[buttonIndex].live =
+      state.defaultBackDisplay.live;
     return saveConfigToLocalStorage(state);
   },
   async resetDefaultBackButton(state) {
-    state.defaultBackDisplay = await createDefaultBackDisplay("dbd");
+    state.defaultBackDisplay.display = await createDefaultBackDisplay("dbd");
     return saveConfigToLocalStorage(state);
   },
   async setLive(state, { buttonIndex, mode, pageId, position }) {
