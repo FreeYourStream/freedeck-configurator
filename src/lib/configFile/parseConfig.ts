@@ -30,14 +30,25 @@ export const generateAdditionalImagery = async (
 export const convertCurrentConfig = async (
   rawConfig: Config
 ): Promise<Config> => {
+  const promises: Array<Promise<Display>> = [];
   for (let outer = 0; outer < rawConfig.pages.sorted.length; outer++) {
     const id = rawConfig.pages.sorted[outer];
     const page = rawConfig.pages.byId[id];
 
     for (let inner = 0; inner < page.displayButtons.length; inner++) {
-      page.displayButtons[inner].display = await generateAdditionalImagery(
-        page.displayButtons[inner].display
+      promises.push(
+        generateAdditionalImagery(page.displayButtons[inner].display)
       );
+    }
+  }
+  const resolved = await Promise.all(promises);
+  for (let outer = 0; outer < rawConfig.pages.sorted.length; outer++) {
+    const id = rawConfig.pages.sorted[outer];
+    const page = rawConfig.pages.byId[id];
+
+    for (let inner = 0; inner < page.displayButtons.length; inner++) {
+      page.displayButtons[inner].display =
+        resolved[outer * page.displayButtons.length + inner];
     }
   }
   const defaultBackDisplay: DefaultBackDisplay = {
