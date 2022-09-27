@@ -36,8 +36,9 @@ export const convertCurrentConfig = async (
     const page = rawConfig.pages.byId[id];
 
     for (let inner = 0; inner < page.displayButtons.length; inner++) {
+      console.log(outer, inner, promises.length);
       promises.push(
-        generateAdditionalImagery(page.displayButtons[inner].display)
+        generateAdditionalImagery({ ...page.displayButtons[inner].display })
       );
     }
   }
@@ -49,6 +50,7 @@ export const convertCurrentConfig = async (
     for (let inner = 0; inner < page.displayButtons.length; inner++) {
       page.displayButtons[inner].display =
         resolved[outer * page.displayButtons.length + inner];
+      console.log(outer * page.displayButtons.length + inner);
     }
   }
   const defaultBackDisplay: DefaultBackDisplay = {

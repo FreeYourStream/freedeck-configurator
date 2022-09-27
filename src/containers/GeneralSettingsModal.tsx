@@ -12,6 +12,7 @@ import { TabView } from "../lib/components/TabView";
 import { FDWindow } from "../lib/components/Window";
 import { ConfigDispatchContext } from "../states/configState";
 import { About } from "./About";
+import { BackButtonLiveData } from "./BackButtonLiveData";
 import { DefaultBackButtonSettings } from "./DefaultBackButtonSettings";
 import { DeveloperSettings } from "./DeveloperSettings";
 import { Device } from "./Device";
@@ -25,6 +26,11 @@ export const GlobalSettings: React.FC<{}> = () => {
       title: "Default back button",
       prefix: <ArrowCircleLeftIcon className="h-6 w-6" />,
       content: <DefaultBackButtonSettings />,
+    },
+    {
+      title: "Back button live data",
+      prefix: <ArrowCircleLeftIcon className="h-6 w-6" />,
+      content: <BackButtonLiveData />,
     },
     {
       title: "Displays",
