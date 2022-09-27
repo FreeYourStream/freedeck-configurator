@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import * as workerInterval from "worker-interval";
 
 import { StateRef } from "../../../App";
 import { getEmptyConvertedImage } from "../../../definitions/emptyConvertedImage";
@@ -159,22 +160,23 @@ export const useLiveData = (
     if (!(window as any).__TAURI_IPC__) return;
 
     let isCancelled = false;
-    let unlistenSerialCommand: number | undefined;
+    let unlistenSerialCommand: string | null;
     const startListen = async () => {
       if (isCancelled) return;
       setTimeout(() => {
         updateLiveDisplays(configState, appState, refData);
       });
-      unlistenSerialCommand = setInterval(async () => {
+      unlistenSerialCommand = workerInterval.setInterval(async () => {
         updateLiveDisplays(configState, appState, refData);
-      }, 1000) as unknown as number;
+      }, 1000);
     };
 
     startListen();
 
     return () => {
       isCancelled = true;
-      clearInterval(unlistenSerialCommand);
+      unlistenSerialCommand &&
+        workerInterval.clearInterval(unlistenSerialCommand);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [configState, appState.serialApi, appState.deck]);
