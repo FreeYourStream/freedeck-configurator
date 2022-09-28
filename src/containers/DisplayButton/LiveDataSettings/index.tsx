@@ -28,10 +28,13 @@ export const LiveDataSettingsContainer: React.FC<{
   pageId: string;
   displayIndex: number;
 }> = ({ pageId, displayIndex }) => {
-  const { pages } = useContext(ConfigStateContext);
+  const { pages, defaultBackDisplay } = useContext(ConfigStateContext);
   const { setLive } = useContext(ConfigDispatchContext);
   const { system, serialApi } = useContext(AppStateContext);
-  const liveSettings = pages.byId[pageId].displayButtons[displayIndex].live;
+  const liveSettings =
+    pageId === "dbd"
+      ? defaultBackDisplay.live
+      : pages.byId[pageId].displayButtons[displayIndex].live;
   const setLiveCallback = useCallback(
     (data: {
       pageId: string;

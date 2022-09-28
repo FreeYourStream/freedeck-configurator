@@ -1,7 +1,8 @@
 import React from "react";
 
 import { DisplaySettingsContainer } from "./DisplayButton/DisplaySettings";
+import { LiveDataSettingsContainer } from "./DisplayButton/LiveDataSettings";
 
 export const BackButtonLiveData: React.FC<{}> = () => {
-  return <DisplaySettingsContainer displayIndex={-1} pageId={"dbd"} />;
+  return <LiveDataSettingsContainer displayIndex={-1} pageId={"dbd"} />;
 };

@@ -624,7 +624,13 @@ export const configReducer: IConfigReducer = {
     return saveConfigToLocalStorage(state);
   },
   async setLive(state, { buttonIndex, mode, pageId, position }) {
-    state.pages.byId[pageId].displayButtons[buttonIndex].live[position] = mode;
+    if (pageId === "dbd") {
+      state.defaultBackDisplay.live[position] = mode;
+      state = cloneDeep(await configReducer.updateAllDefaultBackImages(state));
+    } else {
+      state.pages.byId[pageId].displayButtons[buttonIndex].live[position] =
+        mode;
+    }
     return saveConfigToLocalStorage(state);
   },
   async setState(state, newState) {

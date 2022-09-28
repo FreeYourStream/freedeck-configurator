@@ -86,10 +86,8 @@ export const parseConfig = async (configBuffer: Buffer): Promise<Config> => {
     );
   }
   const jsonConfigSlice = configBuffer.slice(jsonOffset);
-  console.log("before");
   console.log(jsonConfigSlice.length);
   const rawConfig = JSON.parse(inflate(jsonConfigSlice, { to: "string" }));
-  console.log("after");
   if (!rawConfig.configVersion) {
     throw new Error("legacy config. not compatible");
   }

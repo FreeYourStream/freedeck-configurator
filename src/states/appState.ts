@@ -121,9 +121,7 @@ export const modifyTemps = <State extends PartialState>(
   if (state.system.cpuTemp.length >= 64) {
     state.system.cpuTemp.shift();
   }
-  console.log("before", state.system.cpuTemp);
   state.system.cpuTemp.push(cpuTemp);
-  console.log("after", state.system.cpuTemp);
 
   if (state.system.gpuTemp.length >= 64) {
     state.system.gpuTemp.shift();
