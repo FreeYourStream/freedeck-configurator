@@ -44,7 +44,7 @@ export const Hotkeys: React.FC<{
   setValues: (values: ButtonSetting["values"]) => void;
 }> = ({ setValues, values }) => {
   const setKeys = (newValues: number[]) =>
-    newValues.length <= ROW_SIZE / 2 - 3 &&
+    newValues.length <= ROW_SIZE / 2 - 4 &&
     setValues({
       ...values,
       [EAction.hotkeys]: newValues,
