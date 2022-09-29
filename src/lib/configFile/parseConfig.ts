@@ -77,7 +77,7 @@ export const convertCurrentConfig = async (
 export const parseConfig = async (configBuffer: Buffer): Promise<Config> => {
   const displayButtonCount = configBuffer.readUInt16LE(2) - 1; // subtract 1 for the header row
   const imageOffset = ROW_SIZE * (displayButtonCount + 1);
-  const jsonOffset = imageOffset + 1024 * displayButtonCount;
+  const jsonOffset = imageOffset + 1025 * displayButtonCount;
 
   if (configBuffer.length === jsonOffset) {
     alert("config too old. not compatible yet. please create a new one");
