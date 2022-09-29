@@ -85,7 +85,11 @@ impl FDSerial {
     }
     pub fn write(&mut self, data: Vec<u8>) -> Result<(), Box<dyn std::error::Error>> // sends command to serial port
     {
-        let port = self.port.as_mut().unwrap();
+        let port = match self.port.as_mut() {
+            Some(port) => port,
+            None => return Err("no port".into()),
+        };
+
         port.write_all(&data)?;
         port.flush()?;
         Ok(())
