@@ -46,6 +46,7 @@ export const createDefaultDisplay = (): Display => ({
     blackThreshold: 192,
     imageMode: EImageMode.normal,
     invert: true,
+    autoCrop: true,
   },
   textSettings: {
     font: fontMedium,

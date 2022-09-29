@@ -84,6 +84,14 @@ export const ImageSettings: React.FC<{
       buttonIndex: displayIndex,
     });
   };
+  const setAutoCrop = (autoCrop: boolean) => {
+    display.imageSettings.autoCrop = autoCrop;
+    configDispatch.setDisplaySettings({
+      displaySettings: display,
+      pageId,
+      buttonIndex: displayIndex,
+    });
+  };
   const setImageMode = (imageMode: EImageMode) => {
     display.imageSettings.imageMode = imageMode;
     configDispatch.setDisplaySettings({
@@ -248,6 +256,20 @@ export const ImageSettings: React.FC<{
                 value={display.imageSettings.invert}
               />
               <Value>{!!display.imageSettings.invert ? "on" : "off"}</Value>
+            </CtrlDuo>
+          </Row>
+          <Row className="h-8">
+            <CtrlDuo>
+              <ArrowsExpandIcon className="h-7 w-7" />
+              <Label>AutoCrop</Label>
+            </CtrlDuo>
+            <CtrlDuo>
+              <FDSwitch
+                disabled={!display.originalImage}
+                onChange={(value) => setAutoCrop(value)}
+                value={display.imageSettings.autoCrop}
+              />
+              <Value>{!!display.imageSettings.autoCrop ? "on" : "off"}</Value>
             </CtrlDuo>
           </Row>
         </TitleBox>

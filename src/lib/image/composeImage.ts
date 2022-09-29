@@ -100,7 +100,7 @@ export const _composeImage = async (
     });
     if (imageSettings.invert) jimpImage.invert();
   }
-  await jimpImage.autocrop();
+  if (imageSettings.autoCrop) await jimpImage.autocrop();
 
   const background = await import("jimp").then(
     (jimp) => new jimp.default(width, height, "black")
