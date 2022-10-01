@@ -1,10 +1,10 @@
 import {
+  ArrowPathIcon,
+  Bars3Icon,
   ChevronDoubleDownIcon,
-  MenuIcon,
-  PhotographIcon,
-  RefreshIcon,
+  PhotoIcon,
   TrashIcon,
-} from "@heroicons/react/outline";
+} from "@heroicons/react/24/outline";
 import c from "clsx";
 import React, { useContext } from "react";
 import { useDropzone } from "react-dropzone";
@@ -41,7 +41,7 @@ export const DropDisplay = ({
     entries.push({
       title: "Reset to default",
       onClick: () => configDispatch.resetDefaultBackButton(undefined),
-      prefix: <RefreshIcon className={c(iconSize, "text-danger-400")} />,
+      prefix: <ArrowPathIcon className={c(iconSize, "text-danger-400")} />,
     });
   } else {
     entries.push(
@@ -63,7 +63,7 @@ export const DropDisplay = ({
             pageId: pageId,
           }),
 
-        prefix: <RefreshIcon className={c(iconSize)} />,
+        prefix: <ArrowPathIcon className={c(iconSize)} />,
       }
     );
   }
@@ -79,7 +79,7 @@ export const DropDisplay = ({
           <div className="flex text-2xl font-extrabold h-32 items-center justify-center">
             <ChevronDoubleDownIcon className="h-12 w-12 m-4" />
             Drop Here
-            <PhotographIcon className="h-12 w-12 m-4" />
+            <PhotoIcon className="h-12 w-12 m-4" />
           </div>
         )}
         {!isDragActive &&
@@ -96,7 +96,7 @@ export const DropDisplay = ({
       </div>
       <FDMenu className="absolute top-0 right-0" entries={entries}>
         <div className="rounded-full bg-gray-400 hover:bg-gray-300 p-2 m-2">
-          <MenuIcon className="h-6 w-6"></MenuIcon>
+          <Bars3Icon className="h-6 w-6" />
         </div>
       </FDMenu>
     </div>

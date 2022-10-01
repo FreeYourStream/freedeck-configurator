@@ -1,4 +1,4 @@
-import { PlusCircleIcon } from "@heroicons/react/outline";
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import React, { useContext } from "react";
 
 import { FDButton } from "../lib/components/Button";

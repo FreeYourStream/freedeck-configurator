@@ -1,10 +1,11 @@
 import {
+  ArrowDownOnSquareIcon,
+  ArrowUpOnSquareIcon,
   CheckIcon,
-  CogIcon,
-  DownloadIcon,
-  SaveIcon,
-  UploadIcon,
-} from "@heroicons/react/outline";
+  Cog8ToothIcon,
+  DocumentArrowDownIcon,
+  DocumentArrowUpIcon,
+} from "@heroicons/react/24/outline";
 import c from "clsx";
 import React, { useContext, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -87,7 +88,7 @@ export const Header: React.FC<{}> = () => {
             {serialApi?.connected && !ctrlDown ? (
               <>
                 <FDButton
-                  prefix={<UploadIcon className={iconSize} />}
+                  prefix={<ArrowUpOnSquareIcon className={iconSize} />}
                   size={3}
                   disabled={!hasJson || isLoading}
                   title={
@@ -122,7 +123,7 @@ export const Header: React.FC<{}> = () => {
                   Load from FreeDeck
                 </FDButton>
                 <FDButton
-                  prefix={<SaveIcon className={iconSize} />}
+                  prefix={<ArrowDownOnSquareIcon className={iconSize} />}
                   size={3}
                   disabled={isLoading}
                   onClick={async () => {
@@ -181,7 +182,7 @@ export const Header: React.FC<{}> = () => {
             ) : (
               <>
                 <FDButton
-                  prefix={<UploadIcon className={iconSize} />}
+                  prefix={<DocumentArrowUpIcon className={iconSize} />}
                   size={3}
                   onClick={() => {
                     loadConfigRef.current?.click();
@@ -192,7 +193,7 @@ export const Header: React.FC<{}> = () => {
 
                 {!!Object.keys(pages).length && (
                   <FDButton
-                    prefix={<DownloadIcon className={iconSize} />}
+                    prefix={<DocumentArrowDownIcon className={iconSize} />}
                     disabled={!Object.keys(pages).length}
                     size={3}
                     onClick={() => saveConfigFile()}
@@ -225,7 +226,7 @@ export const Header: React.FC<{}> = () => {
         </form>
         <div className={c("flex items-center space-x-4")}>
           <FDButton
-            prefix={<CogIcon className={iconSize} />}
+            prefix={<Cog8ToothIcon className={iconSize} />}
             onClick={() => nav("/settings")}
             size={3}
           >

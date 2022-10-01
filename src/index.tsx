@@ -6,7 +6,7 @@ import {
   InMemoryCache,
   NormalizedCacheObject,
 } from "@apollo/client";
-import { RefreshIcon } from "@heroicons/react/outline";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import ReactDOM from "react-dom";
 
 import App from "./App";
@@ -51,7 +51,7 @@ serviceWorkerRegistration.register({
     createToast({
       primary: (t) => (
         <FDButton
-          prefix={<RefreshIcon className="h-4 w-4" />}
+          prefix={<ArrowPathIcon className="h-4 w-4" />}
           type="primary"
           size={2}
           onClick={async () => {

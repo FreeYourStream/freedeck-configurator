@@ -1,8 +1,8 @@
 import {
-  AdjustmentsIcon,
-  PhotographIcon,
+  AdjustmentsHorizontalIcon,
+  PhotoIcon,
   PlayIcon,
-} from "@heroicons/react/outline";
+} from "@heroicons/react/24/outline";
 import React, { useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -38,7 +38,7 @@ export const DBSettingsModal: React.FC = () => {
         tabs={[
           {
             title: "Display Settings",
-            prefix: <PhotographIcon className="h-6 w-6" />,
+            prefix: <PhotoIcon className="h-6 w-6" />,
             content: (
               <DisplaySettingsContainer
                 pageId={pageId}
@@ -48,7 +48,7 @@ export const DBSettingsModal: React.FC = () => {
           },
           {
             title: "Button Settings",
-            prefix: <AdjustmentsIcon className="h-6 w-6" />,
+            prefix: <AdjustmentsHorizontalIcon className="h-6 w-6" />,
             content: (
               <ButtonSettingsContainer
                 pageId={pageId}

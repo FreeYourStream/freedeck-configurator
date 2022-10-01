@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { XCircleIcon } from "@heroicons/react/solid";
+import { XCircleIcon } from "@heroicons/react/24/solid";
 import c from "clsx";
 import React, { Fragment } from "react";
 

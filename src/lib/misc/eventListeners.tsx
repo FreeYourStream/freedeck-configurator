@@ -1,4 +1,4 @@
-import { CloudDownloadIcon, XIcon } from "@heroicons/react/outline";
+import { CloudArrowDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
@@ -25,7 +25,7 @@ export const AddEventListeners = ({
                 localStorage.setItem("closedPWACTA", "true");
                 toast.dismiss(t.id);
               }}
-              prefix={<XIcon className="h-4 w-4" />}
+              prefix={<XMarkIcon className="h-4 w-4" />}
             >
               Close
             </FDButton>
@@ -38,7 +38,7 @@ export const AddEventListeners = ({
                 toast.dismiss(t.id);
                 (e as any).prompt();
               }}
-              prefix={<CloudDownloadIcon className="h-4 w-4" />}
+              prefix={<CloudArrowDownIcon className="h-4 w-4" />}
             >
               Install
             </FDButton>

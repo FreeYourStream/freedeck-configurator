@@ -1,4 +1,4 @@
-import { XIcon } from "@heroicons/react/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import React, { useContext, useEffect, useState } from "react";
 
 import { Label, Value } from "../lib/components/LabelValue";
@@ -89,7 +89,7 @@ export const Device: React.FC<{}> = () => {
               value={configState.width}
               options={widthOptions}
             />
-            <XIcon className="w-5 h-5 mx-2" />
+            <XMarkIcon className="w-5 h-5 mx-2" />
             <DisplayCountDropDown
               onChange={(height) => configDispatch.setDimensions({ height })}
               value={configState.height}

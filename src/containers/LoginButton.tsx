@@ -1,4 +1,8 @@
-import { LogoutIcon, ShareIcon, UserIcon } from "@heroicons/react/outline";
+import {
+  ArrowLeftOnRectangleIcon,
+  ShareIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
 import React from "react";
 import { useNavigate } from "react-router";
 
@@ -21,7 +25,7 @@ export const LoginLogoutButtons: React.FC = () => {
   if (data?.user) {
     entries.push({
       title: "Logout",
-      prefix: <LogoutIcon className={iconSize} />,
+      prefix: <ArrowLeftOnRectangleIcon className={iconSize} />,
       onClick: () =>
         (window.location.href = `${process.env.REACT_APP_API_URL}/logout`),
     });

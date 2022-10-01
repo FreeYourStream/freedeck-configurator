@@ -1,4 +1,7 @@
-import { LogoutIcon, PlusCircleIcon } from "@heroicons/react/outline";
+import {
+  ArrowLeftOnRectangleIcon,
+  PlusCircleIcon,
+} from "@heroicons/react/24/outline";
 import React, { useContext } from "react";
 
 import { EAction } from "../../../definitions/modes";
@@ -65,7 +68,7 @@ export const ChangePage: React.FC<{
           </FDButton>
         ) : (
           <FDButton
-            prefix={<LogoutIcon className="h-5 w-5" />}
+            prefix={<ArrowLeftOnRectangleIcon className="h-5 w-5" />}
             size={2}
             onClick={() => scrollToPage(values[EAction.changePage]!)}
           >

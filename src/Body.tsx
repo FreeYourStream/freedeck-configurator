@@ -1,7 +1,7 @@
 import {
   PlusCircleIcon,
   QuestionMarkCircleIcon,
-} from "@heroicons/react/outline";
+} from "@heroicons/react/24/outline";
 import { useContext } from "react";
 import { useDrop } from "react-dnd";
 import { Toaster } from "react-hot-toast";

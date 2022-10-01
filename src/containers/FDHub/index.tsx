@@ -1,5 +1,4 @@
-import { HomeIcon, SearchIcon } from "@heroicons/react/outline";
-import React from "react";
+import { HomeIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Route, Routes, useNavigate } from "react-router";
 
 import { iconSize } from "../../definitions/iconSizes";
@@ -29,7 +28,7 @@ export const FDHub = () => {
           },
           {
             title: "Search",
-            prefix: <SearchIcon className={iconSize} />,
+            prefix: <MagnifyingGlassIcon className={iconSize} />,
             content: <FDSearch />,
           },
         ]}

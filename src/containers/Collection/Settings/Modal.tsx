@@ -1,4 +1,4 @@
-import { CogIcon, CollectionIcon } from "@heroicons/react/outline";
+import { CircleStackIcon, CogIcon } from "@heroicons/react/24/outline";
 import React, { useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -39,7 +39,7 @@ export const CollectionSettingsModal: React.FC = () => {
           {
             title: "Auto Page Switcher",
             content: <AutoPageSwitcherSettings collectionId={collectionId} />,
-            prefix: <CollectionIcon className={iconSize} />,
+            prefix: <CircleStackIcon className={iconSize} />,
           },
         ]}
       />
