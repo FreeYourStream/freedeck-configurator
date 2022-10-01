@@ -931,7 +931,7 @@ dependencies = [
 
 [[package]]
 name = "freedeck_configurator"
-version = "2.13.2"
+version = "2.13.3"
 dependencies = [
  "criterion",
  "enigo",

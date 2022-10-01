@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "freedeck-configurator",
-    "version": "2.13.2"
+    "version": "2.13.3"
   },
   "tauri": {
     "allowlist": {
