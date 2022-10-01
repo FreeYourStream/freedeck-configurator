@@ -17,14 +17,10 @@ export const _composeImage = async (
   if (!originalImage) throw new Error("no original image");
   let jimpImage: Jimp;
   try {
-    jimpImage = await import("jimp").then((jimp) =>
-      jimp.default.read(originalImage)
-    );
+    jimpImage = await jimp.read(originalImage);
   } catch {
     console.log("image is corrupted");
-    jimpImage = await import("jimp").then((jimp) =>
-      jimp.default.create(width, height, "black")
-    );
+    jimpImage = await jimp.create(width, height, "black");
   }
 
   if (imageSettings.imageMode === EImageMode.dither) {
@@ -102,9 +98,7 @@ export const _composeImage = async (
   }
   if (imageSettings.autoCrop) await jimpImage.autocrop();
 
-  const background = await import("jimp").then(
-    (jimp) => new jimp.default(width, height, "black")
-  );
+  const background = new jimp(width, height, "black");
 
   if (textSettings.text?.length) {
     const font = await jimp.loadFont(textSettings.font);
@@ -168,12 +162,9 @@ export const _composeText = async (
   width = 128,
   height = 64
 ): Promise<Buffer> => {
-  const image = await import("jimp").then((jimp) =>
-    jimp.default.create(width, height, "black")
-  );
-  const font = await import("jimp").then((jimp) =>
-    jimp.default.loadFont(textSettings.font)
-  );
+  const jimp = (await import("jimp")).default;
+  const image = await jimp.create(width, height, "black");
+  const font = await jimp.loadFont(textSettings.font);
   const fontSize = font.common.lineHeight - 2;
   let lines = textSettings.text?.split(/\r?\n/).filter((line) => line) ?? [];
   const overAllLineHeight = lines.length * fontSize + (lines.length - 1) * 1;
@@ -189,9 +180,7 @@ export const _composeText = async (
       );
     })
   );
-  const background = await import("jimp").then((jimp) =>
-    jimp.default.create(width, height, "black")
-  );
+  const background = await jimp.create(width, height, "black");
   background.composite(
     image,
     (width - image.getWidth()) / 2,
