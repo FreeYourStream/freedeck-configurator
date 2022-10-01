@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
+import { ScrollListContainer } from "../../../lib/components/ScrollListContainer";
 import { FDSelect } from "../../../lib/components/SelectInput";
 import { TextInput } from "../../../lib/components/TextInput";
 import { TitleBox } from "../../../lib/components/Title";
@@ -20,7 +21,7 @@ export const PageGeneralSettings: React.FC<{ pageId: string }> = ({
   const page = configState.pages.byId[pageId];
 
   return (
-    <div className="w-full">
+    <ScrollListContainer>
       <TitleBox title="General page settings">
         <Row>
           <Label>Name</Label>
@@ -49,6 +50,6 @@ export const PageGeneralSettings: React.FC<{ pageId: string }> = ({
           />
         </Row>
       </TitleBox>
-    </div>
+    </ScrollListContainer>
   );
 };

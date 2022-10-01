@@ -38,7 +38,7 @@ export const TabView: React.FC<{
         </Tab.List>
         <Tab.Panels as={Fragment}>
           {tabs.map((tab, index) => (
-            <Tab.Panel key={index} className="w-full flex p-8 overflow-y-auto">
+            <Tab.Panel key={index} className="w-full flex">
               {tab.content}
             </Tab.Panel>
           ))}

@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
+import { ScrollListContainer } from "../../../lib/components/ScrollListContainer";
 import { FDSwitch } from "../../../lib/components/Switch";
 import { TextArea } from "../../../lib/components/TextArea";
 import { TitleBox } from "../../../lib/components/Title";
@@ -19,7 +20,7 @@ export const AutoPageSwitcherSettings: React.FC<{ pageId: string }> = ({
   const page = configState.pages.byId[pageId];
 
   return (
-    <div className="w-full">
+    <ScrollListContainer>
       <TitleBox title="Auto page-switcher">
         <Row className="h-8">
           <Label hint="This will be ignored if this page is in a collection">
@@ -47,6 +48,6 @@ export const AutoPageSwitcherSettings: React.FC<{ pageId: string }> = ({
           />
         </Row>
       </TitleBox>
-    </div>
+    </ScrollListContainer>
   );
 };

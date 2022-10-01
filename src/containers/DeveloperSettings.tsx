@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import { FDButton } from "../lib/components/Button";
 import { Label } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
+import { ScrollListContainer } from "../lib/components/ScrollListContainer";
 import { TextInput } from "../lib/components/TextInput";
 import { TitleBox } from "../lib/components/Title";
 import { createToast } from "../lib/misc/createToast";
@@ -13,7 +14,7 @@ export const DeveloperSettings: React.FC = () => {
   const { serialApi, devLog } = useContext(AppStateContext);
   const appDispatch = useContext(AppDispatchContext);
   return (
-    <div className="flex flex-col w-full">
+    <ScrollListContainer>
       <TitleBox title="FreeDeck Developer Settings">
         <Row>
           <Label>Send text to screen:</Label>
@@ -57,6 +58,6 @@ export const DeveloperSettings: React.FC = () => {
         </Row>
         <Row>{JSON.stringify(devLog, undefined, 2)}</Row>
       </TitleBox>
-    </div>
+    </ScrollListContainer>
   );
 };

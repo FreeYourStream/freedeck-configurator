@@ -3,6 +3,7 @@ import React, { useCallback, useContext } from "react";
 import { LiveMode } from "../../../generated";
 import { Label } from "../../../lib/components/LabelValue";
 import { Row } from "../../../lib/components/Row";
+import { ScrollListContainer } from "../../../lib/components/ScrollListContainer";
 import { FDSelect } from "../../../lib/components/SelectInput";
 import { TitleBox } from "../../../lib/components/Title";
 import { AppStateContext } from "../../../states/appState";
@@ -51,7 +52,7 @@ export const LiveDataSettingsContainer: React.FC<{
     [setLive, serialApi, liveSettings, pageId, pages.sorted]
   );
   return (
-    <div className="w-full">
+    <ScrollListContainer>
       <TitleBox title="Sensors">
         <div className="flex gap-8">
           <Tag>
@@ -70,7 +71,6 @@ export const LiveDataSettingsContainer: React.FC<{
           </Tag>
         </div>
       </TitleBox>
-      <div className="h-8 w-full" />
       <TitleBox title="Live data">
         <div className="">
           <Row>
@@ -107,7 +107,6 @@ export const LiveDataSettingsContainer: React.FC<{
           </Row>
         </div>
       </TitleBox>
-      <div className="h-8 w-full" />
       <TitleBox title="What you need for this to work">
         On windows you need openhardwaremonitor installed and running. If
         something is not working, please save a report and send it to me
@@ -119,8 +118,6 @@ export const LiveDataSettingsContainer: React.FC<{
         the following command:{" "}
         <code className="bg-gray-400 p-1 rounded-sm border-2">sensors</code>
       </TitleBox>
-
-      <div className="h-8 w-full" />
-    </div>
+    </ScrollListContainer>
   );
 };

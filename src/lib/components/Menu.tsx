@@ -23,7 +23,7 @@ export const FDMenu: React.FC<{
         )}
       >
         <Menu.Button className="overflow-hidden">{children}</Menu.Button>
-        <div className="absolute top-full">
+        <div className="absolute top-full z-40">
           <Transition
             as={Fragment}
             enter="transition duration-75 ease-out"
