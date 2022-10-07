@@ -1,13 +1,13 @@
+use anyhow::Result;
 use sysinfo::{Component, ComponentExt, System, SystemExt};
-
 pub struct SystemInfo {
     sys: System,
 }
 
 impl SystemInfo {
-    pub fn new() -> Option<SystemInfo> {
+    pub fn new() -> Result<SystemInfo> {
         let sys = System::new_all();
-        Some(SystemInfo { sys })
+        Ok(SystemInfo { sys })
     }
     pub fn cpu_temp(&mut self) -> f32 {
         let cpu: Option<&mut Component> = self.sys.components_mut().iter_mut().find(|c| {

@@ -1,5 +1,5 @@
+use anyhow::{anyhow, Result};
 use std::path::PathBuf;
-
 #[cfg(target_os = "macos")]
 pub fn get_current_window<F: FnOnce(&str) -> Option<PathBuf>>(
     resolve_resource: F,
@@ -27,7 +27,7 @@ pub fn get_current_window<F: FnOnce(&str) -> Option<PathBuf>>(
 #[cfg(target_os = "linux")]
 pub fn get_current_window<F: FnOnce(&str) -> Option<PathBuf>>(
     _resolve_resource: F,
-) -> Option<String> {
+) -> Result<String> {
     use std::process::Command;
 
     let mut command = Command::new("sh");
@@ -35,14 +35,14 @@ pub fn get_current_window<F: FnOnce(&str) -> Option<PathBuf>>(
         .arg("-c")
         .arg(include_str!("../assets/linux_active_window.sh"));
 
-    let output = command.output().expect("failed to execute process");
-    let result = String::from_utf8(output.stdout).unwrap();
+    let output = command.output()?;
+    let result = String::from_utf8(output.stdout)?;
     let success = !result.trim().is_empty();
 
-    if success {
-        return Some(result);
+    if !success {
+        return Err(anyhow!("failed to get active window"));
     }
-    None
+    Ok(result)
 }
 
 #[cfg(target_os = "windows")]

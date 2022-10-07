@@ -1,5 +1,6 @@
 use std::sync::{Arc, Mutex};
 
+use log::error;
 use tauri::{
     api::dialog, AppHandle, Manager, RunEvent, SystemTrayEvent, UpdaterEvent, Window, WindowEvent,
 };
@@ -58,26 +59,31 @@ pub fn handle_tray_event(app: &AppHandle, event: SystemTrayEvent) {
             size: _,
             ..
         } => {
-            let window = app.get_window("main").unwrap();
+            let window = app.get_window("main").expect("main window not found");
             window::show(window)
         }
         SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
             "quit" => {
                 app.exit(0);
             }
-            "aps" => app.emit_all("toggle_aps", ()).unwrap(),
+            "aps" => match app.emit_all("toggle_aps", ()) {
+                Ok(_) => {}
+                Err(e) => {
+                    error!("Error sending toggle_aps event: {}", e);
+                }
+            },
             "show" => {
-                let window = app.get_window("main").unwrap();
+                let window = app.get_window("main").expect("main window not found");
                 window::show(window)
             }
             "updates" => {
                 app.state::<Arc<Mutex<FDState>>>()
                     .lock()
-                    .unwrap()
+                    .expect("mutex poisened")
                     .serial
                     .port
                     .take();
-                let window = app.get_window("main").unwrap();
+                let window = app.get_window("main").expect("main window not found");
                 let app_handle = app.clone();
                 tauri::async_runtime::spawn(async {
                     handle_update(app_handle, window, false).await
@@ -93,7 +99,9 @@ pub fn handle_tauri_event(app_handle: &AppHandle, e: RunEvent) {
     let app_handle = app_handle.clone();
     match e {
         tauri::RunEvent::Ready => {
-            let window = app_handle.get_window("main").unwrap();
+            let window = app_handle
+                .get_window("main")
+                .expect("main window not found");
             tauri::async_runtime::spawn(async { handle_update(app_handle, window, true).await });
         }
         tauri::RunEvent::WindowEvent {
@@ -101,15 +109,22 @@ pub fn handle_tauri_event(app_handle: &AppHandle, e: RunEvent) {
             event: WindowEvent::CloseRequested { api, .. },
             ..
         } => {
-            let window = app_handle.get_window(&label).unwrap();
+            let window = app_handle
+                .get_window(&label)
+                .expect("{label} window not found");
             api.prevent_close();
-            window.hide().unwrap();
+            match window.hide() {
+                Ok(_) => {}
+                Err(e) => {
+                    error!("Error hiding window: {}", e);
+                }
+            }
         }
         tauri::RunEvent::Updater(UpdaterEvent::Updated) => {
             app_handle
                 .state::<Arc<Mutex<FDState>>>()
                 .lock()
-                .unwrap()
+                .expect("mutex poisened")
                 .serial
                 .port
                 .take();

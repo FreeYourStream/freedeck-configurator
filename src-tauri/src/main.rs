@@ -1,3 +1,4 @@
+#![warn(clippy::unwrap_used, clippy::print_stdout)]
 #![cfg_attr(
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
@@ -64,11 +65,11 @@ fn main() {
         app.tray_handle()
             .get_item("updates")
             .set_enabled(false)
-            .unwrap();
+            .expect("failed to disable update menu item");
         app.tray_handle()
             .get_item("updates")
             .set_title("Platform does not support updates")
-            .unwrap();
+            .expect("failed to set update menu item title");
     }
 
     #[cfg(target_os = "macos")]
@@ -81,8 +82,10 @@ fn main() {
 
     app.run(event_handlers::handle_tauri_event);
 
-    ports_join.join().unwrap();
-    read_join.join().unwrap();
-    current_window_join.join().unwrap();
-    system_temps_join.join().unwrap();
+    ports_join.join().expect("ports_join failed");
+    read_join.join().expect("read_join failed");
+    current_window_join
+        .join()
+        .expect("current_window_join failed");
+    system_temps_join.join().expect("system_temps_join failed");
 }

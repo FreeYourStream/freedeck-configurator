@@ -31,6 +31,8 @@ tauri = { version = "1.0.5", features = ["api-all", "system-tray", "updater"] }
 tauri-macros = "1.0.4"
 tiny_http = "0.11"
 sysinfo = "0.26.0"
+log = "0.4.17"
+anyhow = "1.0.64"
 
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3.9", features = ["winuser"] }
