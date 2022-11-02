@@ -3,7 +3,7 @@ use std::path::PathBuf;
 #[cfg(target_os = "macos")]
 pub fn get_current_window<F: FnOnce(&str) -> Option<PathBuf>>(
     resolve_resource: F,
-) -> Option<String> {
+) -> Result<String> {
     use std::process::Command;
     let script_location = resolve_resource("./src/assets/macos_active_window.as").unwrap();
     let mut command = Command::new("sh");
@@ -18,10 +18,9 @@ pub fn get_current_window<F: FnOnce(&str) -> Option<PathBuf>>(
     let success = result.trim().len() > 0;
 
     if success {
-        return Some(result);
+        return Ok(result);
     }
-    println!("failed to get active window, remove and readd freedeck-configurator to accessibility list?");
-    return None;
+    Err(anyhow!("failed to get active window, remove and readd freedeck-configurator to accessibility list?"))
 }
 
 #[cfg(target_os = "linux")]
@@ -48,7 +47,7 @@ pub fn get_current_window<F: FnOnce(&str) -> Option<PathBuf>>(
 #[cfg(target_os = "windows")]
 pub fn get_current_window<F: FnOnce(&str) -> Option<PathBuf>>(
     _resolve_resource: F,
-) -> Option<String> {
+) -> Result<String> {
     use std::{ffi::OsString, os::windows::prelude::OsStringExt};
     use winapi::um::winuser::{GetForegroundWindow, GetWindowTextW};
     unsafe {
@@ -56,11 +55,17 @@ pub fn get_current_window<F: FnOnce(&str) -> Option<PathBuf>>(
         let mut text: [u16; 512] = [0; 512];
         let _result: usize = GetWindowTextW(window, text.as_mut_ptr(), text.len() as i32) as usize;
         let (short, _) = text.split_at(_result);
-        let result = OsString::from_wide(&short).to_str().unwrap().to_string();
-        let success = result.trim().len() > 0;
+        let result = OsString::from_wide(short)
+            .to_str()
+            .expect("os string conversion error")
+            .to_string();
+        let success = !result.trim().is_empty();
         if success {
-            return Some(OsString::from_wide(&short).to_str().unwrap().to_string());
+            return Ok(OsString::from_wide(short)
+                .to_str()
+                .expect("os string conversion error")
+                .to_string());
         }
     }
-    None
+    Err(anyhow!("windows did an oopsy"))
 }
