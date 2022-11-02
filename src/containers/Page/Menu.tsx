@@ -1,10 +1,10 @@
 import {
+  Bars3Icon,
   CogIcon,
-  MenuIcon,
   PlayIcon,
   ShareIcon,
   TrashIcon,
-} from "@heroicons/react/outline";
+} from "@heroicons/react/24/outline";
 import c from "clsx";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router";
@@ -64,7 +64,7 @@ export const PageMenu: React.FC<{ pageId: string }> = ({ pageId }) => {
             },
           ]}
         >
-          <MenuIcon className="w-9 h-9 p-1.5 rounded-full bg-gray-400 hover:bg-gray-300" />
+          <Bars3Icon className="w-9 h-9 p-1.5 rounded-full bg-gray-400 hover:bg-gray-300" />
         </FDMenu>
         <TrashIcon
           onClick={async () => {

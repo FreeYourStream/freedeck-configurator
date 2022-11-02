@@ -83,11 +83,18 @@ export const createImageBody = (pages: Pages) => {
     pages.byId[
       pages.sorted[0]
     ].displayButtons[0].display.convertedImage.readUInt32LE(10);
+  console.log(bmpHeaderSize);
   pages.sorted.forEach((id) => {
     const page = pages.byId[id];
     page.displayButtons.forEach((db) => {
+      const hasLiveData = new Buffer(1);
+      hasLiveData.writeUInt8(
+        db.live.top !== "none" || db.live.bottom !== "none" ? 1 : 0,
+        0
+      );
       imageBuffer = Buffer.concat([
         imageBuffer,
+        hasLiveData,
         optimizeForSSD1306(db.display.convertedImage.slice(bmpHeaderSize)),
       ]);
     });

@@ -1,6 +1,8 @@
 import { minFWVersion } from "../../../package.json";
 import { TRANSMIT_BUFFER_SIZE } from "../configFile/consts";
-import { compareVersions, timeout } from "../misc/util";
+import { optimizeForSSD1306 } from "../configFile/ssd1306";
+import { _composeText } from "../image/composeImage";
+import { compareVersions, sleep } from "../misc/util";
 import { TauriSerialConnector } from "./tauri-serial";
 import { WebSerialConnector } from "./web-serial";
 import { PortsChangedCallback, SerialConnector, connectionStatus } from ".";
@@ -94,21 +96,28 @@ export class FDSerialAPI {
     this.nextCall();
   }
 
+  async sendImageToScreen(image: Buffer, screen = 0) {
+    await this.waitForTurn("imageToScreen");
+    const headerSize = image.readUInt32LE(10); // 130
+    const optimizedImage = optimizeForSSD1306(image.slice(headerSize));
+    await this.write([commands.init, commands.oledWriteData, screen]);
+    await this.Serial.write([...optimizedImage]);
+    await this.nextCall();
+  }
+
   async writeToScreen(text: string, screen = 0, size = 1) {
     await this.waitForTurn("writeToScreen");
     if (this.connected === connectionStatus.disconnect)
       this.throwError("not connected");
     this.Serial.flush();
-    await this.write([commands.init, commands.oledClear, screen]);
-    await this.write([
-      commands.init,
-      commands.oledWriteLine,
-      screen,
-      0,
-      size,
+    // await this.write([commands.init, commands.oledClear, screen]);
+    const image = await _composeText({
+      font: "fonts/medium.fnt",
       text,
-    ]);
+      position: "bottom",
+    });
     this.nextCall();
+    await this.sendImageToScreen(image, screen);
   }
 
   registerOnPortsChanged(callback: PortsChangedCallback): number {
@@ -278,7 +287,7 @@ export class FDSerialAPI {
     }
     this.calls.push({ id: callId, name });
     while (this.calls[0].id !== callId) {
-      await timeout(100);
+      await sleep(100);
     }
   };
   private nextCall = () => {

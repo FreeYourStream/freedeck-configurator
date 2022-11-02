@@ -24,6 +24,14 @@ export interface AppState {
     onAccept?: () => any;
     onAbort?: () => any;
   };
+  deck: {
+    currentPage: number | null;
+    dontSwitchPage: boolean;
+  };
+  system: {
+    cpuTemp: number[];
+    gpuTemp: number[];
+  };
 }
 export const defaultAppState: () => Promise<AppState> = async () => ({
   autoPageSwitcherEnabled: true,
@@ -46,10 +54,19 @@ export const defaultAppState: () => Promise<AppState> = async () => ({
     text: "",
     title: "",
   },
+  deck: { currentPage: null, dontSwitchPage: false },
+  system: {
+    cpuTemp: [0],
+    gpuTemp: [0],
+  },
 });
 
 export interface IAppReducer extends Actions<AppState> {
   setCtrl(state: AppState, ctrlDown: boolean): Promise<AppState>;
+  setDeck(
+    state: AppState,
+    data: { currentPage: number | null; dontSwitchPage: boolean }
+  ): Promise<AppState>;
   toggleAutoPageSwitcher(state: AppState, enabled?: boolean): Promise<AppState>;
   closeAlert(state: AppState): Promise<AppState>;
   setHasJson(state: AppState, hasJson: boolean): Promise<AppState>;
@@ -79,11 +96,50 @@ export interface IAppReducer extends Actions<AppState> {
     state: AppState,
     connectedPortIndex: number
   ): Promise<AppState>;
+  setTemps(
+    state: AppState,
+    data: { cpuTemp: number; gpuTemp: number }
+  ): Promise<AppState>;
 }
+
+export interface PartialState {
+  system: {
+    cpuTemp: number[];
+    gpuTemp: number[];
+  };
+  [x: string]: any;
+}
+
+export const modifyTemps = <State extends PartialState>(
+  state: State,
+  data: {
+    gpuTemp: number;
+    cpuTemp: number;
+  }
+): State => {
+  const { gpuTemp, cpuTemp } = data;
+  if (state.system.cpuTemp.length >= 64) {
+    state.system.cpuTemp.shift();
+  }
+  state.system.cpuTemp.push(cpuTemp);
+
+  if (state.system.gpuTemp.length >= 64) {
+    state.system.gpuTemp.shift();
+  }
+  state.system.gpuTemp.push(gpuTemp);
+
+  return { ...state };
+};
 
 export const appReducer: IAppReducer = {
   async setCtrl(state, ctrlDown) {
     return { ...state, ctrlDown };
+  },
+  async setDeck(state, { currentPage, dontSwitchPage }) {
+    return { ...state, deck: { currentPage, dontSwitchPage } };
+  },
+  async setTemps(state, data) {
+    return modifyTemps<AppState>(state, data);
   },
   async toggleAutoPageSwitcher(state, maybeEnabled) {
     const enabled =

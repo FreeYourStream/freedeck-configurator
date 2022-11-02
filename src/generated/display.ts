@@ -14,6 +14,7 @@ export interface Display {
 }
 
 export interface ImageSettings {
+  autoCrop: boolean;
   blackThreshold: number;
   brightness: number;
   contrast: number;

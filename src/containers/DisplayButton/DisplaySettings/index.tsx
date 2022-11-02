@@ -31,7 +31,7 @@ export const DisplaySettingsContainer = ({
   };
   return (
     <div
-      className="w-full h-full flex flex-col justify-between focus:outline-none"
+      className="w-full h-full flex flex-col justify-between focus:outline-none p-8"
       tabIndex={0}
       contentEditable={false}
       ref={ref}

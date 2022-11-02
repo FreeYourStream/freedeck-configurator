@@ -1,9 +1,9 @@
-import { XIcon } from "@heroicons/react/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import React, { useContext, useEffect, useState } from "react";
 
-import { Divider } from "../lib/components/Divider";
 import { Label, Value } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
+import { ScrollListContainer } from "../lib/components/ScrollListContainer";
 import { FDSelect } from "../lib/components/SelectInput";
 import { FDSwitch } from "../lib/components/Switch";
 import { TitleBox } from "../lib/components/Title";
@@ -71,7 +71,7 @@ export const Device: React.FC<{}> = () => {
   }, [configState.width, configState.height]);
 
   return (
-    <div className="w-full">
+    <ScrollListContainer>
       <TitleBox title="Device Settings">
         <Row>
           <Label>FreeDeck Layout:</Label>
@@ -89,7 +89,7 @@ export const Device: React.FC<{}> = () => {
               value={configState.width}
               options={widthOptions}
             />
-            <XIcon className="w-5 h-5 mx-2" />
+            <XMarkIcon className="w-5 h-5 mx-2" />
             <DisplayCountDropDown
               onChange={(height) => configDispatch.setDimensions({ height })}
               value={configState.height}
@@ -108,7 +108,6 @@ export const Device: React.FC<{}> = () => {
         </Row>
       </TitleBox>
 
-      <Divider />
       <TitleBox title="Device Info">
         <Row>
           <Label>Firmware version:</Label>
@@ -119,6 +118,6 @@ export const Device: React.FC<{}> = () => {
           <Value>{configState.configVersion || "1.0.0"}</Value>
         </Row>
       </TitleBox>
-    </div>
+    </ScrollListContainer>
   );
 };

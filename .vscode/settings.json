@@ -4,4 +4,9 @@
   "sort-imports.default-sort-style": "module",
   "typescript.preferences.quoteStyle": "double",
   "editor.formatOnSave": true,
+  "rust-analyzer.checkOnSave": {
+    "command": "clippy",
+    "enable": true
+  }
+
 }

@@ -1,8 +1,8 @@
 import {
   PlusCircleIcon,
   QuestionMarkCircleIcon,
-} from "@heroicons/react/outline";
-import React, { useContext } from "react";
+} from "@heroicons/react/24/outline";
+import { useContext } from "react";
 import { useDrop } from "react-dnd";
 import { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +13,6 @@ import { FirstPage } from "./containers/FirstTime";
 import { Header } from "./containers/Header";
 import { Pages } from "./containers/Page/Pages";
 import { FDButton } from "./lib/components/Button";
-import { useBackgroundTasks } from "./lib/hooks/backgroundTasks";
 import {
   ConfigDispatchContext,
   ConfigStateContext,
@@ -25,7 +24,6 @@ export const Body = () => {
   const { createCollection, addPage, setPageCollection } = useContext(
     ConfigDispatchContext
   );
-  useBackgroundTasks();
   const [, drop] = useDrop<{ pageId: string; collectionId: string }>({
     accept: "page",
     drop: (item, monitor) => {

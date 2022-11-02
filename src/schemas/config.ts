@@ -4,9 +4,33 @@ import package_json from "../../package.json";
 import { ButtonSchema } from "./button";
 import { DisplaySchema } from "./display";
 
+export const LiveModeSchema = Joi.string()
+  .required()
+  .allow(
+    "cpu_temp",
+    "gpu_temp",
+    "cpu_temp_graph",
+    "gpu_temp_graph",
+    "cpu_temp_line",
+    "gpu_temp_line",
+    "none"
+  )
+  .failover("none")
+  .meta({ className: "LiveMode" });
+export const LiveSchema = Joi.object({
+  top: LiveModeSchema,
+  bottom: LiveModeSchema,
+}).meta({ className: "Live" });
+
+export const DefaultBackDisplaySchema = Joi.object({
+  display: DisplaySchema.required().failover(DisplaySchema),
+  live: LiveSchema.required().failover(LiveSchema),
+}).meta({ className: "DefaultBackDisplay" });
+
 export const DisplayButtonSchema = Joi.object({
   button: ButtonSchema.required().failover(ButtonSchema),
   display: DisplaySchema.required().failover(DisplaySchema),
+  live: LiveSchema.required().failover(LiveSchema),
 }).meta({ className: "DisplayButton" });
 
 export const PublishData = Joi.object({
@@ -83,7 +107,9 @@ export const ConfigSchema = Joi.object({
     .required(),
   screenSaverTimeout: Joi.number().min(0).failover(0).required(),
   collections: CollectionsSchema.required().failover(CollectionsSchema),
-  defaultBackDisplay: DisplaySchema.required().failover(DisplaySchema),
+  defaultBackDisplay: DefaultBackDisplaySchema.required().failover(
+    DefaultBackDisplaySchema
+  ),
 })
   .required()
   .meta({ className: "Config" })

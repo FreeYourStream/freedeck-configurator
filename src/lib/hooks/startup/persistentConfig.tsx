@@ -14,7 +14,8 @@ export const usePersistentConfig = (
       const config = localStorage.getItem("config");
 
       if (config) {
-        const converted = await convertCurrentConfig(JSON.parse(config));
+        const parsed = JSON.parse(config);
+        const converted = await convertCurrentConfig(parsed);
         configDispatch.setState(converted);
       }
 

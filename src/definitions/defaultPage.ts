@@ -46,6 +46,7 @@ export const createDefaultDisplay = (): Display => ({
     blackThreshold: 192,
     imageMode: EImageMode.normal,
     invert: true,
+    autoCrop: true,
   },
   textSettings: {
     font: fontMedium,
@@ -62,6 +63,10 @@ export const createDefaultDisplayButton = async (): Promise<DisplayButton> => {
   return {
     button: createDefaultButton(),
     display: createDefaultDisplay(),
+    live: {
+      bottom: "none",
+      top: "none",
+    },
   };
 };
 

@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 
 import { FDButton } from "../lib/components/Button";
-import { Divider } from "../lib/components/Divider";
 import { Label } from "../lib/components/LabelValue";
 import { Row } from "../lib/components/Row";
+import { ScrollListContainer } from "../lib/components/ScrollListContainer";
 import { FDSelect } from "../lib/components/SelectInput";
 import { FDSlider } from "../lib/components/Slider";
 import { TitleBox } from "../lib/components/Title";
@@ -18,7 +18,7 @@ export const Displays: React.FC<{}> = () => {
   const configDispatch = useContext(ConfigDispatchContext);
   const appState = useContext(AppStateContext);
   return (
-    <div className="w-full">
+    <ScrollListContainer>
       <TitleBox title="Displays">
         <Row>
           <Label>Brightness:</Label>
@@ -50,7 +50,6 @@ export const Displays: React.FC<{}> = () => {
           />
         </Row>
       </TitleBox>
-      <Divider />
       <TitleBox title="Advanced">
         <Row>
           <Label hint="only for freedeck-pico, if too high the freedeck crashes. try lower values after restarting the freedeck, default 50">
@@ -136,7 +135,6 @@ export const Displays: React.FC<{}> = () => {
           </FDButton>
         </Row>
       </TitleBox>
-      <Divider />
-    </div>
+    </ScrollListContainer>
   );
 };

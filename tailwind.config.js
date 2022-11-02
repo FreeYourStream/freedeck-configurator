@@ -129,7 +129,11 @@ module.exports = {
       },
     },
   },
-  variants: {},
+  variants: {
+    extend: {
+      display: ["group-hover"],
+    },
+  },
   plugins: [
     function ({ addComponents }) {
       const arrows = {
@@ -139,6 +143,13 @@ module.exports = {
           borderLeft: "8px solid transparent",
           borderRight: "8px solid transparent",
           borderBottom: "8px solid #5D3B88",
+        },
+        ".fat-arrow-right": {
+          width: "0px",
+          height: "0px",
+          borderLeft: "12px solid #5D3B88",
+          borderTop: "12px solid transparent",
+          borderBottom: "12px solid transparent",
         },
       };
       addComponents(arrows);

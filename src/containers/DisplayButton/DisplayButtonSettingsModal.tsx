@@ -1,4 +1,8 @@
-import { AdjustmentsIcon, PhotographIcon } from "@heroicons/react/outline";
+import {
+  AdjustmentsHorizontalIcon,
+  PhotoIcon,
+  PlayIcon,
+} from "@heroicons/react/24/outline";
 import React, { useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -8,6 +12,7 @@ import { getPageName } from "../../lib/misc/util";
 import { ConfigStateContext } from "../../states/configState";
 import { ButtonSettingsContainer } from "./ButtonSettings";
 import { DisplaySettingsContainer } from "./DisplaySettings";
+import { LiveDataSettingsContainer } from "./LiveDataSettings";
 
 export const DBSettingsModal: React.FC = () => {
   const params = useParams();
@@ -33,7 +38,7 @@ export const DBSettingsModal: React.FC = () => {
         tabs={[
           {
             title: "Display Settings",
-            prefix: <PhotographIcon className="h-6 w-6" />,
+            prefix: <PhotoIcon className="h-6 w-6" />,
             content: (
               <DisplaySettingsContainer
                 pageId={pageId}
@@ -43,9 +48,19 @@ export const DBSettingsModal: React.FC = () => {
           },
           {
             title: "Button Settings",
-            prefix: <AdjustmentsIcon className="h-6 w-6" />,
+            prefix: <AdjustmentsHorizontalIcon className="h-6 w-6" />,
             content: (
               <ButtonSettingsContainer
+                pageId={pageId}
+                displayIndex={displayIndex}
+              />
+            ),
+          },
+          {
+            title: "Live Data Settings",
+            prefix: <PlayIcon className="h-6 w-6" />,
+            content: (
+              <LiveDataSettingsContainer
                 pageId={pageId}
                 displayIndex={displayIndex}
               />

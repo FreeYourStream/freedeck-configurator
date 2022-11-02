@@ -1,5 +1,5 @@
 import { TRANSMIT_BUFFER_SIZE } from "../configFile/consts";
-import { isMacOS } from "../misc/util";
+import { isMacOS, sleep } from "../misc/util";
 import { PortsChangedCallback, SerialConnector, connectionStatus } from ".";
 export class WebSerialConnector implements SerialConnector {
   buffer: number[];
@@ -86,7 +86,7 @@ export class WebSerialConnector implements SerialConnector {
 
       const arrBuff = Buffer.from([...data]);
       await this.writer.write(arrBuff);
-      await this.sleep(1);
+      await sleep(1);
     } else {
       const arrBuff = new Buffer([...data]);
       await this.writer.write(arrBuff);
@@ -99,10 +99,10 @@ export class WebSerialConnector implements SerialConnector {
     return;
   }
 
-  async read(timeout = 1000): Promise<number[]> {
+  async read(readTimeout = 1000): Promise<number[]> {
     const startTime = new Date().getTime();
     while (!this.buffer.length && new Date().getTime() - startTime < 10000) {
-      await this.sleep(10);
+      await sleep(10);
     }
     if (!this.buffer.length) return [];
     const data = [...this.buffer.splice(0, Math.min(this.buffer.length, 2560))];
@@ -114,13 +114,13 @@ export class WebSerialConnector implements SerialConnector {
     throw new Error("not implemented");
   }
 
-  async readLine(timeout = 1000): Promise<number[]> {
+  async readLine(readLineTimeout = 1000): Promise<number[]> {
     const startTime = new Date().getTime();
     while (
       !this.buffer.find((byte) => byte === 0xa) &&
-      new Date().getTime() - startTime < timeout
+      new Date().getTime() - startTime < readLineTimeout
     ) {
-      await this.sleep(10);
+      await sleep(10);
     }
 
     if (!this.buffer.length || !this.buffer.find((byte) => byte === 0xa)) {
@@ -192,11 +192,5 @@ export class WebSerialConnector implements SerialConnector {
     this.buffer = [];
     this.port = undefined;
     this.reader = undefined;
-  }
-
-  private async sleep(ms: number) {
-    return new Promise<void>((res, rej) => {
-      setTimeout(() => res(), ms);
-    });
   }
 }

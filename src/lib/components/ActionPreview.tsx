@@ -1,7 +1,7 @@
 import {
-  ArrowCircleRightIcon,
+  ArrowRightCircleIcon,
   ExclamationCircleIcon,
-} from "@heroicons/react/outline";
+} from "@heroicons/react/24/outline";
 import c from "clsx";
 import React, { useContext } from "react";
 
@@ -29,7 +29,7 @@ const Pill: React.FC<{
         !genericBackButton &&
         !!button.values[EAction.changePage] && (
           <div className={c(pillClassName, "bg-gray-500")}>
-            <ArrowCircleRightIcon className="w-4 h-4" />
+            <ArrowRightCircleIcon className="w-4 h-4" />
             <span className="overflow-ellipsis overflow-hidden">
               {getPageName(
                 button.values[EAction.changePage]!,

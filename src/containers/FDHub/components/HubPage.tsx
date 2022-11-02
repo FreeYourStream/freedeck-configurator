@@ -1,4 +1,4 @@
-import { ThumbUpIcon } from "@heroicons/react/solid";
+import { HandThumbUpIcon } from "@heroicons/react/24/solid";
 import c from "clsx";
 import React, { useContext } from "react";
 
@@ -33,7 +33,7 @@ export const HubPage: React.FC<{
           </div>
           {page.upvotes !== -1 && (
             <div className="flex justify-end items-center">
-              <ThumbUpIcon className={c(iconSize, "mr-2")} />
+              <HandThumbUpIcon className={c(iconSize, "mr-2")} />
               <Value>{page.upvotes}</Value>
             </div>
           )}
@@ -69,7 +69,7 @@ export const HubPage: React.FC<{
                 size={1}
                 previewImage={
                   db.display.isGeneratedFromDefaultBackImage
-                    ? defaultBackDisplay.previewImage
+                    ? defaultBackDisplay.display.previewImage
                     : db.display.previewImage
                 }
               />

@@ -80,7 +80,10 @@ export class TauriSerialConnector implements SerialConnector {
 
   async readSerialCommand() {
     let start = (await this.readLine()).filter((x) => x !== 13 && x !== 10);
-    if (start[0] !== 3) throw new Error("wrong start byte");
+    if (start[0] !== 3) {
+      console.log(start, await this.readLine());
+      throw new Error("wrong start byte");
+    }
     let command = (await this.readLine()).filter(
       (x) => x !== 13 && x !== 10
     )[0];

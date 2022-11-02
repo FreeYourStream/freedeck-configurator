@@ -1,4 +1,4 @@
-import { TrashIcon } from "@heroicons/react/outline";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import c from "clsx";
 import React, { useContext } from "react";
 import { useDrag, useDrop } from "react-dnd";
@@ -31,7 +31,7 @@ export const DisplayButton: React.FC<{
 
   const display =
     pageId === "dbd"
-      ? configState.defaultBackDisplay
+      ? configState.defaultBackDisplay.display
       : configState.pages.byId[pageId].displayButtons[displayIndex].display;
 
   const [{ isDragging }, dragRef] = useDrag<

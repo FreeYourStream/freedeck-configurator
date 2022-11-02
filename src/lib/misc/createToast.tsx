@@ -1,4 +1,4 @@
-import { XIcon } from "@heroicons/react/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import React from "react";
 import toast, { Toast } from "react-hot-toast";
 
@@ -24,7 +24,7 @@ export const createToast = ({ danger, primary, title, text }: IProps) => {
                 danger(t)
               ) : (
                 <FDButton
-                  prefix={<XIcon className="h-4 w-4" />}
+                  prefix={<XMarkIcon className="h-4 w-4" />}
                   type="danger"
                   size={2}
                   onClick={() => toast.dismiss(t.id)}

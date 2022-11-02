@@ -26,10 +26,10 @@ jobs:
           # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0
           node-version: 16 # optional, default is 10.x
 
-      - name: npm i
+      - name: npm ci
         # You may pin to the exact commit or the version.
         # uses: EgorDm/gha-yarn-node-cache@5e3a518810b21a8e0e1d236a3db83a18cfc1be9e
-        run: npm i
+        run: npm ci
 
       - name: build
         run: CI=false npm run build
@@ -135,7 +135,7 @@ jobs:
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_UPDATER_KEY }}
           CI: false
-        run: npm install && npm run tauri:build
+        run: npm ci && npm run tauri:build
       - name: read signatures
         id: readmacsig
         if: matrix.platform == 'macos-latest'

@@ -1,13 +1,15 @@
+#![warn(clippy::unwrap_used, clippy::print_stdout)]
 #![cfg_attr(
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
 mod modules;
 
-use fd_lib::{serial::FDSerial, state::FDState};
-use modules::{commands, event_handlers, plugins::single_instance, threads};
-
 use std::sync::{Arc, Mutex};
+
+use fd_lib::serial::FDSerial;
+use modules::{commands, event_handlers, plugins::single_instance, state::FDState, threads};
+
 use tauri::{CustomMenuItem, Manager, SystemTray, SystemTrayMenu, SystemTrayMenuItem};
 
 use tauri_macros::generate_handler;
@@ -33,6 +35,7 @@ fn main() {
     let state = Arc::new(Mutex::new(FDState {
         serial: FDSerial::new(),
         current_window: "".to_string(),
+        sensors: Vec::new(),
     }));
 
     #[allow(unused_mut)] // needed for macos
@@ -51,7 +54,8 @@ fn main() {
             commands::read_line,
             commands::get_current_window,
             commands::set_aps_state,
-            commands::press_keys
+            commands::press_keys,
+            commands::list_sensors
         ))
         .build(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -61,11 +65,11 @@ fn main() {
         app.tray_handle()
             .get_item("updates")
             .set_enabled(false)
-            .unwrap();
+            .expect("failed to disable update menu item");
         app.tray_handle()
             .get_item("updates")
             .set_title("Platform does not support updates")
-            .unwrap();
+            .expect("failed to set update menu item title");
     }
 
     #[cfg(target_os = "macos")]
@@ -74,9 +78,14 @@ fn main() {
     let ports_join = threads::ports_thread(&app.handle(), &state);
     let read_join = threads::read_thread(&app.handle(), &state);
     let current_window_join = threads::current_window_thread(&app.handle(), &state);
+    let system_temps_join = threads::system_temps_thread(&app.handle(), &state);
 
     app.run(event_handlers::handle_tauri_event);
-    ports_join.join().unwrap();
-    read_join.join().unwrap();
-    current_window_join.join().unwrap();
+
+    ports_join.join().expect("ports_join failed");
+    read_join.join().expect("read_join failed");
+    current_window_join
+        .join()
+        .expect("current_window_join failed");
+    system_temps_join.join().expect("system_temps_join failed");
 }

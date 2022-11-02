@@ -15,7 +15,7 @@ import { CustomAlert } from "./CustomAlert";
 export const ModalBody = () => {
   const nav = useNavigate();
   useEffect(() => {
-    if (localStorage.getItem("dontShowDeprecatedInfo") === null) {
+    if (localStorage.getItem("dontShow128Info") === null) {
       nav("/deprecated-info");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

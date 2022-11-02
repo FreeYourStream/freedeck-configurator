@@ -35,6 +35,7 @@ export const ImageSettingsSchema = Joi.object({
   whiteThreshold: Joi.number().failover(64).required(),
   brightness: Joi.number().failover(0).required(),
   contrast: Joi.number().failover(0).required(),
+  autoCrop: Joi.bool().failover(true).required(),
   imageMode: Joi.valid(EImageMode.dither, EImageMode.normal, EImageMode.hybrid)
     .failover(EImageMode.normal)
     .required(),

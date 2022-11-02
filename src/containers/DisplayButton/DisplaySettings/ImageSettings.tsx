@@ -1,13 +1,14 @@
 import {
-  AdjustmentsIcon,
-  ArrowsExpandIcon,
-  LightningBoltIcon,
+  AdjustmentsHorizontalIcon,
+  ArrowPathIcon,
+  ArrowsPointingOutIcon,
+  BoltIcon,
+  LanguageIcon,
+  MagnifyingGlassIcon,
   MoonIcon,
-  RefreshIcon,
   SunIcon,
-  TranslateIcon,
-} from "@heroicons/react/outline";
-import { SunIcon as SunIconAlt } from "@heroicons/react/solid";
+} from "@heroicons/react/24/outline";
+import { SunIcon as SunIconAlt } from "@heroicons/react/24/solid";
 import c from "clsx";
 import React, { useContext } from "react";
 
@@ -39,7 +40,7 @@ export const ImageSettings: React.FC<{
   const configState = useContext(ConfigStateContext);
   const display =
     pageId === "dbd"
-      ? configState.defaultBackDisplay
+      ? configState.defaultBackDisplay.display
       : configState.pages.byId[pageId].displayButtons[displayIndex].display;
 
   const configDispatch = useContext(ConfigDispatchContext);
@@ -78,6 +79,14 @@ export const ImageSettings: React.FC<{
   };
   const setInvert = (invert: boolean) => {
     display.imageSettings.invert = invert;
+    configDispatch.setDisplaySettings({
+      displaySettings: display,
+      pageId,
+      buttonIndex: displayIndex,
+    });
+  };
+  const setAutoCrop = (autoCrop: boolean) => {
+    display.imageSettings.autoCrop = autoCrop;
     configDispatch.setDisplaySettings({
       displaySettings: display,
       pageId,
@@ -138,7 +147,7 @@ export const ImageSettings: React.FC<{
         <TitleBox title="Image" className="h-full">
           <Row className="h-8">
             <CtrlDuo>
-              <LightningBoltIcon className="h-7 w-7" />
+              <BoltIcon className="h-7 w-7" />
               <Label>Image mode</Label>
             </CtrlDuo>
             <CtrlDuo>
@@ -238,7 +247,7 @@ export const ImageSettings: React.FC<{
           )}
           <Row className="h-8">
             <CtrlDuo>
-              <RefreshIcon className="h-7 w-7" />
+              <ArrowPathIcon className="h-7 w-7" />
               <Label>Invert</Label>
             </CtrlDuo>
             <CtrlDuo>
@@ -248,6 +257,20 @@ export const ImageSettings: React.FC<{
                 value={display.imageSettings.invert}
               />
               <Value>{!!display.imageSettings.invert ? "on" : "off"}</Value>
+            </CtrlDuo>
+          </Row>
+          <Row className="h-8">
+            <CtrlDuo>
+              <MagnifyingGlassIcon className="h-7 w-7" />
+              <Label>AutoCrop</Label>
+            </CtrlDuo>
+            <CtrlDuo>
+              <FDSwitch
+                disabled={!display.originalImage}
+                onChange={(value) => setAutoCrop(value)}
+                value={display.imageSettings.autoCrop}
+              />
+              <Value>{!!display.imageSettings.autoCrop ? "on" : "off"}</Value>
             </CtrlDuo>
           </Row>
         </TitleBox>
@@ -265,7 +288,7 @@ export const ImageSettings: React.FC<{
           </Row>
           <Row className="h-8">
             <CtrlDuo>
-              <AdjustmentsIcon className="h-7 w-7" />
+              <AdjustmentsHorizontalIcon className="h-7 w-7" />
               <Label>Position:</Label>
             </CtrlDuo>
             <CtrlDuo>
@@ -283,7 +306,7 @@ export const ImageSettings: React.FC<{
           </Row>
           <Row className="h-8">
             <CtrlDuo>
-              <TranslateIcon className="h-7 w-7" />
+              <LanguageIcon className="h-7 w-7" />
               <Label>Font:</Label>
             </CtrlDuo>
             <CtrlDuo>
@@ -303,7 +326,7 @@ export const ImageSettings: React.FC<{
           </Row>
           <Row className="h-8">
             <CtrlDuo>
-              <ArrowsExpandIcon className="h-7 w-7" />
+              <ArrowsPointingOutIcon className="h-7 w-7" />
               <Label>Icon width:</Label>
             </CtrlDuo>
             <FDSlider
