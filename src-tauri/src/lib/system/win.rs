@@ -28,10 +28,10 @@ impl SystemInfo {
             0.0
         } else {
             let cpu = &cpu_results[0];
-            if let Some(Variant::R4(value)) = cpu.get("Value") {
-                value.to_owned()
-            } else {
-                0.0
+            match cpu.get("Value") {
+                Some(Variant::R4(value)) => *value,
+                Some(Variant::I4(value)) => (*value as f32),
+                _ => 0.0,
             }
         }
     }
