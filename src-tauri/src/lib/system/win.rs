@@ -28,9 +28,18 @@ impl SystemInfo {
             0.0
         } else {
             let cpu = &cpu_results[0];
+
             match cpu.get("Value") {
                 Some(Variant::R4(value)) => *value,
+                Some(Variant::R8(value)) => (*value as f32),
+                Some(Variant::I1(value)) => (*value as f32),
+                Some(Variant::I2(value)) => (*value as f32),
                 Some(Variant::I4(value)) => (*value as f32),
+                Some(Variant::I8(value)) => (*value as f32),
+                Some(Variant::UI1(value)) => (*value as f32),
+                Some(Variant::UI2(value)) => (*value as f32),
+                Some(Variant::UI4(value)) => (*value as f32),
+                Some(Variant::UI8(value)) => (*value as f32),
                 _ => 0.0,
             }
         }
