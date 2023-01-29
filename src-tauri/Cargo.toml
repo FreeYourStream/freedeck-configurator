@@ -1,6 +1,6 @@
 [package]
 name = "freedeck_configurator"
-version = "2.13.5"
+version = "2.13.6"
 description = "A Tauri App"
 authors = ["you"]
 license = ""
