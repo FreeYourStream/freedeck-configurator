@@ -40,7 +40,8 @@ impl SystemInfo {
                 Some(Variant::UI2(value)) => (*value as f32),
                 Some(Variant::UI4(value)) => (*value as f32),
                 Some(Variant::UI8(value)) => (*value as f32),
-                _ => 0.0,
+                Some(Variant::String(val_str)) => val_str.parse().unwrap_or(1f32),
+                _ => 0.5,
             }
         }
     }
