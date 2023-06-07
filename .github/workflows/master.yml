@@ -41,7 +41,7 @@ jobs:
         with:
           REMOTE_HOST: "78.47.56.63"
           REMOTE_USER: githubactions
-          TARGET: "/var/www/fdconfig.freeyourstream.com/"
+          TARGET: "/var/www/fdconfig/"
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           # The local folder to copy, defaults to root project folder
           SOURCE: "build/"
@@ -215,7 +215,7 @@ jobs:
         with:
           REMOTE_HOST: "78.47.56.63"
           REMOTE_USER: githubactions
-          TARGET: "/var/www/fdconfig.freeyourstream.com/updater.json"
+          TARGET: "/var/www/fdconfig/updater.json"
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           # The local folder to copy, defaults to root project folder
           SOURCE: "src-tauri/updater.json"
